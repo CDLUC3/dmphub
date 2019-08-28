@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_08_28_211250) do
+ActiveRecord::Schema.define(version: 2019_08_28_231300) do
 
   create_table "award_statuses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "award_id"
@@ -38,6 +38,18 @@ ActiveRecord::Schema.define(version: 2019_08_28_211250) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "project_id"
     t.index ["project_id"], name: "index_data_management_plans_on_project_id"
+  end
+
+  create_table "datasets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "data_management_plan_id"
+    t.string "title", null: false
+    t.integer "dataset_type", default: 0, null: false
+    t.boolean "personal_data"
+    t.boolean "sensitive_data"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["data_management_plan_id"], name: "index_datasets_on_data_management_plan_id"
+    t.index ["dataset_type"], name: "index_datasets_on_dataset_type"
   end
 
   create_table "descriptions", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

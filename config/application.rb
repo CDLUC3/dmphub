@@ -11,6 +11,14 @@ module Dmphub
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 6.0
 
+    # add_autoload_paths_to_load_path is true by default for backwards compatibility, but allows you to
+    # opt-out from adding the autoload paths to $LOAD_PATH.
+    # This makes sense in most applications, since you never should require a file in app/models, for example,
+    # and Zeitwerk only uses absolute file names internally.
+    # By opting-out you optimize $LOAD_PATH lookups (less directories to check), and save Bootsnap work and memory
+    # consumption, since it does not need to build an index for these directories.
+    config.add_autoload_paths_to_load_path
+
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading

@@ -3,6 +3,8 @@
 # To TEST:
 # > curl -v -X POST -d "grant_type=password&client_id=[client id]&client_secret=[client secret]&uid=[user id]&secret=[user secret]" http://localhost:3000/oauth/token
 
+# rubocop:disable Metrics/LineLength
+
 # Should return:
 # {"access_token":"eyJhbGciOiJIUzUxMiIsImtpZCI6ImE4ODgzODE2NTM2MTQyMGE4ZGRlZWQ0MTViZGJkNTViIn0.eyJpc3MiOm51bGwsImlhdCI6MTU2NTM5NDI3NywianRpIjoiZDBlMWZjZGUtMGU2NS00ZGFiLThjMTctZjdmNjlkMWVlYzE2IiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJyaWxleS5icmlAZ21haWwuY29tIn19.Bz1ZkWQVnttBaW8fq57BwGfmIdorgGPfovXm9kn8ob67Lyx8s00mKjq_i6b3hZWJ3EkoK3lUq1qRYk_eH6nC9Q",
 #  "token_type":"Bearer",
@@ -11,23 +13,25 @@
 #  "scope":"read",
 #  "created_at":1565394277}
 
+# rubocop:enable Metrics/LineLength
+
 Doorkeeper.configure do
   # Change the ORM that doorkeeper will use (needs plugins)
   orm :active_record
 
-  resource_owner_from_credentials do |routes|
+  resource_owner_from_credentials do |_routes|
     usr = User.where(id: request.params[:uid], secret: request.params[:secret]).first
 
-    #request.params[:user] = {
+    # request.params[:user] = {
     #  email: usr&.email,
     #  password: usr&.password
-    #}
-    request.env["warden"].logout(:user)
-    request.env["devise.allow_params_authentication"] = true
+    # }
+    request.env['warden'].logout(:user)
+    request.env['devise.allow_params_authentication'] = true
     # Set `store: false` to stop Warden from storing user in session
     # https://github.com/doorkeeper-gem/doorkeeper/issues/475#issuecomment-305517549
-    request.env["warden"].set_user(usr, scope: :user, store: false)
-    #request.env["warden"].authenticate!(scope: :user, store: false)
+    request.env['warden'].set_user(usr, scope: :user, store: false)
+    # request.env["warden"].authenticate!(scope: :user, store: false)
   end
 
   # This block will be called to check whether the resource owner is authenticated or not.
@@ -344,7 +348,7 @@ Doorkeeper.configure do
   # For example if dealing with a trusted application.
   #
   skip_authorization do |resource_owner, client|
-     client.superapp? or resource_owner.admin?
+    client.superapp? || resource_owner.admin?
   end
 
   # WWW-Authenticate Realm (default "Doorkeeper").

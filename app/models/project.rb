@@ -2,7 +2,6 @@
 
 # A project
 class Project < ApplicationRecord
-
   include Describable
 
   # Associations

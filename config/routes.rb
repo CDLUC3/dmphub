@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   use_doorkeeper do
     # You can skip doorkeeper for non-api controllers here
@@ -15,7 +17,7 @@ Rails.application.routes.draw do
     get '/users/sign_out', to: 'devise/sessions#destroy'
   end
 
-  root to: "home#index"
+  root to: 'home#index'
 
   # API version 1
   namespace :api do
@@ -24,5 +26,4 @@ Rails.application.routes.draw do
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
     end
   end
-
 end

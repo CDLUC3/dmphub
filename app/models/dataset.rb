@@ -2,7 +2,6 @@
 
 # A dataset
 class Dataset < ApplicationRecord
-
   include Describable
   include Identifiable
 

@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :person do
-    name        { Faker::Movies::StarWars.character }
+    name { Faker::Movies::StarWars.character }
   end
 
   factory :person_with_identifier, parent: :person do

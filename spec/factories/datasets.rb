@@ -7,7 +7,7 @@ FactoryBot.define do
     dataset_type            { Dataset.dataset_types.keys.sample }
     sensitive_data          { Faker::Boolean.boolean }
     personal_data           { Faker::Boolean.boolean }
-    sequence(:identifiers)  { |n| create(:identifier) }
-    sequence(:descriptions) { |n| create(:description) }
+    sequence(:identifiers)  { |_n| create(:identifier) }
+    sequence(:descriptions) { |_n| create(:description) }
   end
 end

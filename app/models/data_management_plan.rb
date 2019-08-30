@@ -2,7 +2,6 @@
 
 # A data management plan
 class DataManagementPlan < ApplicationRecord
-
   include Describable
   include Identifiable
 

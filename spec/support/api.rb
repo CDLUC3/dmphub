@@ -20,7 +20,7 @@ def get_access_token(doorkeeper_application:, user:)
     uid: user.id,
     secret: user.secret
   }
-  post oauth_token_path, params: @params, headers: @default_headers
+  post oauth_token_path, params: params, headers: @default_headers
   body_to_json[:access_token]
 end
 

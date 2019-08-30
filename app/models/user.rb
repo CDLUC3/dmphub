@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Respresents a user of the API
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
@@ -8,11 +9,11 @@ class User < ApplicationRecord
          :trackable, :omniauthable
 
   # Doorkeeper associations
-  has_many :access_grants, class_name: "Doorkeeper::AccessGrant",
-           foreign_key: :resource_owner_id, dependent: :delete_all
+  has_many :access_grants, class_name: 'Doorkeeper::AccessGrant',
+                           foreign_key: :resource_owner_id, dependent: :delete_all
 
-  has_many :access_tokens, class_name: "Doorkeeper::AccessToken",
-           foreign_key: :resource_owner_id, dependent: :delete_all
+  has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
+                           foreign_key: :resource_owner_id, dependent: :delete_all
 
   # Associations
   belongs_to :role
@@ -41,7 +42,7 @@ class User < ApplicationRecord
   end
 
   # JSON for API
-  def to_json(options = {})
+  def to_json(_options = {})
     JSON.parse(super(only: %i[id first_name last_name email])).to_json
   end
 
@@ -49,6 +50,7 @@ class User < ApplicationRecord
 
   def generate_api_token!
     return false unless email.present?
+
     payload = {
       user_id: id,
       email: email,
@@ -57,5 +59,4 @@ class User < ApplicationRecord
     }
     update(secret: TokenService.encode(payload.to_json))
   end
-
 end

@@ -9,11 +9,10 @@ RSpec.describe Identifier, type: :model do
     it { is_expected.to define_enum_for(:category).with(Identifier.categories.keys) }
 
     it 'should validate that :value is unique per :category' do
-      person = create(:person)
-      identifier = create(:identifier, category: Identifier.categories.keys.sample, identifiable: person)
+      create(:identifier, category: Identifier.categories.keys.sample, identifiable: create(:person))
       subject.value = 'Duplicate'
       is_expected.to validate_uniqueness_of(:value).scoped_to(:category).case_insensitive
-        .with_message('has already been taken')
+                                                   .with_message('has already been taken')
     end
   end
 

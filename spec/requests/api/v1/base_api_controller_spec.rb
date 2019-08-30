@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Api::V1::BaseApiController, type: :request do
-
   before(:each) do
     @user = create(:user)
 
@@ -80,5 +79,4 @@ RSpec.describe Api::V1::BaseApiController, type: :request do
       expect(json[:id]).to eql(@user.id)
     end
   end
-
 end

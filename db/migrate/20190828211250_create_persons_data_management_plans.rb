@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreatePersonsDataManagementPlans < ActiveRecord::Migration[6.0]
   def change
     create_table :persons_data_management_plans do |t|

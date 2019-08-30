@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDoorkeeperTables < ActiveRecord::Migration[6.0]
   def change
     create_table :oauth_applications do |t|
@@ -8,7 +10,7 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[6.0]
       # Remove `null: false` if you are planning to use grant flows
       # that doesn't require redirect URI to be used during authorization
       # like Client Credentials flow or Resource Owner Password.
-      t.text    :redirect_uri #, null: false
+      t.text    :redirect_uri # , null: false
       t.string  :scopes,       null: false, default: ''
       t.boolean :confidential, null: false, default: true
       t.timestamps             null: false
@@ -58,7 +60,7 @@ class CreateDoorkeeperTables < ActiveRecord::Migration[6.0]
       # previous tokens are revoked as soon as a new access token is created.
       # Comment out this line if you'd rather have refresh tokens
       # instantly revoked.
-      t.string   :previous_refresh_token, null: false, default: ""
+      t.string   :previous_refresh_token, null: false, default: ''
     end
 
     add_index :oauth_access_tokens, :token, unique: true, length: 255

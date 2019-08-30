@@ -2,7 +2,6 @@
 
 # A data management plan
 class AwardStatus < ApplicationRecord
-
   enum status: %i[planned applied granted rejected]
 
   # Associations

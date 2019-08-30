@@ -2,7 +2,6 @@
 
 # A data management plan
 class Award < ApplicationRecord
-
   include Identifiable
 
   # Associations

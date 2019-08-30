@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :role do
-    name    { Role.names.keys.sample }
+    name { Role.names.keys.sample }
 
     trait :super_admin do
       name  { 'superadmin' }

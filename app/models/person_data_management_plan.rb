@@ -2,7 +2,6 @@
 
 # A data management plan
 class PersonDataManagementPlan < ApplicationRecord
-
   self.table_name = 'persons_data_management_plans'
 
   enum role: %i[primary_contact curator author]

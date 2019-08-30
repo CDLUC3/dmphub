@@ -7,6 +7,6 @@ FactoryBot.define do
   end
 
   factory :project_with_awards, parent: :project do
-    sequence(:awards)     { |n| create(:award) }
+    sequence(:awards)     { |_n| create(:award) }
   end
 end

@@ -1,0 +1,23 @@
+AllCops:
+  Exclude:
+    - 'bin/**/*'
+    - 'db/**/*'
+    - 'vendor/**/*'
+    - 'node_modules/**/*'
+    - 'test/**/*'
+
+# Reasonable line-length check; it's too easy for the cure to be worse than the disease
+Metrics/LineLength:
+  Max: 150
+
+# AbcSize is very low at 15 and often catches perfectly readable methods because of two small if statements
+Metrics/AbcSize:
+  Max: 30
+
+# The default MethodLength can flag methods which essentially do nothing, simply because they invoke another method with several parameters
+Metrics/MethodLength:
+  Max: 20
+
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'

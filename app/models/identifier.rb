@@ -9,5 +9,5 @@ class Identifier < ApplicationRecord
 
   # Validations
   validates :category, :value, presence: true
-  validates :value, uniqueness: { scope: :category }
+  validates :value, uniqueness: { scope: :category, case_sensitive: false }
 end

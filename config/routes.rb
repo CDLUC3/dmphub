@@ -16,4 +16,13 @@ Rails.application.routes.draw do
   end
 
   root to: "home#index"
+
+  # API version 1
+  namespace :api do
+    namespace :v1 do
+      get '/me', format: :json, to: 'base_api#me'
+      get '/heartbeat', format: :json, to: 'base_api#heartbeat'
+    end
+  end
+
 end

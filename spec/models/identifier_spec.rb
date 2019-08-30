@@ -12,7 +12,8 @@ RSpec.describe Identifier, type: :model do
       person = create(:person)
       identifier = create(:identifier, category: Identifier.categories.keys.sample, identifiable: person)
       subject.value = 'Duplicate'
-      is_expected.to validate_uniqueness_of(:value).scoped_to(:category).with_message('has already been taken')
+      is_expected.to validate_uniqueness_of(:value).scoped_to(:category).case_insensitive
+        .with_message('has already been taken')
     end
   end
 

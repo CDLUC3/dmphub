@@ -8,8 +8,6 @@ class User < ApplicationRecord
          :trackable, :omniauthable
 
   # Doorkeeper associations
-  has_many :oauth_applications, class_name: "Doorkeeper::Application", as: :owner
-
   has_many :access_grants, class_name: "Doorkeeper::AccessGrant",
            foreign_key: :resource_owner_id, dependent: :delete_all
 
@@ -17,13 +15,17 @@ class User < ApplicationRecord
            foreign_key: :resource_owner_id, dependent: :delete_all
 
   # Associations
-  belongs_to :application
+  belongs_to :role
 
   # Validations
   validates :accept_terms, acceptance: true
+  validates :first_name, :last_name, :email, presence: true
+  validates :email, uniqueness: { case_sensitive: false }
 
+  # Callbacks
   after_create :generate_api_token!
 
+  # Instance Methods
   def name
     return email if first_name.nil? && last_name.nil?
 

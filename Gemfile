@@ -38,6 +38,8 @@ gem 'doorkeeper-jwt'
 gem 'mysql2', '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
 gem 'omniauth'
+# This plugin adds helpers for the reCAPTCHA API.
+gem 'recaptcha'
 
 
 group :development, :test do
@@ -47,9 +49,8 @@ group :development, :test do
   # Strategies for cleaning databases.  Can be used to ensure a clean state
   # for testing. (http://github.com/DatabaseCleaner/database_cleaner)
   gem 'database_cleaner', require: false
-  # factory_bot_rails provides integration between factory_bot and rails 3
-  # or newer (https://github.com/thoughtbot/factory_bot_rails)
-  gem 'factory_bot_rails'
+  # factory_bot
+  gem 'factory_bot'
   # Easily generate fake data (https://github.com/stympy/faker)
   gem 'faker'
   # Mocking and stubbing library (http://gofreerange.com/mocha/docs)
@@ -79,6 +80,8 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
+  # Support for controller tests
+  gem 'rails-controller-testing'
   gem 'selenium-webdriver'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'

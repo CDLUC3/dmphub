@@ -13,16 +13,7 @@ module Api::V1
     end
 
     def heartbeat
-      render json: base_json_response
-    end
-
-    protected
-
-    def base_json_response
-      {
-        application: Rails.application.config.x.branding['application']['name'],
-        status: 'ok'
-      }
+      render json: { application: Rails.application.class.name, status: 'ok' }
     end
 
     private

@@ -360,7 +360,7 @@ Doorkeeper::JWT.configure do
     user = User.find(opts[:resource_owner_id])
 
     {
-      iss: Rails.application.config.x.branding['application']['name'],
+      iss: Rails.application.class.name,
       iat: Time.current.utc.to_i,
 
       # @see JWT reserved claims - https://tools.ietf.org/html/draft-jones-json-web-token-07#page-7

@@ -1,17 +1,16 @@
 # frozen_string_literal: true
 
-# To TEST:
-# > curl -v -X POST -d "grant_type=password&client_id=[client id]&client_secret=[client secret]&uid=[user id]&secret=[user secret]" http://localhost:3000/oauth/token
-
 # rubocop:disable Metrics/LineLength
+# To TEST:
+# curl -X POST http://localhost:3000/oauth/token -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -d "grant_type=client_credentials&client_id=C81UztochqF8HLMlGlvQPvBZrrJlwQ3_9mOBDNYC0Pc&client_secret=UnHCxSI_d-gCmaCNbw21RjfYgZraoRw6A0Mcwwr0B5k"
 
-# Should return:
-# {"access_token":"eyJhbGciOiJIUzUxMiIsImtpZCI6ImE4ODgzODE2NTM2MTQyMGE4ZGRlZWQ0MTViZGJkNTViIn0.eyJpc3MiOm51bGwsImlhdCI6MTU2NTM5NDI3NywianRpIjoiZDBlMWZjZGUtMGU2NS00ZGFiLThjMTctZjdmNjlkMWVlYzE2IiwidXNlciI6eyJpZCI6MSwiZW1haWwiOiJyaWxleS5icmlAZ21haWwuY29tIn19.Bz1ZkWQVnttBaW8fq57BwGfmIdorgGPfovXm9kn8ob67Lyx8s00mKjq_i6b3hZWJ3EkoK3lUq1qRYk_eH6nC9Q",
-#  "token_type":"Bearer",
-#  "expires_in":7200,
-#  "refresh_token":"8PUnXgzSHV2MmjOMmxKyUB7iavBt6REh0Ng37RVhhOc",
-#  "scope":"read",
-#  "created_at":1565394277}
+# Should Return:
+#{
+# "access_token":"eyJhbGciOiJIUzUxMiIsImtpZCI6IkM4MVV6dG9jaHFGOEhMTWxHbHZRUHZCWnJySmx3UTNfOW1PQkROWUMwUGMifQ.eyJpc3MiOiJEbXBodWI6OkFwcGxpY2F0aW9uIiwiaWF0IjoxNTY3NTM3MDg0LCJqdGkiOiI2YzEyNTVjMC1iOWU4LTRiODgtOGZjZC1kYjlhODJiOWFiMjYiLCJjbGllbnQiOnsiaWQiOiJDODFVenRvY2hxRjhITE1sR2x2UVB2Qlpyckpsd1EzXzltT0JETllDMFBjIiwidG9rZW5fc2VjcmV0IjoiNzZhNzVkMDMtMTVmYy00MDZjLWFhMjMtZmM0N2RkYmY3MDUxIn19.f7w_RV62VY4o058-vTK1mvkO-oVnzOnvydCgH9022U9KxspKmmXN2z-4wIauRKIc8nU74wpW3AccUYE0BqeNvQ",
+# "token_type":"Bearer",
+# "expires_in":7200,
+# "created_at":1567537084
+#}
 
 # rubocop:enable Metrics/LineLength
 
@@ -19,24 +18,9 @@ Doorkeeper.configure do
   # Change the ORM that doorkeeper will use (needs plugins)
   orm :active_record
 
-  resource_owner_from_credentials do |_routes|
-    usr = User.where(id: request.params[:uid], secret: request.params[:secret]).first
-
-    # request.params[:user] = {
-    #  email: usr&.email,
-    #  password: usr&.password
-    # }
-    request.env['warden'].logout(:user)
-    request.env['devise.allow_params_authentication'] = true
-    # Set `store: false` to stop Warden from storing user in session
-    # https://github.com/doorkeeper-gem/doorkeeper/issues/475#issuecomment-305517549
-    request.env['warden'].set_user(usr, scope: :user, store: false)
-    # request.env["warden"].authenticate!(scope: :user, store: false)
-  end
-
   # This block will be called to check whether the resource owner is authenticated or not.
   resource_owner_authenticator do
-    current_user || warden.authenticate!(scope: :user)
+    #current_user || warden.authenticate!(scope: :user)
   end
 
   # If you didn't skip applications controller from Doorkeeper routes in your application routes.rb
@@ -214,6 +198,7 @@ Doorkeeper.configure do
   # for more information on customization
   #
   # client_credentials :from_basic, :from_params
+  client_credentials :from_params
 
   # Change the way access token is authenticated from the request object.
   # By default it retrieves first from the `HTTP_AUTHORIZATION` header, then
@@ -316,7 +301,7 @@ Doorkeeper.configure do
   #   http://tools.ietf.org/html/rfc6819#section-4.4.3
   #
   # grant_flows %w[authorization_code client_credentials]
-  grant_flows %w[password]
+  grant_flows %w[client_credentials]
 
   # Hook into the strategies' request & response life-cycle in case your
   # application needs advanced customization or logging:
@@ -361,8 +346,6 @@ Doorkeeper::JWT.configure do
   # about the user. Defaults to a randomly generated token in a hash:
   #     { token: "RANDOM-TOKEN" }
   token_payload do |opts|
-    user = User.find(opts[:resource_owner_id])
-
     {
       iss: Rails.application.class.name,
       iat: Time.current.utc.to_i,
@@ -370,9 +353,9 @@ Doorkeeper::JWT.configure do
       # @see JWT reserved claims - https://tools.ietf.org/html/draft-jones-json-web-token-07#page-7
       jti: SecureRandom.uuid,
 
-      user: {
-        id: user.id,
-        email: user.email
+      client: {
+        id: opts[:application].uid,
+        token_secret: SecureRandom.uuid
       }
     }
   end

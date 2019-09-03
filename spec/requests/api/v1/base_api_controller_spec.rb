@@ -4,34 +4,36 @@ require 'rails_helper'
 
 RSpec.describe Api::V1::BaseApiController, type: :request do
   before(:each) do
-    @user = create(:user)
-
     doorkeeper_application = create(:doorkeeper_application, redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
 
     @params = {
       client_id: doorkeeper_application.uid,
       client_secret: doorkeeper_application.secret,
-      grant_type: 'password',
-      uid: @user.id,
-      secret: @user.secret
+      grant_type: 'client_credentials'
     }
   end
 
   describe :oauth_token do
-    it 'returns a 400 (bad request) for an unknown user' do
-      @params[:secret] = 'foo'
-      post oauth_token_path, params: @params.to_json, headers: default_headers
-      expect(response.status).to eql(400)
+    it 'returns a 401 (unauthorized) when credentials are missing' do
+      @params.delete :client_id
+      post oauth_token_path, params: @params, headers: token_headers
+      expect(response.status).to eql(401)
     end
 
-    it 'returns a 401 (unauthorized) for an unknown client' do
+    it 'returns a 401 (unauthorized) for an unknown client_id' do
+      @params[:client_id] = 'foo'
+      post oauth_token_path, params: @params, headers: token_headers
+      expect(response.status).to eql(401)
+    end
+
+    it 'returns a 401 (unauthorized) for an unknown client_secret' do
       @params[:client_secret] = 'foo'
-      post oauth_token_path, params: @params.to_json, headers: default_headers
+      post oauth_token_path, params: @params, headers: token_headers
       expect(response.status).to eql(401)
     end
 
     it 'issues an access token when the client and user are both valid' do
-      post oauth_token_path, params: @params.to_json, headers: default_headers
+      post oauth_token_path, params: @params, headers: token_headers
       expect(response.status).to eql(200)
       body_to_json
       expect(@json['access_token'].present?).to eql(true)
@@ -70,13 +72,15 @@ RSpec.describe Api::V1::BaseApiController, type: :request do
     end
 
     it 'can be accessed by an authenticated user' do
-      post oauth_token_path, params: @params.to_json, headers: default_headers
-      @access_token = body_to_json['access_token']
-      @token_type = body_to_json['token_type']
-      get api_v1_me_path, headers: default_authenticated_headers
+      doorkeeper_application = create(:doorkeeper_application)
+      auth = setup_access_token(doorkeeper_application: doorkeeper_application)
+      get api_v1_me_path, headers: default_authenticated_headers(authorization: auth)
       expect(response.status).to eql(200)
       json = body_to_json
-      expect(json[:id]).to eql(@user.id)
+      expect(json[:uid]).to eql(doorkeeper_application.uid)
+      expect(json[:name]).to eql(doorkeeper_application.name)
+      expect(json[:redirect_uri]).to eql(doorkeeper_application.redirect_uri)
+      expect(json[:created_at]).to eql(doorkeeper_application.created_at.to_s)
     end
   end
 end

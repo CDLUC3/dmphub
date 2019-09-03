@@ -10,7 +10,7 @@ module Api
       before_action :parse_request, except: %i[me heartbeat]
 
       def me
-        respond_with current_resource_owner
+        respond_with current_client
       end
 
       def heartbeat
@@ -20,17 +20,13 @@ module Api
       private
 
       # Find the user that owns the access token
-      def current_resource_owner
-        User.find(doorkeeper_token.resource_owner_id) if doorkeeper_token
-      end
-
-      def authenticate_user_from_token!
-        render json: empty_response, status: :unauthorized if @json.nil? || !@json.key?('api_token')
-
-        @user = nil
-        User.find_each do |user|
-          @user = user if Devise.secure_compare(user.api_token, @json['api_token'])
-        end
+      def current_client
+        {
+          uid: doorkeeper_token.application.uid,
+          name: doorkeeper_token.application.name,
+          redirect_uri: doorkeeper_token.application.redirect_uri,
+          created_at: doorkeeper_token.application.created_at.to_s
+        }
       end
 
       def parse_request

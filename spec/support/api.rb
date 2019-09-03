@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def mock_access_token(user:)
+def mock_access_token
   setup_access_token(
     doorkeeper_application: create(:doorkeeper_application)
   )
@@ -35,5 +35,5 @@ def default_headers
 end
 
 def default_authenticated_headers(authorization:)
-  default_headers.merge('Authorization' => "#{authorization}")
+  default_headers.merge('Authorization' => authorization.to_s)
 end

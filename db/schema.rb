@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_03_175251) do
+ActiveRecord::Schema.define(version: 2019_09_03_200259) do
 
   create_table "award_statuses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "award_id"
@@ -112,6 +112,15 @@ ActiveRecord::Schema.define(version: 2019_09_03_175251) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
+  end
+
+  create_table "oauth_authorizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "oauth_application_id"
+    t.bigint "data_management_plan_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["data_management_plan_id"], name: "index_oauth_authorizations_on_data_management_plan_id"
+    t.index ["oauth_application_id"], name: "index_oauth_authorizations_on_oauth_application_id"
   end
 
   create_table "persons", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

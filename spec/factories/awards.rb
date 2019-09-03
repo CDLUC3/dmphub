@@ -5,7 +5,10 @@ FactoryBot.define do
     project
     funder_uri                { Faker::Internet.url }
     amount                    { Faker::Number.decimal(l_digits: 2) }
-    currency                  { Faker::Currency.code }
-    sequence(:award_statuses) { |_n| create(:award_status) }
+    currency_type             { Faker::Currency.code }
+
+    after :create do |award|
+      create(:award_status, award: award)
+    end
   end
 end

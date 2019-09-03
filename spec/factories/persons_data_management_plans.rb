@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :person_data_management_plan do
-    data_management_plan
-    person
-    role { PersonDataManagementPlan.roles.keys.sample }
+    data_management_plan  { create(:data_management_plan) }
+    person                { create(:person) }
+    role                  { PersonDataManagementPlan.roles.keys.sample }
   end
 end

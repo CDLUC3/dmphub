@@ -13,4 +13,9 @@ RSpec.describe Dataset, type: :model do
     it { is_expected.to have_many(:identifiers) }
     it { is_expected.to belong_to(:data_management_plan) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:dataset)
+    expect(model.valid?).to eql(true)
+  end
 end

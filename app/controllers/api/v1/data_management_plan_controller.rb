@@ -5,7 +5,9 @@ module Api
     # Controller providing DMP functionality
     class DataManagementPlanController < BaseApiController
       # GET /data_management_plans
-      def index; end
+      def index
+
+      end
 
       # GET /data_management_plans/:id
       def show; end

@@ -3,7 +3,6 @@
 FactoryBot.define do
   factory :project do
     title                 { Faker::Movies::StarWars.wookiee_sentence }
-    data_management_plans {}
   end
 
   factory :project_with_awards, parent: :project do

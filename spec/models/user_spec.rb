@@ -22,6 +22,11 @@ RSpec.describe User, type: :model do
     it { is_expected.to belong_to(:role) }
   end
 
+  it 'factory can produce a valid model' do
+    model = create(:user)
+    expect(model.valid?).to eql(true)
+  end
+
   context 'instance methods' do
     describe '#first_name=' do
       it 'is capitalized' do

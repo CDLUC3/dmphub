@@ -12,4 +12,9 @@ RSpec.describe PersonDataManagementPlan, type: :model do
     it { is_expected.to belong_to(:data_management_plan) }
     it { is_expected.to belong_to(:person) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:person_data_management_plan)
+    expect(model.valid?).to eql(true)
+  end
 end

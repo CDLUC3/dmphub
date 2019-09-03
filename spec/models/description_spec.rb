@@ -12,4 +12,13 @@ RSpec.describe Description, type: :model do
   context 'associations' do
     it { is_expected.to belong_to(:describable) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:data_management_plan_description)
+    expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Describable'
+    model = create(:dataset_description)
+    expect(model.valid?).to eql(true), 'expected Dataset to be Describable'
+    model = create(:project_description)
+    expect(model.valid?).to eql(true), 'expected Project to be Describable'
+  end
 end

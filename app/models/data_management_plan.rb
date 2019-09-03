@@ -6,12 +6,24 @@ class DataManagementPlan < ApplicationRecord
   include Identifiable
 
   # Associations
+  belongs_to :oauth_authorization, foreign_key: 'id', optional: true
   belongs_to :project
   has_many :person_data_management_plans
   has_many :persons, through: :person_data_management_plans
   has_many :datasets
 
   # Validations
-  validates :title, :ethical_issues, :language, presence: true
-  validates :datasets, length: { minimum: 1 }
+  validates :title, :language, presence: true
+  validates :ethical_issues, inclusion: 0..2
+
+  # Callbacks
+  after_create :ensure_dataset!
+
+  private
+
+  def ensure_dataset!
+    datasets << Dataset.new(title: title)
+    save!
+  end
+
 end

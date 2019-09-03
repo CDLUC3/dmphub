@@ -12,4 +12,9 @@ RSpec.describe Project, type: :model do
     it { is_expected.to have_many(:awards) }
     it { is_expected.to have_many(:descriptions) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:project)
+    expect(model.valid?).to eql(true)
+  end
 end

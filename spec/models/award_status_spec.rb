@@ -11,4 +11,9 @@ RSpec.describe AwardStatus, type: :model do
   context 'associations' do
     it { is_expected.to belong_to(:award) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:award_status)
+    expect(model.valid?).to eql(true)
+  end
 end

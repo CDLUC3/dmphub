@@ -19,4 +19,15 @@ RSpec.describe Identifier, type: :model do
   context 'associations' do
     it { is_expected.to belong_to(:identifiable) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:award_identifier)
+    expect(model.valid?).to eql(true), 'expected Award to be Identifiable'
+    model = create(:data_management_plan_identifier)
+    expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Identifiable'
+    model = create(:dataset_identifier)
+    expect(model.valid?).to eql(true), 'expected Dataset to be Identifiable'
+    model = create(:person_identifier)
+    expect(model.valid?).to eql(true), 'expected Person to be Identifiable'
+  end
 end

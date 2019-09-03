@@ -12,4 +12,9 @@ RSpec.describe Award, type: :model do
     it { is_expected.to have_many(:award_statuses) }
     it { is_expected.to have_many(:identifiers) }
   end
+
+  it 'factory can produce a valid model' do
+    model = create(:award)
+    expect(model.valid?).to eql(true)
+  end
 end

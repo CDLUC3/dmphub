@@ -2,12 +2,10 @@
 
 FactoryBot.define do
   factory :dataset do
-    data_management_plan
-    title                   { Faker::Movies::StarWars.wookiee_sentence }
-    dataset_type            { Dataset.dataset_types.keys.sample }
-    sensitive_data          { Faker::Boolean.boolean }
-    personal_data           { Faker::Boolean.boolean }
-    sequence(:identifiers)  { |_n| create(:identifier) }
-    sequence(:descriptions) { |_n| create(:description) }
+    data_management_plan        { create(:data_management_plan) }
+    title                       { Faker::Movies::StarWars.wookiee_sentence }
+    dataset_type                { Dataset.dataset_types.keys.sample }
+    sensitive_data              { Faker::Boolean.boolean }
+    personal_data               { Faker::Boolean.boolean }
   end
 end

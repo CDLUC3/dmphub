@@ -1,14 +1,16 @@
 # frozen_string_literal: true
 
 def mock_access_token
+  @doorkeeper_application = create(:doorkeeper_application)
   setup_access_token(
-    doorkeeper_application: create(:doorkeeper_application)
+    doorkeeper_application: @doorkeeper_application
   )
 end
 
 # Parse response body as json
 def body_to_json
-  @json = JSON.parse(@response.body).with_indifferent_access if @response.body.present?
+  @json = JSON.parse(@response.body)
+  @json = @json.with_indifferent_access if @response.body && @json != [{}]
 end
 
 def get_access_token(doorkeeper_application:)

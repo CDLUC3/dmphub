@@ -10,21 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_03_200259) do
+ActiveRecord::Schema.define(version: 2019_09_04_214504) do
 
   create_table "award_statuses", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "award_id"
     t.integer "status", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance", null: false
     t.index ["award_id"], name: "index_award_statuses_on_award_id"
   end
 
   create_table "awards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "project_id"
     t.string "funder_uri"
-    t.float "amount"
-    t.string "currency_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["project_id"], name: "index_awards_on_project_id"
@@ -69,6 +68,7 @@ ActiveRecord::Schema.define(version: 2019_09_03_200259) do
     t.string "identifiable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance", null: false
     t.index ["category"], name: "index_identifiers_on_category"
   end
 

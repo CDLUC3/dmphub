@@ -9,4 +9,9 @@ class Description < ApplicationRecord
 
   # Validations
   validates :category, :value, presence: true
+
+  # JSON for API
+  def to_json(options = [])
+    super((%i[value category no_hateoas] + options).uniq)
+  end
 end

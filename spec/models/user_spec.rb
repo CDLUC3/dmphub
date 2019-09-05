@@ -67,8 +67,8 @@ RSpec.describe User, type: :model do
 
     describe '#to_json' do
       before(:each) do
-        @user = create(:user)
-        @json = JSON.parse(@user.to_json)
+        @user = build(:user)
+        @json = @user.to_json
       end
 
       it 'returns the fields we expect' do
@@ -87,3 +87,11 @@ RSpec.describe User, type: :model do
     end
   end
 end
+
+# Example of `to_json` output:
+# {
+#   "created_at"=>"2019-09-04T22:23:59.088Z",
+#   "first_name"=>"Antione",
+#   "last_name"=>"Runte",
+#   "email"=>"jose@example.net"
+# }

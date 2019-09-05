@@ -24,6 +24,13 @@ Rails.application.routes.draw do
     namespace :v1 do
       get '/me', format: :json, to: 'base_api#me'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
+
+      resources :data_management_plans
+      resources :datasets
+      resources :persons
+      resources :projects
+      resources :awards
+      resources :users, only: %w[show]
     end
   end
 end

@@ -5,6 +5,7 @@ FactoryBot.define do
   factory :identifier do
     category     { Identifier.categories.keys.sample }
     value        { Faker::Lorem.word }
+    provenance   { Faker::Lorem.word.downcase }
   end
 
   factory :award_identifier, parent: :identifier do |identifier|

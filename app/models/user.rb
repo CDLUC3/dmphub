@@ -42,8 +42,8 @@ class User < ApplicationRecord
   end
 
   # JSON for API
-  def to_json(_options = {})
-    JSON.parse(super(only: %i[id first_name last_name email])).to_json
+  def to_json(options = [])
+    super((%i[first_name last_name email] + options).uniq)
   end
 
   private

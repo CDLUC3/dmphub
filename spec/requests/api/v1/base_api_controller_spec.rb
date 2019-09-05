@@ -83,4 +83,5 @@ RSpec.describe Api::V1::BaseApiController, type: :request do
       expect(json[:created_at]).to eql(doorkeeper_application.created_at.to_s)
     end
   end
+
 end

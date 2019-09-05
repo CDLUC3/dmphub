@@ -3,9 +3,7 @@
 FactoryBot.define do
   factory :award do
     project
-    funder_uri                { Faker::Internet.url }
-    amount                    { Faker::Number.decimal(l_digits: 2) }
-    currency_type             { Faker::Currency.code }
+    funder_uri { Faker::Internet.url }
 
     after :create do |award|
       create(:award_status, award: award)

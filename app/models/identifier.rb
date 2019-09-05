@@ -8,6 +8,20 @@ class Identifier < ApplicationRecord
   belongs_to :identifiable, polymorphic: true
 
   # Validations
-  validates :category, :value, presence: true
-  validates :value, uniqueness: { scope: :category, case_sensitive: false }
+  validates :category, :value, :provenance, presence: true
+  validates :value, uniqueness: { scope: %i[category provenance], case_sensitive: false }
+
+  # Callbacks
+  before_validation :ensure_provenance
+
+  # JSON for API
+  def to_json(options = [])
+    super((%i[value category provenance no_hateoas] + options).uniq)
+  end
+
+  private
+
+  def ensure_provenance
+    provenance = Rails.application.class.name.underscore unless provenance.present?
+  end
 end

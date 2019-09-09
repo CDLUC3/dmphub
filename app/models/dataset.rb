@@ -13,21 +13,11 @@ class Dataset < ApplicationRecord
   # Validations
   validates :title, :dataset_type, presence: true
 
-  def to_json(options = [])
-    payload = super((%i[title dataset_type] + options).uniq)
-    payload['personal_data'] = personal_data?
-    payload['sensitive_data'] = sensitive_data?
-    payload['identifiers'] = identifiers.map { |i| i.to_json }
-    payload['descriptions'] = descriptions.map { |d| d.to_json }
-    payload = payload.merge(to_local_json) unless options.include?(:full_json)
-    payload
+  def has_personal_data?
+    personal_data == 0 ? 'no' : personal_data == 1 ? 'yes' : 'unknown'
   end
 
-  private
-
-  def to_local_json
-    payload = {}
-    payload['data_management_plan'] = JSON.parse(data_management_plan.to_hateoas('part_of'))
-    payload
+  def has_sensitive_data?
+    sensitive_data == 0 ? 'no' : sensitive_data == 1 ? 'yes' : 'unknown'
   end
 end

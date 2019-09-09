@@ -3,11 +3,19 @@
 FactoryBot.define do
   factory :person do
     name { Faker::Movies::StarWars.character }
-  end
 
-  factory :person_with_identifier, parent: :person do
-    before :create do |person|
-      create :identifier, 1, person: person, category: 'email'
+    trait :complete do
+      transient do
+        identifier_count { 1 }
+      end
+
+      after :create do |person, evaluator|
+        person.identifiers << create(:person_identifier, category: 'email')
+
+        evaluator.identifier_count.times do
+          person.identifiers << create(:person_identifier)
+        end
+      end
     end
   end
 end

@@ -21,6 +21,8 @@ FactoryBot.define do
         create(:person_data_management_plan, data_management_plan: dmp, role: 'primary_contact')
         dmp.descriptions << create(:data_management_plan_description)
         2.times { dmp.identifiers << create(:data_management_plan_identifier) }
+        dmp.project = create(:project_with_awards)
+        dmp.datasets << create(:dataset, :complete)
         dmp.save
       end
     end

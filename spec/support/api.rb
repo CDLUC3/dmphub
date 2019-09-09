@@ -39,3 +39,23 @@ end
 def default_authenticated_headers(authorization:)
   default_headers.merge('Authorization' => authorization.to_s)
 end
+
+# methods for use with JSON/View validation
+def validate_base_json_elements(model:, rendered:)
+  return false unless model.present? && rendered.present?
+  validate_created_at_presence(model: model, rendered: rendered)
+  validate_hateoas_presence(model: model, rendered: rendered)
+end
+
+def validate_created_at_presence(model:, rendered:)
+  return false unless model.present? && rendered.present?
+  expect(rendered['created_at']).to eql(model.created_at.to_s)
+end
+
+def validate_hateoas_presence(model:, rendered:)
+  return false unless model.present? && rendered.present?
+  href = "api_v1_#{model.class.name.underscore}_url"
+  expect(@json['links'].present?).to eql(true)
+  expect(@json['links'].first['rel']).to eql('self')
+  expect(@json['links'].first['href']).to eql(Rails.application.routes.url_helpers.send(href, model.id))
+end

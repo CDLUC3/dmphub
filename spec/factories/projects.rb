@@ -6,6 +6,14 @@ FactoryBot.define do
   end
 
   factory :project_with_awards, parent: :project do
-    sequence(:awards)     { |_n| create(:award) }
+    transient do
+      award_count { 1 }
+    end
+
+    after :create do |project, evaluator|
+      evaluator.award_count.times do
+        project.awards << create(:award)
+      end
+    end
   end
 end

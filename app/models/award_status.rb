@@ -13,10 +13,6 @@ class AwardStatus < ApplicationRecord
   # Callbacks
   before_validation :ensure_provenance
 
-  def to_json(options = [])
-    super((%i[status provenance no_hateoas] + options).uniq)
-  end
-
   private
 
   def ensure_provenance

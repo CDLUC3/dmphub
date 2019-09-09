@@ -14,6 +14,14 @@ class Identifier < ApplicationRecord
   # Callbacks
   before_validation :ensure_provenance
 
+  # Scopes
+  scope :from_json, ->(json) do
+    return nil unless json.present?
+
+    json = delete_base_json_elements(json)
+    new(json)
+  end
+
   private
 
   def ensure_provenance

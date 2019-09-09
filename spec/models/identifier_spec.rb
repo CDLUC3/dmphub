@@ -32,26 +32,25 @@ RSpec.describe Identifier, type: :model do
     expect(model.valid?).to eql(true), 'expected Person to be Identifiable'
   end
 
-  context 'instance methods' do
+  context 'scopes' do
     before(:each) do
-      @ident = build(:dataset_identifier)
+      @json = {
+        'created_at': Time.now.to_s,
+        'category': Identifier.categories.keys.sample,
+        'provenance': Faker::Lorem.word,
+        'value': Faker::Lorem.word
+      }
     end
 
-    describe 'to_json' do
-      it 'returns the attributes we expect' do
-        json = @ident.to_json
-        expect(json['provenance']).to eql(@ident.provenance)
-        expect(json['category']).to eql(@ident.category)
-        expect(json['value']).to eql(@ident.value)
+    describe 'from_json' do
+      it 'converts the expected json into an Identifier model' do
+        identifier = Identifier.from_json(@json)
+        expect(identifier.created_at.to_s).not_to eql(@json[:created_at])
+        expect(identifier.category).to eql(@json[:category])
+        expect(identifier.provenance).to eql(@json[:provenance])
+        expect(identifier.value).to eql(@json[:value])
       end
     end
   end
-end
 
-# Example of `to_json` output:
-# {
-#   "created_at"=>"2019-09-04T21:11:30.894Z",
-#   "value"=>"10.1234/abc123.98zy",
-#   "category"=>"doi",
-#   "provenance"=>"datacite"
-# }
+end

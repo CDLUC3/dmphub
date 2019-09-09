@@ -17,34 +17,24 @@ RSpec.describe Person, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  context 'instance methods' do
+  context 'scopes' do
     before(:each) do
-      @person = create(:person)
-      @dmp = create(:person_data_management_plan, person: @person)
-      @person.reload
+      @json = {
+        'created_at': Time.now.to_s,
+        'name': Faker::Movies::StarWars.name,
+        'identifiers': [{ 'category': 'orcid', 'provenance': 'orcid', 'value': 'abcd', 'created_at': Time.now}],
+        'mbox': 'weird.test@example.org'
+      }
     end
 
-    describe 'to_json' do
-      it 'returns the attributes we expect' do
-        json = @person.to_json
-        expect(json['name']).to eql(@person.name)
-        expect(json['data_management_plans'].length).to eql(1)
-        expect(json['data_management_plans'].first).to eql(JSON.parse(@dmp.data_management_plan.to_hateoas("#{@dmp.role}_of")))
+    describe 'from_json' do
+      it 'converts the expected json into an Identifier model' do
+        person = Person.from_json(@json, Faker::Lorem.word)
+        expect(person.created_at.to_s).not_to eql(@json[:created_at])
+        expect(person.name).to eql(@json[:name])
+        expect(person.identifiers.length).to eql(2)
       end
     end
   end
-end
 
-# Example of `to_json` output:
-# {
-#   "created_at"=>"2019-09-05T15:44:02.995Z",
-#   "links"=>[{
-#     "rel"=>"self",
-#     "href"=>"http://localhost:3000/api/v1/persons/2"
-#   }],
-#   "name"=>"Sheev Palpatine",
-#   "data_management_plans"=>[{
-#     "rel"=>"curator_of",
-#     "href"=>"http://localhost:3000/api/v1/data_management_plans/1"
-#   }]
-# }
+end

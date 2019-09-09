@@ -22,24 +22,24 @@ RSpec.describe Description, type: :model do
     expect(model.valid?).to eql(true), 'expected Project to be Describable'
   end
 
-  context 'instance methods' do
+  context 'scopes' do
     before(:each) do
-      @desc = build(:dataset_description)
+      @json = {
+        'created_at': Time.now.to_s,
+        'links': [{ 'rel': 'self', 'href': 'http://localhost:3000/descriptions/1' }],
+        'category': Description.categories.keys.sample,
+        'value': Faker::Lorem.word
+      }
     end
 
-    describe 'to_json' do
-      it 'returns the attributes we expect' do
-        json = @desc.to_json
-        expect(json['category']).to eql(@desc.category)
-        expect(json['value']).to eql(@desc.value)
+    describe 'from_json' do
+      it 'converts the expected json into an Identifier model' do
+        desc = Description.from_json(@json)
+        expect(desc.created_at.to_s).not_to eql(@json[:created_at])
+        expect(desc.category).to eql(@json[:category])
+        expect(desc.value).to eql(@json[:value])
       end
     end
   end
-end
 
-# Example of `to_json` output:
-# {
-#   "created_at"=>"2019-09-04T21:11:30.894Z",
-#   "value"=>"Nisi ut eius. Quos dolor reiciendis. Possimus aut adipisci.",
-#   "category"=>"ethical_issue"
-# }
+end

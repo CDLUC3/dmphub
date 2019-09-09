@@ -18,24 +18,21 @@ RSpec.describe AwardStatus, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  context 'instance methods' do
+  context 'scopes' do
     before(:each) do
-      @status = build(:award_status)
+      @json = {
+        'created_at': Time.now.to_s,
+        'status': AwardStatus.statuses.keys.sample
+      }
     end
 
-    describe 'to_json' do
-      it 'returns the attributes we expect' do
-        json = @status.to_json
-        expect(json['status']).to eql(@status.status)
-        expect(json['links'].present?).to eql(false)
+    describe 'from_json' do
+      it 'converts the expected json into an Identifier model' do
+        award_status = AwardStatus.from_json(@json, Faker::Lorem.word)
+        expect(award_status.created_at.to_s).not_to eql(@json[:created_at])
+        expect(award_status.status).to eql(@json[:status])
+        expect(award_status.provenance).not_to eql(nil)
       end
     end
   end
 end
-
-# Example of `to_json` output:
-# {
-#   "created_at"=>"2019-09-04T21:11:30.894Z",
-#   "status"=>"granted",
-#   "provenance"=>"nsf_award_api"
-# }

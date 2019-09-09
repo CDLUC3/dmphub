@@ -9,4 +9,12 @@ class Description < ApplicationRecord
 
   # Validations
   validates :category, :value, presence: true
+
+  # Scopes
+  scope :from_json, ->(json) do
+    return nil unless json.present?
+
+    json = delete_base_json_elements(json)
+    new(json)
+  end
 end

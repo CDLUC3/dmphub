@@ -10,6 +10,8 @@ class Person < ApplicationRecord
   has_many :person_data_management_plans
   has_many :data_management_plans, through: :person_data_management_plans
   has_many :projects, through: :data_management_plans
+  has_many :person_organizations
+  has_many :organizations, through: :person_organizations
 
   # Validations
   validates :name, presence: true

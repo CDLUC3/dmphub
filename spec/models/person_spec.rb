@@ -10,6 +10,7 @@ RSpec.describe Person, type: :model do
   context 'associations' do
     it { is_expected.to have_many(:identifiers) }
     it { is_expected.to have_many(:data_management_plans) }
+    it { is_expected.to have_many(:organizations) }
   end
 
   it 'factory can produce a valid model' do

@@ -6,5 +6,10 @@ class CreateOrganizations < ActiveRecord::Migration[6.0]
       t.string     :name, null: false, index: true
       t.timestamps
     end
+
+    create_table :persons_organizations do |t|
+      t.references :person, index: true
+      t.references :organization, index: true
+    end
   end
 end

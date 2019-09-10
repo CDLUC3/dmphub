@@ -2,22 +2,30 @@
 
 # A data management plan
 class Award < ApplicationRecord
+
   include Identifiable
+
+  enum status: %i[planned applied granted rejected]
 
   # Associations
   belongs_to :project
-  has_many :award_statuses
 
   # Validations
-  validates :funder_uri, presence: true
+  validates :funder_uri, :status, presence: true
 
   # Scopes
-  scope :from_json, ->(json) do
+  scope :from_json, ->(json, provenance) do
     return nil unless json.present?
 
-    award = new(delete_base_json_elements(json))
-    award.identifiers << json['identifiers'].map { |i| Identifier.from_json(i) } if json['identifiers']
-    award.award_statuses << json['identifiers'].map { |s| AwardStatus.from_json(s) } if json['funding_statuses']
-    award.project = Project.from_json(json['project']) if json['project']
+    json = delete_base_json_elements(json)
+    args = json.select do |k, v|
+      !%w[person_data_management_plans data_management_plans projects identifiers mbox].include?(k)
+    end
+    award = new(args)
+
+    provenance = provenance || Rails.application.name.downcase
+    award.identifiers << Identifier.new(category: 'email', value: json['mbox'], provenance: provenance)
+    award.identifiers << json['identifiers'].map { |i| Identifier.from_json(i) }
+    award
   end
 end

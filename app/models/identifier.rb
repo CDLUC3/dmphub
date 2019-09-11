@@ -15,11 +15,18 @@ class Identifier < ApplicationRecord
   before_validation :ensure_provenance
 
   # Scopes
-  scope :from_json, ->(json) do
-    return nil unless json.present?
+  class << self
 
-    json = delete_base_json_elements(json)
-    new(json)
+    # Common Standard JSON to an instance of this object
+    def from_json(json:, provenance:)
+      return nil unless json.present? && provenance.present?
+
+      json = json.with_indifferent_access
+      return nil unless json['value'].present?
+
+      new(category: json.fetch('category', 'url'), provenance: provenance, value: json.fetch('value', ''))
+    end
+
   end
 
   private

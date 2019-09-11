@@ -1,0 +1,18 @@
+/* Represents an Identifier */
+{
+  "complete": {
+    "created": "2019-07-17 14:34:07 UTC",
+    "modified": "2019-07-17 14:34:07 UTC",
+    "category": "doi",
+    "provenance": "datacite",
+    "value": "10.80030/abc123.zy98"
+  },
+  "minimal": {
+    "category": "doi",
+    "provenance": "datacite",
+    "value": "10.80030/abc123.zy98"
+  },
+  "invalid": {
+    "value": "invalid identifier hash"
+  }
+}

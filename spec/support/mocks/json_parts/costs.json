@@ -1,0 +1,18 @@
+/* Represents an Data Management Plan Cost */
+{
+  "complete": {
+    "created": "2019-07-17 14:34:07 UTC",
+    "modified": "2019-07-17 14:34:07 UTC",
+    "title": "Dataset preservation costs",
+    "description": "Cost for preservation of datasets for 10 year period",
+    "value": 870.03,
+    "currency_code": "usd"
+  },
+  "minimal": {
+    "title": "Dataset preservation costs"
+  },
+  "invalid": {
+    "description": "Cost for preservation of datasets for 10 year period",
+    "value": 870.03
+  }
+}

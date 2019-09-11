@@ -25,12 +25,11 @@ Rails.application.routes.draw do
       get '/me', format: :json, to: 'base_api#me'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
 
-      resources :awards, only: %w[show]
       resources :data_management_plans
-      resources :datasets, only: %w[show]
-      resources :organizations, only: %w[show]
-      resources :persons, only: %w[show]
-      resources :projects, only: %w[show]
+      resources :datasets, only: %w[index show]
+      resources :organizations, only: %w[index show]
+      resources :persons, only: %w[index show]
+      resources :projects, only: %w[index show]
       resources :users, only: %w[show]
     end
   end

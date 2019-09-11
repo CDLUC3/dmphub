@@ -27,7 +27,6 @@ class Person < ApplicationRecord
     person = new(args)
 
     provenance = provenance || Rails.application.name.downcase
-    person.identifiers << Identifier.new(category: 'email', value: json['mbox'], provenance: provenance)
     person.identifiers << json['identifiers'].map { |i| Identifier.from_json(i) }
     person
   end

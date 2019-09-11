@@ -4,4 +4,4 @@
 json.merge! model_json_base(model: award, skip_hateoas: true)
 json.funder_id award.funder_uri
 json.grant_id award.identifiers.first&.value
-json.funding_statuses award.status
+json.funding_status award.status

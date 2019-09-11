@@ -21,7 +21,7 @@ RSpec.describe Person, type: :model do
   context 'scopes' do
     before(:each) do
       @json = {
-        'created_at': Time.now.to_s,
+        'created': Time.now.to_s,
         'name': Faker::Movies::StarWars.name,
         'identifiers': [{ 'category': 'orcid', 'provenance': 'orcid', 'value': 'abcd', 'created_at': Time.now}],
         'mbox': 'weird.test@example.org'
@@ -33,7 +33,7 @@ RSpec.describe Person, type: :model do
         person = Person.from_json(@json, Faker::Lorem.word)
         expect(person.created_at.to_s).not_to eql(@json[:created_at])
         expect(person.name).to eql(@json[:name])
-        expect(person.identifiers.length).to eql(2)
+        expect(person.identifiers.length).to eql(1)
       end
     end
   end

@@ -32,25 +32,27 @@ RSpec.describe Identifier, type: :model do
     expect(model.valid?).to eql(true), 'expected Person to be Identifiable'
   end
 
-  context 'scopes' do
+  describe 'from_json' do
     before(:each) do
-      @json = {
-        'created_at': Time.now.to_s,
-        'category': Identifier.categories.keys.sample,
-        'provenance': Faker::Lorem.word,
-        'value': Faker::Lorem.word
-      }
+      @jsons = open_json_mock(file_name: 'identifiers.json')
     end
 
-    describe 'from_json' do
-      it 'converts the expected json into an Identifier model' do
-        identifier = Identifier.from_json(@json)
-        expect(identifier.created_at.to_s).not_to eql(@json[:created_at])
-        expect(identifier.category).to eql(@json[:category])
-        expect(identifier.provenance).to eql(@json[:provenance])
-        expect(identifier.value).to eql(@json[:value])
-      end
+    it 'invalid JSON does not create a valid Identifier instance' do
+      validate_invalid_json_to_model(clazz: Identifier, jsons: @jsons)
+    end
+
+    it 'minimal JSON creates a valid Identifier instance' do
+      obj = validate_minimal_json_to_model(clazz: Identifier, jsons: @jsons)
+      expect(obj.category).to eql(@json['category'])
+      expect(obj.value).to eql(@json['value'])
+      expect(obj.provenance).to eql('Testing')
+    end
+
+    it 'complete JSON creates a valid Identifier instance' do
+      obj = validate_complete_json_to_model(clazz: Identifier, jsons: @jsons)
+      expect(obj.category).to eql(@json['category'])
+      expect(obj.value).to eql(@json['value'])
+      expect(obj.provenance).to eql('Testing')
     end
   end
-
 end

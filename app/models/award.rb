@@ -8,24 +8,26 @@ class Award < ApplicationRecord
   enum status: %i[planned applied granted rejected]
 
   # Associations
-  belongs_to :project
+  belongs_to :project, optional: true
 
   # Validations
   validates :funder_uri, :status, presence: true
 
   # Scopes
-  scope :from_json, ->(json, provenance) do
-    return nil unless json.present?
+  class << self
 
-    json = delete_base_json_elements(json)
-    args = json.select do |k, v|
-      !%w[person_data_management_plans data_management_plans projects identifiers mbox].include?(k)
+    # Common Standard JSON to an instance of this object
+    def from_json(json:, provenance:)
+      return nil unless json.present? && provenance.present?
+      json = json.with_indifferent_access
+      award = new(funder_uri: json.fetch('funder_id', ''), status: json.fetch('funding_status', 'planned'))
+      return award unless award.valid? && json['grant_id'].present?
+
+      # Convert the grant_id into an identifier record
+      ident = { 'provenance': provenance.to_s, 'category': 'url', 'value': json.fetch('grant_id', '') }
+      award.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+      award
     end
-    award = new(args)
 
-    provenance = provenance || Rails.application.name.downcase
-    award.identifiers << Identifier.new(category: 'email', value: json['mbox'], provenance: provenance)
-    award.identifiers << json['identifiers'].map { |i| Identifier.from_json(i) }
-    award
   end
 end

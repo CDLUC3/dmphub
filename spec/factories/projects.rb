@@ -3,6 +3,9 @@
 FactoryBot.define do
   factory :project do
     title                 { Faker::Movies::StarWars.wookiee_sentence }
+    description           { Faker::Lorem.paragraph }
+    start_on              { Time.now + 5.days }
+    end_on                { Time.now + 370.days }
   end
 
   factory :project_with_awards, parent: :project do

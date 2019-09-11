@@ -3,11 +3,13 @@
 # A JSON representation of a Person in the Common Standard format
 json.merge! model_json_base(model: person)
 json.name person.name
+json.mbox person.email
+json.organizations person.organizations do |organization|
+  json.partial! 'api/v1/organizations/show', organization: organization
+end
 
-email = person.identifiers.select { |p| p.category == 'email' }.first&.value
 identifiers = person.identifiers.select { |p| p.category != 'email' }
 
-json.mbox email || ''
 
 if rel == 'primary_contact'
   json.contact_ids identifiers do |identifier|

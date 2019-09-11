@@ -23,8 +23,11 @@ describe 'API V1 - Person Show' do
     end
 
     it 'has a mbox attribute' do
-      expected = @person.identifiers.select { |i| i.category == 'email' }.first&.value
-      expect(@json['mbox']).to eql(expected)
+      expect(@json['mbox']).to eql(@person.email)
+    end
+
+    it 'has an organizations attribute' do
+      expect(@json['organizations'].length).to eql(@person.organizations.length)
     end
   end
 
@@ -60,15 +63,18 @@ end
 
 # Example structure of expected JSON output for a primary contact:
 # {
-#   "created_at"=>"2019-09-09 16:31:39 UTC",
+#   "created"=>"2019-09-09 16:31:39 UTC",
+#   "modified"=>"2019-09-09 16:31:39 UTC",
 #   "links"=>[{
 #     "rel"=>"self",
 #     "href"=>"http://localhost:3000/api/v1/persons/1"
 #   }],
 #   "name"=>"Sebulba",
 #   "mbox"=>"sebulba@example.org",
+#   "organizations"=>[ << See the organization_show_spec.rb for an example of its JSON >> ],
 #   "contact_ids"=>[{
-#     "created_at"=>"2019-09-09 16:31:39 UTC",
+#     "created"=>"2019-09-09 16:31:39 UTC",
+#     "modified"=>"2019-09-09 16:31:39 UTC",
 #     "category"=>"orcid",
 #     "provenance"=>"orcid",
 #     "value"=>"9999999999999"
@@ -77,15 +83,18 @@ end
 
 # Example structure of expected JSON output for regular person:
 # {
-#   "created_at":"2019-09-09 16:31:39 UTC",
+#   "created":"2019-09-09 16:31:39 UTC",
+#   "modified":"2019-09-09 16:31:39 UTC",
 #   "links":[{
 #     "rel":"self",
 #     "href":"http://localhost:3000/api/v1/persons/16"
 #   }],
 #   "name":"Sebulba",
 #   "mbox":"sebulba@example.org",
+#   "organizations"=>[ << See the organization_show_spec.rb for an example of its JSON >> ],
 #   "user_ids":[{
-#     "created_at":"2019-09-09 16:31:39 UTC",
+#     "created":"2019-09-09 16:31:39 UTC",
+#     "modified":"2019-09-09 16:31:39 UTC",
 #     "category":"orcid",
 #     "provenance":"orcid",
 #     "value":"1234567890"

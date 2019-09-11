@@ -49,7 +49,8 @@ end
 
 def validate_created_at_presence(model:, rendered:)
   return false unless model.present? && rendered.present?
-  expect(rendered['created_at']).to eql(model.created_at.to_s)
+  expect(rendered['created']).to eql(model.created_at.to_s)
+  expect(rendered['modified']).to eql(model.updated_at.to_s)
 end
 
 def validate_hateoas_presence(model:, rendered:)

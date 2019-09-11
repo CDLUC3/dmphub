@@ -4,15 +4,18 @@ FactoryBot.define do
   factory :award do |award|
     project
     funder_uri { Faker::Internet.url }
-  end
+    status     { Award.statuses.keys.sample }
 
-  factory :award_with_statuses, parent: :award do
-    transient do
-      status_count { 1 }
-    end
+    trait :complete do
+      transient do
+        identifier_count { 1 }
+      end
 
-    after :create do |award, evaluator|
-      create_list :award_status, evaluator.status_count, award: award
+      after :create do |dataset, evaluator|
+        evaluator.identifier_count.times do
+          dataset.identifiers << create(:award_identifier, category: 'url')
+        end
+      end
     end
   end
 end

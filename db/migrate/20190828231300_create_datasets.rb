@@ -8,6 +8,11 @@ class CreateDatasets < ActiveRecord::Migration[6.0]
       t.integer     :dataset_type, null: false, default: 0, index: true
       t.boolean     :personal_data
       t.boolean     :sensitive_data
+      t.longtext    :description
+      t.datetime    :publication_date
+      t.string      :language
+      t.longtext    :data_quality_assurance
+      t.longtext    :preservation_statement
       t.timestamps
     end
   end

@@ -8,6 +8,8 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :trackable, :omniauthable
 
+  enum role: %i[user admin super_user]
+
   # Doorkeeper associations
   has_many :access_grants, class_name: 'Doorkeeper::AccessGrant',
                            foreign_key: :resource_owner_id, dependent: :delete_all
@@ -15,16 +17,13 @@ class User < ApplicationRecord
   has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
                            foreign_key: :resource_owner_id, dependent: :delete_all
 
-  # Associations
-  belongs_to :role
-
   # Validations
   validates :accept_terms, acceptance: true
-  validates :first_name, :last_name, :email, presence: true
+  validates :first_name, :last_name, :email, :role, presence: true
   validates :email, uniqueness: { case_sensitive: false }
 
   # Callbacks
-  after_create :generate_api_token!
+  before_validation :ensure_role
 
   # Instance Methods
   def name
@@ -41,22 +40,7 @@ class User < ApplicationRecord
     super(value&.humanize)
   end
 
-  # JSON for API
-  def to_json(options = [])
-    super((%i[first_name last_name email] + options).uniq)
-  end
-
-  private
-
-  def generate_api_token!
-    return false unless email.present?
-
-    payload = {
-      user_id: id,
-      email: email,
-      username: name,
-      secret: TokenService.generate_uuid
-    }
-    update(secret: TokenService.encode(payload.to_json))
+  def ensure_role
+    role = 'user' unless role.present?
   end
 end

@@ -7,7 +7,7 @@ FactoryBot.define do
     email               { Faker::Internet.unique.safe_email }
     password            { 'password' }
     accept_terms        { true }
-    role                { create(:role) }
+    role                { 'user' }
     secret              { Faker::Crypto.sha256 }
   end
 end

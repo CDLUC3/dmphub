@@ -12,7 +12,7 @@ namespace :initialize do
   task super_user: :environment do
     return if User.all.any?
 
-    User.create(first_name: 'Super', last_name: 'User', email: 'brian.riley@ucop.edu', password: 'super_user')
+    User.create(first_name: 'Super', last_name: 'User', email: 'brian.riley@ucop.edu', password: 'password_123', role: 'super_user')
   end
 
   desc 'Create a default client application for API access/testing'

@@ -2,7 +2,7 @@
 
 # Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
-  enum category: %i[email orcid doi ark url]
+  enum category: %i[ark doi grid orcid ror url]
 
   # Associations
   belongs_to :identifiable, polymorphic: true
@@ -13,6 +13,14 @@ class Identifier < ApplicationRecord
 
   # Callbacks
   before_validation :ensure_provenance
+
+  # Scopes
+  scope :from_json, ->(json) do
+    return nil unless json.present?
+
+    json = delete_base_json_elements(json)
+    new(json)
+  end
 
   private
 

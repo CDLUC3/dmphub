@@ -2,7 +2,7 @@
 
 # Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
-  enum category: %i[email orcid doi ark url]
+  enum category: %i[ark doi grid orcid ror url]
 
   # Associations
   belongs_to :identifiable, polymorphic: true

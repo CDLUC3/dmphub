@@ -15,6 +15,8 @@ class Dataset < ApplicationRecord
   has_many :technical_resources
   has_many :metadata
   has_many :distributions
+  has_many :quality_assurances
+  has_many :preservation_statements
 
   # Validations
   validates :title, :dataset_type, presence: true

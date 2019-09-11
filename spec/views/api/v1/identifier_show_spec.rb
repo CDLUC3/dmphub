@@ -34,7 +34,8 @@ end
 
 # Example structure of expected JSON output:
 # {
-#   "created_at"=>"2019-09-06 18:11:55 UTC",
+#   "created"=>"2019-09-06 18:11:55 UTC",
+#   "modified"=>"2019-09-06 18:11:55 UTC",
 #   "category"=>"doi",
 #   "provenance"=>"datacite",
 #   "value"=>"10.1234/abc123.98zy"

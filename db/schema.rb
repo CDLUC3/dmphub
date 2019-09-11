@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_10_084010) do
+ActiveRecord::Schema.define(version: 2019_09_10_150210) do
 
   create_table "awards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "project_id"
@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 2019_09_10_084010) do
   create_table "costs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "data_management_plan_id"
     t.string "title", null: false
+    t.text "description", size: :long
     t.float "value"
     t.string "currency_code"
     t.datetime "created_at", precision: 6, null: false
@@ -220,6 +221,14 @@ ActiveRecord::Schema.define(version: 2019_09_10_084010) do
     t.index ["person_id"], name: "index_persons_organizations_on_person_id"
   end
 
+  create_table "preservation_statements", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "dataset_id"
+    t.text "description", size: :long
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["dataset_id"], name: "index_preservation_statements_on_dataset_id"
+  end
+
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
     t.datetime "start_on", null: false
@@ -228,6 +237,14 @@ ActiveRecord::Schema.define(version: 2019_09_10_084010) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["id", "start_on", "end_on"], name: "index_projects_on_id_and_start_on_and_end_on"
+  end
+
+  create_table "quality_assurances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "dataset_id"
+    t.text "description", size: :long
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["dataset_id"], name: "index_quality_assurances_on_dataset_id"
   end
 
   create_table "security_privacy_statements", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

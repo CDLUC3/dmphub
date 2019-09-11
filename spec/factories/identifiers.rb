@@ -9,18 +9,37 @@ FactoryBot.define do
   end
 
   factory :award_identifier, parent: :identifier do |identifier|
+    category { 'url' }
     identifier.identifiable { |i| i.association(:award) }
   end
 
   factory :data_management_plan_identifier, parent: :identifier do |identifier|
+    category { %w[doi url].sample }
     identifier.identifiable { |i| i.association(:data_management_plan) }
   end
 
   factory :dataset_identifier, parent: :identifier do |identifier|
+    category { %w[doi url].sample }
     identifier.identifiable { |i| i.association(:dataset) }
   end
 
+  factory :metadatum_identifier, parent: :identifier do |identifier|
+    category { 'url' }
+    identifier.identifiable { |i| i.association(:metadatum) }
+  end
+
+  factory :organization_identifier, parent: :identifier do |identifier|
+    category { %w[ror grid].sample }
+    identifier.identifiable { |i| i.association(:organization) }
+  end
+
   factory :person_identifier, parent: :identifier do |identifier|
+    category { %w[orcid url].sample }
     identifier.identifiable { |i| i.association(:person) }
+  end
+
+  factory :technical_resource_identifier, parent: :identifier do |identifier|
+    category { %w[doi url].sample }
+    identifier.identifiable { |i| i.association(:technical_resource) }
   end
 end

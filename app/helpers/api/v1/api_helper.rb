@@ -12,7 +12,7 @@ module Api
       #  ]
       def model_json_base(model:, skip_hateoas: false)
         return unless model.present?
-        ret = { 'created_at': model.created_at.to_s }
+        ret = { 'created': model.created_at.to_s, 'modified': model.updated_at.to_s }
         ret['links'] = [to_hateoas(model: model)] unless skip_hateoas
         ret
       end
@@ -24,6 +24,11 @@ module Api
       def to_hateoas(model:)
         href = "api_v1_#{model.class.name.underscore}_url"
         { 'rel': 'self', 'href': Rails.application.routes.url_helpers.send(href, model.id) }
+      end
+
+      # Converts a boolean field to [yes, no, unknown]
+      def boolean_to_yes_no_unknown(value)
+        value.present? ? (value == true ? 'yes' : 'no') : 'unknown'
       end
 
     end

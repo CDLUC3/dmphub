@@ -24,23 +24,24 @@ describe 'API V1 - Data Management Plan Show' do
   end
 
   it 'has a dmp_ids attribute' do
-    expect(@json['dmp_ids'].present?).to eql(true)
+    expect(@json['dmp_ids'].length).to eql(@data_management_plan.identifiers.length)
   end
 
-  it 'has a descriptions attribute' do
-    expect(@json['descriptions'].present?).to eql(true)
+  it 'has a description attribute' do
+    expect(@json['description']).to eql(@data_management_plan.description)
   end
 
   it 'has a ethical_issues_exist attribute' do
-    expect(@json['ethical_issues_exist']).to eql(@data_management_plan.has_ethical_issues?)
+    expected = @data_management_plan.ethical_issues.present? ? (@data_management_plan.ethical_issues? ? 'yes' : 'no') : 'unknown'
+    expect(@json['ethical_issues_exist']).to eql(expected)
   end
 
-  it 'has a ethical_issue_descriptions attribute' do
-    expect(@json['ethical_issue_descriptions'].present?).to eql(false)
+  it 'has a ethical_issue_description attribute' do
+    expect(@json['ethical_issues_description']).to eql(@data_management_plan.ethical_issues_description)
   end
 
-  it 'has a ethical_issue_reports attribute' do
-    expect(@json['ethical_issue_reports']).to eql([])
+  it 'has a ethical_issue_report attribute' do
+    expect(@json['ethical_issues_report']).to eql(@data_management_plan.ethical_issues_report)
   end
 
   it 'has a contact attribute' do
@@ -54,7 +55,7 @@ describe 'API V1 - Data Management Plan Show' do
   end
 
   it 'has a project attribute' do
-    expect(@json['project'].first['title']).to eql(@data_management_plan.project.title)
+    expect(@json['project']['title']).to eql(@data_management_plan.project.title)
   end
 
   it 'has a datasets attribute' do
@@ -65,77 +66,93 @@ end
 
 # Example structure of expected JSON output:
 # {
-#   "created_at"=>"2019-09-09 17:18:08 UTC",
+#   "created"=>"2019-09-10 22:53:53 UTC",
+#   "modified"=>"2019-09-10 22:53:53 UTC",
 #   "links"=>[{
 #     "rel"=>"self",
-#     "href"=>"http://localhost:3000/api/v1/projects/25"
+#     "href"=>"http://localhost:3000/api/v1/data_management_plans/1"
 #   }],
-#   "title"=>"Ooma ooma hnn-rowr mumwa muaa roo kabukk hnn-rowr youw wua!",
-#   "language"=>"en",
+#   "title"=>"Roooarrgh kabukk ma ru huewaa?",
+#   "description"=>"Dolore assumenda nesciunt. Libero tempora et. Voluptas incidunt rerum.",
+#   "language"=>"fr",
 #   "ethical_issues_exist"=>"yes",
+#   "ethical_issues_description"=>"Nostrum voluptatum quia. Ut et et. Illum voluptatum earum.",
+#   "ethical_issues_report"=>"http://maggio.com/sparkle_bernier",
 #   "dmp_ids"=>[{
-#     "created_at"=>"2019-09-09 17:18:08 UTC",
+#     "created"=>"2019-09-10 22:19:59 UTC",
+#     "modified"=>"2019-09-10 22:19:59 UTC",
 #     "category"=>"doi",
 #     "provenance"=>"datacite",
 #     "value"=>"10.1234/abc123.zy98"
-#   }, {
-#     "created_at"=>"2019-09-09 17:18:08 UTC",
-#     "category"=>"url",
-#     "provenance"=>"dmptool",
-#     "value"=>"https://dmptool.org/plans/1234"
 #   }],
-#   "descriptions"=>[],
-#   "ethical_issues_description"=>[],
-#   "ethical_issue_reports"=>[],
 #   "contact"=>[{
-#     "created_at"=>"2019-09-09 17:33:13 UTC",
+#     "created"=>"2019-09-10 22:53:53 UTC",
+#     "modified"=>"2019-09-10 22:53:53 UTC",
 #     "links"=>[{
 #       "rel"=>"self",
-#       "href"=>"http://localhost:3000/api/v1/persons/9"
+#       "href"=>"http://localhost:3000/api/v1/persons/1"
 #     }],
-#     "name"=>"Darth Vader",
-#     "mbox"=>"darth@deathstar.org",
+#     "name"=>"Jabba the Hutt",
+#     "mbox"=>"shan@corkery.org",
+#     "organizations"=>[{
+#       "created"=>"2019-09-10 22:53:53 UTC",
+#       "modified"=>"2019-09-10 22:53:53 UTC",
+#       "links"=>[{
+#         "rel"=>"self",
+#         "href"=>"http://localhost:3000/api/v1/organizations/1"
+#       }],
+#       "name"=>"Beer LLC",
+#       "identifiers"=>[{
+#         "created"=>"2019-09-10 22:19:59 UTC",
+#         "modified"=>"2019-09-10 22:19:59 UTC",
+#         "category"=>"grid",
+#         "provenance"=>"sunt",
+#         "value"=>"grid.49857624596"
+#       }]
+#     }],
 #     "contact_ids"=>[{
-#       "create_at"=>"2019-09-09 17:18:08 UTC",
+#       "created"=>"2019-09-10 22:53:53 UTC",
+#       "modified"=>"2019-09-10 22:53:53 UTC",
 #       "category"=>"orcid",
-#       "provenance"=>"orcid",
-#       "value"=>"5555555555"
+#       "provenance"=>"ut",
+#       "value"=>"45t353yg4"
 #     }]
 #   }],
 #   "dm_staff"=>[{
-#     "created_at"=>"2019-09-09 17:33:13 UTC",
+#     "created"=>"2019-09-10 22:53:53 UTC",
+#     "modified"=>"2019-09-10 22:53:53 UTC",
 #     "links"=>[{
 #       "rel"=>"self",
-#       "href"=>"http://localhost:3000/api/v1/persons/7"
+#       "href"=>"http://localhost:3000/api/v1/persons/3"
 #     }],
-#     "name"=>"Bail Organa",
-#     "mbox"=>"bail@doomed.planet.com",
+#     "name"=>"Darth Vader",
+#     "mbox"=>"jake.cronin@mayertlueilwitz.org",
+#     "organizations"=>[{
+#       "created"=>"2019-09-10 22:53:53 UTC",
+#       "modified"=>"2019-09-10 22:53:53 UTC",
+#       "links"=>[{
+#         "rel"=>"self",
+#         "href"=>"http://localhost:3000/api/v1/organizations/2"
+#       }],
+#       "name"=>"Hintz, Mante and Willms",
+#       "identifiers"=>[{
+#         "created"=>"2019-09-10 22:19:59 UTC",
+#         "modified"=>"2019-09-10 22:19:59 UTC",
+#         "category"=>"ror",
+#         "provenance"=>"ror_api",
+#         "value"=>"http:///ror.example.org/45647474g35"
+#       }]
+#     }],
 #     "user_ids"=>[{
-#       "create_at"=>"2019-09-09 17:18:08 UTC",
+#       "created"=>"2019-09-10 22:53:53 UTC",
+#       "modified"=>"2019-09-10 22:53:53 UTC",
 #       "category"=>"orcid",
-#       "provenance"=>"orcid",
-#       "value"=>"333333"
+#       "provenance"=>"neque",
+#       "value"=>"eos"
 #     }],
-#     "contributor_type"=>"author"
-#   }, {
-#     "created_at"=>"2019-09-09 17:33:13 UTC",
-#     "links"=>[{
-#       "rel"=>"self",
-#       "href"=>"http://localhost:3000/api/v1/persons/8"
-#     }],
-#     "name"=>"Ahsoka Tano",
-#     "mbox"=>"ahsoka@jedi.dropbox.com",
-#     "user_ids"=>[{
-#       "create_at"=>"2019-09-09 17:18:08 UTC",
-#       "category"=>"orcid",
-#       "provenance"=>"orcid",
-#       "value"=>"222222"
-#     }],
-#     "contributor_type"=>"author"
+#     "contributor_type"=>"data_librarian"
 #   }],
-#   "funding"=>[ << See award_show_spec.rb for example of an award JSON >> ],
-#   "project"=>[ << See project_show_spec.rb for example of an award JSON >> ],
-#   "datasets"=>[ << See dataset_show_spec.rb for example of an award JSON >> ]
+#   "costs"=>[ << See cost_show_spec.rb for an example of its JSON >> ],
+#   "project"=>{ << See project_show.spec.rb for an example of its JSON >> },
+#   "datasets"=>[ << See dataset_show_spec.rb for an example of its JSON >> ]
 # }
-
-

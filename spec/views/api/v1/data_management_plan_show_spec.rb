@@ -32,7 +32,7 @@ describe 'API V1 - Data Management Plan Show' do
   end
 
   it 'has a ethical_issues_exist attribute' do
-    expected = @data_management_plan.ethical_issues.present? ? (@data_management_plan.ethical_issues? ? 'yes' : 'no') : 'unknown'
+    expected = ConversionService.boolean_to_yes_no_unknown(@data_management_plan.ethical_issues)
     expect(@json['ethical_issues_exist']).to eql(expected)
   end
 
@@ -45,12 +45,12 @@ describe 'API V1 - Data Management Plan Show' do
   end
 
   it 'has a contact attribute' do
-    expected = @data_management_plan.person_data_management_plans.select { |p| p.role == 'primary_contact' }
-    expect(@json['contact'].first['name']).to eql(expected.first.person.name)
+    expected = @data_management_plan.primary_contact.person
+    expect(@json['contact']['name']).to eql(expected.name)
   end
 
   it 'has a dm_staff attribute' do
-    expected = @data_management_plan.person_data_management_plans.select { |p| p.role != 'primary_contact' }
+    expected = @data_management_plan.persons
     expect(@json['dm_staff'].length).to eql(expected.length)
   end
 

@@ -15,14 +15,16 @@ json.dmp_ids data_management_plan.identifiers do |identifier|
     identifier: identifier
 end
 
-json.contact [data_management_plan.primary_contact] do |person|
-  json.partial! 'api/v1/rda_common_standard/persons_show',
-    person: person.person, rel: 'primary_contact'
+if data_management_plan.primary_contact.present?
+  json.contact do
+    json.partial! 'api/v1/rda_common_standard/persons_show',
+      person: data_management_plan.primary_contact.person, rel: 'primary_contact'
+  end
 end
 
-json.dm_staff data_management_plan.persons do |person|
+json.dm_staff data_management_plan.persons do |pdmp|
   json.partial! 'api/v1/rda_common_standard/persons_show',
-    person: person.person, rel: person.role
+    person: pdmp.person, rel: pdmp.role
 end
 
 json.costs data_management_plan.costs do |cost|

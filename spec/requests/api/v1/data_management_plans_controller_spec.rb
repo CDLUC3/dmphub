@@ -5,10 +5,10 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
   before(:each) do
     auth = mock_access_token
     @dmps = [
-      create(:data_management_plan, doorkeeper_application: @doorkeeper_application),
-      create(:data_management_plan, doorkeeper_application: @doorkeeper_application)
+      create(:data_management_plan, :complete, doorkeeper_application: @doorkeeper_application),
+      create(:data_management_plan, :complete, doorkeeper_application: @doorkeeper_application)
     ]
-    @other_dmp = create(:data_management_plan)
+    @other_dmp = create(:data_management_plan, :complete)
     @headers = default_authenticated_headers(authorization: auth)
   end
 
@@ -16,7 +16,7 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
     before(:each) do
       get api_v1_data_management_plans_path, headers: @headers
       expect(response.status).to eql(200)
-      @json = body_to_json
+      @json = body_to_json['content']
     end
 
     it 'returns the data management plans owned by the client' do
@@ -24,16 +24,23 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
     end
 
     it 'does not return data management plans owned by another client' do
-      expect(@json['data_management_plans'].collect { |d| d[:id] }.include?(@other_dmp.id)).to eql(false)
+      dmps = @json['data_management_plans'].select do |dmp|
+        dmp['links'].first['href'].ends_with?(api_v1_data_management_plan_path(@other_dmp.id.to_s))
+      end
+      expect(dmps.empty?).to eql(true)
     end
   end
 
   describe :show do
     it 'returns the requested data management plan' do
+      # TODO: This one is failing for some reason when running the full test
+      #       suite via `rspec` it passes without issue when running either the
+      #       individual file or all of the request tests
       get api_v1_data_management_plan_path(@dmps.first), headers: @headers
       expect(response.status).to eql(200)
-      @json = body_to_json
-      expect(@json).to eql(@dmps.first.to_json(%i[full_json]))
+      @json = body_to_json['content']
+      received = @json['data_management_plan']['links'].first['href']
+      expect(received.ends_with?(api_v1_data_management_plan_path(@dmps.first))).to eql(true)
     end
 
     it 'returns a not_found if the data management plan does not exist' do

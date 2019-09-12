@@ -10,7 +10,7 @@ module Api
       before_action :parse_request, except: %i[me heartbeat]
 
       def me
-        respond_with current_client
+        render json: current_client.to_json
       end
 
       def heartbeat

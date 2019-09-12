@@ -1,5 +1,6 @@
+/* Represents an Data Management Plan Cost */
 {
-  "data_management_plan": {
+  "complete": {
     "created": "2019-07-10 22:53:53 UTC",
     "modified": "2019-07-17 14:34:07 UTC",
     "links": [{
@@ -194,5 +195,19 @@
         }
       }]
     }]
+  },
+  "minimal": {
+    "title": "The prevalence of contagious infections in Adama city",
+    "contact": {
+      "name": "Hidden to protect the innocent",
+      "mbox": "foobar-testing@yahoo.com",
+      "contact_ids": [{
+        "category": "orcid",
+        "value": "000-0002-0003-0004"
+      }]
+    }
+  },
+  "invalid": {
+    "description": "Cost for preservation of datasets for 10 year period"
   }
 }

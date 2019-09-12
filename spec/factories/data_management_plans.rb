@@ -23,12 +23,13 @@ FactoryBot.define do
         persons_count  { 1 }
         datasets_count { 1 }
         costs_count    { 1 }
-        #projects_count { 1 }
       end
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
-        create(:person_data_management_plan, data_management_plan: data_management_plan, role: 'primary_contact')
+        contact = create(:person, :complete)
+        pdmp = create(:person_data_management_plan, person: contact, role: 'primary_contact')
+        data_management_plan.person_data_management_plans << pdmp
 
         evaluator.persons_count.times do
           per = create(:person, :complete)
@@ -38,9 +39,6 @@ FactoryBot.define do
         evaluator.costs_count.times do
           data_management_plan.costs << create(:cost)
         end
-        #evaluator.projects_count.times do
-        #  data_management_plan.projects << create(:project, :complete)
-        #end
         evaluator.datasets_count.times do
           data_management_plan.datasets << create(:dataset, :complete)
         end

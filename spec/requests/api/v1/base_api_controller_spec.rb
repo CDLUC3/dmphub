@@ -68,7 +68,6 @@ RSpec.describe Api::V1::BaseApiController, type: :request do
     it 'cannot be access by an unathenticated user' do
       get api_v1_me_path, headers: default_headers
       expect(response.status).to eql(401)
-      expect(body_to_json).to eql(nil)
     end
 
     it 'can be accessed by an authenticated user' do

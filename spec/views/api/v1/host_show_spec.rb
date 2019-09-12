@@ -27,7 +27,7 @@ describe 'API V1 - Host Show' do
   end
 
   it 'has a supports_versioning attribute' do
-    expected = @host.supports_versioning.present? ? (@host.supports_versioning? ? 'yes' : 'no') : 'unknown'
+    expected = ConversionService.boolean_to_yes_no_unknown(@host.supports_versioning)
     expect(@json['supports_versioning']).to eql(expected)
   end
 

@@ -22,23 +22,38 @@ RSpec.describe DataManagementPlan, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  context 'scopes' do
-    describe 'for_client' do
-      before(:each) do
-        @app = create(:doorkeeper_application)
-        @dmps = [
-          create(:data_management_plan, doorkeeper_application: @app),
-          create(:data_management_plan, doorkeeper_application: @app)
-        ]
-        @other_dmp = create(:data_management_plan)
-      end
+  describe 'from_json' do
+    before(:each) do
+      @jsons = open_json_mock(file_name: 'data_management_plans.json')
+    end
 
-      it 'returns only the data_management_plans that belong to the client/application' do
-        dmps = DataManagementPlan.by_client(client_id: @app.uid).pluck(:data_management_plan_id)
-        expect(dmps.length).to eql(2)
-        expect(dmps.include?(@other_dmp.id)).to eql(false)
-        @dmps.each { |dmp| expect(dmps.include?(dmp.id)).to eql(true) }
-      end
+    it 'invalid JSON does not create a valid DataManagementPlan instance' do
+      validate_invalid_json_to_model(clazz: DataManagementPlan, jsons: @jsons)
+    end
+
+    it 'minimal JSON creates a valid DataManagementPlan instance' do
+      obj = validate_minimal_json_to_model(clazz: DataManagementPlan, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+      expect(obj.language).to eql('en')
+      expect(ConversionService.boolean_to_yes_no_unknown(obj.ethical_issues)).to eql('unknown')
+      contact = obj.person_data_management_plans.select { |pdmp| pdmp.role == 'primary_contact' }.first
+      expect(contact.person.email).to eql(@json['contact']['mbox'])
+    end
+
+    it 'complete JSON creates a valid DataManagementPlan instance' do
+      obj = validate_complete_json_to_model(clazz: DataManagementPlan, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+      expect(obj.language).to eql(@json['language'])
+      expect(ConversionService.boolean_to_yes_no_unknown(obj.ethical_issues)).to eql(@json['ethical_issues_exist'])
+      expect(obj.ethical_issues_report).to eql(@json['ethical_issues_report'])
+      expect(obj.ethical_issues_description).to eql(@json['ethical_issues_description'])
+      contact = obj.person_data_management_plans.select { |pdmp| pdmp.role == 'primary_contact' }.first
+      expect(contact.person.email).to eql(@json['contact']['mbox'])
+      person = obj.person_data_management_plans.select { |pdmp| pdmp.role != 'primary_contact' }.first
+      expect(person.person.email).to eql(@json['dm_staff'].first['mbox'])
+      expect(obj.project.title).to eql(@json['project']['title'])
+      expect(obj.costs.first.title).to eql(@json['costs'].first['title'])
+      expect(obj.datasets.first.title).to eql(@json['datasets'].first['title'])
     end
   end
 

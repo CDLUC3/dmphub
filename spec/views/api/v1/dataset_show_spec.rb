@@ -35,12 +35,12 @@ describe 'API V1 - Dataset Show' do
   end
 
   it 'has a personal_data attribute' do
-    expected = @dataset.personal_data.present? ? (@dataset.personal_data? ? 'yes' : 'no') : 'unknown'
+    expected = ConversionService.boolean_to_yes_no_unknown(@dataset.personal_data)
     expect(@json['personal_data']).to eql(expected)
   end
 
   it 'has a sensitive_data attribute' do
-    expected = @dataset.sensitive_data.present? ? (@dataset.sensitive_data? ? 'yes' : 'no') : 'unknown'
+    expected = ConversionService.boolean_to_yes_no_unknown(@dataset.sensitive_data)
     expect(@json['sensitive_data']).to eql(expected)
   end
 

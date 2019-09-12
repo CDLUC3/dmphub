@@ -11,10 +11,10 @@ class Dataset < ApplicationRecord
   belongs_to :data_management_plan, optional: true
   has_many :dataset_keywords
   has_many :keywords, through: :dataset_keywords
-  has_many :security_privacy_statements
-  has_many :technical_resources
-  has_many :metadata
-  has_many :distributions
+  has_many :security_privacy_statements, dependent: :destroy
+  has_many :technical_resources, dependent: :destroy
+  has_many :metadata, dependent: :destroy
+  has_many :distributions, dependent: :destroy
 
   # Validations
   validates :title, :dataset_type, presence: true

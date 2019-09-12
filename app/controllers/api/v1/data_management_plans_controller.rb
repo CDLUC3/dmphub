@@ -9,19 +9,18 @@ module Api
 
       before_action :load_dmp, except: %i[index]
 
+      PARTIAL = 'api/v1/rd_common_standard/data_management_plans_show.json.jbuilder'.freeze
+
       # GET /data_management_plans
       def index
-        dmps = DataManagementPlan.by_client(client_id: current_client[:uid]).map{ |dmp| dmp.to_json }
-        render json: {
-          data_management_plans: dmps || []
-        }
+        dmps = DataManagementPlan.by_client(client_id: current_client[:uid])
+        render 'index', locals: { data_management_plans: dmps }
       end
 
       # GET /data_management_plans/:id
       def show
         render(json: empty_response, status: :not_found) unless authorized?
-
-        render json: @dmp.to_json(%i[full_json])
+        render 'show', locals: { data_management_plan: @dmp }
       end
 
       # POST /data_management_plans

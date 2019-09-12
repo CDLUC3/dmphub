@@ -1,0 +1,28 @@
+/* Represents an Organization */
+{
+  "complete": {
+    "created": "2019-07-17 14:34:07 UTC",
+    "modified": "2019-07-17 14:34:07 UTC",
+    "links": [{
+      "rel": "self",
+      "href": "http://localhost:3000/api/v1/organizations/2"
+    }],
+    "name": "Death Star",
+    "identifiers": [{
+      "created": "2019-07-17 14:34:07 UTC",
+      "modified": "2019-07-17 14:34:07 UTC",
+      "category": "ror",
+      "provenance": "dmptool",
+      "value": "https://ror.org/03fkerfgkje3894t935t"
+    }]
+  },
+  "minimal": {
+    "name": "Death Star",
+    "identifiers": [{
+      "value": "https://ror.org/03fkerfgkje3894t935t"
+    }]
+  },
+  "invalid": {
+    "name": "Death Star"
+  }
+}

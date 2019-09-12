@@ -14,14 +14,12 @@ FactoryBot.define do
 
     trait :complete do
       transient do
-        host_count    { 1 }
         license_count { 1 }
       end
 
       after :create do |distribution, evaluator|
-        evaluator.host_count.times do
-          distribution.hosts << create(:host)
-        end
+        distribution.host = create(:host)
+
         evaluator.license_count.times do
           distribution.licenses << create(:license)
         end

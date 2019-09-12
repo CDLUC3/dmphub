@@ -6,7 +6,7 @@ class ConversionService
   class << self
     # Converts a boolean field to [yes, no, unknown]
     def boolean_to_yes_no_unknown(value)
-      value.present? ? (value == true ? 'yes' : 'no') : 'unknown'
+      value == true ? 'yes' : (value == false ? 'no' : 'unknown')
     end
 
     # Converts a [yes, no, unknown] field to boolean (or nil)

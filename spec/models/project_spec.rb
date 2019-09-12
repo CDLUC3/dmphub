@@ -18,4 +18,30 @@ RSpec.describe Project, type: :model do
     model = create(:project)
     expect(model.valid?).to eql(true)
   end
+
+  describe 'from_json' do
+    before(:each) do
+      @jsons = open_json_mock(file_name: 'projects.json')
+    end
+
+    it 'invalid JSON does not create a valid Project instance' do
+      validate_invalid_json_to_model(clazz: Project, jsons: @jsons)
+    end
+
+    it 'minimal JSON creates a valid Project instance' do
+      obj = validate_minimal_json_to_model(clazz: Project, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+      expect(obj.start_on.to_s).to eql(@json['start_on'])
+      expect(obj.end_on.to_s).to eql(@json['end_on'])
+    end
+
+    it 'complete JSON creates a valid Project instance' do
+      obj = validate_complete_json_to_model(clazz: Project, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+      expect(obj.description).to eql(@json['description'])
+      expect(obj.start_on.to_s).to eql(@json['start_on'])
+      expect(obj.end_on.to_s).to eql(@json['end_on'])
+      expect(obj.awards.first.funder_uri).to eql(@json['funding'].first['funder_id'])
+    end
+  end
 end

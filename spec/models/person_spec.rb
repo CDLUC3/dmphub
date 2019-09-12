@@ -18,24 +18,54 @@ RSpec.describe Person, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  context 'scopes' do
-    before(:each) do
-      @json = {
-        'created': Time.now.to_s,
-        'name': Faker::Movies::StarWars.name,
-        'identifiers': [{ 'category': 'orcid', 'provenance': 'orcid', 'value': 'abcd', 'created_at': Time.now}],
-        'mbox': 'weird.test@example.org'
-      }
+  describe 'from_json' do
+    context 'dataset contact' do
+      before(:each) do
+        @jsons = open_json_mock(file_name: 'persons.json').fetch('dataset_contact', {})
+      end
+
+      it 'invalid JSON does not create a valid Person instance' do
+        validate_invalid_json_to_model(clazz: Person, jsons: @jsons)
+      end
+
+      it 'minimal JSON creates a valid Person instance' do
+        obj = validate_minimal_json_to_model(clazz: Person, jsons: @jsons)
+        expect(obj.name).to eql(@json['name'])
+        expect(obj.email).to eql(@json['mbox'])
+        expect(obj.identifiers.first.value).to eql(@json['contact_ids'].first['value'])
+        expect(obj.identifiers.first.category).to eql('url')
+      end
+
+      it 'complete JSON creates a valid Person instance' do
+        obj = validate_complete_json_to_model(clazz: Person, jsons: @jsons)
+        expect(obj.name).to eql(@json['name'])
+        expect(obj.email).to eql(@json['mbox'])
+        expect(obj.identifiers.first.value).to eql(@json['contact_ids'].first['value'])
+        expect(obj.identifiers.first.category).to eql(@json['contact_ids'].first['category'])
+      end
     end
 
-    describe 'from_json' do
-      it 'converts the expected json into an Identifier model' do
-        person = Person.from_json(@json, Faker::Lorem.word)
-        expect(person.created_at.to_s).not_to eql(@json[:created_at])
-        expect(person.name).to eql(@json[:name])
-        expect(person.identifiers.length).to eql(1)
+    context 'dataset dm_staff' do
+      before(:each) do
+        @jsons = open_json_mock(file_name: 'persons.json').fetch('dataset_dm_staff', {})
+      end
+
+      it 'invalid JSON does not create a valid Person instance' do
+        validate_invalid_json_to_model(clazz: Person, jsons: @jsons)
+      end
+
+      it 'minimal JSON creates a valid Person instance' do
+        obj = validate_minimal_json_to_model(clazz: Person, jsons: @jsons)
+        expect(obj.name).to eql(@json['name'])
+      end
+
+      it 'complete JSON creates a valid Person instance' do
+        obj = validate_complete_json_to_model(clazz: Person, jsons: @jsons)
+        expect(obj.name).to eql(@json['name'])
+        expect(obj.email).to eql(@json['mbox'])
+        expect(obj.identifiers.first.value).to eql(@json['user_ids'].first['value'])
+        expect(obj.identifiers.first.category).to eql(@json['user_ids'].first['category'])
       end
     end
   end
-
 end

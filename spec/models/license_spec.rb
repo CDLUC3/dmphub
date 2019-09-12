@@ -16,4 +16,26 @@ RSpec.describe License, type: :model do
     model = create(:license)
     expect(model.valid?).to eql(true)
   end
+
+  describe 'from_json' do
+    before(:each) do
+      @jsons = open_json_mock(file_name: 'licenses.json')
+    end
+
+    it 'invalid JSON does not create a valid License instance' do
+      validate_invalid_json_to_model(clazz: License, jsons: @jsons)
+    end
+
+    it 'minimal JSON creates a valid License instance' do
+      obj = validate_minimal_json_to_model(clazz: License, jsons: @jsons)
+      expect(obj.license_uri).to eql(@json['license_ref'])
+      expect(obj.start_date.to_s).to eql(@json['start_date'])
+    end
+
+    it 'complete JSON creates a valid License instance' do
+      obj = validate_complete_json_to_model(clazz: License, jsons: @jsons)
+      expect(obj.license_uri).to eql(@json['license_ref'])
+      expect(obj.start_date.to_s).to eql(@json['start_date'])
+    end
+  end
 end

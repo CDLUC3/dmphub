@@ -12,5 +12,4 @@ class PersonDataManagementPlan < ApplicationRecord
 
   # Validations
   validates :role, presence: true
-
 end

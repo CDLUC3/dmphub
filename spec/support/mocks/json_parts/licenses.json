@@ -1,0 +1,16 @@
+/* Represents an Distribution License */
+{
+  "complete": {
+    "created": "2019-09-10 20:49:02 UTC",
+    "modified": "2019-09-10 20:49:02 UTC",
+    "license_ref": "http://lang.biz/britney",
+    "start_date": "2019-10-10 20:49:02 UTC"
+  },
+  "minimal": {
+    "license_ref": "http://lang.biz/britney",
+    "start_date": "2019-10-10 20:49:02 UTC"
+  },
+  "invalid": {
+    "license_ref": "http://lang.biz/britney"
+  }
+}

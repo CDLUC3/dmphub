@@ -15,4 +15,5 @@ RSpec.describe Keyword, type: :model do
     model = create(:keyword)
     expect(model.valid?).to eql(true)
   end
+
 end

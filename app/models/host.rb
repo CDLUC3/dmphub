@@ -31,7 +31,7 @@ class Host < ApplicationRecord
       return host unless host.valid? && json['host_ids'].present?
 
       # Convert the dmp_ids into identifier records
-      json.fetch('dmp_ids', []).each do |dmp_id|
+      json.fetch('host_ids', []).each do |dmp_id|
         next unless dmp_id['value'].present?
         ident = {
           'provenance': provenance.to_s,

@@ -1,0 +1,26 @@
+/* Represents an Dataset Metadatum */
+{
+  "complete": {
+    "created": "2019-09-10 18:51:27 UTC",
+    "modified": "2019-09-10 18:51:27 UTC",
+    "identifier": {
+      "created": "2019-09-06 18:11:55 UTC",
+      "modified": "2019-09-06 18:11:55 UTC",
+      "category": "url",
+      "provenance": "zenodo",
+      "value": "http://example.org/dataset/123456789"
+    },
+    "description": "Final copy of the spreadsheet",
+    "language": "en"
+  },
+  "minimal": {
+    "identifier": {
+      "value": "http://example.org/dataset/123456789"
+    },
+    "language": "en"
+  },
+  "invalid": {
+    "description": "Final copy of the spreadsheet",
+    "language": "en"
+  }
+}

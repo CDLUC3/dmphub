@@ -15,4 +15,25 @@ RSpec.describe SecurityPrivacyStatement, type: :model do
     model = create(:security_privacy_statement)
     expect(model.valid?).to eql(true)
   end
+
+  describe 'from_json' do
+    before(:each) do
+      @jsons = open_json_mock(file_name: 'security_privacy_statements.json')
+    end
+
+    it 'invalid JSON does not create a valid SecurityPrivacyStatement instance' do
+      validate_invalid_json_to_model(clazz: SecurityPrivacyStatement, jsons: @jsons)
+    end
+
+    it 'minimal JSON creates a valid SecurityPrivacyStatement instance' do
+      obj = validate_minimal_json_to_model(clazz: SecurityPrivacyStatement, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+    end
+
+    it 'complete JSON creates a valid SecurityPrivacyStatement instance' do
+      obj = validate_complete_json_to_model(clazz: SecurityPrivacyStatement, jsons: @jsons)
+      expect(obj.title).to eql(@json['title'])
+      expect(obj.description).to eql(@json['description'])
+    end
+  end
 end

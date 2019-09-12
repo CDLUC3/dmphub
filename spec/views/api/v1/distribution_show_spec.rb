@@ -51,7 +51,7 @@ describe 'API V1 - Distribution Show' do
   end
 
   it 'has a host attribute' do
-    expect(@json['host'].first['title']).to eql(@distribution.hosts.first.title)
+    expect(@json['host']['title']).to eql(@distribution.host.title)
   end
 
   it 'has a licenses attribute' do

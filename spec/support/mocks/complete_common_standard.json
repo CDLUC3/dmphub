@@ -120,7 +120,13 @@
       "sensitive_data": "unknown",
       "data_quality_assurance": "As the data are not that much big, availability of storage is not an issue. Moreover, the data will be deposited in national repository (NADRE), deposited in Google drive, in hardcopies and storage devices like external hard disc storage. ASTU will own the data as the funding belongs to it. As the copies will be available in library (ASTU library) and online repository, the data could be recovered from either of the two.",
       "preservation_statement": "The data will be deposited in the NADRE repository in addition to the hard copy and softcopy archiving at the University’s library. The costs and time budgets required for data preparation and sharing activities are detailed in the final project proposal document budget breakdown.",
-      "identifiers": [],
+      "dataset_ids": [{
+        "created": "2019-07-17 14:34:07 UTC",
+        "modified": "2019-07-17 14:34:07 UTC",
+        "category": "url",
+        "provenance": "dmptool",
+        "value": "https://example.org/datasets/1"
+      }],
       "keywords": ["contagion","infection","Adama"],
       "security_and_privacy_statements": [{
         "created": "2019-07-17 14:34:07 UTC",
@@ -165,7 +171,7 @@
           "license_ref": "http://lang.biz/britney",
           "start_date": "2019-10-10 20:49:02 UTC"
         }],
-        "host": [{
+        "host": {
           "created": "2019-09-10 18:35:11 UTC",
           "modified": "2019-09-10 18:35:11 UTC",
           "title": "Est molestiae delectus aut.",
@@ -185,7 +191,7 @@
           "geo_location": "Lothal",
           "certified_with": ["etum","blah"],
           "pid_system": ["ark"]
-        }]
+        }
       }]
     }]
   }

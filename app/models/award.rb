@@ -18,10 +18,11 @@ class Award < ApplicationRecord
 
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
-      return nil unless json.present? && provenance.present?
+      return nil unless json.present? && provenance.present? && json['funder_id'].present?
+
       json = json.with_indifferent_access
       award = new(
-        funder_uri: json.fetch('funder_id', ''),
+        funder_uri: json['funder_id'],
         status: json.fetch('funding_status', 'planned')
       )
       return award unless award.valid? && json['grant_id'].present?

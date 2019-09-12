@@ -17,17 +17,25 @@ class Person < ApplicationRecord
   validates :name, presence: true
 
   # Scopes
-  scope :from_json, ->(json, provenance) do
-    return nil unless json.present?
+  class << self
 
-    json = delete_base_json_elements(json)
-    args = json.select do |k, v|
-      !%w[person_data_management_plans data_management_plans projects identifiers mbox].include?(k)
+    # Common Standard JSON to an instance of this object
+    def from_json(json:, provenance:)
+      return nil unless json.present? && provenance.present? && json['name'].present?
+
+      json = json.with_indifferent_access
+      person = new(name: json['name'], email: json['mbox'])
+      json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
+        next unless identifier['value'].present?
+
+        ident = {
+          'category': identifier.fetch('category', 'url'),
+          'value': identifier['value']
+        }
+        person.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+      end
+      person
     end
-    person = new(args)
 
-    provenance = provenance || Rails.application.name.downcase
-    person.identifiers << json['identifiers'].map { |i| Identifier.from_json(i) }
-    person
   end
 end

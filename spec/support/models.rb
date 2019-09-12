@@ -18,7 +18,7 @@ end
 def validate_minimal_json_to_model(clazz:, jsons:)
   @json = jsons.fetch('minimal', {})
   obj = clazz.from_json(json: @json, provenance: 'Testing')
-  expect(obj.is_a?(clazz)).to eql(true)
+  expect(obj.is_a?(clazz)).to eql(true), "Expected #{obj.class.name} to be a #{clazz.name}"
   return obj if clazz == Identifier
 
   expect(obj.valid?).to eql(true), obj.errors.collect { |e, m| "#{e} - #{m}" }.join(', ')
@@ -28,7 +28,7 @@ end
 def validate_complete_json_to_model(clazz:, jsons:)
   @json = jsons.fetch('complete', {})
   obj = clazz.from_json(json: @json, provenance: 'Testing')
-  expect(obj.is_a?(clazz)).to eql(true)
+  expect(obj.is_a?(clazz)).to eql(true), "Expected #{obj.class.name} to be a #{clazz.name}"
   return obj if clazz == Identifier
 
   expect(obj.valid?).to eql(true), obj.errors.collect { |e, m| "#{e} - #{m}" }.join(', ')

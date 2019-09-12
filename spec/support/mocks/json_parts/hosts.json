@@ -1,0 +1,30 @@
+/* Represents an Award (aka Funding) */
+{
+  "complete": {
+    "created": "2019-09-10 18:35:11 UTC",
+    "modified": "2019-09-10 18:35:11 UTC",
+    "title": "Est molestiae delectus aut.",
+    "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
+    "host_ids": [{
+      "created": "2019-09-06 18:11:55 UTC",
+      "modified": "2019-09-06 18:11:55 UTC",
+      "category": "url",
+      "provenance": "zenodo",
+      "value": "http://example.org/dataset/123456789"
+    }],
+    "supports_versioning": "yes",
+    "backup_type": "beatae",
+    "backup_frequency": "et",
+    "storage_type": "est",
+    "availability": "earum",
+    "geo_location": "Lothal",
+    "certified_with": ["etum","blah"],
+    "pid_system": ["ark"]
+  },
+  "minimal": {
+    "title": "Est molestiae delectus aut."
+  },
+  "invalid": {
+    "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem."
+  }
+}

@@ -6,7 +6,8 @@ describe 'API V1 - Organization Show' do
 
   before(:each) do
     @organization = create(:organization, :complete)
-    render partial: "api/v1/organizations/show.json.jbuilder", locals: { organization: @organization }
+    render partial: 'api/v1/rda_common_standard/organizations_show.json.jbuilder',
+           locals: { organization: @organization }
     @json = JSON.parse(rendered)
   end
 

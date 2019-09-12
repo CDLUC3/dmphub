@@ -12,4 +12,6 @@ class Distribution < ApplicationRecord
 
   # Validations
   validates :title, presence: true
+
+
 end

@@ -8,5 +8,5 @@ json.start_on project.start_on.to_s
 json.end_on project.end_on.to_s
 
 json.funding project.awards do |award|
-  json.partial! 'api/v1/awards/show', award: award
+  json.partial! 'api/v1/rda_common_standard/awards_show', award: award
 end

@@ -6,7 +6,7 @@ describe 'API V1 - Technical Resource Show' do
 
   before(:each) do
     @technical_resource = create(:technical_resource, :complete)
-    render partial: "api/v1/technical_resources/show.json.jbuilder",
+    render partial: "api/v1/rda_common_standard/technical_resources_show.json.jbuilder",
            locals: { technical_resource: @technical_resource }
     @json = JSON.parse(rendered)
   end

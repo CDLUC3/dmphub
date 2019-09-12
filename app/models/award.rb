@@ -20,11 +20,18 @@ class Award < ApplicationRecord
     def from_json(json:, provenance:)
       return nil unless json.present? && provenance.present?
       json = json.with_indifferent_access
-      award = new(funder_uri: json.fetch('funder_id', ''), status: json.fetch('funding_status', 'planned'))
+      award = new(
+        funder_uri: json.fetch('funder_id', ''),
+        status: json.fetch('funding_status', 'planned')
+      )
       return award unless award.valid? && json['grant_id'].present?
 
       # Convert the grant_id into an identifier record
-      ident = { 'provenance': provenance.to_s, 'category': 'url', 'value': json.fetch('grant_id', '') }
+      ident = {
+        'provenance': provenance.to_s,
+        'category': 'url',
+        'value': json.fetch('grant_id', '')
+      }
       award.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       award
     end

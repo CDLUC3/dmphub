@@ -12,8 +12,8 @@ json.data_access distribution.data_access
 json.available_until distribution.available_until.to_s
 
 json.licenses distribution.licenses do |license|
-  json.partial! 'api/v1/licenses/show', license: license
+  json.partial! 'api/v1/rda_common_standard/licenses_show', license: license
 end
 json.host [distribution.hosts.first] do |host|
-  json.partial! 'api/v1/hosts/show', host: host
+  json.partial! 'api/v1/rda_common_standard/hosts_show', host: host
 end

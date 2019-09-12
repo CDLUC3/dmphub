@@ -6,7 +6,7 @@ describe 'API V1 - Host Show' do
 
   before(:each) do
     @host = create(:host)
-    render partial: "api/v1/hosts/show.json.jbuilder", locals: { host: @host }
+    render partial: "api/v1/rda_common_standard/hosts_show.json.jbuilder", locals: { host: @host }
     @json = JSON.parse(rendered)
   end
 

@@ -6,7 +6,7 @@ describe 'API V1 - Data Management Plan Show' do
 
   before(:each) do
     @data_management_plan = create(:data_management_plan, :complete)
-    render partial: "api/v1/data_management_plans/show.json.jbuilder",
+    render partial: "api/v1/rda_common_standard/data_management_plans_show.json.jbuilder",
            locals: { data_management_plan: @data_management_plan }
     @json = JSON.parse(rendered)
   end

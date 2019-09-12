@@ -6,7 +6,8 @@ describe 'API V1 - Award Show' do
 
   before(:each) do
     @license = create(:license)
-    render partial: "api/v1/licenses/show.json.jbuilder", locals: { license: @license }
+    render partial: 'api/v1/rda_common_standard/licenses_show.json.jbuilder',
+           locals: { license: @license }
     @json = JSON.parse(rendered)
   end
 

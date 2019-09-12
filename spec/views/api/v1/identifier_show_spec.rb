@@ -6,7 +6,8 @@ describe 'API V1 - Identifier Show' do
 
   before(:each) do
     @identifier = create(:award_identifier)
-    render partial: "api/v1/identifiers/show.json.jbuilder", locals: { identifier: @identifier }
+    render partial: 'api/v1/rda_common_standard/identifiers_show.json.jbuilder',
+           locals: { identifier: @identifier }
     @json = JSON.parse(rendered)
   end
 

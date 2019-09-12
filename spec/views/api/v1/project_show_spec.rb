@@ -6,7 +6,7 @@ describe 'API V1 - Project Show' do
 
   before(:each) do
     @project = create(:project_with_awards)
-    render partial: "api/v1/projects/show.json.jbuilder", locals: { project: @project }
+    render partial: "api/v1/rda_common_standard/projects_show.json.jbuilder", locals: { project: @project }
     @json = JSON.parse(rendered)
   end
 

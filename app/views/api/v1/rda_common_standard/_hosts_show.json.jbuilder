@@ -6,10 +6,11 @@ json.title host.title
 json.description host.description
 
 json.host_ids host.identifiers do |identifier|
-  json.partial! 'api/v1/identifiers/show', identifier: identifier
+  json.partial! 'api/v1/rda_common_standard/identifiers_show',
+    identifier: identifier
 end
 
-json.supports_versioning boolean_to_yes_no_unknown(host.supports_versioning)
+json.supports_versioning ConversionService.boolean_to_yes_no_unknown(host.supports_versioning)
 
 json.backup_type host.backup_type
 json.backup_frequency host.backup_frequency

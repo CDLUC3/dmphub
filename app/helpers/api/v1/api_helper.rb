@@ -26,11 +26,6 @@ module Api
         { 'rel': 'self', 'href': Rails.application.routes.url_helpers.send(href, model.id) }
       end
 
-      # Converts a boolean field to [yes, no, unknown]
-      def boolean_to_yes_no_unknown(value)
-        value.present? ? (value == true ? 'yes' : 'no') : 'unknown'
-      end
-
     end
   end
 end

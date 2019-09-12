@@ -6,7 +6,7 @@ describe 'API V1 - Award Show' do
 
   before(:each) do
     @award = create(:award, :complete)
-    render partial: "api/v1/awards/show.json.jbuilder", locals: { award: @award }
+    render partial: "api/v1/rda_common_standard/awards_show.json.jbuilder", locals: { award: @award }
     @json = JSON.parse(rendered)
   end
 
@@ -27,7 +27,7 @@ describe 'API V1 - Award Show' do
   end
 
   it 'has a funding_statuses attribute' do
-    expect(@json['funding_statuses']).to eql(@award.status)
+    expect(@json['funding_status']).to eql(@award.status)
   end
 
 end

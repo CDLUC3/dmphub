@@ -6,7 +6,7 @@ describe 'API V1 - Security and Privacy Statement Show' do
 
   before(:each) do
     @security_privacy_statement = create(:security_privacy_statement)
-    render partial: "api/v1/security_privacy_statements/show.json.jbuilder",
+    render partial: "api/v1/rda_common_standard/security_privacy_statements_show.json.jbuilder",
            locals: { security_privacy_statement: @security_privacy_statement }
     @json = JSON.parse(rendered)
   end

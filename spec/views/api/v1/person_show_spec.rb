@@ -6,11 +6,12 @@ describe 'API V1 - Person Show' do
 
   before(:each) do
     @person = create(:person, :complete)
+    @partial = 'api/v1/rda_common_standard/persons_show.json.jbuilder'
   end
 
   context 'base person' do
     before(:each) do
-      render partial: "api/v1/persons/show.json.jbuilder", locals: { person: @person, rel: 'primary_contact' }
+      render partial: @partial, locals: { person: @person, rel: 'primary_contact' }
       @json = JSON.parse(rendered)
     end
 
@@ -33,7 +34,7 @@ describe 'API V1 - Person Show' do
 
   context 'primary contact' do
     before(:each) do
-      render partial: "api/v1/persons/show.json.jbuilder", locals: { person: @person, rel: 'primary_contact' }
+      render partial: @partial, locals: { person: @person, rel: 'primary_contact' }
       @json = JSON.parse(rendered)
     end
 
@@ -45,7 +46,7 @@ describe 'API V1 - Person Show' do
 
   context 'other contributor' do
     before(:each) do
-      render partial: "api/v1/persons/show.json.jbuilder", locals: { person: @person, rel: 'author' }
+      render partial: @partial, locals: { person: @person, rel: 'author' }
       @json = JSON.parse(rendered)
     end
 

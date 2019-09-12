@@ -6,7 +6,7 @@ describe 'API V1 - Award Show' do
 
   before(:each) do
     @metadatum = create(:metadatum, :complete)
-    render partial: "api/v1/metadata/show.json.jbuilder", locals: { metadatum: @metadatum }
+    render partial: "api/v1/rda_common_standard/metadata_show.json.jbuilder", locals: { metadatum: @metadatum }
     @json = JSON.parse(rendered)
   end
 

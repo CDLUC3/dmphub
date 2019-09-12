@@ -6,7 +6,7 @@ describe 'API V1 - Cost Show' do
 
   before(:each) do
     @cost = create(:cost)
-    render partial: "api/v1/costs/show.json.jbuilder", locals: { cost: @cost }
+    render partial: "api/v1/rda_common_standard/costs_show.json.jbuilder", locals: { cost: @cost }
     @json = JSON.parse(rendered)
   end
 

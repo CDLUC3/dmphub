@@ -6,7 +6,7 @@ describe 'API V1 - Dataset Show' do
 
   before(:each) do
     @dataset = create(:dataset, :complete)
-    render partial: "api/v1/datasets/show.json.jbuilder", locals: { dataset: @dataset }
+    render partial: "api/v1/rda_common_standard/datasets_show.json.jbuilder", locals: { dataset: @dataset }
     @json = JSON.parse(rendered)
   end
 

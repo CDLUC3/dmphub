@@ -68,4 +68,26 @@ RSpec.describe Person, type: :model do
       end
     end
   end
+
+  context 'callbacks' do
+    describe 'creatable?' do
+      xit 'returns false if the email already exists' do
+        model = create(:person)
+        model2 = build(:person, email: model.email)
+        expect(model2.send(:creatable?)).to eql(false)
+      end
+
+      xit 'returns false one of the identifiers already exists' do
+        model = create(:person, :complete)
+        model2 = build(:person, :complete)
+        model2.identifiers << model.identifiers.first
+        expect(model2.send(:creatable?)).to eql(false)
+      end
+
+      xit 'returns true if the person does not already exist' do
+        model = build(:person, :complete)
+        expect(model.send(:creatable?)).to eql(true)
+      end
+    end
+  end
 end

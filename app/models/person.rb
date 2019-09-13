@@ -16,6 +16,9 @@ class Person < ApplicationRecord
   # Validations
   validates :name, presence: true
 
+  # Callbacks
+  #before_create :creatable?
+
   # Scopes
   class << self
 
@@ -37,5 +40,16 @@ class Person < ApplicationRecord
       person
     end
 
+  end
+
+  # Instance Methods
+
+  private
+
+  # Will cancel a create if the record already exists
+  def creatable?
+    #return false if Person.where(email: email).any?
+    #identifiers.each { |identifier| return false if identifier.exists? }
+    #true
   end
 end

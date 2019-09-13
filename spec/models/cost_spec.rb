@@ -38,4 +38,19 @@ RSpec.describe Cost, type: :model do
       expect(obj.currency_code).to eql(@json['currency_code'])
     end
   end
+
+  context 'callbacks' do
+    describe 'creatable?' do
+      xit 'returns false if the title and data_management_plan_id already exist' do
+        model = create(:cost)
+        model2 = build(:cost, title: model.title, data_management_plan_id: model.data_management_plan_id)
+        expect(model2.send(:creatable?)).to eql(false)
+      end
+
+      xit 'returns true if the title and data_management_plan_id do not exist' do
+        model = build(:cost)
+        expect(model.send(:creatable?)).to eql(true)
+      end
+    end
+  end
 end

@@ -40,6 +40,15 @@ def default_authenticated_headers(authorization:)
   default_headers.merge('Authorization' => authorization.to_s)
 end
 
+def validate_base_response(json:)
+  return false unless json.present?
+  expect(json['generation_date'].present?).to eql(true), 'expected to find `generation_date`'
+  expect(json['caller'].present?).to eql(true), 'expected to find `caller` Name'
+  expect(json['source'].present?).to eql(true), 'expected to find `source` URL'
+  expect(json['content'].present?).to eql(true), 'expected to find `content`'
+  true
+end
+
 # methods for use with JSON/View validation
 def validate_base_json_elements(model:, rendered:)
   return false unless model.present? && rendered.present?

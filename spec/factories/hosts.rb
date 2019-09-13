@@ -11,5 +11,17 @@ FactoryBot.define do
     storage_type          { Faker::Lorem.word }
     availability          { Faker::Lorem.word }
     geo_location          { Faker::Movies::StarWars.planet }
+
+    trait :complete do
+      transient do
+        identifiers_count { 1 }
+      end
+
+      after :create do |host, evaluator|
+        evaluator.identifiers_count.times do
+          host.identifiers << create(:host_identifier)
+        end
+      end
+    end
   end
 end

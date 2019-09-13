@@ -3,9 +3,9 @@
 FactoryBot.define do
   # This base factory is not meant to be used directly, use one of the ones below
   factory :identifier do
-    category     { Identifier.categories.keys.sample }
-    value        { Faker::Lorem.word }
-    provenance   { Faker::Lorem.word.downcase }
+    category        { Identifier.categories.keys.sample }
+    provenance      { Faker::Lorem.word.downcase }
+    value           { SecureRandom.uuid }
   end
 
   factory :award_identifier, parent: :identifier do |identifier|
@@ -21,6 +21,11 @@ FactoryBot.define do
   factory :dataset_identifier, parent: :identifier do |identifier|
     category { %w[doi url].sample }
     identifier.identifiable { |i| i.association(:dataset) }
+  end
+
+  factory :host_identifier, parent: :identifier do |identifier|
+    category { %w[url].sample }
+    identifier.identifiable { |i| i.association(:host) }
   end
 
   factory :metadatum_identifier, parent: :identifier do |identifier|

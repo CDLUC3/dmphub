@@ -1,24 +1,26 @@
 # frozen_string_literal: true
 
+json.ignore_nil!
+
 # A JSON representation of a Person in the Common Standard format
 json.merge! model_json_base(model: person)
 json.name person.name
 json.mbox person.email
-json.organizations person.organizations do |organization|
-  json.partial! 'api/v1/rda_common_standard/organizations_show',
-    organization: organization
+
+if person.organizations.any?
+  json.organizations person.organizations do |organization|
+    json.partial! 'api/v1/rda_common_standard/organizations_show',
+      organization: organization
+  end
 end
 
-identifiers = person.identifiers.select { |p| p.category != 'email' }
-
-
 if rel == 'primary_contact'
-  json.contact_ids identifiers do |identifier|
+  json.contact_ids person.identifiers do |identifier|
     json.partial! 'api/v1/rda_common_standard/identifiers_show',
       identifier: identifier
   end
 else
-  json.user_ids identifiers do |identifier|
+  json.user_ids person.identifiers do |identifier|
     json.partial! 'api/v1/rda_common_standard/identifiers_show',
       identifier: identifier
   end

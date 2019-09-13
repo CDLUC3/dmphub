@@ -9,6 +9,9 @@ class Cost < ApplicationRecord
   # Validations
   validates :title, presence: true
 
+  # Callbacks
+  before_create :creatable?
+
   # Scopes
   class << self
 
@@ -23,4 +26,14 @@ class Cost < ApplicationRecord
 
   end
 
+  # Instance Methods
+
+  private
+
+  # Will cancel a create if the record already exists
+  def creatable?
+    #return false if Cost.where(title: title,
+    #  data_management_plan_id: data_management_plan_id).any?
+    #true
+  end
 end

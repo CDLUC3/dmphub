@@ -1,26 +1,82 @@
-// Source: https://github.com/RDA-DMP-Common/RDA-DMP-Common-Standard/blob/master/examples/JSON/ex8-dmp-minimal-content.json
+/*
+ * This JSON represents the bare minimum amount of information required to
+ * register a Data Management Plan with DMPhub
+ */
 {
   "dmp": {
     "title": "Minimal DMP",
     "language": "en",
-    "created": "2018-07-23T10:10:23.6",
-    "modified": "2019-02-06T10:10:23.6",
-    "ethical_issues_exist": "unknown",
     "contact": {
-      "mail": "cc@example.com",
+      "mbox": "cc@example.com",
       "name": "Charlie Chaplin",
-      "contact_id": {
-        "contact_id": "http://orcid.org/0000-0000-0000-0000",
-        "contact_id_type": "HTTP-ORCID"
-      }
-    },
-    "dataset": [
-      {
-        "title": "Placeholder dataset",
-        "type": "(value from dictionary)",
-        "personal_data": "unknown",
-        "sensitive_data": "unknown"
-      }
-    ]
+      "contact_ids": [{
+        "value": "http://orcid.org/0000-0000-0000-0000",
+        "category": "orcid"
+      }]
+    }
   }
 }
+
+/*
+ * The above JSON will result in the following RDA Common Standard JSON:
+ *
+ * {
+ *   "generation_date" => "2019-09-13 11:09:56 -0700",
+ *   "caller": "Test Application"
+ *   "source" => "POST http://www.example.com/api/v1/data_management_plans"
+ *   "content" => {
+ *
+ *     "dmp"=>{
+ *       "created"=>"2019-09-13 18:34:04 UTC",
+ *       "modified"=>"2019-09-13 18:34:04 UTC",
+ *       "links"=>[{
+ *         "href"=>"http://localhost:3000/api/v1/data_management_plans/10.80030/9c2aa.ca58",
+ *         "rel"=>"self"
+ *       }],
+ *
+ *       "title"=>"Minimal DMP"
+ *       "language"=>"en",
+ *       "ethical_issues_exist"=>"unknown",
+ *
+ *       "dmp_ids"=>[{
+ *         "category"=>"doi",
+ *         "created"=>"2019-09-13 18:34:04 UTC",
+ *         "modified"=>"2019-09-13 18:34:04 UTC",
+ *         "provenance"=>"Datacite",
+ *         "value"=>"10.80030/9c2aa.ca58"
+ *       }],
+ *
+ *       "contact"=>{
+ *         "created"=>"2019-09-13 18:34:04 UTC",
+ *         "modified"=>"2019-09-13 18:34:04 UTC",
+ *         "name"=>"Charlie Chaplin",
+ *         "mbox"=>"cc@example.com",
+ *         "contact_ids"=>[{
+ *           "category"=>"orcid",
+ *           "created"=>"2019-09-13 19:02:42 UTC",
+ *           "modified"=>"2019-09-13 19:02:42 UTC",
+ *           "provenance"=>"Test Application",
+ *           "value"=>"http://orcid.org/0000-0000-0000-0000"
+ *         }]
+ *       },
+ *
+ *       "datasets"=>[{
+ *         "created"=>"2019-09-13 18:34:04 UTC",
+ *         "modified"=>"2019-09-13 18:34:04 UTC",
+ *         "title"=>"Minimal DMP",
+ *         "type"=>"dataset",
+ *         "personal_data"=>"unknown",
+ *         "sensitive_data"=>"unknown"
+ *       }],
+ *
+ *       "project"=>{
+ *         "created"=>"2019-09-13 18:34:04 UTC",
+ *         "modified"=>"2019-09-13 18:34:04 UTC",
+ *         "title"=>"Minimal DMP"
+ *         "start_on"=>"2019-09-13 18:34:04 UTC",
+ *         "end_on"=>"2021-09-13 18:34:04 UTC"
+ *       }
+ *     }
+ *   }
+ * },
+ */

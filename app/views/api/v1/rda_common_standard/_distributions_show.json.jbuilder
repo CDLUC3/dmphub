@@ -11,9 +11,14 @@ json.download_url distribution.download_url
 json.data_access distribution.data_access
 json.available_until distribution.available_until.to_s
 
-json.licenses distribution.licenses do |license|
-  json.partial! 'api/v1/rda_common_standard/licenses_show', license: license
+if distribution.licenses.any?
+  json.licenses distribution.licenses do |license|
+    json.partial! 'api/v1/rda_common_standard/licenses_show', license: license
+  end
 end
-json.host do
-  json.partial! 'api/v1/rda_common_standard/hosts_show', host: distribution.host
+
+if distribution.host.present?
+  json.host do
+    json.partial! 'api/v1/rda_common_standard/hosts_show', host: distribution.host
+  end
 end

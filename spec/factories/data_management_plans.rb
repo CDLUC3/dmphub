@@ -20,9 +20,10 @@ FactoryBot.define do
 
     trait :complete do
       transient do
-        persons_count  { 1 }
-        datasets_count { 1 }
-        costs_count    { 1 }
+        persons_count     { 1 }
+        datasets_count    { 1 }
+        costs_count       { 1 }
+        identifiers_count { 1 }
       end
 
       after :create do |data_management_plan, evaluator|
@@ -41,6 +42,9 @@ FactoryBot.define do
         end
         evaluator.datasets_count.times do
           data_management_plan.datasets << create(:dataset, :complete)
+        end
+        evaluator.identifiers_count.times do
+          data_management_plan.identifiers << create(:data_management_plan_identifier)
         end
       end
     end

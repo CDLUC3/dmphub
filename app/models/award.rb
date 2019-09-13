@@ -38,4 +38,5 @@ class Award < ApplicationRecord
     end
 
   end
+
 end

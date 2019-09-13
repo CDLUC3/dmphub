@@ -19,6 +19,7 @@ class DataManagementPlan < ApplicationRecord
 
   # Callbacks
   after_create :ensure_dataset!
+  after_create :ensure_project!
 
   # Scopes
   scope :by_client, ->(client_id:) do
@@ -88,6 +89,14 @@ class DataManagementPlan < ApplicationRecord
 
   def ensure_dataset!
     datasets << Dataset.new(title: title)
-    save!
+    save
+  end
+
+  def ensure_project!
+    return true if project.present?
+
+    project = Project.create(title: title, description: description,
+      start_on: Time.now, end_on: Time.now + 2.years)
+    update(project: project)
   end
 end

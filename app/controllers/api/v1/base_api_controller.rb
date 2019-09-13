@@ -35,7 +35,11 @@ module Api
       end
 
       def empty_response
-        [{}].to_json
+        {}
+      end
+
+      def error_response(obj)
+        { errors: obj.errors.map { |e, m| { "#{e}": m } } }
       end
     end
   end

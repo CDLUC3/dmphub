@@ -20,7 +20,7 @@ You must first register your application with the DMPHub (this is currently an e
 curl -X POST http://dmptool-stg.cdlib.org/oauth/token -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -d "grant_type=client_credentials&client_id=[my application uid]&client_secret=[my application secret]"
 ```
 
-Which should return JSON that looks like this:
+Which should return an authorization token as JSON that looks like this:
 ```javascript
 {
   "access_token":"eyJhbGciOiJIUzUxMiIsImtpZCI6IkM4MVV6dG9jaHFGOEhMTWxHbHZRUHZCWnJySmx3UTNfOW1PQkROWUMwUGMifQ.eyJpc3MiOiJEbXBodWI6OkFwcGxpY2F0aW9uIiwiaWF0IjoxNTY3NTM3MDg0LCJqdGkiOiI2YzEyNTVjMC1iOWU4LTRiODgtOGZjZC1kYjlhODJiOWFiMjYiLCJjbGllbnQiOnsiaWQiOiJDODFVenRvY2hxRjhITE1sR2x2UVB2Qlpyckpsd1EzXzltT0JETllDMFBjIiwidG9rZW5fc2VjcmV0IjoiNzZhNzVkMDMtMTVmYy00MDZjLWFhMjMtZmM0N2RkYmY3MDUxIn19.f7w_RV62VY4o058-vTK1mvkO-oVnzOnvydCgH9022U9KxspKmmXN2z-4wIauRKIc8nU74wpW3AccUYE0BqeNvQ",
@@ -34,14 +34,33 @@ You should then send this token in the Headers of all subsequent requests to the
 
 ### Retrieve a list of DMPs associated with your application
 
-```shell
-curl http://dmptool-stg.cdlib.org/api/v1/data_management_plans -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsImtpZCI6IkM4MVV6dG9jaHFGOEhMTWxHbHZRUHZCWnJySmx3UTNfOW1PQkROWUMwUGMifQ.eyJpc3MiOiJEbXBodWI6OkFwcGxpY2F0aW9uIiwiaWF0IjoxNTY3NTM3MDg0LCJqdGkiOiI2YzEyNTVjMC1iOWU4LTRiODgtOGZjZC1kYjlhODJiOWFiMjYiLCJjbGllbnQiOnsiaWQiOiJDODFVenRvY2hxRjhITE1sR2x2UVB2Qlpyckpsd1EzXzltT0JETllDMFBjIiwidG9rZW5fc2VjcmV0IjoiNzZhNzVkMDMtMTVmYy00MDZjLWFhMjMtZmM0N2RkYmY3MDUxIn19.f7w_RV62VY4o058-vTK1mvkO-oVnzOnvydCgH9022U9KxspKmmXN2z-4wIauRKIc8nU74wpW3AccUYE0BqeNvQ"
-```
-
-### Retrieve a specific DMP by its DMPHub ID
-
-### Retrieve a list of DMPs associated with your application
+Results are returned as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json).
 
 ```shell
-curl http://dmptool-stg.cdlib.org/api/v1/data_management_plans/[DMP id] -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -H "Authorization: Bearer eyJhbGciOiJIUzUxMiIsImtpZCI6IkM4MVV6dG9jaHFGOEhMTWxHbHZRUHZCWnJySmx3UTNfOW1PQkROWUMwUGMifQ.eyJpc3MiOiJEbXBodWI6OkFwcGxpY2F0aW9uIiwiaWF0IjoxNTY3NTM3MDg0LCJqdGkiOiI2YzEyNTVjMC1iOWU4LTRiODgtOGZjZC1kYjlhODJiOWFiMjYiLCJjbGllbnQiOnsiaWQiOiJDODFVenRvY2hxRjhITE1sR2x2UVB2Qlpyckpsd1EzXzltT0JETllDMFBjIiwidG9rZW5fc2VjcmV0IjoiNzZhNzVkMDMtMTVmYy00MDZjLWFhMjMtZmM0N2RkYmY3MDUxIn19.f7w_RV62VY4o058-vTK1mvkO-oVnzOnvydCgH9022U9KxspKmmXN2z-4wIauRKIc8nU74wpW3AccUYE0BqeNvQ"
+curl http://dmptool-stg.cdlib.org/api/v1/data_management_plans
+  -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
+  -H "Accept: application/json"
+  -H "Authorization: Bearer [Your Authorization Token]"
 ```
+
+### Retrieve a specific DMP by its DOI or DMPHub ID
+
+The DMP is returned as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json).
+
+```shell
+curl http://dmptool-stg.cdlib.org/api/v1/data_management_plans/[DMP id]
+  -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
+  -H "Accept: application/json"
+  -H "Authorization: Bearer [Your Authorization Token]"
+```
+
+### Add a DMP to the DMPHub (returns the DMP's DOI)
+
+You should send the DMP as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json).
+
+```shell
+curl -X http://dmptool-stg.cdlib.org/api/v1/data_management_plans
+  -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
+  -H "Accept: application/json"
+  -H "Authorization: Bearer [Your Authorization Token]"
+  ```

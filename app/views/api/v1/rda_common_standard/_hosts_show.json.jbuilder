@@ -5,9 +5,11 @@ json.merge! model_json_base(model: host, skip_hateoas: true)
 json.title host.title
 json.description host.description
 
-json.host_ids host.identifiers do |identifier|
-  json.partial! 'api/v1/rda_common_standard/identifiers_show',
-    identifier: identifier
+if host.identifiers.any?
+  json.host_ids host.identifiers do |identifier|
+    json.partial! 'api/v1/rda_common_standard/identifiers_show',
+      identifier: identifier
+  end
 end
 
 json.supports_versioning ConversionService.boolean_to_yes_no_unknown(host.supports_versioning)

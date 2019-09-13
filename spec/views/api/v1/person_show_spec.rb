@@ -39,8 +39,7 @@ describe 'API V1 - Person Show' do
     end
 
     it 'has a contact_ids attribute' do
-      expected = @person.identifiers.select { |i| i.category != 'email' }.length
-      expect(@json['contact_ids'].length).to eql(expected)
+      expect(@json['contact_ids'].length).to eql(@person.identifiers.length)
     end
   end
 
@@ -51,8 +50,11 @@ describe 'API V1 - Person Show' do
     end
 
     it 'has a user_ids attribute' do
-      expected = @person.identifiers.select { |i| i.category != 'email' }.length
-      expect(@json['user_ids'].length).to eql(expected)
+
+p @person.identifiers.inspect
+p @json
+
+      expect(@json['user_ids'].length).to eql(@person.identifiers.length)
     end
 
     it 'has a contributor_type attribute' do

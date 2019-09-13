@@ -1,5 +1,5 @@
 {
-  "data_management_plan": {
+  "dmp": {
     "created": "2019-07-10 22:53:53 UTC",
     "modified": "2019-07-17 14:34:07 UTC",
     "links": [{
@@ -101,7 +101,7 @@
         "modified": "2019-07-17 14:34:07 UTC",
         "funder_id": "http://dx.doi.org/10.13039/100000001",
         "grant_id": "",
-        "funding_statuses": "applied"
+        "funding_status": "applied"
       }]
     },
     "datasets": [{
@@ -140,7 +140,18 @@
         "title": "Data sharing",
         "description": "Potential users need to have NADRE account to get open access to the data which they can use and share to third body under the Creative Commons attribution license. The data availability will not be restricted once deposited in the repository while still we pursue for persistent identifier of our data for unlimited accessibility."
       }],
-      "technical_resources": [],
+      "technical_resources": [{
+        "created": "2019-07-17 14:34:07 UTC",
+        "modified": "2019-07-17 14:34:07 UTC",
+        "identifier": {
+          "created": "2019-07-17 14:34:07 UTC",
+          "modified": "2019-07-17 14:34:07 UTC",
+          "category": "url",
+          "provenance": "dmptool",
+          "value": "https://microsoft.com/excel"
+        },
+        "description": "Microsoft Excel for viewing and working with the spreadsheet"
+      }],
       "metadata": [{
         "created": "2019-09-10 18:51:27 UTC",
         "modified": "2019-09-10 18:51:27 UTC",

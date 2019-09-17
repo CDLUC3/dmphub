@@ -26,10 +26,11 @@ module Api
       # GET /data_management_plans/:id
       def show
         render(json: empty_response, status: :not_found) unless authorized?
+
         render 'show', locals: {
           data_management_plan: @dmp,
           caller: current_client[:name],
-          source: "GET #{api_v1_data_management_plan_url(@dmp)}"
+          source: "GET #{api_v1_data_management_plan_url(@doi.value)}"
         }
       end
 
@@ -78,8 +79,8 @@ module Api
       # Retrieve the specified DMP from the database and return a 404 if its either
       # not found or not owned by a client/application
       def load_dmp
-        ident = Identifier.where(value: params[:id], identifiable_type: 'DataManagementPlan').first
-        @dmp = DataManagementPlan.where(id: ident.identifiable_id).first if ident.present?
+        @doi = Identifier.where(value: params[:id], identifiable_type: 'DataManagementPlan').first
+        @dmp = DataManagementPlan.where(id: @doi.identifiable_id).first if @doi.present?
 
         render json: empty_response, status: :not_found unless authorized?
       end

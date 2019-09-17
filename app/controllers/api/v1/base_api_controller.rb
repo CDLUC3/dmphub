@@ -22,6 +22,7 @@ module Api
       # Find the user that owns the access token
       def current_client
         {
+          id: doorkeeper_token.application.id,
           uid: doorkeeper_token.application.uid,
           name: doorkeeper_token.application.name,
           redirect_uri: doorkeeper_token.application.redirect_uri,

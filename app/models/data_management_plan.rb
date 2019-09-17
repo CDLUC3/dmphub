@@ -23,7 +23,8 @@ class DataManagementPlan < ApplicationRecord
 
   # Scopes
   scope :by_client, ->(client_id:) do
-    joins(oauth_authorization: :oauth_application).where('oauth_applications.uid = ?', client_id)
+    ids = OauthAuthorization.where(oauth_application_id: client_id).pluck(:data_management_plan_id)
+    where(id: ids)
   end
 
   # Class Methods

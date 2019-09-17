@@ -7,13 +7,15 @@ module Api
     # Controller providing DMP functionality
     class DataManagementPlansController < BaseApiController
 
+      protect_from_forgery with: :null_session, only: [:create]
+
       before_action :load_dmp, except: %i[index create]
 
       PARTIAL = 'api/v1/rd_common_standard/data_management_plans_show.json.jbuilder'.freeze
 
       # GET /data_management_plans
       def index
-        dmps = DataManagementPlan.by_client(client_id: current_client[:uid])
+        dmps = DataManagementPlan.by_client(client_id: current_client[:id]).order(updated_at: :desc)
         render 'index', locals: {
           data_management_plans: dmps,
           caller: current_client[:name],
@@ -41,6 +43,9 @@ module Api
                status: :bad_request unless @dmp.present?
 
         if @dmp.save
+          # Associate the DMP with the Client/Application who created it
+          OauthAuthorization.create(oauth_application: doorkeeper_token.application, data_management_plan: @dmp)
+          # Mint the DOI
           doi = DataciteService.mint_doi(data_management_plan: @dmp)
           @dmp.identifiers << Identifier.new(provenance: current_client[:name],
                                              category: 'doi', value: doi)
@@ -71,18 +76,18 @@ module Api
       end
 
       # Retrieve the specified DMP from the database and return a 404 if its either
-      # not found or the client/application does not own it
+      # not found or not owned by a client/application
       def load_dmp
-        @dmp = DataManagementPlan.joins(oauth_authorization: :oauth_application)
-          .includes(oauth_authorization: :oauth_application)
-          .where(id: params[:id]).first
+        ident = Identifier.where(value: params[:id], identifiable_type: 'DataManagementPlan').first
+        @dmp = DataManagementPlan.where(id: ident.identifiable_id).first if ident.present?
 
         render json: empty_response, status: :not_found unless authorized?
       end
 
       # Determine whether or not the client/application owns the DMP
       def authorized?
-        @dmp.present? && @dmp.oauth_authorization.oauth_application.uid == current_client[:uid]
+        return false unless @dmp.present? && current_client[:id].present?
+        OauthAuthorization.where(data_management_plan_id: @dmp.id, oauth_application_id: current_client[:id]).any?
       end
     end
   end

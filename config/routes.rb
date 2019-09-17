@@ -25,7 +25,8 @@ Rails.application.routes.draw do
       get '/me', format: :json, to: 'base_api#me'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
 
-      resources :data_management_plans
+      get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }
+      resources :data_management_plans, except: %w[show]
       resources :datasets, only: %w[index show]
       resources :organizations, only: %w[index show]
       resources :persons, only: %w[index show]

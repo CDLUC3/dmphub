@@ -18,12 +18,17 @@ module Api
       end
 
       # Generates a Hypermedia As The Engine Of Application State (HATEOAS) link
-      # for the model:
+      # for the Data Management Plan:
       #  'rel':'self',
       #  'href':'http://localhost:3000/models/1'
       def to_hateoas(model:)
-        href = "api_v1_#{model.class.name.underscore}_url"
-        { 'rel': 'self', 'href': Rails.application.routes.url_helpers.send(href, model.id) }
+        ident = model.id unless model.is_a?(DataManagementPlan)
+        ident = Identifier.where(identifiable_id: model.id, identifiable_type: 'DataManagementPlan').first unless ident.present?
+        return nil unless ident.present?
+
+        href = Rails.application.routes.url_helpers.send('api_v1_data_management_plan_url', ident.value)
+
+        { 'rel': 'self', 'href': href }
       end
 
     end

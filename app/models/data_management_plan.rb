@@ -65,7 +65,16 @@ class DataManagementPlan < ApplicationRecord
       })
       dmp.project = Project.from_json(json: project_json, provenance: provenance)
 
-      # Handle costs and datasets
+      # Handle identifiers, costs and datasets
+      json.fetch('dmp_ids', []).each do |identifier|
+        next unless identifier['value'].present?
+        ident = {
+          'provenance': provenance.to_s,
+          'category': identifier.fetch('category', 'url'),
+          'value': identifier['value']
+        }
+        dmp.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+      end
       json.fetch('costs', []).each do |cost|
         dmp.costs << Cost.from_json(json: cost, provenance: provenance)
       end
@@ -88,11 +97,15 @@ class DataManagementPlan < ApplicationRecord
 
   private
 
+  # Create a default stub dataset unless one exists
   def ensure_dataset!
+    return true if datasets.any?
+
     datasets << Dataset.new(title: title)
     save
   end
 
+  # Create a default stub project unless one exists
   def ensure_project!
     return true if project.present?
 

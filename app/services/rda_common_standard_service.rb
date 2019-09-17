@@ -22,17 +22,18 @@ class RdaCommonStandardService
          ethical_issues_description ethical_issues_report] +
       [dm_staff: person_permitted_params, contact: person_permitted_params,
        datasets: dataset_permitted_params, costs: cost_permitted_params,
-       project: project_permitted_params]
+       project: project_permitted_params, dmp_ids: identifier_permitted_params]
     end
 
     def dataset_permitted_params
       base_permitted_params +
-      %i[title description type issued language personal_data sensitive_data
-         keywords data_quality_assurance preservation_statement] +
+      %i[title description type issued language personal_data sensitive_data keywords
+         data_quality_assurance preservation_statement] +
       [dataset_ids: identifier_permitted_params,
        security_and_privacy_statements: security_and_privacy_statement_permitted_params,
        technical_resources: technical_resource_permitted_params,
-       metadata: metadatum_permitted_params]
+       metadata: metadatum_permitted_params,
+       distributions: distribution_permitted_params]
     end
 
     def distribution_permitted_params
@@ -45,12 +46,16 @@ class RdaCommonStandardService
     def host_permitted_params
       base_permitted_params +
       %i[title description supports_versioning backup_type backup_frequency
-         storage_type availability geo_location] +
+         storage_type availability geo_location certified_with pid_system] +
       [host_ids: identifier_permitted_params]
     end
 
     def identifier_permitted_params
       base_permitted_params + %i[provenance category value]
+    end
+
+    def keyword_permitted_params
+      base_permitted_params + %i[value]
     end
 
     def license_permitted_params
@@ -62,10 +67,15 @@ class RdaCommonStandardService
       [identifier: identifier_permitted_params]
     end
 
+    def organization_permitted_params
+      base_permitted_params + %i[name] + [identifiers: identifier_permitted_params]
+    end
+
     def person_permitted_params
       base_permitted_params + %i[name mbox contributor_type] +
       [contact_ids: identifier_permitted_params,
-       user_ids: identifier_permitted_params]
+       user_ids: identifier_permitted_params,
+       organizations: organization_permitted_params]
     end
 
     def project_permitted_params

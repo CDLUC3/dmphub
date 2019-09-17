@@ -49,10 +49,9 @@ class Dataset < ApplicationRecord
         dataset.metadata << Metadatum.from_json(json: metadatum, provenance: provenance)
       end
 
-      json.fetch('identifiers', []).each do |identifier|
+      json.fetch('dataset_ids', []).each do |identifier|
         next unless identifier['value'].present?
 
-        # Convert the grant_id into an identifier record
         ident = {
           'provenance': provenance.to_s,
           'category': identifier.fetch('category', 'url'),
@@ -61,9 +60,14 @@ class Dataset < ApplicationRecord
         dataset.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       end
 
+p "KEYWORDS: #{json['keywords']}"
+
       json.fetch('keywords', []).each do |keyword|
+
+p "KEYWORD: #{keyword}"
+
         next if keyword.blank?
-        dataset.keywords << Keyword.new(value: keyword)
+        dataset.dataset_keywords << DatasetKeyword.new(keyword: Keyword.new(value: keyword))
       end
       json.fetch('distributions', []).each do |distribution|
         dataset.distributions << Distribution.from_json(json: distribution, provenance: provenance)

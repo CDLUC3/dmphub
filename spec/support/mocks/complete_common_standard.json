@@ -4,7 +4,7 @@
     "modified": "2019-07-17 14:34:07 UTC",
     "links": [{
       "rel": "self",
-      "href": "http://localhost:3000/api/v1/data_management_plans/1"
+      "href": "http://localhost:3000/api/v1/data_management_plans/10.80030/a12D34.bv12"
     }],
     "title": "The prevalence of contagious infections in Adama city",
     "description": "Contagious infections are among the top health threats worldwide. The main attributing factors are said to be linked to poor sanitation and low income. Despite their emerging and re-emerging nature, little are addressed here in Adama in particular and in Ethiopia in general. The objective of the present study is to investigate the current status of contagious diseases and predict the future prospect on health and economic well-being of the City's citizens. Primary data will be collected from 20 health centre in Adama city and subjected to qualitative and quantitative data analysis. The result of the research will be used as inputs in health policy of the city municipality.",
@@ -28,10 +28,6 @@
     "contact": {
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "links": [{
-        "rel": "self",
-        "href": "http://localhost:3000/api/v1/persons/1"
-      }],
       "name": "Hidden to protect the innocent",
       "mbox": "foobar-testing@yahoo.com",
       "organizations": [],
@@ -46,19 +42,11 @@
     "dm_staff": [{
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "links": [{
-        "rel": "self",
-        "href": "http://localhost:3000/api/v1/persons/3"
-      }],
       "name": "Darth Vader",
       "mbox": "darth.vader@deathstar.org",
       "organizations": [{
         "created": "2019-07-17 14:34:07 UTC",
         "modified": "2019-07-17 14:34:07 UTC",
-        "links": [{
-          "rel": "self",
-          "href": "http://localhost:3000/api/v1/organizations/2"
-        }],
         "name": "Death Star",
         "identifiers": [{
           "created": "2019-07-17 14:34:07 UTC",
@@ -88,10 +76,6 @@
     "project": {
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "links": [{
-        "rel": "self",
-        "href": "http://localhost:3000/api/v1/projects/5"
-      }],
       "title": "The prevalence of contagious infections in Adama city",
       "description": "Contagious infections are among the top health threats worldwide. The main attributing factors are said to be linked to poor sanitation and low income. Despite their emerging and re-emerging nature, little are addressed here in Adama in particular and in Ethiopia in general. The objective of the present study is to investigate the current status of contagious diseases and predict the future prospect on health and economic well-being of the City's citizens. Primary data will be collected from 20 health centre in Adama city and subjected to qualitative and quantitative data analysis. The result of the research will be used as inputs in health policy of the city municipality.",
       "start_on": "2019-09-15 20:13:20 UTC",
@@ -107,10 +91,6 @@
     "datasets": [{
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "links": [{
-        "rel": "self",
-        "href": "http://localhost:3000/api/v1/datasets/52"
-      }],
       "title": "List of infections.",
       "description": "The extensive list of contagious infection cases as a spreadsheet.",
       "type": "dataset",

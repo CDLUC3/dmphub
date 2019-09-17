@@ -24,7 +24,11 @@ class Metadatum < ApplicationRecord
         language: json.fetch('language', 'en'),
         description: json['description']
       )
-      ident = { 'category': 'url', 'value': json['identifier']['value'] }
+      ident = {
+        'provenance': provenance.to_s,
+        'category': 'url',
+        'value': json['identifier']['value']
+      }
       metadatum.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       metadatum.valid? ? metadatum : nil
     end

@@ -46,10 +46,12 @@ module Api
         if @dmp.save
           # Associate the DMP with the Client/Application who created it
           OauthAuthorization.create(oauth_application: doorkeeper_token.application, data_management_plan: @dmp)
-          # Mint the DOI
-          doi = DataciteService.mint_doi(data_management_plan: @dmp)
+
+          # Mint the DOI if we did not recieve a DOI in the input
+          existing = @dmp.identifiers.select { |ident| ident.doi? }.any?
+          @doi = DataciteService.mint_doi(data_management_plan: @dmp) unless existing
           @dmp.identifiers << Identifier.new(provenance: current_client[:name],
-                                             category: 'doi', value: doi)
+                                             category: 'doi', value: @doi) unless existing
           @dmp.save
 
           render 'show', locals: {

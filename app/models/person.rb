@@ -37,6 +37,9 @@ class Person < ApplicationRecord
         }
         person.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       end
+      json.fetch('organizations', []).each do |org|
+        person.organizations << Organization.from_json(json: org, provenance: provenance)
+      end
       person
     end
 

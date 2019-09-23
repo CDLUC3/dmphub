@@ -13,7 +13,7 @@ RSpec.describe DataManagementPlan, type: :model do
     it { is_expected.to have_many(:persons) }
     it { is_expected.to have_many(:costs) }
     it { is_expected.to have_many(:datasets) }
-    it { is_expected.to belong_to(:project) }
+    it { is_expected.to have_many(:projects) }
     it { is_expected.to belong_to(:oauth_authorization) }
   end
 
@@ -51,9 +51,44 @@ RSpec.describe DataManagementPlan, type: :model do
       expect(contact.person.email).to eql(@json['contact']['mbox'])
       person = obj.person_data_management_plans.select { |pdmp| pdmp.role != 'primary_contact' }.first
       expect(person.person.email).to eql(@json['dm_staff'].first['mbox'])
-      expect(obj.project.title).to eql(@json['project']['title'])
+      expect(obj.projects.first.title).to eql(@json['project']['title'])
       expect(obj.costs.first.title).to eql(@json['costs'].first['title'])
       expect(obj.datasets.first.title).to eql(@json['datasets'].first['title'])
+    end
+
+    it 'returns the existing record if the identifier already exists' do
+      dmp = create(:data_management_plan, :complete)
+      ident = dmp.identifiers.first
+      obj = DataManagementPlan.from_json(provenance: ident.provenance,
+        json: hash_to_json(hash: {
+          title: Faker::Lorem.sentence,
+          contact: {
+            name: Faker::Lorem.word,
+            mbox: Faker::Internet.email,
+            contact_ids: [{
+              category: 'orcid',
+              value: Faker::Number.number(digits: 9)
+            }]
+          },
+          dmp_ids: [{
+            category: ident.category,
+            value: ident.value
+          }]
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(dmp.id)
+      expect(obj.identifiers.length).to eql(dmp.identifiers.length)
+    end
+
+    it 'finds the existing record rather than creating a new instance' do
+      dmp = create(:data_management_plan, title: @jsons['minimal']['title'])
+      obj = DataManagementPlan.from_json(
+        provenance: Faker::Lorem.word,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(dmp.id).to eql(obj.id)
     end
   end
 

@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :metadatum do
-    dataset
     description { Faker::Lorem.paragraph }
     language    { %w[en fr de es].sample }
 
@@ -13,7 +12,7 @@ FactoryBot.define do
 
       after :create do |metadatum, evaluator|
         evaluator.identifier_count.times do
-          metadatum.identifiers << create(:metadatum_identifier)
+          metadatum.identifiers << create(:identifier, category: 'url', identifiable: metadatum)
         end
       end
     end

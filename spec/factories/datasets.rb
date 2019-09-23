@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :dataset do
-    data_management_plan        { create(:data_management_plan) }
     title                       { Faker::Movies::StarWars.wookiee_sentence }
     description                 { Faker::Lorem.paragraph }
     dataset_type                { Dataset.dataset_types.keys.sample }
@@ -25,7 +24,7 @@ FactoryBot.define do
 
       after :create do |dataset, evaluator|
         evaluator.identifier_count.times do
-          dataset.identifiers << create(:dataset_identifier)
+          dataset.identifiers << create(:identifier, category: 'url', identifiable: dataset)
         end
         evaluator.keyword_count.times do
           dataset.keywords << create(:keyword)

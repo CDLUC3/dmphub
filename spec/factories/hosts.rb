@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :host do
-    distribution
     title                 { Faker::Lorem.sentence }
     description           { Faker::Lorem.paragraph }
     supports_versioning   { [nil, true, false].sample }
@@ -19,7 +18,7 @@ FactoryBot.define do
 
       after :create do |host, evaluator|
         evaluator.identifiers_count.times do
-          host.identifiers << create(:host_identifier)
+          host.identifiers << create(:identifier, category: 'url', identifiable: host)
         end
       end
     end

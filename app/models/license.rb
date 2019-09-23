@@ -13,15 +13,14 @@ class License < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, distribution: nil)
       return nil unless json.present? && provenance.present? &&
                         json['license_ref'].present? && json['start_date'].present?
 
       json = json.with_indifferent_access
-      new(
-        license_uri: json.fetch('license_ref', ''),
-        start_date: json.fetch('start_date', Time.now.to_s)
-      )
+      license = find_or_initialize_by(license_uri: json['license_ref'], distribution: distribution)
+      license.start_date = json.fetch('start_date', Time.now.to_s)
+      license
     end
 
   end

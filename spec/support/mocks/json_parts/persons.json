@@ -4,10 +4,6 @@
     "complete": {
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "links": [{
-        "rel": "self",
-        "href": "http://localhost:3000/api/v1/persons/1"
-      }],
       "name": "Hidden to protect the innocent",
       "mbox": "foobar-testing@yahoo.com",
       "organizations": [{

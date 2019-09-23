@@ -23,30 +23,39 @@ class Dataset < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, data_management_plan: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
 
       json = json.with_indifferent_access
-      dataset = new(
-        title: json['title'],
-        description: json['description'],
-        dataset_type: json.fetch('type', 'dataset'),
-        publication_date: json['issued'],
-        language: json['language'],
-        personal_data: ConversionService.yes_no_unknown_to_boolean(json['personal_data']),
-        sensitive_data: ConversionService.yes_no_unknown_to_boolean(json['sensitive_data']),
-        data_quality_assurance: json['data_quality_assurance'],
-        preservation_statement: json['preservation_statement']
+      dataset = find_by_identifiers(
+        provenance: provenance,
+        json_array: json['dataset_ids']
       )
+      dataset = find_or_initialize_by(
+        title: json['title'],
+        dataset_type: json.fetch('type', 'dataset'),
+        data_management_plan: data_management_plan
+      ) unless dataset.present?
+
+      dataset.description = json['description']
+      dataset.dataset_type = json.fetch('type', 'dataset')
+      dataset.publication_date = json['issued']
+      dataset.language = json.fetch('language', 'en')
+      dataset.personal_data = ConversionService.yes_no_unknown_to_boolean(json['personal_data'])
+      dataset.sensitive_data = ConversionService.yes_no_unknown_to_boolean(json['sensitive_data'])
+      dataset.data_quality_assurance = json['data_quality_assurance']
+      dataset.preservation_statement = json['preservation_statement']
 
       json.fetch('security_and_privacy_statements', []).each do |sps|
-        dataset.security_privacy_statements << SecurityPrivacyStatement.from_json(json: sps, provenance: provenance)
+        dataset.security_privacy_statements << SecurityPrivacyStatement.from_json(json: sps,
+          provenance: provenance, dataset: dataset)
       end
       json.fetch('technical_resources', []).each do |tr|
-        dataset.technical_resources << TechnicalResource.from_json(json: tr, provenance: provenance)
+        dataset.technical_resources << TechnicalResource.from_json(json: tr, provenance: provenance,
+          dataset: dataset)
       end
       json.fetch('metadata', []).each do |metadatum|
-        dataset.metadata << Metadatum.from_json(json: metadatum, provenance: provenance)
+        dataset.metadata << Metadatum.from_json(json: metadatum, provenance: provenance, dataset: dataset)
       end
 
       json.fetch('dataset_ids', []).each do |identifier|
@@ -57,20 +66,19 @@ class Dataset < ApplicationRecord
           'category': identifier.fetch('category', 'url'),
           'value': identifier['value']
         }
-        dataset.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+        id = Identifier.from_json(json: ident, provenance: provenance)
+        dataset.identifiers << id unless dataset.identifiers.include?(id)
       end
-
-p "KEYWORDS: #{json['keywords']}"
 
       json.fetch('keywords', []).each do |keyword|
-
-p "KEYWORD: #{keyword}"
-
         next if keyword.blank?
-        dataset.dataset_keywords << DatasetKeyword.new(keyword: Keyword.new(value: keyword))
+        key = Keyword.find_or_initialize_by(value: keyword)
+        dataset.dataset_keywords << DatasetKeyword.new(keyword: key)
       end
+
       json.fetch('distributions', []).each do |distribution|
-        dataset.distributions << Distribution.from_json(json: distribution, provenance: provenance)
+        dataset.distributions << Distribution.from_json(json: distribution, provenance: provenance,
+          dataset: dataset)
       end
       dataset
     end

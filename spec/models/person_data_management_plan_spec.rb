@@ -14,7 +14,8 @@ RSpec.describe PersonDataManagementPlan, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:person_data_management_plan)
+    model = create(:person_data_management_plan, data_management_plan: create(:data_management_plan),
+      person: create(:person))
     expect(model.valid?).to eql(true)
   end
 end

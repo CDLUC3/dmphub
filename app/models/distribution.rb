@@ -17,27 +17,27 @@ class Distribution < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, dataset: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
 
       json = json.with_indifferent_access
-      distribution = new(
-        title: json['title'],
-        description: json['description'],
-        format: json['format'],
-        byte_size: json['byte_size'],
-        access_url: json['access_url'],
-        download_url: json['download_url'],
-        available_until: json['available_until'],
-        data_access: json.fetch('data_access', 'closed')
-      )
+      distribution = find_or_initialize_by(dataset: dataset, title: json['title'])
+
+      distribution.description = json['description']
+      distribution.format = json['format']
+      distribution.byte_size = json['byte_size']
+      distribution.access_url = json['access_url']
+      distribution.download_url = json['download_url']
+      distribution.available_until = json['available_until']
+      distribution.data_access = json.fetch('data_access', 'closed')
 
       json.fetch('licenses', []).each do |license|
-        distribution.licenses << License.from_json(json: license, provenance: provenance)
+        lcsn = License.from_json(json: license, provenance: provenance, distribution: distribution)
+        distribution.licenses << lcsn unless distribution.licenses.include?(lcsn)
       end
       return distribution unless json['host'].present?
 
-      distribution.host = Host.from_json(json: json['host'], provenance: provenance)
+      distribution.host = Host.from_json(json: json['host'], provenance: provenance, distribution: distribution)
       distribution
     end
 

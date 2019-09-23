@@ -10,7 +10,7 @@ RSpec.describe Project, type: :model do
   end
 
   context 'associations' do
-    it { is_expected.to have_many(:data_management_plans) }
+    it { is_expected.to belong_to(:data_management_plan) }
     it { is_expected.to have_many(:awards) }
   end
 
@@ -42,6 +42,17 @@ RSpec.describe Project, type: :model do
       expect(obj.start_on.to_s).to eql(@json['start_on'])
       expect(obj.end_on.to_s).to eql(@json['end_on'])
       expect(obj.awards.first.funder_uri).to eql(@json['funding'].first['funder_id'])
+    end
+
+    it 'finds the existing record rather than creating a new instance' do
+      project = create(:project, data_management_plan: create(:data_management_plan), title: @jsons['minimal']['title'])
+      obj = Project.from_json(
+        provenance: Faker::Lorem.word,
+        data_management_plan: project.data_management_plan,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(project.id).to eql(obj.id)
     end
   end
 end

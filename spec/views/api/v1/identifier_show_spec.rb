@@ -5,7 +5,7 @@ require 'rails_helper'
 describe 'API V1 - Identifier Show' do
 
   before(:each) do
-    @identifier = create(:award_identifier)
+    @identifier = create(:identifier, identifiable: create(:award))
     render partial: 'api/v1/rda_common_standard/identifiers_show.json.jbuilder',
            locals: { identifier: @identifier }
     @json = JSON.parse(rendered)

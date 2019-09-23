@@ -31,6 +31,12 @@ module Api
         { 'rel': 'self', 'href': href }
       end
 
+      def response_layout(json:, caller:, source:)
+        json.generation_date Time.now.to_s
+        json.caller caller
+        json.source source
+      end
+
     end
   end
 end

@@ -34,5 +34,34 @@ RSpec.describe TechnicalResource, type: :model do
       expect(obj.identifiers.first.value).to eql(@json['identifier']['value'])
       expect(obj.identifiers.first.category).to eql(@json['identifier']['category'])
     end
+
+    it 'returns the existing record if the identifier already exists' do
+      technical_resource = create(:technical_resource, :complete)
+      ident = technical_resource.identifiers.first
+      obj = TechnicalResource.from_json(provenance: ident.provenance,
+        json: hash_to_json(hash: {
+          description: Faker::Lorem.paragraph,
+          identifier: {
+            category: ident.category,
+            value: ident.value
+          }
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(technical_resource.id)
+      expect(obj.identifiers.length).to eql(technical_resource.identifiers.length)
+    end
+
+    it 'finds the existing record rather than creating a new instance' do
+      tech_resource = create(:technical_resource, dataset: create(:dataset), description: @jsons['minimal']['description'])
+      obj = TechnicalResource.from_json(
+        provenance: Faker::Lorem.word,
+        dataset: tech_resource.dataset,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(tech_resource.id).to eql(obj.id)
+    end
   end
+
 end

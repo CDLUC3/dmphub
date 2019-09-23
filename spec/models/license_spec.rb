@@ -37,5 +37,16 @@ RSpec.describe License, type: :model do
       expect(obj.license_uri).to eql(@json['license_ref'])
       expect(obj.start_date.to_s).to eql(@json['start_date'])
     end
+
+    it 'finds the existing record rather than creating a new instance' do
+      license = create(:license, distribution: create(:distribution), license_uri: @jsons['minimal']['license_ref'])
+      obj = License.from_json(
+        provenance: Faker::Lorem.word,
+        distribution: license.distribution,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(license.id).to eql(obj.id)
+    end
   end
 end

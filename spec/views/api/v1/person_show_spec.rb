@@ -50,10 +50,6 @@ describe 'API V1 - Person Show' do
     end
 
     it 'has a user_ids attribute' do
-
-p @person.identifiers.inspect
-p @json
-
       expect(@json['user_ids'].length).to eql(@person.identifiers.length)
     end
 

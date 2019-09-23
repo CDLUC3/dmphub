@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :cost do
-    data_management_plan
     title                 { Faker::Lorem.sentence }
     description           { Faker::Lorem.paragraph }
     value                 { Faker::Number.decimal(l_digits: 2) }

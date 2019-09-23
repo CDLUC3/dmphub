@@ -5,6 +5,10 @@ require 'rails_helper'
 RSpec.describe Organization, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:name) }
+    it "validates uniqueness of name" do
+      subject = create(:organization)
+      expect(subject).to validate_uniqueness_of(:name).case_insensitive
+    end
   end
 
   context 'associations' do
@@ -38,6 +42,23 @@ RSpec.describe Organization, type: :model do
       expect(obj.name).to eql(@json['name'])
       expect(obj.identifiers.first.value).to eql(@json['identifiers'].first['value'])
       expect(obj.identifiers.first.category).to eql(@json['identifiers'].first['category'])
+    end
+
+    it 'returns the existing record if the identifier already exists' do
+      org = create(:organization, :complete)
+      ident = org.identifiers.first
+      obj = Organization.from_json(provenance: ident.provenance,
+        json: hash_to_json(hash: {
+          name: Faker::Lorem.word,
+          identifiers: [{
+            category: ident.category,
+            value: ident.value
+          }]
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(org.id)
+      expect(obj.identifiers.length).to eql(org.identifiers.length)
     end
   end
 end

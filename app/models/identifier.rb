@@ -24,7 +24,11 @@ class Identifier < ApplicationRecord
       json = json.with_indifferent_access
       return nil unless json['value'].present?
 
-      new(category: json.fetch('category', 'url'), provenance: provenance, value: json.fetch('value', ''))
+      find_or_initialize_by(
+        category: json.fetch('category', 'url'),
+        provenance: provenance,
+        value: json.fetch('value', '')
+      )
     end
 
   end

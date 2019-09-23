@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :distribution do
-    dataset               { create(:dataset) }
     title                 { Faker::Lorem.sentence }
     description           { Faker::Lorem.paragraph }
     format                { Faker::Lorem.word }

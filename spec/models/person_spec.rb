@@ -19,6 +19,20 @@ RSpec.describe Person, type: :model do
   end
 
   describe 'from_json' do
+
+    it 'returns the existing record if the email already exists' do
+      person = create(:person, :complete)
+      obj = Person.from_json(
+        provenance: Faker::Lorem.word,
+        json: hash_to_json(hash: {
+          name: Faker::Lorem.word,
+          mbox: person.email
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(person.id)
+    end
+
     context 'dataset contact' do
       before(:each) do
         @jsons = open_json_mock(file_name: 'persons.json').fetch('dataset_contact', {})
@@ -43,6 +57,24 @@ RSpec.describe Person, type: :model do
         expect(obj.identifiers.first.value).to eql(@json['contact_ids'].first['value'])
         expect(obj.identifiers.first.category).to eql(@json['contact_ids'].first['category'])
       end
+
+      it 'returns the existing record if the contact_id already exists' do
+        person = create(:person, :complete)
+        ident = person.identifiers.first
+        obj = Person.from_json(provenance: ident.provenance,
+          json: hash_to_json(hash: {
+            name: Faker::Lorem.word,
+            mbox: Faker::Internet.unique.email,
+            contact_ids: [
+              category: ident.category,
+              value: ident.value
+            ]
+          })
+        )
+        expect(obj.new_record?).to eql(false)
+        expect(obj.id).to eql(person.id)
+        expect(obj.identifiers.length).to eql(person.identifiers.length)
+      end
     end
 
     context 'dataset dm_staff' do
@@ -66,28 +98,28 @@ RSpec.describe Person, type: :model do
         expect(obj.identifiers.first.value).to eql(@json['user_ids'].first['value'])
         expect(obj.identifiers.first.category).to eql(@json['user_ids'].first['category'])
       end
-    end
-  end
 
-  context 'callbacks' do
-    describe 'creatable?' do
-      xit 'returns false if the email already exists' do
-        model = create(:person)
-        model2 = build(:person, email: model.email)
-        expect(model2.send(:creatable?)).to eql(false)
+      it 'returns the existing record if the user_id already exists' do
+        person = create(:person, :complete, identifier_count: 3)
+        ident = person.identifiers.first
+        obj = Person.from_json(provenance: ident.provenance,
+          json: hash_to_json(hash: {
+            name: Faker::Lorem.word,
+            mbox: Faker::Internet.unique.email,
+            user_ids: [{
+              category: ident.category,
+              value: ident.value
+            },{
+              category: 'url',
+              value: Faker::Lorem.word
+            }]
+          })
+        )
+        expect(obj.new_record?).to eql(false)
+        expect(obj.id).to eql(person.id)
+        expect(obj.identifiers.length).to eql(person.identifiers.length)
       end
 
-      xit 'returns false one of the identifiers already exists' do
-        model = create(:person, :complete)
-        model2 = build(:person, :complete)
-        model2.identifiers << model.identifiers.first
-        expect(model2.send(:creatable?)).to eql(false)
-      end
-
-      xit 'returns true if the person does not already exist' do
-        model = build(:person, :complete)
-        expect(model.send(:creatable?)).to eql(true)
-      end
     end
   end
 end

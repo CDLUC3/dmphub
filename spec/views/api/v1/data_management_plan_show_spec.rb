@@ -15,6 +15,14 @@ describe 'API V1 - Data Management Plan Show' do
     validate_base_json_elements(model: @data_management_plan, rendered: @json)
   end
 
+  it 'has hateoas links attribute' do
+    doi = @data_management_plan.identifiers.first
+    href = "api_v1_data_management_plans_url"
+    expect(@json['links'].present?).to eql(true)
+    expect(@json['links'].first['rel']).to eql('self')
+    expect(@json['links'].first['href']).to eql("#{Rails.application.routes.url_helpers.send(href)}/#{doi.value}")
+  end
+
   it 'has a title attribute' do
     expect(@json['title']).to eql(@data_management_plan.title)
   end
@@ -55,7 +63,7 @@ describe 'API V1 - Data Management Plan Show' do
   end
 
   it 'has a project attribute' do
-    expect(@json['project']['title']).to eql(@data_management_plan.project.title)
+    expect(@json['project']['title']).to eql(@data_management_plan.projects.first.title)
   end
 
   it 'has a datasets attribute' do

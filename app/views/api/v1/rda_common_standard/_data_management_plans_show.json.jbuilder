@@ -41,7 +41,7 @@ end
 
 json.project do
   json.partial! 'api/v1/rda_common_standard/projects_show',
-    project: data_management_plan.project
+    project: data_management_plan.projects.first
 end
 
 json.datasets data_management_plan.datasets do |dataset|

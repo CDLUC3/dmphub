@@ -16,9 +16,6 @@ class Person < ApplicationRecord
   # Validations
   validates :name, presence: true
 
-  # Callbacks
-  #before_create :creatable?
-
   # Scopes
   class << self
 
@@ -27,32 +24,34 @@ class Person < ApplicationRecord
       return nil unless json.present? && provenance.present? && json['name'].present?
 
       json = json.with_indifferent_access
-      person = new(name: json['name'], email: json['mbox'])
-      json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
-        next unless identifier['value'].present?
+      person = nil
 
-        ident = {
-          'category': identifier.fetch('category', 'url'),
-          'value': identifier['value']
-        }
-        person.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+      # Check any identifiers to see if the person already exists
+      ids = json.fetch('user_ids', json.fetch('contact_ids', []))
+      person = find_by_identifiers(provenance: provenance, json_array: ids) if ids.any?
+      person = find_or_initialize_by(email: json['mbox']) if person.nil?
+
+      # Update the values if they were previously empty
+      person.name = json['name'] unless person.name.present?
+      person.email = json['mbox'] unless person.email.present?
+
+      # Attach any identifiers
+      json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
+        identifier = Identifier.from_json(provenance: provenance, json: {
+          category: identifier.fetch('category', 'url'),
+          value: identifier['value']
+        })
+        person.identifiers << identifier unless person.identifiers.include?(identifier)
       end
+
+      # Attach any organizations
       json.fetch('organizations', []).each do |org|
-        person.organizations << Organization.from_json(json: org, provenance: provenance)
+        org = Organization.from_json(json: org, provenance: provenance)
+        person.organizations << org unless person.organizations.include?(org)
       end
       person
     end
 
   end
 
-  # Instance Methods
-
-  private
-
-  # Will cancel a create if the record already exists
-  def creatable?
-    #return false if Person.where(email: email).any?
-    #identifiers.each { |identifier| return false if identifier.exists? }
-    #true
-  end
 end

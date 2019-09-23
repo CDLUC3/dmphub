@@ -9,31 +9,24 @@ class Cost < ApplicationRecord
   # Validations
   validates :title, presence: true
 
-  # Callbacks
-  before_create :creatable?
-
   # Scopes
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, data_management_plan: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
 
       json = json.with_indifferent_access
-      new(title: json['title'], description: json['description'],
-          value: json['value'], currency_code: json['currency_code'])
+      cost = find_or_initialize_by(
+        data_management_plan: data_management_plan,
+        title: json['title']
+      )
+      cost.description = json['description']
+      cost.value = json['value']
+      cost.currency_code = json['currency_code']
+      cost
     end
 
   end
 
-  # Instance Methods
-
-  private
-
-  # Will cancel a create if the record already exists
-  def creatable?
-    #return false if Cost.where(title: title,
-    #  data_management_plan_id: data_management_plan_id).any?
-    #true
-  end
 end

@@ -13,11 +13,12 @@ FactoryBot.define do
 
       after :create do |person, evaluator|
         evaluator.identifier_count.times do
-          person.identifiers << create(:person_identifier)
+          person.identifiers << create(:identifier, category: 'orcid', identifiable: person)
         end
         evaluator.organization_count.times do
           person.organizations << create(:organization)
         end
+        person.save
       end
     end
   end

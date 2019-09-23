@@ -49,13 +49,42 @@ RSpec.describe Dataset, type: :model do
       expect(ConversionService.boolean_to_yes_no_unknown(obj.sensitive_data)).to eql(@json['sensitive_data'])
       expect(obj.data_quality_assurance).to eql(@json['data_quality_assurance'])
       expect(obj.preservation_statement).to eql(@json['preservation_statement'])
-      expect(obj.identifiers.first.value).to eql(@json['identifiers'].first['value'])
+      expect(obj.identifiers.first.value).to eql(@json['dataset_ids'].first['value'])
       expect(obj.security_privacy_statements.first.title).to eql(@json['security_and_privacy_statements'].first['title'])
       expect(obj.technical_resources.first.description).to eql(@json['technical_resources'].first['description'])
       expect(obj.metadata.first.description).to eql(@json['metadata'].first['description'])
-      expect(obj.keywords.length).to eql(@json['keywords'].length)
-      expect(obj.keywords.first.value).to eql(@json['keywords'].first)
+      expect(obj.dataset_keywords.length).to eql(@json['keywords'].length)
+      expect(obj.dataset_keywords.first.keyword.value).to eql(@json['keywords'].first)
       expect(obj.distributions.first.title).to eql(@json['distributions'].first['title'])
+    end
+
+    it 'returns the existing record if the identifier already exists' do
+      dataset = create(:dataset, :complete)
+      ident = dataset.identifiers.first
+      obj = Dataset.from_json(provenance: ident.provenance,
+        json: hash_to_json(hash: {
+          title: Faker::Lorem.sentence,
+          dataset_ids: [{
+            category: ident.category,
+            value: ident.value
+          }]
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(dataset.id)
+      expect(obj.identifiers.length).to eql(dataset.identifiers.length)
+    end
+
+    it 'finds the existing record rather than creating a new instance' do
+      dataset = create(:dataset, data_management_plan: create(:data_management_plan),
+        title: @jsons['minimal']['title'], dataset_type: 'dataset')
+      obj = Dataset.from_json(
+        provenance: Faker::Lorem.word,
+        data_management_plan: dataset.data_management_plan,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(dataset.id).to eql(obj.id)
     end
   end
 

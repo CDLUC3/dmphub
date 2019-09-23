@@ -71,15 +71,15 @@ RSpec.describe Api::V1::BaseApiController, type: :request do
     end
 
     it 'can be accessed by an authenticated user' do
-      doorkeeper_application = create(:doorkeeper_application)
-      auth = setup_access_token(doorkeeper_application: doorkeeper_application)
+      @doorkeeper_application = create(:doorkeeper_application)
+      auth = setup_access_token(doorkeeper_application: @doorkeeper_application)
       get api_v1_me_path, headers: default_authenticated_headers(authorization: auth)
       expect(response.status).to eql(200)
       json = body_to_json
-      expect(json[:uid]).to eql(doorkeeper_application.uid)
-      expect(json[:name]).to eql(doorkeeper_application.name)
-      expect(json[:redirect_uri]).to eql(doorkeeper_application.redirect_uri)
-      expect(json[:created_at]).to eql(doorkeeper_application.created_at.to_s)
+      expect(json[:uid]).to eql(@doorkeeper_application.uid)
+      expect(json[:name]).to eql(@doorkeeper_application.name)
+      expect(json[:redirect_uri]).to eql(@doorkeeper_application.redirect_uri)
+      expect(json[:created_at]).to eql(@doorkeeper_application.created_at.to_s)
     end
   end
 

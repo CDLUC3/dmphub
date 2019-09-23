@@ -4,7 +4,7 @@
 class Project < ApplicationRecord
 
   # Associations
-  has_many :data_management_plans
+  belongs_to :data_management_plan, optional: true
   has_many :awards, dependent: :destroy
 
   # Validations
@@ -14,21 +14,22 @@ class Project < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, data_management_plan: nil)
       return nil unless json.present? && provenance.present? && json['title'].present? &&
                         json['start_on'].present? && json['end_on'].present?
 
       json = json.with_indifferent_access
-      project = new(
-        title: json['title'],
-        description: json['description'],
-        start_on: json['start_on'],
-        end_on: json['end_on']
+      project = find_or_initialize_by(
+        data_management_plan: data_management_plan,
+        title: json['title']
       )
-      return project unless json['funding'].present?
+      project.description = json['description']
+      project.start_on = json['start_on']
+      project.end_on = json['end_on']
+      return project unless json['funding'].present? && json['funding'].any?
 
       json['funding'].each do |award|
-        project.awards << Award.from_json(json: award, provenance: provenance)
+        project.awards << Award.from_json(json: award, provenance: provenance, project: project)
       end
       project
     end

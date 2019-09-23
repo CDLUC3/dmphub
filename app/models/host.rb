@@ -15,30 +15,32 @@ class Host < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, distribution: nil)
       return nil unless json.present? && provenance.present?
-      json = json.with_indifferent_access
-      host = new(
-        title: json.fetch('title', ''),
-        description: json.fetch('description', ''),
-        supports_versioning: ConversionService.yes_no_unknown_to_boolean(json['supports_versioning']),
-        backup_type: json['backup_type'],
-        backup_frequency: json['backup_frequency'],
-        storage_type: json['storage_type'],
-        availability: json['availability'],
-        geo_location: json['geo_location']
-      )
-      return host unless host.valid? && json['host_ids'].present?
 
-      # Convert the dmp_ids into identifier records
-      json.fetch('host_ids', []).each do |dmp_id|
-        next unless dmp_id['value'].present?
+      json = json.with_indifferent_access
+      host = find_by_identifiers(
+        provenance: provenance,
+        json_array: json['host_ids']
+      )
+      host = find_or_initialize_by(title: json['title'], distribution: distribution) unless host.present?
+
+      host.description = json['description']
+      host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supports_versioning'])
+      host.backup_type = json['backup_type']
+      host.backup_frequency = json['backup_frequency']
+      host.storage_type = json['storage_type']
+      host.availability = json['availability']
+      host.geo_location = json['geo_location']
+
+      json.fetch('host_ids', []).each do |identifier|
+        next unless identifier['value'].present?
         ident = {
-          'provenance': provenance.to_s,
-          'category': dmp_id.fetch('category', 'url'),
-          'value': dmp_id['value']
+          'category': identifier.fetch('category', 'url'),
+          'value': identifier['value']
         }
-        host.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+        id = Identifier.from_json(json: ident, provenance: provenance)
+        host.identifiers << id unless host.identifiers.include?(id)
       end
       host
     end

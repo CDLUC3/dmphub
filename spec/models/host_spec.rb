@@ -43,5 +43,33 @@ RSpec.describe Host, type: :model do
       expect(obj.geo_location).to eql(@json['geo_location'])
       expect(obj.identifiers.first.value).to eql(@json['host_ids'].first['value'])
     end
+
+    it 'returns the existing record if the identifier already exists' do
+      host = create(:host, :complete)
+      ident = host.identifiers.first
+      obj = Host.from_json(provenance: ident.provenance,
+        json: hash_to_json(hash: {
+          title: Faker::Lorem.sentence,
+          host_ids: [{
+            category: ident.category,
+            value: ident.value
+          }]
+        })
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(host.id)
+      expect(obj.identifiers.length).to eql(host.identifiers.length)
+    end
+
+    it 'finds the existing record rather than creating a new instance' do
+      host = create(:host, distribution: create(:distribution), title: @jsons['minimal']['title'])
+      obj = Host.from_json(
+        provenance: Faker::Lorem.word,
+        distribution: host.distribution,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(host.id).to eql(obj.id)
+    end
   end
 end

@@ -1,6 +1,4 @@
-json.generation_date Time.now.to_s
-json.caller caller
-json.source source
+response_layout(json: json, caller: caller, source: source)
 
 json.content do
   json.dmps  do

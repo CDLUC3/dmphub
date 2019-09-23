@@ -17,23 +17,21 @@ class Award < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, project: nil)
       return nil unless json.present? && provenance.present? && json['funder_id'].present?
 
       json = json.with_indifferent_access
-      award = new(
-        funder_uri: json['funder_id'],
-        status: json.fetch('funding_status', 'planned')
-      )
-      return award unless award.valid? && json['grant_id'].present?
+      award = find_or_initialize_by(project: project, funder_uri: json['funder_id'])
+      award.status = json.fetch('funding_status', 'planned')
+      return award unless json['grant_id'].present?
 
       # Convert the grant_id into an identifier record
       ident = {
-        'provenance': provenance.to_s,
         'category': 'url',
-        'value': json.fetch('grant_id', '')
+        'value': json['grant_id']
       }
-      award.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+      id = Identifier.from_json(json: ident, provenance: provenance)
+      award.identifiers << id unless award.identifiers.include?(id)
       award
     end
 

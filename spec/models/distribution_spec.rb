@@ -46,5 +46,16 @@ RSpec.describe Distribution, type: :model do
       expect(obj.licenses.first.license_uri).to eql(@json['licenses'].first['license_ref'])
       expect(obj.host.title).to eql(@json['host']['title'])
     end
+
+    it 'finds the existing record rather than creating a new instance' do
+      distribution = create(:distribution, dataset: create(:dataset), title: @jsons['minimal']['title'])
+      obj = Distribution.from_json(
+        provenance: Faker::Lorem.word,
+        dataset: distribution.dataset,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(distribution.id).to eql(obj.id)
+    end
   end
 end

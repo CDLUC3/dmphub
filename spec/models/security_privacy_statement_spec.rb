@@ -35,5 +35,16 @@ RSpec.describe SecurityPrivacyStatement, type: :model do
       expect(obj.title).to eql(@json['title'])
       expect(obj.description).to eql(@json['description'])
     end
+
+    it 'finds the existing record rather than creating a new instance' do
+      statement = create(:security_privacy_statement, dataset: create(:dataset), title: @jsons['minimal']['title'])
+      obj = SecurityPrivacyStatement.from_json(
+        provenance: Faker::Lorem.word,
+        dataset: statement.dataset,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(statement.id).to eql(obj.id)
+    end
   end
 end

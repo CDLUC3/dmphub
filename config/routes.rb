@@ -19,6 +19,8 @@ Rails.application.routes.draw do
 
   root to: 'home#index'
 
+  get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
+
   # API version 1
   namespace :api do
     namespace :v1 do

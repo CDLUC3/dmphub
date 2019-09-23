@@ -14,7 +14,7 @@ RSpec.describe OauthAuthorization, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:oauth_authorization)
+    model = create(:oauth_authorization, data_management_plan: create(:data_management_plan))
     expect(model.valid?).to eql(true)
   end
 end

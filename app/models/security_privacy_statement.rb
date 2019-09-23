@@ -13,11 +13,13 @@ class SecurityPrivacyStatement < ApplicationRecord
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def from_json(json:, provenance:, dataset: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
 
       json = json.with_indifferent_access
-      new(title: json['title'], description: json['description'])
+      statement = find_or_initialize_by(title: json['title'], dataset: dataset)
+      statement.description = json['description']
+      statement
     end
 
   end

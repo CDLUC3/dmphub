@@ -5,7 +5,7 @@ require 'rails_helper'
 describe 'API V1 - Project Show' do
 
   before(:each) do
-    @project = create(:project_with_awards)
+    @project = create(:project, :complete)
     render partial: "api/v1/rda_common_standard/projects_show.json.jbuilder", locals: { project: @project }
     @json = JSON.parse(rendered)
   end

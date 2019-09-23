@@ -10,6 +10,7 @@ module Api
       protect_from_forgery with: :null_session, only: [:create]
 
       before_action :load_dmp, except: %i[index create]
+      before_action :check_agent
 
       PARTIAL = 'api/v1/rd_common_standard/data_management_plans_show.json.jbuilder'.freeze
 
@@ -36,14 +37,14 @@ module Api
 
       # POST /data_management_plans
       def create
-        render json: empty_response, status: :bad_request unless params['dmp'].present?
-
         @dmp = DataManagementPlan.from_json(json: dmp_params,
                                             provenance: current_client[:name])
-        render json: { errors: [{ dmp: 'invalid json' }] },
-               status: :bad_request unless @dmp.present?
 
-        if @dmp.save
+p @dmp
+
+        errors = { dmp: 'already exists' } if @dmp.present? && !@dmp.new_record?
+
+        if errors.nil? && @dmp.present? && @dmp.save
           # Associate the DMP with the Client/Application who created it
           OauthAuthorization.create(oauth_application: doorkeeper_token.application, data_management_plan: @dmp)
 
@@ -60,8 +61,19 @@ module Api
             source: "POST #{api_v1_data_management_plans_url}"
           }, status: 201
         else
-          render json: error_response(@dmp), status: :bad_request
+          errs = error_response(@dmp) || { 'errors': [] }
+          render 'error', locals: {
+            caller: current_client[:name],
+            source: "POST #{api_v1_data_management_plans_url}",
+            errors: (errs[:errors] << errors),
+          }, status: :bad_request
         end
+      rescue ActionController::ParameterMissing => pm
+        render 'error', locals: {
+            caller: current_client[:name],
+            source: "POST #{api_v1_data_management_plans_url}",
+            errors: [{ dmp: 'invalid json format' }],
+          }, status: :bad_request
       end
 
       # PUT /data_management_plans/:id
@@ -76,6 +88,11 @@ module Api
         params.require(:dmp).permit(
           RdaCommonStandardService.data_management_plan_permitted_params
           ).to_h
+      end
+
+      def check_agent
+        expecting = "#{current_client[:name]} (#{current_client[:uid]})"
+        request.headers.fetch('HTTP_USER_AGENT', nil).downcase == expecting.downcase
       end
 
       # Retrieve the specified DMP from the database and return a 404 if its either

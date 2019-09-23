@@ -40,55 +40,13 @@ RSpec.describe Award, type: :model do
       expect(obj.status).to eql(@json['funding_status'])
       expect(obj.identifiers.first.value).to eql(@json['grant_id'])
     end
-  end
 
-  context 'callbacks' do
-    describe 'creatable?' do
-      context 'the funder_uri and project_id already exist' do
-        before(:each) do
-          @model = create(:award)
-          @model2 = build(:award, funder_uri: @model.funder_uri, project_id: @model.project_id)
-        end
-
-        xit 'returns false if the status is `planned`' do
-          @model.update(status: 'planned')
-          expect(@model2.send(:creatable?)).to eql(false)
-        end
-
-        xit 'returns false if the status is `applied`' do
-          @model.update(status: 'applied')
-          expect(@model2.send(:creatable?)).to eql(false)
-        end
-
-        xit 'returns true if the status is `rejected`' do
-          @model.update(status: 'rejected')
-          expect(@model2.send(:creatable?)).to eql(true)
-        end
-
-        xit 'returns true if the status is `granted`' do
-          @model.update(status: 'granted')
-          expect(@model2.send(:creatable?)).to eql(true)
-        end
-
-        xit 'returns false if one of the identifiers exists' do
-          @model.identifiers << create(:award_identifier)
-          @model.save
-          @model2.identifiers << @model.identifiers.first
-          expect(@model2.send(:creatable?)).to eql(false)
-        end
-
-        xit 'returns true if none of the identifiers exists' do
-          @model.identifiers << create(:award_identifier)
-          @model.save
-          @model2.identifiers << create(:award_identifier)
-          expect(@model2.send(:creatable?)).to eql(true)
-        end
-      end
-
-      xit 'returns true if the funder_uri and project_id do not exist' do
-        model = build(:award)
-        expect(model.send(:creatable?)).to eql(true)
-      end
+    it 'finds the existing record rather than creating a new instance' do
+      award = create(:award, project: create(:project), funder_uri: @jsons['minimal']['funder_id'])
+      obj = Award.from_json(provenance: Faker::Lorem.word, project: award.project, json: @jsons['minimal'])
+      expect(obj.new_record?).to eql(false)
+      expect(award.id).to eql(obj.id)
     end
   end
+
 end

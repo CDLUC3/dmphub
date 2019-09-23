@@ -8,5 +8,5 @@ class Keyword < ApplicationRecord
   has_many :datasets, through: :dataset_keywords
 
   # Validations
-  validates :value, presence: true
+  validates :value, presence: true, uniqueness: { case_sensitive: false }
 end

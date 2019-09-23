@@ -7,6 +7,10 @@ def mock_access_token
   )
 end
 
+def hash_to_json(hash:)
+  JSON.parse(hash.to_json)
+end
+
 # Parse response body as json
 def body_to_json
   @json = JSON.parse(@response.body)
@@ -37,7 +41,10 @@ def default_headers
 end
 
 def default_authenticated_headers(authorization:)
-  default_headers.merge('Authorization' => authorization.to_s)
+  default_headers.merge(
+    'User-Agent' => @doorkeeper_application.name,
+    'Authorization' => authorization.to_s
+  )
 end
 
 def validate_base_response(json:)
@@ -53,19 +60,10 @@ end
 def validate_base_json_elements(model:, rendered:)
   return false unless model.present? && rendered.present?
   validate_created_at_presence(model: model, rendered: rendered)
-  validate_hateoas_presence(model: model, rendered: rendered)
 end
 
 def validate_created_at_presence(model:, rendered:)
   return false unless model.present? && rendered.present?
   expect(rendered['created']).to eql(model.created_at.to_s)
   expect(rendered['modified']).to eql(model.updated_at.to_s)
-end
-
-def validate_hateoas_presence(model:, rendered:)
-  return false unless model.present? && rendered.present?
-  href = "api_v1_#{model.class.name.underscore}_url"
-  expect(@json['links'].present?).to eql(true)
-  expect(@json['links'].first['rel']).to eql('self')
-  expect(@json['links'].first['href']).to eql(Rails.application.routes.url_helpers.send(href, model.id))
 end

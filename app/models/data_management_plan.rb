@@ -7,7 +7,7 @@ class DataManagementPlan < ApplicationRecord
 
   # Associations
   belongs_to :oauth_authorization, foreign_key: 'id', optional: true
-  belongs_to :project, optional: true
+  has_many :projects
 
   has_many :person_data_management_plans
   has_many :persons, through: :person_data_management_plans
@@ -23,26 +23,26 @@ class DataManagementPlan < ApplicationRecord
 
   # Scopes
   scope :by_client, ->(client_id:) do
-    ids = OauthAuthorization.where(oauth_application_id: client_id).pluck(:data_management_plan_id)
-    where(id: ids)
+    where(id: OauthAuthorization.where(oauth_application_id: client_id).pluck(:data_management_plan_id))
   end
 
   # Class Methods
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
-      return nil unless json.present? && provenance.present? &&
-                        json['title'].present? && json['contact'].present?
+      return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
-      dmp = new(
-        title: json['title'],
-        description: json['description'],
-        language: json.fetch('language', 'en'),
-        ethical_issues: ConversionService.yes_no_unknown_to_boolean(json['ethical_issues_exist']),
-        ethical_issues_description: json['ethical_issues_description'],
-        ethical_issues_report: json['ethical_issues_report']
+      dmp = find_by_identifiers(
+        provenance: provenance,
+        json_array: json['dmp_ids']
       )
+      dmp = find_or_initialize_by(title: json['title']) unless dmp.present?
+      dmp.description = json['description']
+      dmp.language = json.fetch('language', 'en')
+      dmp.ethical_issues = ConversionService.yes_no_unknown_to_boolean(json['ethical_issues_exist'])
+      dmp.ethical_issues_description = json['ethical_issues_description']
+      dmp.ethical_issues_report = json['ethical_issues_report']
 
       # Handle the primary contact for the DMP
       contact = Person.from_json(json: json['contact'], provenance: provenance)
@@ -56,14 +56,8 @@ class DataManagementPlan < ApplicationRecord
           role: staff.fetch('contributor_type', 'author'), person: person)
       end
 
-      # Stub out a default Project if none was provided
-      project_json = json.fetch('project', {
-        title: json['title'],
-        description: json['description'],
-        start_on: Time.now.to_s,
-        end_on: (Time.now + 1.years).to_s
-      })
-      dmp.project = Project.from_json(json: project_json, provenance: provenance)
+      dmp.projects << Project.from_json(json: json['project'], provenance: provenance,
+        data_management_plan: dmp) if json['project'].present?
 
       # Handle identifiers, costs and datasets
       json.fetch('dmp_ids', []).each do |identifier|
@@ -73,13 +67,14 @@ class DataManagementPlan < ApplicationRecord
           'category': identifier.fetch('category', 'url'),
           'value': identifier['value']
         }
-        dmp.identifiers << Identifier.from_json(json: ident, provenance: provenance)
+        id = Identifier.from_json(json: ident, provenance: provenance)
+        dmp.identifiers << id unless dmp.identifiers.include?(id)
       end
       json.fetch('costs', []).each do |cost|
-        dmp.costs << Cost.from_json(json: cost, provenance: provenance)
+        dmp.costs << Cost.from_json(json: cost, provenance: provenance, data_management_plan: dmp)
       end
       json.fetch('datasets', []).each do |dataset|
-        dmp.datasets << Dataset.from_json(json: dataset, provenance: provenance)
+        dmp.datasets << Dataset.from_json(json: dataset, provenance: provenance, data_management_plan: dmp)
       end
       dmp
     end
@@ -107,10 +102,10 @@ class DataManagementPlan < ApplicationRecord
 
   # Create a default stub project unless one exists
   def ensure_project!
-    return true if project.present?
+    return true if projects.any?
 
-    project = Project.create(title: title, description: description,
+    projects << Project.create(title: title, description: description,
       start_on: Time.now, end_on: Time.now + 2.years)
-    update(project: project)
+    save
   end
 end

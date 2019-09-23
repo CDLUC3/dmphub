@@ -47,9 +47,6 @@ group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a
   # debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]
-  # Strategies for cleaning databases.  Can be used to ensure a clean state
-  # for testing. (http://github.com/DatabaseCleaner/database_cleaner)
-  gem 'database_cleaner', require: false
   # factory_bot
   gem 'factory_bot'
   # Easily generate fake data (https://github.com/stympy/faker)
@@ -81,6 +78,9 @@ end
 group :test do
   # Adds support for Capybara system testing and selenium driver
   gem 'capybara', '>= 2.15'
+  # Strategies for cleaning databases.  Can be used to ensure a clean state
+  # for testing. (http://github.com/DatabaseCleaner/database_cleaner)
+  gem 'database_cleaner'
   # Support for controller tests
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'

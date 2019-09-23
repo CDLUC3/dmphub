@@ -6,7 +6,6 @@ FactoryBot.define do
       doorkeeper_application { create(:doorkeeper_application) }
     end
 
-    project                     { create(:project) }
     title                       { Faker::Movies::StarWars.wookiee_sentence }
     description                 { Faker::Lorem.paragraph }
     ethical_issues              { [nil, true, false].sample }
@@ -20,6 +19,7 @@ FactoryBot.define do
 
     trait :complete do
       transient do
+        projects_count    { 1 }
         persons_count     { 1 }
         datasets_count    { 1 }
         costs_count       { 1 }
@@ -28,13 +28,19 @@ FactoryBot.define do
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
+
         contact = create(:person, :complete)
-        pdmp = create(:person_data_management_plan, person: contact, role: 'primary_contact')
+        pdmp = create(:person_data_management_plan, person: contact,
+          data_management_plan: data_management_plan, role: 'primary_contact')
         data_management_plan.person_data_management_plans << pdmp
 
+        evaluator.projects_count.times do
+          data_management_plan.projects << create(:project, :complete)
+        end
         evaluator.persons_count.times do
           per = create(:person, :complete)
-          j = create(:person_data_management_plan, person: per, role: %w[author principal_investigator data_librarian].sample)
+          j = create(:person_data_management_plan, person: per, data_management_plan: data_management_plan,
+            role: %w[author principal_investigator data_librarian].sample)
           data_management_plan.person_data_management_plans << j
         end
         evaluator.costs_count.times do
@@ -44,7 +50,8 @@ FactoryBot.define do
           data_management_plan.datasets << create(:dataset, :complete)
         end
         evaluator.identifiers_count.times do
-          data_management_plan.identifiers << create(:data_management_plan_identifier)
+          data_management_plan.identifiers << create(:identifier, category: 'doi',
+            identifiable: data_management_plan)
         end
       end
     end

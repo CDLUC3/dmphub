@@ -37,20 +37,17 @@ RSpec.describe Cost, type: :model do
       expect(obj.value).to eql(@json['value'])
       expect(obj.currency_code).to eql(@json['currency_code'])
     end
-  end
 
-  context 'callbacks' do
-    describe 'creatable?' do
-      xit 'returns false if the title and data_management_plan_id already exist' do
-        model = create(:cost)
-        model2 = build(:cost, title: model.title, data_management_plan_id: model.data_management_plan_id)
-        expect(model2.send(:creatable?)).to eql(false)
-      end
-
-      xit 'returns true if the title and data_management_plan_id do not exist' do
-        model = build(:cost)
-        expect(model.send(:creatable?)).to eql(true)
-      end
+    it 'finds the existing record rather than creating a new instance' do
+      cost = create(:cost, data_management_plan: create(:data_management_plan), title: @jsons['minimal']['title'])
+      obj = Cost.from_json(
+        provenance: Faker::Lorem.word,
+        data_management_plan: cost.data_management_plan,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(cost.id).to eql(obj.id)
     end
   end
+
 end

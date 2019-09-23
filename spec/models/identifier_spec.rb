@@ -22,14 +22,22 @@ RSpec.describe Identifier, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:award_identifier)
+    model = create(:identifier, identifiable: create(:award))
     expect(model.valid?).to eql(true), 'expected Award to be Identifiable'
-    model = create(:data_management_plan_identifier)
+    model = create(:identifier, identifiable: create(:data_management_plan))
     expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Identifiable'
-    model = create(:dataset_identifier)
+    model = create(:identifier, identifiable: create(:dataset))
     expect(model.valid?).to eql(true), 'expected Dataset to be Identifiable'
-    model = create(:person_identifier)
+    model = create(:identifier, identifiable: create(:host))
+    expect(model.valid?).to eql(true), 'expected Host to be Identifiable'
+    model = create(:identifier, identifiable: create(:metadatum))
+    expect(model.valid?).to eql(true), 'expected Metadatum to be Identifiable'
+    model = create(:identifier, identifiable: create(:organization))
+    expect(model.valid?).to eql(true), 'expected Organization to be Identifiable'
+    model = create(:identifier, identifiable: create(:person))
     expect(model.valid?).to eql(true), 'expected Person to be Identifiable'
+    model = create(:identifier, identifiable: create(:technical_resource))
+    expect(model.valid?).to eql(true), 'expected TechnicalResource to be Identifiable'
   end
 
   describe 'from_json' do
@@ -54,5 +62,16 @@ RSpec.describe Identifier, type: :model do
       expect(obj.value).to eql(@json['value'])
       expect(obj.provenance).to eql('Testing')
     end
+
+    it 'returns the existing record if it already exists' do
+      identifier = create(:identifier, identifiable: create(:person))
+      obj = Identifier.from_json(
+        provenance: identifier.provenance,
+        json: { category:  identifier.category, value: identifier.value }
+      )
+      expect(obj.new_record?).to eql(false)
+      expect(obj.id).to eql(identifier.id)
+    end
+
   end
 end

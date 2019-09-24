@@ -1,6 +1,7 @@
 <div style="text-align: center">
   <h1><%= @data_management_plan.title %></h1>
   <h2>Data Management Plan</h2>
+  <p><%= identifier_to_link(@data_management_plan.identifiers.select { |id| id.category == 'doi' }.first) %></p>
   <p><strong>Created</strong>: <%= safe_date(@data_management_plan.created_at) %> &nbsp; <strong>Last Updated</strong>: <%= safe_date(@data_management_plan.updated_at) %></p>
 
   <% contact = @data_management_plan.primary_contact.person %>
@@ -8,22 +9,23 @@
     <div style="border: 1px solid #000;">
       <h3>Primary Contact</h3>
       <p><strong>Name:</strong><%= contact.name %></p>
-      <p><strong>ORCID:</strong><%= orcid_link(contact.identifiers.select { |id| id.category == 'orcid' }.first) %></p>
+      <p><strong>ORCID:</strong><%= identifier_to_link(contact.identifiers.select { |id| id.category == 'orcid' }.first) %></p>
 
       <% if contact.organizations.any? %>
         <p><strong><%= contact.organizations.length == 1 ? 'Organization' : 'Organizations' %></strong></p>
         <% contact.organizations.each do |organization| %>
-          <p><%= organization.name %> <%= ror_link(organization.identifiers.select { |id| id.category == 'ror' }.first&.value) %></p>
+          <p><%= organization.name %> <%= identifier_to_link(organization.identifiers.select { |id| id.category == 'ror' }.first) %></p>
         <% end %>
       <% end %>
     </div>
 
-    <p><strong>Project Start</strong>: <%= safe_date(@data_management_plan.project.start_on) %> &nbsp; <strong>End</strong>: <%= safe_date(@data_management_plan.project.end_on) %></p>
+    <% project = @data_management_plan.projects.first %>
+    <p><strong>Project Start</strong>: <%= safe_date(project.start_on) %> &nbsp; <strong>End</strong>: <%= safe_date(project.end_on) %></p>
 
-    <% if @data_management_plan.project.awards.any? %>
+    <% if project.awards.any? %>
       <div style="border: 1px solid #000;">
         <h3>Funding</h3>
-        <% @data_management_plan.project.awards.each do |award| %>
+        <% project.awards.each do |award| %>
           <p><%= award.funder_uri %>&nbsp;<strong><%= award.status %></strong>
         <% end %>
       </div>
@@ -32,6 +34,12 @@
     <% if @data_management_plan.description.present? %>
       <p><strong>Abstract</strong>:</p>
       <p><%= @data_management_plan.description %></p>
+    <% end %>
+
+    <h2>Relationships</h2>
+    <% identifiers = @data_management_plan.identifiers.select { |id| id.category != 'doi' } %>
+    <% identifiers.each do |identifier| %>
+      <p>Publisher - <%= identifier.provenance %> - <%= identifier_to_link(identifier) %></p>
     <% end %>
   <% end %>
 

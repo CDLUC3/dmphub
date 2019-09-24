@@ -56,8 +56,9 @@ class DataManagementPlan < ApplicationRecord
           role: staff.fetch('contributor_type', 'author'), person: person)
       end
 
-      dmp.projects << Project.from_json(json: json['project'], provenance: provenance,
+      project = Project.from_json(json: json['project'], provenance: provenance,
         data_management_plan: dmp) if json['project'].present?
+      dmp.projects << project if project.present?
 
       # Handle identifiers, costs and datasets
       json.fetch('dmp_ids', []).each do |identifier|

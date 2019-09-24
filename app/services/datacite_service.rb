@@ -7,13 +7,17 @@ class DataciteService
   # Constants referenced in this class can be found in config/initializers/constants.rb
   class << self
 
-    def mint_doi(data_management_plan:)
+    def mint_doi(data_management_plan:, provenance:)
       json = ActionController::Base.new.render_to_string(
         template: '/datacite/_minter',
-        locals: { prefix: DATACITE_SHOULDER, data_management_plan: data_management_plan }
+        locals: {
+          prefix: DATACITE_SHOULDER,
+          data_management_plan: data_management_plan,
+          provenance: provenance
+        }
       )
       resp = HTTParty.post(DATACITE_MINT_URI, basic_auth: options, body: json, headers: headers)
-      process_error(action: 'mint_doi', response: resp) unless resp.code == :created
+      process_error(action: 'mint_doi', response: resp) unless resp.code == 201
 
       json = JSON.parse(resp.body)
       process_error(

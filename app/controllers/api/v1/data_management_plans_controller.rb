@@ -43,21 +43,30 @@ module Api
         errors = { dmp: 'already exists' } if @dmp.present? && !@dmp.new_record?
 
         if errors.nil? && @dmp.present? && @dmp.save
-          # Associate the DMP with the Client/Application who created it
-          OauthAuthorization.create(oauth_application: doorkeeper_token.application, data_management_plan: @dmp)
-
           # Mint the DOI if we did not recieve a DOI in the input
           existing = @dmp.identifiers.select { |ident| ident.doi? }.any?
-          @doi = DataciteService.mint_doi(data_management_plan: @dmp) unless existing
-          @dmp.identifiers << Identifier.new(provenance: current_client[:name],
-                                             category: 'doi', value: @doi) unless existing
-          @dmp.save
+          @doi = DataciteService.mint_doi(data_management_plan: @dmp, provenance: current_client[:name]) unless existing
 
-          render 'show', locals: {
-            data_management_plan: @dmp,
-            caller: current_client[:name],
-            source: "POST #{api_v1_data_management_plans_url}"
-          }, status: 201
+          if @doi.present?
+            @dmp.identifiers << Identifier.new(provenance: 'datacite', category: 'doi', value: @doi) unless existing
+            @dmp.save
+
+            # Associate the DMP with the Client/Application who created it
+            OauthAuthorization.create(oauth_application: doorkeeper_token.application, data_management_plan: @dmp)
+
+            render 'show', locals: {
+              data_management_plan: @dmp,
+              caller: current_client[:name],
+              source: "POST #{api_v1_data_management_plans_url}"
+            }, status: 201
+          else
+            render 'error', locals: {
+              caller: current_client[:name],
+              source: "POST #{api_v1_data_management_plans_url}",
+              errors: [{ dmp: 'unable to register a DOI at this time' }],
+            }, status: :bad_request
+          end
+
         else
           errs = error_response(@dmp) || { 'errors': [] }
           render 'error', locals: {

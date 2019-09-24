@@ -21,7 +21,7 @@ json.data do
         json.title title
       end
     end
-    json.publisher data_management_plan.oauth_authorization.oauth_application.name
+    json.publisher provenance
     json.publicationYear Time.now.year
 
 # TODO: Figure out how to pass this as JSON

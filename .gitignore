@@ -57,6 +57,7 @@ build-iPhoneSimulator/
 config/credentials.yml.enc
 config/database.yml
 config/master.key
+config/initializers/constants.rb
 
 # Logs
 log/

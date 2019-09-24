@@ -29,13 +29,14 @@ gem 'jbuilder', '~> 2.7'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
-
 # Devise is a flexible authentication solution for Rails based on Warden.
 gem 'devise'
 # Doorkeeper introduce OAuth 2 provider functionality to your Rails application.
 gem 'doorkeeper'
 # Doorkeeper JWT adds JWT token support to the Doorkeeper OAuth library.
 gem 'doorkeeper-jwt'
+# Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
+gem 'httparty'
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
 gem 'mysql2', '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
@@ -84,6 +85,8 @@ group :test do
   # Support for controller tests
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
+  # Library for stubbing and setting expectations on HTTP requests in Ruby.
+  gem 'webmock'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end

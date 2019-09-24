@@ -40,8 +40,6 @@ module Api
         @dmp = DataManagementPlan.from_json(json: dmp_params,
                                             provenance: current_client[:name])
 
-p @dmp
-
         errors = { dmp: 'already exists' } if @dmp.present? && !@dmp.new_record?
 
         if errors.nil? && @dmp.present? && @dmp.save

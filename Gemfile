@@ -41,6 +41,8 @@ gem 'httparty'
 gem 'mysql2', '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
 gem 'omniauth'
+# ORCID OAuth 2.0 Strategy for the OmniAuth Ruby authentication framework.
+gem 'omniauth-orcid'
 # This plugin adds helpers for the reCAPTCHA API.
 gem 'recaptcha'
 

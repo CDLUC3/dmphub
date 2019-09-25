@@ -1,0 +1,9 @@
+<h1>Welcome to the DMPHub</h1>
+
+<h2>Find a Data Management Plan (DMP)</h2>
+<p>If you know the DOI or title of the Data Management Plan you are looking for, enter it below</p>
+<%= form_with scope: :search, url: search_path do |f| %>
+  <%= f.label :search_words, 'Search' %>
+  <%= f.text_field :search_words %>
+  <%= f.submit 'Go' %>
+<% end %>

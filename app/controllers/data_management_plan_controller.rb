@@ -2,6 +2,8 @@
 
 class DataManagementPlanController < ApplicationController
 
+  before_action :authenticate_user!, except: %i[show]
+
   # GET /data_management_plan/:id
   def show
     p params[:id]

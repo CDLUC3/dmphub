@@ -58,6 +58,7 @@ config/credentials.yml.enc
 config/database.yml
 config/master.key
 config/initializers/constants.rb
+config/initializers/devise.rb
 
 # Logs
 log/

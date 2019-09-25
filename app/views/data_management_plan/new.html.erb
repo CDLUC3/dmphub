@@ -1,0 +1,10 @@
+<h1>New Data Management Plan Registration</h1>
+
+<%= form_with model: @dmp do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title %>
+  <%= f.label :description, 'Abstract' %>
+  <%= f.text_area :description %>
+
+  <%= f.submit 'Register' %>
+<% end %>

@@ -2,3 +2,7 @@
 
 <p>Welcome back <%= current_user.name %></p>
 
+<%= link_to 'Register a Data Management Plan', new_data_management_plan_path %>
+
+<h2>My Data Management Plans</h2>
+<%= render partial: '/data_management_plan/index', locals: { data_management_plans: @data_management_plans } %>

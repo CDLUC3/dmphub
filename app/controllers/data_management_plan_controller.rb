@@ -13,4 +13,10 @@ class DataManagementPlanController < ApplicationController
 
     @data_management_plan = DataManagementPlan.find(doi.identifiable_id)
   end
+
+  # GET /data_management_plan/new
+  def new; end
+
+  # POST /data_management_plans
+  def create; end
 end

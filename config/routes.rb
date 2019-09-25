@@ -15,7 +15,7 @@ Rails.application.routes.draw do
     omniauth_callbacks: 'users/omniauth_callbacks',
     invitations: 'users/invitations'
   } do
-    get '/users/sign_out', to: 'devise/sessions#destroy'
+    # get '/users/sign_out', to: 'devise/sessions#destroy'
   end
 
   root to: 'home#index'
@@ -27,6 +27,8 @@ Rails.application.routes.draw do
 
   # Handles DOI resolution to a landing page
   get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
+
+  resources :data_management_plan, except: %w[show edit update destroy]
 
   # API version 1
   namespace :api do

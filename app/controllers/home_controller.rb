@@ -11,7 +11,9 @@ class HomeController < ApplicationController
   def search; end
 
   # GET /dashboard
-  def dashboard; end
+  def dashboard
+    @data_management_plans = current_user.data_management_plans
+  end
 
   # GET /login
   def login

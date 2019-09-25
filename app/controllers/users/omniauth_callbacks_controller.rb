@@ -10,10 +10,12 @@ module Users
       retry_extras(token: token)
       session[:user_id] = @user.id
 
-      if @user.last_name.present? && @user.email.present? && @user.organizations.any?
-        sign_in_and_redirect dashboard_path
+      if @user.new_record?
+        render new_user_registration_path
       else
-        sign_in_and_redirect edit_user_registration_path
+        sign_in @user
+        @user.update_user_orcid(auth_hash: @auth_hash)
+        redirect_to dashboard_path
       end
     end
 
@@ -28,7 +30,6 @@ module Users
       @user.update(email: email) unless @user.email.present? || email.nil?
       employment = OrcidService.employment_lookup(orcid: @user.orcid, bearer_token: token) unless @user.organization.present?
       @user.organization << Organization.find_or_initialize_by(employment) unless employment.blank?
-      @user.save
     end
   end
 end

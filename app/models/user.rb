@@ -17,7 +17,7 @@ class User < ApplicationRecord
   has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
                            foreign_key: :resource_owner_id, dependent: :delete_all
 
-  belongs_to :organization
+  belongs_to :organization, optional: true
 
   # Validations
   validates :accept_terms, acceptance: true
@@ -32,10 +32,26 @@ class User < ApplicationRecord
     def from_omniauth_orcid(auth_hash:)
       users = find_by_orcid_or_email(auth_hash: auth_hash)
       raise 'More than one user matches the ID or email returned by ORCID' if users.count > 1
+      return users.first if users.first.present?
 
-      return users.first.update_user_orcid(auth_hash: auth_hash) if users.count == 1
+      initialize_user_with_orcid(auth_hash: auth_hash)
+    end
 
-      create_user_with_orcid(auth_hash: auth_hash)
+    def find_by_orcid_or_email(auth_hash:)
+      where(orcid: auth_hash[:uid]).or(where(email: auth_hash[:info]['email']))
+    end
+
+    private
+
+    def initialize_user_with_orcid(auth_hash:)
+      User.new(
+        first_name: auth_hash[:info]['first_name'],
+        last_name: auth_hash[:info]['last_name'],
+        email: auth_hash[:info]['email'],
+        last_sign_in_at: Time.new.utc,
+        role: 'user',
+        orcid: auth_hash[:uid]
+      )
     end
   end
 
@@ -58,32 +74,26 @@ class User < ApplicationRecord
     @role = 'user' unless @role.present?
   end
 
-  class << self
-    private
+  def data_management_plans
+    if user?
+      ident = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').first
+      return [] unless ident.present?
 
-    def find_by_orcid_or_email(auth_hash:)
-      where(orcid: auth_hash[:uid]).or(where(email: auth_hash[:info]['email']))
-    end
+      person = Person.where(id: ident.identifiable_id).first
+      return [] unless person.present?
 
-    # convenience method for updating and returning user
-    def update_user_orcid(auth_hash:)
-      update(orcid: auth_hash[:uid]) unless orcid.present?
-      update(last_sign_in_at: Time.new.utc)
-      update(first_name: auth_hash[:info]['first_name']) if auth_hash[:info]['first_name'].present?
-      update(last_name: auth_hash[:info]['last_name']) if auth_hash[:info]['last_name'].present?
-      update(email: auth_hash[:info]['email']) if auth_hash[:info]['email'].present?
-      self
+      ids = PersonDataManagementPlan.where(person_id: person.id).pluck(:data_management_plan_id)
+      DataManagementPlan.where(id: ids)
     end
+  end
 
-    def create_user_with_orcid(auth_hash:)
-      User.create(
-        first_name: auth_hash[:info]['first_name'],
-        last_name: auth_hash[:info]['last_name'],
-        email: auth_hash[:info]['email'],
-        last_sign_in_at: Time.new.utc,
-        role: 'user',
-        orcid: auth_hash[:uid]
-      )
-    end
+  # convenience method for updating and returning user
+  def update_user_orcid(auth_hash:)
+    update(orcid: auth_hash[:uid]) unless orcid.present?
+    update(last_sign_in_at: Time.new.utc)
+    update(first_name: auth_hash[:info]['first_name']) if auth_hash[:info]['first_name'].present?
+    update(last_name: auth_hash[:info]['last_name']) if auth_hash[:info]['last_name'].present?
+    update(email: auth_hash[:info]['email']) if auth_hash[:info]['email'].present?
+    self
   end
 end

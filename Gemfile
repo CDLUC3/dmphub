@@ -45,6 +45,9 @@ gem 'omniauth'
 gem 'omniauth-orcid'
 # This plugin adds helpers for the reCAPTCHA API.
 gem 'recaptcha'
+# A simple HTTP and REST client for Ruby, inspired by the Sinatra's microframework style of specifying
+# actions: get, put, post, delete.
+gem 'rest-client'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a

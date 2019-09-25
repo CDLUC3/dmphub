@@ -20,6 +20,7 @@ RSpec.describe User, type: :model do
   context 'associations' do
     it { is_expected.to have_many(:access_grants) }
     it { is_expected.to have_many(:access_tokens) }
+    it { is_expected.to belong_to(:organization) }
   end
 
   it 'factory can produce a valid model' do

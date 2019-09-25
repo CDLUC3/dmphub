@@ -19,7 +19,10 @@ Rails.application.routes.draw do
 
   root to: 'home#index'
 
-  post '/search', to: 'home#search', as: 'search'
+  get '/dashboard', to: 'home#dashboard'
+
+  post '/search', to: 'home#search'
+  get '/login', to: 'home#login', as: 'login'
 
   # Handles DOI resolution to a landing page
   get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'

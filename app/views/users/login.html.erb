@@ -1,0 +1,8 @@
+<h1>Login</h1>
+
+<%= link_to user_orcid_omniauth_authorize_path, method: :post do %>
+  <%= image_tag('icon_orcid.svg', alt: 'ORCID logo', style: 'width: 20px;') %>
+  Login or create your ORCID iD
+<% end %>
+
+<p>DMPHub uses ORCID as its primary login method.<br>Please use, or create, your ORCID login credentials to login to the system.</p>

@@ -1,0 +1,18 @@
+<h1>Sign up</h1>
+
+<p>Thank you for logging in with your ORCID. Please tell us a bit more about yourself</p>
+<p><em>This information will be used to help prepopulate fields when you create a new data management plan. We will not share your information with third parties.</em></p>
+
+<%= form_with model: @user, url: user_registration_path, method: :put do |f| %>
+  <%= f.label :first_name %>
+  <%= f.text_field :first_name %>
+  <%= f.label :last_name %>
+  <%= f.text_field :last_name %>
+  <%= f.label :email %>
+  <%= f.email_field :email %>
+  <%= f.label :organization %>
+  <%= f.text_field :organization %>
+  ORCID: <%= @user.orcid %>
+  <%= f.hidden_field :orcid %>
+  <%= f.submit 'Save' %>
+<% end %>

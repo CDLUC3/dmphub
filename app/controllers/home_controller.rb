@@ -2,14 +2,22 @@
 
 class HomeController < ApplicationController
 
-  # GET /
-  def index
+  before_action :authenticate_user!, only: %i[signup dashboard]
 
-  end
+  # GET /
+  def index; end
 
   # POST /search
   def search
 
+  end
+
+  # GET /dashboard
+  def dashboard; end
+
+  # GET /login
+  def login
+    render template: '/users/login'
   end
 
   private

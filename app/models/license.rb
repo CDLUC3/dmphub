@@ -2,7 +2,6 @@
 
 # A Dataset Distribution License
 class License < ApplicationRecord
-
   # Associations
   belongs_to :distribution, optional: true
 
@@ -11,7 +10,6 @@ class License < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, distribution: nil)
       return nil unless json.present? && provenance.present? &&
@@ -22,6 +20,5 @@ class License < ApplicationRecord
       license.start_date = json.fetch('start_date', Time.now.to_s)
       license
     end
-
   end
 end

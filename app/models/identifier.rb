@@ -16,7 +16,6 @@ class Identifier < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
       return nil unless json.present? && provenance.present?
@@ -30,12 +29,11 @@ class Identifier < ApplicationRecord
         value: json.fetch('value', '')
       )
     end
-
   end
 
   private
 
   def ensure_provenance
-    provenance = Rails.application.class.name.underscore unless provenance.present?
+    @provenance = Rails.application.class.name.underscore unless @provenance.present?
   end
 end

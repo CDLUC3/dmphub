@@ -2,7 +2,6 @@
 
 # A data management plan
 class Award < ApplicationRecord
-
   include Identifiable
 
   enum status: %i[planned applied granted rejected]
@@ -15,7 +14,6 @@ class Award < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, project: nil)
       return nil unless json.present? && provenance.present? && json['funder_id'].present?
@@ -34,7 +32,5 @@ class Award < ApplicationRecord
       award.identifiers << id unless award.identifiers.include?(id)
       award
     end
-
   end
-
 end

@@ -2,7 +2,6 @@
 
 # A data management plan
 class DataManagementPlan < ApplicationRecord
-
   include Identifiable
 
   # Associations
@@ -22,9 +21,9 @@ class DataManagementPlan < ApplicationRecord
   after_create :ensure_project!
 
   # Scopes
-  scope :by_client, ->(client_id:) do
+  scope :by_client, lambda { |client_id:|
     where(id: OauthAuthorization.where(oauth_application_id: client_id).pluck(:data_management_plan_id))
-  end
+  }
 
   # Class Methods
   class << self
@@ -33,10 +32,7 @@ class DataManagementPlan < ApplicationRecord
       return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
-      dmp = find_by_identifiers(
-        provenance: provenance,
-        json_array: json['dmp_ids']
-      )
+      dmp = find_by_identifiers(provenance: provenance, json_array: json['dmp_ids'])
       dmp = find_or_initialize_by(title: json['title']) unless dmp.present?
       dmp.description = json['description']
       dmp.language = json.fetch('language', 'en')
@@ -44,25 +40,42 @@ class DataManagementPlan < ApplicationRecord
       dmp.ethical_issues_description = json['ethical_issues_description']
       dmp.ethical_issues_report = json['ethical_issues_report']
 
+      persons_from_json(provenance: provenance, json: json, dmp: dmp)
+      projects_from_json(provenance: provenance, json: json, dmp: dmp)
+      identifiers_from_json(provenance: provenance, json: json, dmp: dmp)
+      datasets_from_json(provenance: provenance, json: json, dmp: dmp)
+      costs_from_json(provenance: provenance, json: json, dmp: dmp)
+      dmp
+    end
+
+    def persons_from_json(provenance:, json:, dmp:)
       # Handle the primary contact for the DMP
       contact = Person.from_json(json: json['contact'], provenance: provenance)
       dmp.person_data_management_plans << PersonDataManagementPlan.new(
-        role: 'primary_contact', person: contact)
-
+        role: 'primary_contact', person: contact
+      )
       # Handle other persons related to the DMP
       json.fetch('dm_staff', []).each do |staff|
         person = Person.from_json(json: staff, provenance: provenance)
         dmp.person_data_management_plans << PersonDataManagementPlan.new(
-          role: staff.fetch('contributor_type', 'author'), person: person)
+          role: staff.fetch('contributor_type', 'author'), person: person
+        )
       end
+    end
 
-      project = Project.from_json(json: json['project'], provenance: provenance,
-        data_management_plan: dmp) if json['project'].present?
+    def projects_from_json(provenance:, json:, dmp:)
+      if json['project'].present?
+        project = Project.from_json(json: json['project'], provenance: provenance,
+                                    data_management_plan: dmp)
+      end
       dmp.projects << project if project.present?
+    end
 
+    def identifiers_from_json(provenance:, json:, dmp:)
       # Handle identifiers, costs and datasets
       json.fetch('dmp_ids', []).each do |identifier|
         next unless identifier['value'].present?
+
         ident = {
           'provenance': provenance.to_s,
           'category': identifier.fetch('category', 'url'),
@@ -71,13 +84,18 @@ class DataManagementPlan < ApplicationRecord
         id = Identifier.from_json(json: ident, provenance: provenance)
         dmp.identifiers << id unless dmp.identifiers.include?(id)
       end
-      json.fetch('costs', []).each do |cost|
-        dmp.costs << Cost.from_json(json: cost, provenance: provenance, data_management_plan: dmp)
-      end
+    end
+
+    def datasets_from_json(provenance:, json:, dmp:)
       json.fetch('datasets', []).each do |dataset|
         dmp.datasets << Dataset.from_json(json: dataset, provenance: provenance, data_management_plan: dmp)
       end
-      dmp
+    end
+
+    def costs_from_json(provenance:, json:, dmp:)
+      json.fetch('costs', []).each do |cost|
+        dmp.costs << Cost.from_json(json: cost, provenance: provenance, data_management_plan: dmp)
+      end
     end
   end
 
@@ -106,7 +124,7 @@ class DataManagementPlan < ApplicationRecord
     return true if projects.any?
 
     projects << Project.create(title: title, description: description,
-      start_on: Time.now, end_on: Time.now + 2.years)
+                               start_on: Time.now, end_on: Time.now + 2.years)
     save
   end
 end

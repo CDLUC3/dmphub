@@ -19,15 +19,14 @@ RSpec.describe Person, type: :model do
   end
 
   describe 'from_json' do
-
     it 'returns the existing record if the email already exists' do
       person = create(:person, :complete)
       obj = Person.from_json(
         provenance: Faker::Lorem.word,
         json: hash_to_json(hash: {
-          name: Faker::Lorem.word,
-          mbox: person.email
-        })
+                             name: Faker::Lorem.word,
+                             mbox: person.email
+                           })
       )
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(person.id)
@@ -62,15 +61,14 @@ RSpec.describe Person, type: :model do
         person = create(:person, :complete)
         ident = person.identifiers.first
         obj = Person.from_json(provenance: ident.provenance,
-          json: hash_to_json(hash: {
-            name: Faker::Lorem.word,
-            mbox: Faker::Internet.unique.email,
-            contact_ids: [
-              category: ident.category,
-              value: ident.value
-            ]
-          })
-        )
+                               json: hash_to_json(hash: {
+                                                    name: Faker::Lorem.word,
+                                                    mbox: Faker::Internet.unique.email,
+                                                    contact_ids: [
+                                                      category: ident.category,
+                                                      value: ident.value
+                                                    ]
+                                                  }))
         expect(obj.new_record?).to eql(false)
         expect(obj.id).to eql(person.id)
         expect(obj.identifiers.length).to eql(person.identifiers.length)
@@ -103,23 +101,21 @@ RSpec.describe Person, type: :model do
         person = create(:person, :complete, identifier_count: 3)
         ident = person.identifiers.first
         obj = Person.from_json(provenance: ident.provenance,
-          json: hash_to_json(hash: {
-            name: Faker::Lorem.word,
-            mbox: Faker::Internet.unique.email,
-            user_ids: [{
-              category: ident.category,
-              value: ident.value
-            },{
-              category: 'url',
-              value: Faker::Lorem.word
-            }]
-          })
-        )
+                               json: hash_to_json(hash: {
+                                                    name: Faker::Lorem.word,
+                                                    mbox: Faker::Internet.unique.email,
+                                                    user_ids: [{
+                                                      category: ident.category,
+                                                      value: ident.value
+                                                    }, {
+                                                      category: 'url',
+                                                      value: Faker::Lorem.word
+                                                    }]
+                                                  }))
         expect(obj.new_record?).to eql(false)
         expect(obj.id).to eql(person.id)
         expect(obj.identifiers.length).to eql(person.identifiers.length)
       end
-
     end
   end
 end

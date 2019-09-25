@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :award do |award|
+  factory :award do |_award|
     funder_uri { Faker::Internet.url }
     status     { Award.statuses.keys.sample }
 

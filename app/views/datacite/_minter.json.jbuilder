@@ -24,11 +24,11 @@ json.data do
     json.publisher provenance
     json.publicationYear Time.now.year
 
-# TODO: Figure out how to pass this as JSON
-    #json.types do
+    # TODO: Figure out how to pass this as JSON
+    # json.types do
     #  json.array! %w[Text] do |type|
     #    json.resourceTypeGeneral type
     #  end
-    #end
+    # end
   end
 end

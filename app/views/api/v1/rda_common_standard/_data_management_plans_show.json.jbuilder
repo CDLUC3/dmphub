@@ -15,21 +15,21 @@ json.ethical_issues_report data_management_plan.ethical_issues_report
 if data_management_plan.identifiers.any?
   json.dmp_ids data_management_plan.identifiers do |identifier|
     json.partial! 'api/v1/rda_common_standard/identifiers_show',
-      identifier: identifier
+                  identifier: identifier
   end
 end
 
 if data_management_plan.primary_contact.present?
   json.contact do
     json.partial! 'api/v1/rda_common_standard/persons_show',
-      person: data_management_plan.primary_contact.person, rel: 'primary_contact'
+                  person: data_management_plan.primary_contact.person, rel: 'primary_contact'
   end
 end
 
 if data_management_plan.persons.any?
   json.dm_staff data_management_plan.persons do |pdmp|
     json.partial! 'api/v1/rda_common_standard/persons_show',
-      person: pdmp.person, rel: pdmp.role
+                  person: pdmp.person, rel: pdmp.role
   end
 end
 
@@ -41,7 +41,7 @@ end
 
 json.project do
   json.partial! 'api/v1/rda_common_standard/projects_show',
-    project: data_management_plan.projects.first
+                project: data_management_plan.projects.first
 end
 
 json.datasets data_management_plan.datasets do |dataset|

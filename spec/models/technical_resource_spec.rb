@@ -39,14 +39,13 @@ RSpec.describe TechnicalResource, type: :model do
       technical_resource = create(:technical_resource, :complete)
       ident = technical_resource.identifiers.first
       obj = TechnicalResource.from_json(provenance: ident.provenance,
-        json: hash_to_json(hash: {
-          description: Faker::Lorem.paragraph,
-          identifier: {
-            category: ident.category,
-            value: ident.value
-          }
-        })
-      )
+                                        json: hash_to_json(hash: {
+                                                             description: Faker::Lorem.paragraph,
+                                                             identifier: {
+                                                               category: ident.category,
+                                                               value: ident.value
+                                                             }
+                                                           }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(technical_resource.id)
       expect(obj.identifiers.length).to eql(technical_resource.identifiers.length)
@@ -63,5 +62,4 @@ RSpec.describe TechnicalResource, type: :model do
       expect(tech_resource.id).to eql(obj.id)
     end
   end
-
 end

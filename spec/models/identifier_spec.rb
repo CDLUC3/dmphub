@@ -72,6 +72,5 @@ RSpec.describe Identifier, type: :model do
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(identifier.id)
     end
-
   end
 end

@@ -1,16 +1,14 @@
 # frozen_string_literal: true
 
+# Home Controller
 class HomeController < ApplicationController
-
   before_action :authenticate_user!, only: %i[signup dashboard]
 
   # GET /
   def index; end
 
   # POST /search
-  def search
-
-  end
+  def search; end
 
   # GET /dashboard
   def dashboard; end
@@ -25,5 +23,4 @@ class HomeController < ApplicationController
   def search_params
     params.require(:search).permit(:search_words)
   end
-
 end

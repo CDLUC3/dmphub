@@ -49,5 +49,4 @@ RSpec.describe Cost, type: :model do
       expect(cost.id).to eql(obj.id)
     end
   end
-
 end

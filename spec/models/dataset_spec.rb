@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Dataset, type: :model do
-
   context 'validations' do
     it { is_expected.to validate_presence_of(:title) }
     it { is_expected.to validate_presence_of(:dataset_type) }
@@ -62,14 +61,13 @@ RSpec.describe Dataset, type: :model do
       dataset = create(:dataset, :complete)
       ident = dataset.identifiers.first
       obj = Dataset.from_json(provenance: ident.provenance,
-        json: hash_to_json(hash: {
-          title: Faker::Lorem.sentence,
-          dataset_ids: [{
-            category: ident.category,
-            value: ident.value
-          }]
-        })
-      )
+                              json: hash_to_json(hash: {
+                                                   title: Faker::Lorem.sentence,
+                                                   dataset_ids: [{
+                                                     category: ident.category,
+                                                     value: ident.value
+                                                   }]
+                                                 }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(dataset.id)
       expect(obj.identifiers.length).to eql(dataset.identifiers.length)
@@ -77,7 +75,7 @@ RSpec.describe Dataset, type: :model do
 
     it 'finds the existing record rather than creating a new instance' do
       dataset = create(:dataset, data_management_plan: create(:data_management_plan),
-        title: @jsons['minimal']['title'], dataset_type: 'dataset')
+                                 title: @jsons['minimal']['title'], dataset_type: 'dataset')
       obj = Dataset.from_json(
         provenance: Faker::Lorem.word,
         data_management_plan: dataset.data_management_plan,
@@ -87,5 +85,4 @@ RSpec.describe Dataset, type: :model do
       expect(dataset.id).to eql(obj.id)
     end
   end
-
 end

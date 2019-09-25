@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Award Show' do
-
   before(:each) do
     @metadatum = create(:metadatum, :complete)
-    render partial: "api/v1/rda_common_standard/metadata_show.json.jbuilder", locals: { metadatum: @metadatum }
+    render partial: 'api/v1/rda_common_standard/metadata_show.json.jbuilder', locals: { metadatum: @metadatum }
     @json = JSON.parse(rendered)
   end
 
@@ -29,7 +28,6 @@ describe 'API V1 - Award Show' do
   it 'has a language attribute' do
     expect(@json['language']).to eql(@metadatum.language)
   end
-
 end
 
 # Example structure of expected JSON output:

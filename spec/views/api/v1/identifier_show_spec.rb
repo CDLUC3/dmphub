@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'API V1 - Identifier Show' do
-
   before(:each) do
     @identifier = create(:identifier, identifiable: create(:award))
     render partial: 'api/v1/rda_common_standard/identifiers_show.json.jbuilder',
@@ -30,7 +29,6 @@ describe 'API V1 - Identifier Show' do
   it 'has a value attribute' do
     expect(@json['value']).to eql(@identifier.value)
   end
-
 end
 
 # Example structure of expected JSON output:

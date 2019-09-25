@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Award Show' do
-
   before(:each) do
     @award = create(:award, :complete)
-    render partial: "api/v1/rda_common_standard/awards_show.json.jbuilder", locals: { award: @award }
+    render partial: 'api/v1/rda_common_standard/awards_show.json.jbuilder', locals: { award: @award }
     @json = JSON.parse(rendered)
   end
 
@@ -29,7 +28,6 @@ describe 'API V1 - Award Show' do
   it 'has a funding_statuses attribute' do
     expect(@json['funding_status']).to eql(@award.status)
   end
-
 end
 
 # Example structure of expected JSON output:

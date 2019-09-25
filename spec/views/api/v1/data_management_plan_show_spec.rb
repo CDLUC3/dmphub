@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Data Management Plan Show' do
-
   before(:each) do
     @data_management_plan = create(:data_management_plan, :complete)
-    render partial: "api/v1/rda_common_standard/data_management_plans_show.json.jbuilder",
+    render partial: 'api/v1/rda_common_standard/data_management_plans_show.json.jbuilder',
            locals: { data_management_plan: @data_management_plan }
     @json = JSON.parse(rendered)
   end
@@ -17,7 +16,7 @@ describe 'API V1 - Data Management Plan Show' do
 
   it 'has hateoas links attribute' do
     doi = @data_management_plan.identifiers.first
-    href = "api_v1_data_management_plans_url"
+    href = 'api_v1_data_management_plans_url'
     expect(@json['links'].present?).to eql(true)
     expect(@json['links'].first['rel']).to eql('self')
     expect(@json['links'].first['href']).to eql("#{Rails.application.routes.url_helpers.send(href)}/#{doi.value}")
@@ -69,7 +68,6 @@ describe 'API V1 - Data Management Plan Show' do
   it 'has a datasets attribute' do
     expect(@json['datasets'].first['title']).to eql(@data_management_plan.datasets.first.title)
   end
-
 end
 
 # Example structure of expected JSON output:

@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'API V1 - Person Show' do
-
   before(:each) do
     @person = create(:person, :complete)
     @partial = 'api/v1/rda_common_standard/persons_show.json.jbuilder'
@@ -57,7 +56,6 @@ describe 'API V1 - Person Show' do
       expect(@json['contributor_type']).to eql('author')
     end
   end
-
 end
 
 # Example structure of expected JSON output for a primary contact:

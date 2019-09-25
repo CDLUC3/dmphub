@@ -8,7 +8,7 @@ json.description host.description
 if host.identifiers.any?
   json.host_ids host.identifiers do |identifier|
     json.partial! 'api/v1/rda_common_standard/identifiers_show',
-      identifier: identifier
+                  identifier: identifier
   end
 end
 
@@ -20,6 +20,6 @@ json.storage_type host.storage_type
 json.availability host.availability
 json.geo_location host.geo_location
 
-# ToDo: Implement these later
+# TODO: Implement these later
 json.certified_with []
 json.pid_system []

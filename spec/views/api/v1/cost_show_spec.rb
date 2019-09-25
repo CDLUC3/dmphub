@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Cost Show' do
-
   before(:each) do
     @cost = create(:cost)
-    render partial: "api/v1/rda_common_standard/costs_show.json.jbuilder", locals: { cost: @cost }
+    render partial: 'api/v1/rda_common_standard/costs_show.json.jbuilder', locals: { cost: @cost }
     @json = JSON.parse(rendered)
   end
 
@@ -33,7 +32,6 @@ describe 'API V1 - Cost Show' do
   it 'has a currency_code attribute' do
     expect(@json['currency_code']).to eql(@cost.currency_code)
   end
-
 end
 
 # Example structure of expected JSON output:

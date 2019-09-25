@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Keyword, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:value) }
-    it "validates uniqueness of value" do
+    it 'validates uniqueness of value' do
       subject = create(:keyword)
       expect(subject).to validate_uniqueness_of(:value).case_insensitive
     end
@@ -19,5 +19,4 @@ RSpec.describe Keyword, type: :model do
     model = create(:keyword)
     expect(model.valid?).to eql(true)
   end
-
 end

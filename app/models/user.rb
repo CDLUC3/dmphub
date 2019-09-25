@@ -2,7 +2,6 @@
 
 # Respresents a user of the API
 class User < ApplicationRecord
-
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
@@ -30,7 +29,6 @@ class User < ApplicationRecord
 
   # Class Methods
   class << self
-
     def from_omniauth_orcid(auth_hash:)
       users = find_by_orcid_or_email(auth_hash: auth_hash)
       raise 'More than one user matches the ID or email returned by ORCID' if users.count > 1
@@ -39,7 +37,6 @@ class User < ApplicationRecord
 
       create_user_with_orcid(auth_hash: auth_hash)
     end
-
   end
 
   # Instance Methods
@@ -58,12 +55,11 @@ class User < ApplicationRecord
   end
 
   def ensure_role
-    role = 'user' unless role.present?
+    @role = 'user' unless @role.present?
   end
 
-  private
-
   class << self
+    private
 
     def find_by_orcid_or_email(auth_hash:)
       where(orcid: auth_hash[:uid]).or(where(email: auth_hash[:info]['email']))
@@ -89,7 +85,5 @@ class User < ApplicationRecord
         orcid: auth_hash[:uid]
       )
     end
-
   end
-
 end

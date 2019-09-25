@@ -2,7 +2,6 @@
 
 # A Dataset Distribution
 class Distribution < ApplicationRecord
-
   enum data_access: %i[closed open shared]
 
   # Associations
@@ -15,7 +14,6 @@ class Distribution < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, dataset: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
@@ -40,6 +38,5 @@ class Distribution < ApplicationRecord
       distribution.host = Host.from_json(json: json['host'], provenance: provenance, distribution: distribution)
       distribution
     end
-
   end
 end

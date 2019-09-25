@@ -2,7 +2,6 @@
 
 # A Dataset Security and Privacy Statement
 class SecurityPrivacyStatement < ApplicationRecord
-
   # Associations
   belongs_to :dataset, optional: true
 
@@ -11,7 +10,6 @@ class SecurityPrivacyStatement < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, dataset: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
@@ -21,6 +19,5 @@ class SecurityPrivacyStatement < ApplicationRecord
       statement.description = json['description']
       statement
     end
-
   end
 end

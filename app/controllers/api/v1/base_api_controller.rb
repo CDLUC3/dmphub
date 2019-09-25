@@ -32,6 +32,7 @@ module Api
 
       def parse_request
         return {} unless @request.present? && @request.body.present?
+
         @json = JSON.parse(@request.body.read)
       end
 

@@ -49,6 +49,7 @@ end
 
 def validate_base_response(json:)
   return false unless json.present?
+
   expect(json['generation_date'].present?).to eql(true), 'expected to find `generation_date`'
   expect(json['caller'].present?).to eql(true), 'expected to find `caller` Name'
   expect(json['source'].present?).to eql(true), 'expected to find `source` URL'
@@ -59,11 +60,13 @@ end
 # methods for use with JSON/View validation
 def validate_base_json_elements(model:, rendered:)
   return false unless model.present? && rendered.present?
+
   validate_created_at_presence(model: model, rendered: rendered)
 end
 
 def validate_created_at_presence(model:, rendered:)
   return false unless model.present? && rendered.present?
+
   expect(rendered['created']).to eql(model.created_at.to_s)
   expect(rendered['modified']).to eql(model.updated_at.to_s)
 end

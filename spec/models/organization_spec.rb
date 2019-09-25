@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Organization, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:name) }
-    it "validates uniqueness of name" do
+    it 'validates uniqueness of name' do
       subject = create(:organization)
       expect(subject).to validate_uniqueness_of(:name).case_insensitive
     end
@@ -48,14 +48,13 @@ RSpec.describe Organization, type: :model do
       org = create(:organization, :complete)
       ident = org.identifiers.first
       obj = Organization.from_json(provenance: ident.provenance,
-        json: hash_to_json(hash: {
-          name: Faker::Lorem.word,
-          identifiers: [{
-            category: ident.category,
-            value: ident.value
-          }]
-        })
-      )
+                                   json: hash_to_json(hash: {
+                                                        name: Faker::Lorem.word,
+                                                        identifiers: [{
+                                                          category: ident.category,
+                                                          value: ident.value
+                                                        }]
+                                                      }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(org.id)
       expect(obj.identifiers.length).to eql(org.identifiers.length)

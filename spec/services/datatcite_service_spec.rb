@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe DataciteService, type: :model do
-
   include DataciteMocks
 
   describe 'options' do
@@ -24,7 +23,7 @@ RSpec.describe DataciteService, type: :model do
 
   describe 'headers' do
     before(:each) do
-      @hash  = DataciteService.send(:headers)
+      @hash = DataciteService.send(:headers)
     end
 
     it 'returns the correct User-Agent header' do
@@ -38,8 +37,8 @@ RSpec.describe DataciteService, type: :model do
     end
 
     it 'returns the correct Accept header' do
-      expect(@hash.include?(:'Accept')).to eql(true)
-      expect(@hash[:'Accept']).to eql('application/json')
+      expect(@hash.include?(:Accept)).to eql(true)
+      expect(@hash[:Accept]).to eql('application/json')
     end
   end
 
@@ -51,14 +50,13 @@ RSpec.describe DataciteService, type: :model do
 
     it 'returns the new DOI' do
       stub_minting_success!
-      doi = DataciteService.mint_doi(data_management_plan: @dmp)
+      doi = DataciteService.mint_doi(data_management_plan: @dmp, provenance: Faker::Lorem.word)
       expect(doi).to eql('10.99999/abc123-566')
     end
 
     it 'returns nil if Datacite returned an error' do
-      doi = DataciteService.mint_doi(data_management_plan: @dmp)
+      doi = DataciteService.mint_doi(data_management_plan: @dmp, provenance: Faker::Lorem.word)
       expect(doi).to eql(nil)
     end
   end
-
 end

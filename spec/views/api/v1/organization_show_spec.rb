@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'API V1 - Organization Show' do
-
   before(:each) do
     @organization = create(:organization, :complete)
     render partial: 'api/v1/rda_common_standard/organizations_show.json.jbuilder',
@@ -22,7 +21,6 @@ describe 'API V1 - Organization Show' do
   it 'has a identifiers attribute' do
     expect(@json['identifiers'].length).to eql(@organization.identifiers.length)
   end
-
 end
 
 # Example structure of expected JSON output:
@@ -42,4 +40,3 @@ end
 #     "value"=>"grid.39084673245986"
 #   }]
 # }
-

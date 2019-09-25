@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Distribution Show' do
-
   before(:each) do
     @distribution = create(:distribution, :complete)
-    render partial: "api/v1/rda_common_standard/distributions_show.json.jbuilder", locals: { distribution: @distribution }
+    render partial: 'api/v1/rda_common_standard/distributions_show.json.jbuilder', locals: { distribution: @distribution }
     @json = JSON.parse(rendered)
   end
 
@@ -57,7 +56,6 @@ describe 'API V1 - Distribution Show' do
   it 'has a licenses attribute' do
     expect(@json['licenses'].length).to eql(@distribution.licenses.length)
   end
-
 end
 
 # Example structure of expected JSON output:
@@ -80,5 +78,3 @@ end
 #   }],
 #   "host"=>[ << See host_show_spec.rb for an example of its JSON >>]
 # }
-
-

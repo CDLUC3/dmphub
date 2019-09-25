@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
+# Data Management Plan Controller
 class DataManagementPlanController < ApplicationController
-
   before_action :authenticate_user!, except: %i[show]
 
   # GET /data_management_plan/:id
@@ -13,5 +13,4 @@ class DataManagementPlanController < ApplicationController
 
     @data_management_plan = DataManagementPlan.find(doi.identifiable_id)
   end
-
 end

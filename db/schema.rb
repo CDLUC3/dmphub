@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_25_172612) do
+ActiveRecord::Schema.define(version: 2019_09_25_194409) do
 
   create_table "awards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "project_id"
@@ -271,7 +271,9 @@ ActiveRecord::Schema.define(version: 2019_09_25_172612) do
     t.string "unlock_token"
     t.datetime "locked_at"
     t.string "orcid"
+    t.bigint "organization_id"
     t.index ["email"], name: "index_users_on_email"
+    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end

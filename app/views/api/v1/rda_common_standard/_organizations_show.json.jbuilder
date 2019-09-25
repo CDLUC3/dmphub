@@ -9,6 +9,6 @@ json.name organization.name
 if organization.identifiers.any?
   json.identifiers organization.identifiers do |identifier|
     json.partial! 'api/v1/rda_common_standard/identifiers_show',
-      identifier: identifier
+                  identifier: identifier
   end
 end

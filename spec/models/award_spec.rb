@@ -48,5 +48,4 @@ RSpec.describe Award, type: :model do
       expect(award.id).to eql(obj.id)
     end
   end
-
 end

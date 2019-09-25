@@ -4,7 +4,7 @@
 json.merge! model_json_base(model: metadatum, skip_hateoas: true)
 json.identifier do
   json.partial! 'api/v1/rda_common_standard/identifiers_show',
-    identifier: metadatum.identifiers.first
+                identifier: metadatum.identifiers.first
 end
 json.description metadatum.description
 json.language metadatum.language

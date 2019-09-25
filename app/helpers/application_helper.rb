@@ -2,9 +2,9 @@
 
 # Generic helper
 module ApplicationHelper
-
   def safe_date(date)
     return 'Unknown' unless date.is_a?(Time)
+
     date.strftime('%b. %d, %Y')
   end
 
@@ -23,5 +23,4 @@ module ApplicationHelper
       "#{identifier.category}:#{identifier.value}"
     end
   end
-
 end

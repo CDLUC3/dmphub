@@ -2,6 +2,6 @@
 
 FactoryBot.define do
   factory :oauth_authorization do
-    oauth_application     { create(:doorkeeper_application) }
+    oauth_application { create(:doorkeeper_application) }
   end
 end

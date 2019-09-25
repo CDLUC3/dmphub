@@ -2,7 +2,7 @@
 
 # methods for use with building models/objects from JSON
 def open_json_mock(file_name:)
-  return "" unless file_name.present?
+  return '' unless file_name.present?
 
   path = Rails.root.join('spec', 'support', 'mocks', 'json_parts')
   JSON.parse(File.read("#{path}/#{file_name}"))
@@ -10,7 +10,6 @@ end
 
 # Run validations against each of the JSON sets: invalid, minimal, complete
 def validate_invalid_json_to_model(clazz:, jsons:)
-  json = jsons.fetch('invalid', {})
   obj = clazz.from_json(json: jsons.fetch(:invalid, {}), provenance: 'Testing')
   expect(obj.nil?).to eql(true)
 end

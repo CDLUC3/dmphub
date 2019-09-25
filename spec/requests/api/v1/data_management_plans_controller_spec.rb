@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Api::V1::DataManagementPlansController, type: :request do
+  include DataciteMocks
 
   before(:each) do
     auth = mock_access_token
@@ -70,6 +73,7 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
 
     context 'minimal JSON' do
       before(:each) do
+        stub_minting_success!
         json = File.read("#{@file_path}/rda_madmp_common_standard_minimal.json")
         @payload = JSON.parse(json)
       end
@@ -108,6 +112,7 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
 
     context 'complete JSON' do
       before(:each) do
+        stub_minting_success!
         json = File.read("#{@file_path}/complete_common_standard.json")
         @payload = JSON.parse(json)
       end
@@ -137,5 +142,4 @@ RSpec.describe Api::V1::DataManagementPlansController, type: :request do
       end
     end
   end
-
 end

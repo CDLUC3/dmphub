@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Security and Privacy Statement Show' do
-
   before(:each) do
     @security_privacy_statement = create(:security_privacy_statement)
-    render partial: "api/v1/rda_common_standard/security_privacy_statements_show.json.jbuilder",
+    render partial: 'api/v1/rda_common_standard/security_privacy_statements_show.json.jbuilder',
            locals: { security_privacy_statement: @security_privacy_statement }
     @json = JSON.parse(rendered)
   end
@@ -26,7 +25,6 @@ describe 'API V1 - Security and Privacy Statement Show' do
   it 'has a description attribute' do
     expect(@json['description']).to eql(@security_privacy_statement.description)
   end
-
 end
 
 # Example structure of expected JSON output:

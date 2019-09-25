@@ -24,7 +24,7 @@ RSpec.describe User, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:user)
+    model = create(:user, organization: create(:organization))
     expect(model.valid?).to eql(true)
   end
 
@@ -65,6 +65,5 @@ RSpec.describe User, type: :model do
         expect(@user.name).to eq(@user.email.to_s)
       end
     end
-
   end
 end

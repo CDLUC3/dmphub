@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 describe 'API V1 - Award Show' do
-
   before(:each) do
     @license = create(:license)
     render partial: 'api/v1/rda_common_standard/licenses_show.json.jbuilder',
@@ -26,7 +25,6 @@ describe 'API V1 - Award Show' do
   it 'has a start_date attribute' do
     expect(@json['start_date']).to eql(@license.start_date.to_s)
   end
-
 end
 
 # Example structure of expected JSON output:

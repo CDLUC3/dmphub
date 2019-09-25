@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Dataset Show' do
-
   before(:each) do
     @dataset = create(:dataset, :complete)
-    render partial: "api/v1/rda_common_standard/datasets_show.json.jbuilder", locals: { dataset: @dataset }
+    render partial: 'api/v1/rda_common_standard/datasets_show.json.jbuilder', locals: { dataset: @dataset }
     @json = JSON.parse(rendered)
   end
 
@@ -71,7 +70,6 @@ describe 'API V1 - Dataset Show' do
   it 'has a metadata attribute' do
     expect(@json['metadata'].length).to eql(@dataset.metadata.length)
   end
-
 end
 
 # Example structure of expected JSON output:

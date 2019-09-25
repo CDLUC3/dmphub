@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 module Users
-
+  # User Sign up and Profile Controller
   class RegistrationsController < ApplicationController
-
     before_action :authenticate_user!
 
     # GET /users/edit
@@ -28,7 +27,5 @@ module Users
       params.require(:user).permit(:first_name, :last_name, :email,
                                    :organization_id, :orcid)
     end
-
   end
-
 end

@@ -90,8 +90,6 @@ group :test do
   # Support for controller tests
   gem 'rails-controller-testing'
   gem 'selenium-webdriver'
-  # Library for stubbing and setting expectations on HTTP requests in Ruby.
-  gem 'webmock'
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'webdrivers'
 end

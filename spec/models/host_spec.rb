@@ -48,14 +48,13 @@ RSpec.describe Host, type: :model do
       host = create(:host, :complete)
       ident = host.identifiers.first
       obj = Host.from_json(provenance: ident.provenance,
-        json: hash_to_json(hash: {
-          title: Faker::Lorem.sentence,
-          host_ids: [{
-            category: ident.category,
-            value: ident.value
-          }]
-        })
-      )
+                           json: hash_to_json(hash: {
+                                                title: Faker::Lorem.sentence,
+                                                host_ids: [{
+                                                  category: ident.category,
+                                                  value: ident.value
+                                                }]
+                                              }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(host.id)
       expect(obj.identifiers.length).to eql(host.identifiers.length)

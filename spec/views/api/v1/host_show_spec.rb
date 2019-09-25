@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Host Show' do
-
   before(:each) do
     @host = create(:host, :complete)
-    render partial: "api/v1/rda_common_standard/hosts_show.json.jbuilder", locals: { host: @host }
+    render partial: 'api/v1/rda_common_standard/hosts_show.json.jbuilder', locals: { host: @host }
     @json = JSON.parse(rendered)
   end
 

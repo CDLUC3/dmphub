@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 describe 'API V1 - Project Show' do
-
   before(:each) do
     @project = create(:project, :complete)
-    render partial: "api/v1/rda_common_standard/projects_show.json.jbuilder", locals: { project: @project }
+    render partial: 'api/v1/rda_common_standard/projects_show.json.jbuilder', locals: { project: @project }
     @json = JSON.parse(rendered)
   end
 
@@ -33,7 +32,6 @@ describe 'API V1 - Project Show' do
   it 'has a funding attribute' do
     expect(@json['funding'].length).to eql(@project.awards.length)
   end
-
 end
 
 # Example structure of expected JSON output:

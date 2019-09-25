@@ -2,7 +2,6 @@
 
 # A Data Management Plan Cost
 class Cost < ApplicationRecord
-
   # Associations
   belongs_to :data_management_plan, optional: true
 
@@ -11,7 +10,6 @@ class Cost < ApplicationRecord
 
   # Scopes
   class << self
-
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, data_management_plan: nil)
       return nil unless json.present? && provenance.present? && json['title'].present?
@@ -26,7 +24,5 @@ class Cost < ApplicationRecord
       cost.currency_code = json['currency_code']
       cost
     end
-
   end
-
 end

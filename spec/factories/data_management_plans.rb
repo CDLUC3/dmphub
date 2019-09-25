@@ -31,7 +31,7 @@ FactoryBot.define do
 
         contact = create(:person, :complete)
         pdmp = create(:person_data_management_plan, person: contact,
-          data_management_plan: data_management_plan, role: 'primary_contact')
+                                                    data_management_plan: data_management_plan, role: 'primary_contact')
         data_management_plan.person_data_management_plans << pdmp
 
         evaluator.projects_count.times do
@@ -40,7 +40,7 @@ FactoryBot.define do
         evaluator.persons_count.times do
           per = create(:person, :complete)
           j = create(:person_data_management_plan, person: per, data_management_plan: data_management_plan,
-            role: %w[author principal_investigator data_librarian].sample)
+                                                   role: %w[author principal_investigator data_librarian].sample)
           data_management_plan.person_data_management_plans << j
         end
         evaluator.costs_count.times do
@@ -51,7 +51,7 @@ FactoryBot.define do
         end
         evaluator.identifiers_count.times do
           data_management_plan.identifiers << create(:identifier, category: 'doi',
-            identifiable: data_management_plan)
+                                                                  identifiable: data_management_plan)
         end
       end
     end

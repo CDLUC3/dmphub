@@ -1,0 +1,15 @@
+<h4>Identifiers</h4>
+<%= render partial: 'identifiers/index', locals: { identifiers: dataset.identifiers } %>
+<%= render partial: 'identifiers/form',
+           locals: { identifier: Identifier.new, excluded_categories: %w[ror grid orcid] } %>
+
+<%= form.label :personal_data, 'Will contain personal data?' %>
+<%= form.check_box :personal_data %>
+<%= form.label :sensitive_data, 'Will contain sensitive data?' %>
+<%= form.check_box :sensitive_data %>
+<%= form.label :data_quality_assurance, 'Describe how you will assure data quality' %>
+<%= form.text_area :data_quality_assurance %>
+<%= form.label :preservation_statement, 'Describe your plans for preserving this dataset' %>
+<%= form.text_area :preservation_statement %>
+<%= form.label :keywords, 'Keywords/Tags (separate words with a comma)' %>
+<%= form.text_area :keywords, value: dataset.keywords.collect { |k| k.value }.join(', ') %>

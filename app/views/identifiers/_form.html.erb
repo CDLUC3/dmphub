@@ -1,0 +1,7 @@
+<%= fields_for identifier do |i| %>
+  <%= i.label :category, 'Type' %>
+  <%= i.select :category, Identifier.categories.keys.select { |k| !excluded_categories.include?(k) } %>
+  <%= i.label :value %>
+  <%= i.text_field :value %>
+  <%= i.button 'Add identifier' %>
+<% end %>

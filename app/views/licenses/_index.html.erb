@@ -1,0 +1,5 @@
+<ul class="licenses">
+  <% licenses.each do |license| %>
+    <%= license.license_uri %> effective date: <%= safe_date(license.start_date) %> (+/-)
+  <% end %>
+</ul>

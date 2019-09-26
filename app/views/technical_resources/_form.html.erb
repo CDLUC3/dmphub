@@ -1,0 +1,10 @@
+<%= fields_for technical_resource do |t| %>
+  <%= render partial: 'identifiers/form',
+             locals: {
+               identifier: (technical_resource.identifiers.first || Identifier.new),
+               excluded_categories: %w[ror grid orcid]
+             } %>
+  <%= t.label :description %>
+  <%= t.text_area :description %>
+  <%= t.button 'Add resource' %>
+<% end %>

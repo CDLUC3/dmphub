@@ -23,4 +23,21 @@ module ApplicationHelper
       "#{identifier.category}:#{identifier.value}"
     end
   end
+
+  def landing_page_path(dmp:)
+    return root_path unless dmp.id.present? && dmp.doi.present?
+
+    id_to_doi(dmp: dmp, value: data_management_plan_path(dmp))
+  end
+
+  def landing_page_url(dmp:)
+    return root_url unless dmp.id.present? && dmp.doi.present?
+
+    id_to_doi(dmp: dmp, value: data_management_plan_url(dmp))
+  end
+
+  def id_to_doi(dmp:, value:)
+    value.gsub(dmp.id.to_s, dmp.doi)
+  end
+
 end

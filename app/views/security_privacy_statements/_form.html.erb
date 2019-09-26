@@ -1,0 +1,7 @@
+<%= fields_for statement do |s| %>
+  <%= s.label :title %>
+  <%= s.text_field :title %>
+  <%= s.label :description %>
+  <%= s.text_area :description %>
+  <%= s.button 'Add statement' %>
+<% end %>

@@ -1,0 +1,50 @@
+<%= fields_for dataset do |d| %>
+  <%= d.label :dataset_type, 'Type' %>
+  <%= d.select :dataset_type, Dataset.dataset_types.keys %>
+  <%= d.label :title %>
+  <%= d.text_field :title %>
+  <%= d.label :description, 'Description' %>
+  <%= d.text_area :description %>
+  <%= d.label :language %>
+  <%= d.select :language, %w[en es de fr] %>
+  <%= d.label :publication_date, 'Anticipated publication date' %>
+  <%= d.date_field :publication_date %>
+
+  <div style="display: flex; justify-content: space-between;">
+    <div class="dataset-overview" style="border: 1px solid black;">
+      <h3>Overview</h3>
+      <%= render partial: 'datasets/overview_form', locals: { form: d, dataset: dataset } %>
+    </div>
+    <div class="dataset-security" style="border: 1px solid black;">
+      <h3>Security and privacy</h3>
+      <%= render partial: 'security_privacy_statements/index',
+                 locals: { statements: dataset.security_privacy_statements } %>
+      <%= render partial: 'security_privacy_statements/form',
+                 locals: { statement: SecurityPrivacyStatement.new } %>
+    </div>
+    <div class="dataset-tech" style="border: 1px solid black;">
+      <h3>Technical resources</h3>
+      <%= render partial: 'technical_resources/index',
+                 locals: { technical_resources: dataset.technical_resources } %>
+      <%= render partial: 'technical_resources/form',
+                 locals: { technical_resource: TechnicalResource.new } %>
+    </div>
+    <div class="dataset-distributions" style="border: 1px solid black;">
+      <h3>Distributions</h3>
+      <%= render partial: 'distributions/index',
+                 locals: { distributions: dataset.distributions } %>
+      <%= render partial: 'distributions/form',
+                 locals: { distribution: Distribution.new } %>
+    </div>
+    <div class="dataset-metadata" style="border: 1px solid black;">
+      <h3>Metadata</h3>
+      <%= render partial: 'metadata/index',
+                 locals: { metadata: dataset.metadata } %>
+      <%= render partial: 'metadata/form',
+                 locals: { metadatum: Metadatum.new } %>
+    </div>
+  </div>
+
+  <%= d.button 'Add dataset' %>
+<% end %>
+<hr>

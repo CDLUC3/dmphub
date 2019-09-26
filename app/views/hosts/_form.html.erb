@@ -1,0 +1,22 @@
+<%= fields_for host do |h| %>
+  <%= render partial: 'identifiers/index', locals: { identifiers: host.identifiers } %>
+  <%= render partial: 'identifiers/form',
+             locals: { identifier: Identifier.new, excluded_categories: %w[ror grid orcid] } %>
+
+  <%= h.label :title %>
+  <%= h.text_field :title %>
+  <%= h.label :description %>
+  <%= h.text_area :description %>
+  <%= h.label :supports_versioning %>
+  <%= h.check_box :supports_versioning %>
+  <%= h.label :backup_type %>
+  <%= h.select :backup_type, %w[good bad ugly] %>
+  <%= h.label :backup_frequency %>
+  <%= h.select :backup_frequency, %w[daily weekly monthly annually never] %>
+  <%= h.label :storage_type %>
+  <%= h.select :storage_type, %w[disk tape physical] %>
+  <%= h.label :availability %>
+  <%= h.select :availability, %w[on_demand within_the_hour within_a_day within_a_week] %>
+  <%= h.label :geo_location %>
+  <%= h.text_field :geo_location %>
+<% end %>

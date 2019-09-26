@@ -1,0 +1,19 @@
+<%= fields_for project do |p| %>
+  <%= p.label :title %>
+  <%= p.text_field :title %>
+  <%= p.label :description, 'Abstract' %>
+  <%= p.text_area :description %>
+  <%= p.label :start_on, 'Estimated Start Date' %>
+  <%= p.date_field :start_on %>
+  <%= p.label :end_on, 'Estimated End Date' %>
+  <%= p.date_field :end_on %>
+
+  <% award = project.awards.first || Award.new %>
+  <%= fields_for award do |a| %>
+    <%= a.label :funder_uri, 'Funding Agency' %>
+    <%= a.text_field :funder_uri %>
+    <%= a.label :status %>
+    <%= a.select :status, Award.statuses.keys %>
+  <% end %>
+<% end %>
+<hr>

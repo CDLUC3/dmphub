@@ -1,0 +1,6 @@
+<ul class="technical-resources">
+  <% technical_resources.each do |technical_resource| %>
+    <%= technical_resource.identifiers.first %> (+/-)
+    <%= technical_resource.description %>
+  <% end %>
+</ul>

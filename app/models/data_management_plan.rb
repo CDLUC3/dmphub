@@ -109,6 +109,10 @@ class DataManagementPlan < ApplicationRecord
     PersonDataManagementPlan.where(data_management_plan_id: id).where.not(role: 'primary_contact')
   end
 
+  def doi
+    Identifier.find_by(category: 'doi', identifiable_type: 'DataManagementPlan', identifiable_id: id)&.value
+  end
+
   private
 
   # Create a default stub dataset unless one exists

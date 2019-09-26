@@ -15,8 +15,17 @@ class DataManagementPlanController < ApplicationController
   end
 
   # GET /data_management_plan/new
-  def new; end
+  def new
+    @dmp = DataManagementPlan.new
+  end
 
   # POST /data_management_plans
   def create; end
+
+  private
+
+  def data_management_plan_params
+    params.require(:data_management_plan).permit(:description, :language, :ethical_issues,
+                                                 :ethical_issues_report, :ethical_issues_description)
+  end
 end

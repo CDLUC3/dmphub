@@ -1,0 +1,7 @@
+<%= fields_for license do |s| %>
+  <%= s.label :license_uri, 'License URL' %>
+  <%= s.url_field :license_uri %>
+  <%= s.label :start_date, 'Effective date' %>
+  <%= s.date_field :start_date %>
+  <%= s.button 'Add license' %>
+<% end %>

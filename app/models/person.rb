@@ -16,7 +16,7 @@ class Person < ApplicationRecord
   # Validations
   validates :name, presence: true
 
-  # Scopes
+  # Class Methods
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
@@ -63,5 +63,10 @@ class Person < ApplicationRecord
         person.organizations << org unless person.organizations.include?(org)
       end
     end
+  end
+
+  # Instance Methods
+  def orcid
+    identifiers.select { |identifier| identifier.category == 'orcid' }.first
   end
 end

@@ -1,0 +1,10 @@
+<%= fields_for metadatum do |m| %>
+  <%= render partial: 'identifiers/form',
+             locals: {
+               identifier: (metadatum.identifiers.first || Identifier.new),
+               excluded_categories: %w[ror grid orcid]
+             } %>
+  <%= m.label :description %>
+  <%= m.text_area :description %>
+  <%= m.button 'Add metadatum' %>
+<% end %>

@@ -1,0 +1,24 @@
+<%= fields_for distribution do |m| %>
+  <%= m.label :title %>
+  <%= m.text_field :title %>
+  <%= m.label :description %>
+  <%= m.text_area :description %>
+  <%= m.label :byte_size %>
+  <%= m.number_field :byte_size %>
+
+  <div style="display: flex; justify-content: space-between;">
+    <div class="distribution-host" style="border: 1px solid black;">
+      <h3>Host</h3>
+      <%= render partial: 'hosts/form', locals: { host: distribution.host || Host.new } %>
+    </div>
+    <div class="distribution-licenses" style="border: 1px solid black;">
+      <h3>Licenses</h3>
+      <%= render partial: 'licenses/index',
+                 locals: { licenses: distribution.licenses } %>
+      <%= render partial: 'licenses/form',
+                 locals: { license: License.new } %>
+    </div>
+  </div>
+
+  <%= m.button 'Add distribution' %>
+<% end %>

@@ -75,16 +75,16 @@ class User < ApplicationRecord
   end
 
   def data_management_plans
-    if user?
-      ident = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').first
-      return [] unless ident.present?
+    return unless role == 'user'
 
-      person = Person.where(id: ident.identifiable_id).first
-      return [] unless person.present?
+    ident = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').first
+    return [] unless ident.present?
 
-      ids = PersonDataManagementPlan.where(person_id: person.id).pluck(:data_management_plan_id)
-      DataManagementPlan.where(id: ids)
-    end
+    person = Person.where(id: ident.identifiable_id).first
+    return [] unless person.present?
+
+    ids = PersonDataManagementPlan.where(person_id: person.id).pluck(:data_management_plan_id)
+    DataManagementPlan.where(id: ids)
   end
 
   # convenience method for updating and returning user

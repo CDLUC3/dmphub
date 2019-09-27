@@ -49,7 +49,7 @@ RSpec.describe DataciteService, type: :model do
     end
 
     it 'returns the new DOI' do
-      stub_minting_success!
+      #stub_minting_success!
       doi = DataciteService.mint_doi(data_management_plan: @dmp, provenance: Faker::Lorem.word)
       expect(doi).to eql('10.99999/abc123-566')
     end

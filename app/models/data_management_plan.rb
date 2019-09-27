@@ -13,6 +13,9 @@ class DataManagementPlan < ApplicationRecord
   has_many :costs
   has_many :datasets
 
+  accepts_nested_attributes_for :projects, :costs, :datasets,
+                                :person_data_management_plans
+
   # Validations
   validates :title, :language, presence: true
 

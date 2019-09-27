@@ -1,47 +1,43 @@
-<%= fields_for dmp do |d| %>
-  <%= d.label :description, 'Summary' %>
-  <%= d.text_area :description %>
-  <%= d.label :language %>
-  <%= d.select :language, %w[en es de fr] %>
-  <%= d.label :ethical_issues, 'Are there any ethical issue(s)?' %>
-  <%= d.select :ethical_issues, %w[yes no], { include_blank: 'unknown' } %>
-  <div class="ethical-considerations">
-    <%= d.label :ethical_issues_report, 'Link to your ethical policy' %>
-    <%= d.url_field :ethical_issues_report %>
-    <%= d.label :ethical_issues_description, 'Please describe the issue(s)' %>
-    <%= d.text_area :ethical_issues_description %>
-  </div>
+<%= f.label :description, 'Summary' %>
+<%= f.text_area :description %>
+<%= f.label :language %>
+<%= f.select :language, %w[en es de fr] %>
 
-  <h3>Primary contact</h3>
-  <%= render partial: 'persons/form',
+<%= f.label :ethical_issues, 'Are there any ethical issue(s)?' %>
+<%= f.select :ethical_issues, %w[yes no], { include_blank: 'unknown' } %>
+<div class="ethical-considerations">
+  <%= f.label :ethical_issues_report, 'Link to your ethical policy' %>
+  <%= f.url_field :ethical_issues_report %>
+  <%= f.label :ethical_issues_description, 'Please describe the issue(s)' %>
+  <%= f.text_area :ethical_issues_description %>
+</div>
+
+<h3>Primary contact</h3>
+<div class="primary-contact">
+  <%= fields_for :contact do |c| %>
+    <%= c.label :name %>
+    <%= c.text_field :name, value: current_user.name %>
+    <%= c.label :email %>
+    <%= c.email_field :email, value: current_user.email %>
+    <%= c.label :value, 'ORCID' %>
+    <%= c.text_field :value, value: current_user.orcid %>
+  <% end %>
+</div>
+
+<h3>Other contacts</h3>
+<div class="dm-staff-list">
+  <%= render partial: 'persons/index',
              locals: {
-               rel: 'primary_contact',
-               person_data_management_plan: PersonDataManagementPlan.new(role: 'primary_contact')
+               person_data_management_plans: dmp.person_data_management_plans
              } %>
-
-  <h3>Other contacts</h3>
-  <%= render partial: 'persons/index', locals: { persons: dmp.person_data_management_plans } %>
-  <%= render partial: 'persons/form',
-             locals: {
-               rel: 'author',
-               person_data_management_plan: PersonDataManagementPlan.new
-             } %>
-<% end %>
-
-<script type="text/javascript">
-  var ethicalIssues = document.getElementById('data_management_plan_ethical_issues');
-  var ethicalDetails = document.getElementsByClassName('ethical-considerations')[0];
-
-  var toggleEthics = () => {
-    ethicalDetails.style.display = (ethicalIssues.options[ethicalIssues.selectedIndex].value == 'yes' ? 'block' : 'none');
-  };
-
-  ethicalIssues.addEventListener('click', toggleEthics);
-  ethicalIssues.addEventListener('keydown', toggleEthics);
-
-  document.addEventListener('DOMContentLoaded', () => {
-    toggleEthics();
-  }, false);
-</script>
+</div>
+<div class="dm-staff-form">
+  <%= f.fields_for :person_data_management_plans do |pdmp| %>
+    <%= pdmp.label :role %>
+    <%= pdmp.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
+    <%= render partial: 'persons/form', locals: { f: pdmp, rel: 'other' } %>
+    <%= pdmp.button 'Add person' %>
+  <% end %>
+</div>
 
 <hr>

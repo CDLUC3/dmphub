@@ -14,7 +14,7 @@ module ApplicationHelper
 
     case identifier.category
     when 'doi'
-      link_to "https://dx.doi.org/#{identifier.value}", "https://dx.doi.org/#{identifier.value}"
+      link_to "https://doi.org/#{identifier.value}", "https://dx.doi.org/#{identifier.value}"
     when 'orcid'
       link_to "https://orcid.org/#{identifier.value}", "https://orcid.org/#{identifier.value}"
     when 'ror'

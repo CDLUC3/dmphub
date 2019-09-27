@@ -10,6 +10,8 @@ class PersonDataManagementPlan < ApplicationRecord
   belongs_to :data_management_plan
   belongs_to :person
 
+  accepts_nested_attributes_for :person
+
   # Validations
   validates :role, presence: true
 end

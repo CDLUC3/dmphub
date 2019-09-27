@@ -6,6 +6,8 @@ class Project < ApplicationRecord
   belongs_to :data_management_plan, optional: true
   has_many :awards, dependent: :destroy
 
+  accepts_nested_attributes_for :awards
+
   # Validations
   validates :title, :start_on, :end_on, presence: true
 

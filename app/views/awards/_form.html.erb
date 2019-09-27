@@ -1,0 +1,6 @@
+<%= f.fields_for :awards do |a| %>
+  <%= a.label :funder_uri, 'Funding Agency' %>
+  <%= a.text_field :funder_uri %>
+  <%= a.label :status %>
+  <%= a.select :status, Award.statuses.keys %>
+<% end %>

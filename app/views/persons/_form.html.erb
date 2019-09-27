@@ -1,18 +1,11 @@
-<%= fields_for person_data_management_plan do |pdmp| %>
-  <% unless rel == 'primary_contact' %>
-    <%= pdmp.label :role %>
-    <%= pdmp.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
-  <% end %>
-
-  <%= fields_for (person_data_management_plan.person || Person.new) do |p| %>
-    <%= p.label :name %>
-    <%= p.text_field :name, value: (rel == 'primary_contact' ? current_user.name : '') %>
-    <%= p.label :email %>
-    <%= p.email_field :email, value: (rel == 'primary_contact' ? current_user.email : '') %>
-    <%= fields_for Identifier.new do |i| %>
-      <%= p.label :value, 'ORCID' %>
-      <%= p.text_field :value, value: (rel == 'primary_contact' ? current_user.orcid : '') %>
-    <% end %>
-    <%= p.button 'Add person' %>
+<%= f.fields_for :person do |p| %>
+  <%= p.label :name %>
+  <%= p.text_field :name %>
+  <%= p.label :email %>
+  <%= p.email_field :email %>
+  <%= p.fields_for :identifiers do |i| %>
+    <%= i.hidden_field :category, value: 'orcid' %>
+    <%= i.label :value, 'ORCID' %>
+    <%= i.text_field :value %>
   <% end %>
 <% end %>

@@ -34,6 +34,6 @@ class Identifier < ApplicationRecord
   private
 
   def ensure_provenance
-    @provenance = Rails.application.class.name.underscore unless @provenance.present?
+    @provenance = Rails.application.class.name.split('::').first.downcase unless @provenance.present?
   end
 end

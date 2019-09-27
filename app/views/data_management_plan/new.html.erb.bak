@@ -1,0 +1,20 @@
+<h1>Register a Data Management Plan</h1>
+
+<%= form_with model: @dmp, url: data_management_plan_index_path do |f| %>
+
+  <h2>Project (+/-)</h2>
+  <p>Tell us about your research project:</p>
+
+  <%= render partial: '/projects/form', locals: { projects: @dmp.projects } %>
+
+  <h2>Data management plan (+/-)</h2>
+  <p>Describe the plan for managing your project's research outputs:</p>
+  <%= render partial: '/data_management_plan/form', locals: { dmp: @dmp } %>
+
+  <h2>Research outputs (+/-)</h2>
+  <p>Tell us about your anticipated research outputs</p>
+  <%= render partial: '/datasets/index', locals: { datasets: @dmp.datasets } %>
+  <%= render partial: '/datasets/form', locals: { dataset: Dataset.new } %>
+
+  <%= f.submit 'Register your plan' %>
+<% end %>

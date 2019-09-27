@@ -4,16 +4,14 @@
 
   <h2>Project (+/-)</h2>
   <p>Tell us about your research project:</p>
-  <%= render partial: '/projects/form', locals: { project: @dmp.projects.first || Project.new } %>
+  <%= f.label :title %>
+  <%= f.text_field :title %>
+  <%= render partial: '/projects/form', locals: { f: f } %>
 
   <h2>Data management plan (+/-)</h2>
   <p>Describe the plan for managing your project's research outputs:</p>
-  <%= render partial: '/data_management_plan/form', locals: { dmp: @dmp } %>
-
-  <h2>Research outputs (+/-)</h2>
-  <p>Tell us about your anticipated research outputs</p>
-  <%= render partial: '/datasets/index', locals: { datasets: @dmp.datasets } %>
-  <%= render partial: '/datasets/form', locals: { dataset: Dataset.new } %>
+  <%= render partial: '/data_management_plan/form',
+             locals: { f: f, dmp: @dmp } %>
 
   <%= f.submit 'Register your plan' %>
 <% end %>

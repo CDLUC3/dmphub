@@ -13,6 +13,8 @@ class Person < ApplicationRecord
   has_many :person_organizations
   has_many :organizations, through: :person_organizations
 
+  accepts_nested_attributes_for :identifiers, :organizations
+
   # Validations
   validates :name, presence: true
 

@@ -29,7 +29,8 @@ class TechnicalResource < ApplicationRecord
 
       ident = {
         'category': json['identifier'].fetch('category', 'url'),
-        'value': json['identifier']['value']
+        'value': json['identifier']['value'],
+        'descriptor': 'identified_by'
       }
       tech_resource.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       tech_resource

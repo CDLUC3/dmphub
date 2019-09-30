@@ -9,6 +9,8 @@ class Award < ApplicationRecord
   # Associations
   belongs_to :project, optional: true
 
+  accepts_nested_attributes_for :identifiers
+
   # Validations
   validates :funder_uri, :status, presence: true
 
@@ -26,7 +28,8 @@ class Award < ApplicationRecord
       # Convert the grant_id into an identifier record
       ident = {
         'category': 'url',
-        'value': json['grant_id']
+        'value': json['grant_id'],
+        'descriptor': 'funded_by'
       }
       id = Identifier.from_json(json: ident, provenance: provenance)
       award.identifiers << id unless award.identifiers.include?(id)

@@ -18,7 +18,7 @@ FactoryBot.define do
 
       after :create do |host, evaluator|
         evaluator.identifiers_count.times do
-          host.identifiers << create(:identifier, category: 'url', identifiable: host)
+          host.identifiers << create(:identifier, category: 'url', identifiable: host, descriptor: Identifier.descriptors.keys.sample)
         end
       end
     end

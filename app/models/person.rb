@@ -52,9 +52,10 @@ class Person < ApplicationRecord
       json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
         identifier = Identifier.from_json(provenance: provenance, json: {
                                             category: identifier.fetch('category', 'url'),
-                                            value: identifier['value']
+                                            value: identifier['value'],
+                                            descriptor: 'identified_by'
                                           })
-        person.identifiers << identifier unless person.identifiers.include?(identifier)
+        person.identifiers << identifier unless person.identifiers.include?(identifier) || identifier.nil?
       end
     end
 

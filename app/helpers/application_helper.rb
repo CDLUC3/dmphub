@@ -24,6 +24,12 @@ module ApplicationHelper
     end
   end
 
+  def humaniz_underscored(name:)
+    return nil unless name.present?
+
+    name.to_s.split('_').map { |part| part.capitalize }.join(' ')
+  end
+
   def landing_page_path(dmp:)
     return root_path unless dmp.id.present? && dmp.doi.present?
 

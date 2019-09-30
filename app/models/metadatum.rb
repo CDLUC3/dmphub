@@ -22,7 +22,8 @@ class Metadatum < ApplicationRecord
 
       ident = {
         'category': json['identifier'].fetch('category', 'url'),
-        'value': json['identifier']['value']
+        'value': json['identifier']['value'],
+        'descriptor': 'described_by'
       }
       metadatum.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       metadatum

@@ -67,7 +67,8 @@ class Dataset < ApplicationRecord
         ident = {
           'provenance': provenance.to_s,
           'category': identifier.fetch('category', 'url'),
-          'value': identifier['value']
+          'value': identifier['value'],
+          'descriptor': 'is_metadata_for'
         }
         id = Identifier.from_json(json: ident, provenance: provenance)
         dataset.identifiers << id unless dataset.identifiers.include?(id)

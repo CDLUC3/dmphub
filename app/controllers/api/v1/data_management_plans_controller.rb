@@ -39,16 +39,9 @@ module Api
       # rubocop:disable Metrics/PerceivedComplexity
       def create
         @dmp = DataManagementPlan.from_json(json: dmp_params, provenance: current_client[:name])
-
-p @dmp.inspect
-p @dmp.person_data_management_plans.inspect
-
         if @dmp.present? && @dmp.new_record? && @dmp.save
           # Mint the DOI if we did not recieve a DOI in the input
-          mint_doi!(dmp: @dmp)
-
-p @errors.inspect
-
+          @dmp.mint_doi(provenance: current_client[:name])
           if @errors.nil? && @dmp.save
             # Associate the DMP with the Client/Application who created it
             OauthAuthorization.find_or_create_by(
@@ -63,7 +56,8 @@ p @errors.inspect
           end
         else
           errs = { 'errors': (@dmp.errors.collect { |e, m| { "#{e}": m } } || []) }
-          render_error errors: (errs[:errors] << { dmp: 'already exists' }) unless @dmp.new_record?
+          errs[:errors] << { dmp: 'already exists' } unless @dmp.new_record?
+          render_error errors: errs[:errors]
         end
       rescue ActionController::ParameterMissing
         render_error errors: [{ dmp: 'invalid json format' }]
@@ -88,21 +82,14 @@ p @errors.inspect
       end
 
       def render_error(errors:)
+
+p errors.inspect
+
         render 'error', locals: {
           caller: current_client[:name],
           source: "POST #{api_v1_data_management_plans_url}",
           errors: errors
         }, status: :bad_request
-      end
-
-      def mint_doi!(dmp:)
-        existing = dmp.identifiers.select(&:doi?).any?
-        return dmp if existing
-
-        doi = DataciteService.mint_doi(data_management_plan: dmp,
-                                       provenance: current_client[:name])
-        @errors = { dmp: 'unable to register a DOI at this time' } unless doi.present?
-        dmp.identifiers << Identifier.new(provenance: 'datacite', category: 'doi', value: doi) if doi.present?
       end
 
       def dmp_params

@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-# frozen_dtring_literal: true
-
 require 'httparty'
 
 # Interface to Datacite's API
@@ -10,9 +8,6 @@ class DataciteService
   class << self
     def mint_doi(data_management_plan:, provenance:)
       json = json_from_template(provenance: provenance, dmp: data_management_plan)
-
-p json
-
       resp = HTTParty.post(DATACITE_MINT_URI, basic_auth: options, body: json, headers: headers)
       process_error(action: 'mint_doi', response: resp) unless resp.code == 201
 

@@ -1,6 +1,7 @@
 <ul class="other-contacts">
   <% person_data_management_plans.each do |pdmp| %>
     <% next unless pdmp.person.name.present? %>
+
     <% person = pdmp.person %>
     <strong><%= pdmp.role.humanize %></strong>: <%= person.name %> (<%= person.email %>) <%= link_to identifier_to_link(person.orcid), identifier_to_link(person.orcid) %> (X)
   <% end %>

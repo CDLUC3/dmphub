@@ -123,15 +123,17 @@ json.data do
       end
     end
 
-    if data_management_plan.projects.any?
-      json.fundingReferences do
-        project = data_management_plan.projects.first
-        json.array! project.awards do |award|
-          json.funderIdentifier award.funder_uri
-          json.funderIdentifierType 'Crossref Funder ID'
-          json.schemeUri 'https://www.crossref.org/services/funder-registry/'
-        end
-      end
-    end
+# Getting:
+#    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+    #if data_management_plan.projects.any?
+    #  json.fundingReferences do
+    #    project = data_management_plan.projects.first
+    #    json.array! project.awards do |award|
+    #      json.funderIdentifier award.funder_uri
+    #      json.funderIdentifierType 'Crossref Funder ID'
+    #      json.schemeUri 'https://www.crossref.org/services/funder-registry/'
+    #    end
+    #  end
+    #end
   end
 end

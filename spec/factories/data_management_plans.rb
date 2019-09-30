@@ -51,7 +51,8 @@ FactoryBot.define do
         end
         evaluator.identifiers_count.times do
           data_management_plan.identifiers << create(:identifier, category: 'doi',
-                                                                  identifiable: data_management_plan)
+                                                                  identifiable: data_management_plan,
+                                                                  descriptor: Identifier.descriptors.keys.sample)
         end
       end
     end

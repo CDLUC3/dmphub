@@ -11,7 +11,7 @@ FactoryBot.define do
 
       after :create do |technical_resource, evaluator|
         evaluator.identifier_count.times do
-          technical_resource.identifiers << create(:identifier, category: 'url', identifiable: technical_resource)
+          technical_resource.identifiers << create(:identifier, category: 'url', identifiable: technical_resource, descriptor: Identifier.descriptors.keys.sample)
         end
       end
     end

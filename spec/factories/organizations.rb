@@ -11,7 +11,7 @@ FactoryBot.define do
 
       after :create do |organization, evaluator|
         evaluator.identifier_count.times do
-          organization.identifiers << create(:identifier, category: 'ror', identifiable: organization)
+          organization.identifiers << create(:identifier, category: 'ror', identifiable: organization, descriptor: 'identified_by')
         end
       end
     end

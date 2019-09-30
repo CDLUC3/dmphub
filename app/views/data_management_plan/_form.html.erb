@@ -31,13 +31,12 @@
                person_data_management_plans: dmp.person_data_management_plans
              } %>
 </div>
-<div class="dm-staff-form">
-  <%= f.fields_for :person_data_management_plans do |pdmp| %>
-    <%= pdmp.label :role %>
-    <%= pdmp.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
-    <%= render partial: 'persons/form', locals: { f: pdmp, rel: 'other' } %>
-    <%= pdmp.button 'Add person' %>
-  <% end %>
+<div class="dm-staff-form association">
+  <%= button_tag 'Add a contact', type: 'button', class: 'add-association-button' %>
+  <div class="association-template">
+    <%= render partial: 'person_data_management_plans/form', locals: { f: f } %>
+  </div>
 </div>
 
 <hr>
+

@@ -8,7 +8,6 @@ module Users
       token = @auth_hash[:credentials]['token']
       @user = User.from_omniauth_orcid(auth_hash: @auth_hash)
       retry_extras(token: token)
-      session[:user_id] = @user.id
 
       if @user.new_record?
         render new_user_registration_path
@@ -27,9 +26,9 @@ module Users
 
     def retry_extras(token:)
       email = OrcidService.email_lookup(orcid: @user.orcid, bearer_token: token).first unless @user.email.present?
-      @user.update(email: email) unless @user.email.present? || email.nil?
+      @user.email = email unless @user.email.present? || email.nil?
       employment = OrcidService.employment_lookup(orcid: @user.orcid, bearer_token: token) unless @user.organization.present?
-      @user.organization << Organization.find_or_initialize_by(employment) unless employment.blank?
+      @user.organizations << Organization.find_or_initialize_by(employment) unless employment.blank?
     end
   end
 end

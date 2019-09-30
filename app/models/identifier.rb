@@ -3,7 +3,7 @@
 # Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
   enum category: %i[ark doi grid orcid ror url]
-
+  enum descriptor: %i[identified_by is_metadata_for funded_by described_by]
   # Associations
   belongs_to :identifiable, polymorphic: true
 
@@ -23,11 +23,13 @@ class Identifier < ApplicationRecord
       json = json.with_indifferent_access
       return nil unless json['value'].present?
 
-      find_or_initialize_by(
+      identifier = find_or_initialize_by(
         category: json.fetch('category', 'url'),
         provenance: provenance,
         value: json.fetch('value', '')
       )
+      identifier.descriptor = json['descriptor']
+      identifier
     end
   end
 

@@ -32,7 +32,7 @@ class User < ApplicationRecord
     def from_omniauth_orcid(auth_hash:)
       users = find_by_orcid_or_email(auth_hash: auth_hash)
       raise 'More than one user matches the ID or email returned by ORCID' if users.count > 1
-      return users.first if users.first.present?
+      return users.first if users.any?
 
       initialize_user_with_orcid(auth_hash: auth_hash)
     end
@@ -77,13 +77,13 @@ class User < ApplicationRecord
   def data_management_plans
     return unless role == 'user'
 
-    ident = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').first
-    return [] unless ident.present?
+    ident_ids = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').pluck(:identifiable_id)
+    return [] unless ident_ids.any?
 
-    person = Person.where(id: ident.identifiable_id).first
-    return [] unless person.present?
+    person_ids = Person.where(id: ident_ids)
+    return [] unless person_ids.any?
 
-    ids = PersonDataManagementPlan.where(person_id: person.id).pluck(:data_management_plan_id)
+    ids = PersonDataManagementPlan.where(person_id: person_ids).pluck(:data_management_plan_id)
     DataManagementPlan.where(id: ids)
   end
 

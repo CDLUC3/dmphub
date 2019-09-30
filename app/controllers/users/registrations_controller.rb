@@ -14,6 +14,13 @@ module Users
     def create
       @user = User.new(user_params.merge(password: TokenService.generate_uuid))
       if @user.save
+        # Create a Person record for the User that will be used if they create
+        # any DMPs via our entry form
+        person = Person.new(name: @user.name, email: @user.email)
+        person.identifiers << Identifier.new(category: 'orcid',
+          provenance: ConversionService.local_provenance, value: @user.orcid)
+        person.save
+
         sign_in @user
         redirect_to dashboard_path, notice: 'Thank you for registering!'
       else

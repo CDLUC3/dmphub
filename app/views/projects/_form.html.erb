@@ -1,4 +1,4 @@
-<%= f.fields_for :projects do |p| %>
+<%= f.fields_for :projects, Project.new do |p| %>
   <%= p.hidden_field :title %>
   <%= p.label :description, 'Abstract' %>
   <%= p.text_area :description %>

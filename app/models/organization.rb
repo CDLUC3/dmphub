@@ -40,7 +40,8 @@ class Organization < ApplicationRecord
       json['identifiers'].each do |identifier|
         ident = {
           'category': identifier.fetch('category', 'url'),
-          'value': identifier['value']
+          'value': identifier['value'],
+          'descriptor': 'identified_by'
         }
         id = Identifier.from_json(json: ident, provenance: provenance)
         org.identifiers << id unless org.identifiers.include?(id)

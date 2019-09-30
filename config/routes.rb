@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   # Handles DOI resolution to a landing page
   get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
 
-  resources :data_management_plan, except: %w[show edit update destroy]
+  resources :data_management_plan, only: %w[index new create]
 
   # API version 1
   namespace :api do

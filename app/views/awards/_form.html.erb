@@ -1,6 +1,11 @@
-<%= f.fields_for :awards do |a| %>
+<%= f.fields_for :awards, Award.new do |a| %>
   <%= a.label :funder_uri, 'Funding Agency' %>
   <%= a.text_field :funder_uri %>
   <%= a.label :status %>
   <%= a.select :status, Award.statuses.keys %>
+  <%= a.fields_for :identifiers, Identifier.new do |i| %>
+    <%= i.hidden_field :category, value: 'url' %>
+    <%= i.label :value, 'URI' %>
+    <%= i.text_field :value %>
+  <% end %>
 <% end %>

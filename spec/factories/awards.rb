@@ -12,7 +12,7 @@ FactoryBot.define do
 
       after :create do |award, evaluator|
         evaluator.identifier_count.times do
-          award.identifiers << create(:identifier, category: 'url', identifiable: award)
+          award.identifiers << create(:identifier, category: 'url', identifiable: award, descriptor: 'funded_by')
         end
       end
     end

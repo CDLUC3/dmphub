@@ -82,7 +82,8 @@ class DataManagementPlan < ApplicationRecord
         ident = {
           'provenance': provenance.to_s,
           'category': identifier.fetch('category', 'url'),
-          'value': identifier['value']
+          'value': identifier['value'],
+          'descriptor': 'is_metadata_for'
         }
         id = Identifier.from_json(json: ident, provenance: provenance)
         dmp.identifiers << id unless dmp.identifiers.include?(id)
@@ -114,6 +115,11 @@ class DataManagementPlan < ApplicationRecord
 
   def doi
     Identifier.find_by(category: 'doi', identifiable_type: 'DataManagementPlan', identifiable_id: id)&.value
+  end
+
+  def mint_doi(provenance:)
+    doi = DataciteService.mint_doi(data_management_plan: self, provenance: provenance)
+    identifiers << Identifier.new(category: 'doi', provenance: 'datacite', value: doi, descriptor: 'is_metadata_for')
   end
 
   private

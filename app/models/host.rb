@@ -45,7 +45,8 @@ class Host < ApplicationRecord
 
         ident = {
           'category': identifier.fetch('category', 'url'),
-          'value': identifier['value']
+          'value': identifier['value'],
+          'descriptor': 'identified_by'
         }
         id = Identifier.from_json(json: ident, provenance: provenance)
         host.identifiers << id unless host.identifiers.include?(id)

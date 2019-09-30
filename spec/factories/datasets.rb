@@ -24,7 +24,7 @@ FactoryBot.define do
 
       after :create do |dataset, evaluator|
         evaluator.identifier_count.times do
-          dataset.identifiers << create(:identifier, category: 'url', identifiable: dataset)
+          dataset.identifiers << create(:identifier, category: 'url', identifiable: dataset, descriptor: Identifier.descriptors.keys.sample)
         end
         evaluator.keyword_count.times do
           dataset.keywords << create(:keyword)

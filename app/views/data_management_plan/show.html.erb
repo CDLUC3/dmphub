@@ -36,10 +36,12 @@
       <p><%= @data_management_plan.description %></p>
     <% end %>
 
-    <h2>Relationships</h2>
     <% identifiers = @data_management_plan.identifiers.select { |id| id.category != 'doi' } %>
-    <% identifiers.each do |identifier| %>
-      <p>Publisher - <%= identifier.provenance %> - <%= identifier_to_link(identifier) %></p>
+    <% if identifiers.any? %>
+      <h2>Relationships</h2>
+      <% identifiers.each do |identifier| %>
+        <p><strong><%= humaniz_underscored(name: identifier.descriptor) %></strong><%= humaniz_underscored(name: identifier.provenance) %> - <%= identifier_to_link(identifier) %></p>
+      <% end %>
     <% end %>
   <% end %>
 

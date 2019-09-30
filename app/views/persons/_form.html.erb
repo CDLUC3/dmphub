@@ -1,9 +1,9 @@
-<%= f.fields_for :person do |p| %>
+<%= f.fields_for :person, Person.new do |p| %>
   <%= p.label :name %>
-  <%= p.text_field :name %>
+  <%= p.text_field :name, class: 'required' %>
   <%= p.label :email %>
   <%= p.email_field :email %>
-  <%= p.fields_for :identifiers do |i| %>
+  <%= p.fields_for :identifiers, Identifier.new do |i| %>
     <%= i.hidden_field :category, value: 'orcid' %>
     <%= i.label :value, 'ORCID' %>
     <%= i.text_field :value %>

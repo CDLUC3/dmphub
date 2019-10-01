@@ -27,7 +27,7 @@ module ApplicationHelper
   def humaniz_underscored(name:)
     return nil unless name.present?
 
-    name.to_s.split('_').map { |part| part.capitalize }.join(' ')
+    name.to_s.split('_').map(&:capitalize).join(' ')
   end
 
   def landing_page_path(dmp:)

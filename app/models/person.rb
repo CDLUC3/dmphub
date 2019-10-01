@@ -50,12 +50,12 @@ class Person < ApplicationRecord
     def identifiers_from_json(provenance:, json:, person:)
       # Attach any identifiers
       json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
-        identifier = Identifier.from_json(provenance: provenance, json: {
-                                            category: identifier.fetch('category', 'url'),
-                                            value: identifier['value'],
-                                            descriptor: 'identified_by'
-                                          })
-        person.identifiers << identifier unless person.identifiers.include?(identifier) || identifier.nil?
+        ident = Identifier.from_json(provenance: provenance, json: {
+                                       category: identifier.fetch('category', 'url'),
+                                       value: identifier['value'],
+                                       descriptor: 'identified_by'
+                                     })
+        person.identifiers << ident unless person.identifiers.include?(ident) || ident.nil?
       end
     end
 

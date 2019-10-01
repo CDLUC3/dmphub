@@ -23,7 +23,7 @@ class ConversionService
 
     # Returns the name of this application
     def local_provenance
-      return Rails.application.class.name.split('::').first.downcase
+      Rails.application.class.name.split('::').first.downcase
     end
 
     # Converts input form params to RDA Common Standard JSON
@@ -39,7 +39,7 @@ class ConversionService
           params: params['projects_attributes'],
           dmp_title: params['title']
         ).first,
-        'dm-staff': person_form_params_to_rda(
+        'dm_staff': person_form_params_to_rda(
           params: params['person_data_management_plans_attributes']
         )
       }
@@ -50,19 +50,19 @@ class ConversionService
       {
         'name': params['name'],
         'mbox': params['email'],
-        'contact_ids': identifier_form_params_to_rda(
-          params: { category: 'orcid', value: params['value'] }
-        )
+        'contact_ids': [identifier_form_params_to_rda(
+          params: { 'category': 'orcid', 'value': params['value'] }
+        )]
       }
     end
 
     # Converts input form params to RDA Common Standard JSON
     def person_form_params_to_rda(params:)
-      params.to_h.map do |idx, hash|
+      params.to_h.map do |_idx, hash|
         {
           'name': hash['person_attributes']['name'],
           'mbox': hash['person_attributes']['email'],
-          'user_ids': identifier_form_params_to_rda(params: hash['identifiers_attributes']),
+          'user_ids': hash['person_attributes']['identifiers_attributes'].map { |h| identifier_form_params_to_rda(params: h.last) },
           'contributor_type': hash['role']
         }
       end
@@ -70,7 +70,7 @@ class ConversionService
 
     # Converts input form params to RDA Common Standard JSON
     def project_form_params_to_rda(params:, dmp_title:)
-      params.to_h.map do |idx, hash|
+      params.to_h.map do |_idx, hash|
         {
           'title': hash['title'] || dmp_title,
           'description': hash['description'],
@@ -83,7 +83,7 @@ class ConversionService
 
     # Converts input form params to RDA Common Standard JSON
     def award_form_params_to_rda(params:)
-      params.to_h.map do |idx, hash|
+      params.to_h.map do |_idx, hash|
         {
           'funder_id': hash['funder_uri'],
           'funding_status': hash['status'],
@@ -94,13 +94,29 @@ class ConversionService
 
     # Converts input form params to RDA Common Standard JSON
     def identifier_form_params_to_rda(params:)
-      params.to_h.map do |idx, hash|
-        {
-          'provenance': hash['provenance'] || local_provenance,
-          'category': hash['category'] || 'url',
-          'value': hash['value']
-        }
-      end
+      p params
+
+      {
+        'provenance': params.fetch('provenance', params[:provenance]) || local_provenance,
+        'category': params.fetch('category', params[:category]) || 'url',
+        'value': params.fetch('value', params[:value])
+      }
+    end
+
+    def user_to_person(user:, role:)
+      return {} unless user.present? && user.is_a?(User)
+
+      ident = Identifier.find_by(value: user.orcid, category: 'orcid',
+                                 provenance: local_provenance, identifiable_type: 'Person')
+      person = Person.find(ident.identifiable_id) if ident.present?
+      return PersonDataManagementPlan.new(person: person, role: role) if person.present?
+
+      person = Person.find_or_initialize_by(name: user.name, email: user.email)
+      person.identifiers << Identifier.find_or_initialize_by(
+        provenance: local_provenance, category: 'orcid', value: user.orcid,
+        identifiable_type: 'Person'
+      )
+      PersonDataManagementPlan.new(person: person, role: role)
     end
   end
 end

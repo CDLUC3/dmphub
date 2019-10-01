@@ -1,11 +1,11 @@
 /* Required fields */
 const requiredFields = [
-  $('#data_management_plan_title'),
-  $('#data_management_plan_projects_attributes_0_start_on'),
-  $('#data_management_plan_projects_attributes_0_end_on'),
-  $('.primary-contact #contact_name'),
-  $('.primary-contact #contact_email'),
-  $('.primary-contact #contact_value'),
+  '#data_management_plan_title',
+  '#data_management_plan_projects_attributes_0_start_on',
+  '#data_management_plan_projects_attributes_0_end_on',
+  '.primary-contact #contact_name',
+  '.primary-contact #contact_email',
+  '.primary-contact #contact_value',
 ];
 
 const validateField = (context) => {
@@ -20,7 +20,6 @@ const validateField = (context) => {
 
 const validateRequirements = () => {
   var requirementsMet = true;
-
   $.each(requiredFields, (idx, el) => {
     if (!validateField(el)) {
       requirementsMet = false;
@@ -39,15 +38,13 @@ const validateRequirements = () => {
 
 const validateAssociation = (context) => {
   /* Loop through each section and check its required fields */
-  $.each($(context).find('.association-template'), (idx, section) => {
-    if ($(section).css('display') === 'block') {
-      var empty = true;
-      $.each($(section).find('.required'), (idx, el) => {
-        if (!validateField(el) && !empty) {
-          return false
-        }
-      });
-    }
+  $.each($(context).find('.association-entry'), (idx, section) => {
+    var empty = true;
+    $.each($(section).find('.required'), (idx, el) => {
+      if (!validateField(el)) {
+        return false
+      }
+    });
   });
   return true;
 };
@@ -55,6 +52,14 @@ const validateAssociation = (context) => {
 const removeAssociationTemplates = (context) => {
   $(context).find('.association-template').remove();
 };
+
+const displayFormErrors = (message) => {
+  $('.submission-errors').html(message);
+};
+
+const clearFormErrors = () => {
+  $('.submission-errors').html();
+}
 
 const initFormValidations = () => {
   /* keep the project and DMP titles synced */
@@ -72,18 +77,23 @@ const initFormValidations = () => {
 
   /* Only allow form submission if all requirements are met */
   $('form[action="/data_management_plan"]').submit((e) => {
+    clearFormErrors();
+
     if (!validateRequirements()) {
-      console.log('preventing');
       /* Required fields were not completed */
       e.preventDefault();
+      displayFormErrors('You must fill out all of the required fields!');
       return false;
 
     } else {
       removeAssociationTemplates(e.target);
+      return true;
     }
   });
 
-  console.log('loading form validations');
+  $('form[action="/data_management_plan"]').on('ajax:error', (e) => {
+    displayFormErrors(e.detail[0]['error']);
+  });
 };
 
 export default initFormValidations;

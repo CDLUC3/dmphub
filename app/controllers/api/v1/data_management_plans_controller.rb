@@ -5,6 +5,7 @@
 module Api
   module V1
     # Controller providing DMP functionality
+    # rubocop:disable Metrics/ClassLength
     class DataManagementPlansController < BaseApiController
       protect_from_forgery with: :null_session, only: [:create]
 
@@ -37,6 +38,8 @@ module Api
       # POST /data_management_plans
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/MethodLength
       def create
         @dmp = DataManagementPlan.from_json(json: dmp_params, provenance: current_client[:name])
         if @dmp.present? && @dmp.new_record? && @dmp.save
@@ -62,6 +65,8 @@ module Api
       rescue ActionController::ParameterMissing
         render_error errors: [{ dmp: 'invalid json format' }]
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/PerceivedComplexity
 
@@ -82,8 +87,7 @@ module Api
       end
 
       def render_error(errors:)
-
-p errors.inspect
+        p errors.inspect
 
         render 'error', locals: {
           caller: current_client[:name],
@@ -175,5 +179,6 @@ p errors.inspect
         distribution.licenses.destroy_all
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

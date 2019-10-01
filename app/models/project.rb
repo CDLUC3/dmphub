@@ -34,7 +34,8 @@ class Project < ApplicationRecord
       return unless json['funding'].present? && json['funding'].any?
 
       json['funding'].each do |award|
-        project.awards << Award.from_json(json: award, provenance: provenance, project: project)
+        award = Award.from_json(json: award, provenance: provenance, project: project)
+        project.awards << award if award.present? && !project.awards.include?(award)
       end
     end
   end

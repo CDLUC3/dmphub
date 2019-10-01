@@ -39,18 +39,22 @@ const removeSection = (context) => {
 };
 
 const initSectionHandlers = () => {
-  $('.association').on('click', '.add-association-button', (e) => {
-    addSection(e.target);
+  /* Add a section when the user clicks the button */
+  $('.association').on('click keypress', '.add-association-button', (e) => {
+    if (e.which === 13 || e.type === 'click') {
+      addSection(e.target);
+    }
   });
 
-  $('.association').on('click', '.remove-association', (e) => {
-    removeSection(e.target);
+  /* Remove the section when the user clicks the button */
+  $('.association').on('click keypress', '.remove-association', (e) => {
+    if (e.which === 13 || e.type === 'click') {
+      removeSection(e.target);
+    }
   });
 
   /* Hide all section templates by default */
   $('.association .association-template').hide();
-
-  console.log('loading sections');
 };
 
 export default initSectionHandlers;

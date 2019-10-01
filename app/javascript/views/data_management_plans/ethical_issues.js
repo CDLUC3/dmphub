@@ -1,28 +1,3 @@
-/*
-$(() => {
-  const ethicalIssues = $('#data_management_plan_ethical_issues');
-  const ethicalDetails = $('.ethical-considerations');
-
-  const toggleEthicalDetails = () => {
-    if (ethicalIssues.find('option:selected').val() === 'yes' ) {
-      ethicalDetails.show();
-    } else {
-      ethicalDetails.hide();
-    }
-  };
-
-
-    ethicalIssues.on('change', () => {
-      toggleEthicalDetails();
-    });
-
-    toggleEthicalDetails();
-
-    console.log('loading ethics');
-  });
-});
-*/
-
 const toggleEthicalDetails = ((selector, context) => {
   if ($(selector).find('option:selected').val() === 'yes' ) {
     $(context).show();
@@ -40,8 +15,6 @@ const initEthicalIssues = () => {
   });
 
   toggleEthicalDetails(ethicalIssues, ethicalDetails);
-
-  console.log('loading ethics');
 };
 
 export default initEthicalIssues;

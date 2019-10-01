@@ -18,6 +18,6 @@ namespace :initialize do
   desc 'Create a default client application for API access/testing'
   task default_client_app: :environment do
     Doorkeeper::Application.create(name: ConversionService.local_provenance,
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
+                                   redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
   end
 end

@@ -20,39 +20,51 @@ class DataManagementPlanController < ApplicationController
   end
 
   # POST /data_management_plans
+  # rubocop:disable Metrics/MethodLength
   def create
     @dmp = DataManagementPlan.from_json(
       provenance: ConversionService.local_provenance,
       json: params_to_rda_json
     )
+    add_current_user_to_dmp
+
     if @dmp.save
       begin
         @dmp.mint_doi(provenance: ConversionService.local_provenance)
 
-        if @dmp.mint_doi.present?
+        if @dmp.doi.present?
           redirect_to dashboard_path, notice: 'Successuly registered your Data Management Plan'
         else
           log_errors(errors: 'Unable to generate a DOI at this time.',
-            action: 'create', params: data_management_plan_params)
-          flash[:alert] = 'Unable to generate a DOI at this time.'
-          render 'new'
+                     action: 'create', params: data_management_plan_params)
+          render json: { error: 'Unable to generate a DOI at this time.' },
+                 status: :bad_request
         end
-
-      rescue StandardError => se
-        log_errors(errors: se.message, action: 'create',
-          params: data_management_plan_params)
-        flash[:alert] = se.message
-        render 'new'
+      rescue StandardError => e
+        log_errors(errors: e.message, action: 'create',
+                   params: data_management_plan_params)
+        flash[:alert] = e.message
+        render json: { error: "Unable to register your DMP! #{e.message}" },
+               status: 500
       end
     else
-      errs = @dmp.errors.collect { |e, m| "#{e} - #{m}" }.join(', ')
-      log_errors(errors: errs, action: 'create', params: dmp)
-      flash[:alert] = "Unable to register your DMP! #{errs}"
-      render 'new'
+      errs = @dmp.errors.collect { |er, m| "#{er} - #{m}" }.join(', ')
+      log_errors(errors: errs, action: 'create', params: @dmp)
+      render json: { error: "Unable to register your DMP! #{errs}" },
+             status: :bad_request
     end
   end
 
+  # rubocop:enable Metrics/MethodLength
+
   private
+
+  def add_current_user_to_dmp
+    return if @dmp.persons.collect(&:email).include?(current_user.email)
+
+    pdmp = ConversionService.user_to_person(user: current_user, role: 'creator')
+    @dmp.person_data_management_plans << pdmp
+  end
 
   def contact_params
     params.require(:contact).permit(:name, :email, :value)
@@ -62,7 +74,7 @@ class DataManagementPlanController < ApplicationController
     params.require(:data_management_plan).permit(
       :title, :description, :language, :ethical_issues, :ethical_issues_report,
       :ethical_issues_description, projects_attributes: project_params,
-      person_data_management_plans_attributes: person_data_management_plan_params
+                                   person_data_management_plans_attributes: person_data_management_plan_params
     )
   end
 
@@ -75,7 +87,7 @@ class DataManagementPlanController < ApplicationController
     )
     dmp['contact'] = contact
 
-p dmp.inspect
+    p dmp.inspect
 
     dmp
   end
@@ -103,7 +115,6 @@ p dmp.inspect
   end
 
   def identifier_params
-    [:category, :value]
+    %i[category value]
   end
-
 end

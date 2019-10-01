@@ -10,6 +10,7 @@ class TechnicalResource < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/MethodLength
     def from_json(json:, provenance:, dataset: nil)
       return nil unless json.present? && provenance.present? &&
                         json['identifier'].present? &&
@@ -35,5 +36,6 @@ class TechnicalResource < ApplicationRecord
       tech_resource.identifiers << Identifier.from_json(json: ident, provenance: provenance)
       tech_resource
     end
+    # rubocop:enable Metrics/MethodLength
   end
 end

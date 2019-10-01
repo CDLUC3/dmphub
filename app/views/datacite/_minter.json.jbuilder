@@ -2,6 +2,7 @@
 
 json.ignore_nil!
 
+# rubocop:disable Metrics/BlockLength
 json.data do
   json.type 'dois'
 
@@ -29,14 +30,14 @@ json.data do
               json.array! person.organizations do |organization|
                 json.name organization.name
 
-# Getting:
-#    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-                #ror = organization.identifiers.select { |i| i.category == 'ror' }.first
-                #if ror.present?
+                # Getting:
+                #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+                # ror = organization.identifiers.select { |i| i.category == 'ror' }.first
+                # if ror.present?
                 #  json.schemeUri 'https://ror.org'
                 #  json.nameIdentifier ror.value
                 #  json.nameIdentifierScheme 'ROR'
-                #end
+                # end
               end
             end
           end
@@ -55,7 +56,7 @@ json.data do
       end
     end
 
-    contributors = data_management_plan.person_data_management_plans.select { |per| per.role != 'primary_contact' }
+    contributors = data_management_plan.person_data_management_plans.reject { |per| per.role == 'primary_contact' }
     if contributors.any?
       json.contributors contributors do |contributor|
         next unless contributor.person.present?
@@ -70,14 +71,14 @@ json.data do
             json.array! person.organizations do |organization|
               json.name organization.name
 
-# Getting:
-#    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-              #ror = organization.identifiers.select { |i| i.category == 'ror' }.first
-              #if ror.present?
+              # Getting:
+              #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+              # ror = organization.identifiers.select { |i| i.category == 'ror' }.first
+              # if ror.present?
               #  json.schemeUri 'https://ror.org'
               #  json.nameIdentifier ror.value
               #  json.nameIdentifierScheme 'ROR'
-              #end
+              # end
             end
           end
         end
@@ -86,7 +87,7 @@ json.data do
         if orcid.present?
           json.nameIdentifiers do
             json.array! [orcid] do |ident|
-              #json.schemeUri 'https://orcid.org'
+              # json.schemeUri 'https://orcid.org'
               json.nameIdentifier "https://orcid.org/#{ident.value}"
               json.nameIdentifierScheme 'ORCID'
             end
@@ -123,9 +124,9 @@ json.data do
       end
     end
 
-# Getting:
-#    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-    #if data_management_plan.projects.any?
+    # Getting:
+    #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+    # if data_management_plan.projects.any?
     #  json.fundingReferences do
     #    project = data_management_plan.projects.first
     #    json.array! project.awards do |award|
@@ -134,6 +135,7 @@ json.data do
     #      json.schemeUri 'https://www.crossref.org/services/funder-registry/'
     #    end
     #  end
-    #end
+    # end
   end
 end
+# rubocop:enable Metrics/BlockLength

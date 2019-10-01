@@ -4,7 +4,8 @@
 class PersonDataManagementPlan < ApplicationRecord
   self.table_name = 'persons_data_management_plans'
 
-  enum role: %i[primary_contact curator author principal_investigator data_librarian]
+  enum role: %i[primary_contact curator author principal_investigator
+                data_librarian creator]
 
   # Associations
   belongs_to :data_management_plan

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # A data management plan
+# rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
   include Identifiable
 
@@ -57,6 +58,7 @@ class DataManagementPlan < ApplicationRecord
       dmp.person_data_management_plans << PersonDataManagementPlan.new(
         role: 'primary_contact', person: contact
       )
+
       # Handle other persons related to the DMP
       json.fetch('dm_staff', []).each do |staff|
         person = Person.from_json(json: staff, provenance: provenance)
@@ -118,8 +120,16 @@ class DataManagementPlan < ApplicationRecord
   end
 
   def mint_doi(provenance:)
-    doi = DataciteService.mint_doi(data_management_plan: self, provenance: provenance)
-    identifiers << Identifier.new(category: 'doi', provenance: 'datacite', value: doi, descriptor: 'is_metadata_for')
+    doi = DataciteService.mint_doi(
+      data_management_plan: self,
+      provenance: provenance
+    )
+    identifiers << Identifier.new(
+      category: 'doi',
+      provenance: 'datacite',
+      value: doi,
+      descriptor: 'is_metadata_for'
+    )
   end
 
   private
@@ -141,3 +151,4 @@ class DataManagementPlan < ApplicationRecord
     save
   end
 end
+# rubocop:enable Metrics/ClassLength

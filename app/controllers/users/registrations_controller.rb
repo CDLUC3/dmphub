@@ -18,7 +18,7 @@ module Users
         # any DMPs via our entry form
         person = Person.new(name: @user.name, email: @user.email)
         person.identifiers << Identifier.new(category: 'orcid',
-          provenance: ConversionService.local_provenance, value: @user.orcid)
+                                             provenance: ConversionService.local_provenance, value: @user.orcid)
         person.save
 
         sign_in @user

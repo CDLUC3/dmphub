@@ -37,6 +37,8 @@ class Organization < ApplicationRecord
     end
 
     def identifiers_from_json(provenance:, json:, org:)
+      return nil unless json.fetch('identifiers', []).any?
+
       json['identifiers'].each do |identifier|
         ident = {
           'category': identifier.fetch('category', 'url'),

@@ -18,6 +18,11 @@ class Award < ApplicationRecord
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, project: nil)
+
+p "JSON PRESENT? #{json.present?}"
+p "PROV PRESENT? #{provenance.present?}"
+p "FUNDER ID PRESENT? #{json['funder_id'].present?}"
+
       return nil unless json.present? && provenance.present? && json['funder_id'].present?
 
       json = json.with_indifferent_access

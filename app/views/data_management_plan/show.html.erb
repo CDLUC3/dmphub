@@ -14,10 +14,24 @@
       <% if contact.organizations.any? %>
         <p><strong><%= contact.organizations.length == 1 ? 'Organization' : 'Organizations' %></strong></p>
         <% contact.organizations.each do |organization| %>
-          <p><%= organization.name %> <%= identifier_to_link(organization.identifiers.select { |id| id.category == 'ror' }.first) %></p>
+          <p><%= organization.name %> <strong>ROR:</strong> <%= identifier_to_link(organization.identifiers.select { |id| id.category == 'ror' }.first) %></p>
         <% end %>
       <% end %>
     </div>
+
+    <% pdmps = @data_management_plan.persons %>
+    <% if pdmps.any? %>
+      <div style="border: 1px solid #000;">
+        <h3>Staff</h3>
+        <% pdmps.each do |pdmp| %>
+          <p><strong><%= pdmp.role.humanize %></strong> <%= pdmp.person.name %>
+            <% if pdmp.person.organizations.first.present? %>
+              &nbsp;from <%= pdmp.person.organizations.first.name %>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    <% end %>
 
     <% project = @data_management_plan.projects.first %>
     <p><strong>Project Start</strong>: <%= safe_date(project.start_on) %> &nbsp; <strong>End</strong>: <%= safe_date(project.end_on) %></p>
@@ -26,7 +40,9 @@
       <div style="border: 1px solid #000;">
         <h3>Funding</h3>
         <% project.awards.each do |award| %>
-          <p><%= award.funder_uri %>&nbsp;<strong><%= award.status %></strong>
+          <% name = FundrefService.find_by_uri(uri: award.funder_uri) %>
+          <p><%= link_to (name.present? ? name : award.funder_uri), award.funder_uri %>&nbsp;<strong> status:</strong> <%= award.status %>
+          <%= award.identifiers.first.present? ? "&nbsp;#{link_to award.identifiers.first.value, award.identifiers.first.value}".html_safe : '' %>
         <% end %>
       </div>
     <% end %>

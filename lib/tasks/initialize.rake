@@ -20,4 +20,12 @@ namespace :initialize do
     Doorkeeper::Application.create(name: ConversionService.local_provenance,
                                    redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
   end
+
+  desc ' Create the default apps for the DMPTool and the NSF Awards API Scanner'
+  task dmptool_nsf_client_apps: :environment do
+    Doorkeeper::Application.create(name: 'dmptool',
+                                   redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
+    Doorkeeper::Application.create(name: 'national_science_foundation',
+                                   redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
+  end
 end

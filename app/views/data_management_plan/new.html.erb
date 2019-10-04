@@ -13,6 +13,11 @@
   <%= render partial: '/data_management_plan/form',
              locals: { f: f, dmp: @dmp } %>
 
+  <h2>Research outputs (+/-)</h2>
+  <p>Tell us about your anticipated research outputs</p>
+  <%= render partial: '/datasets/index', locals: { datasets: @dmp.datasets } %>
+  <%= render partial: '/datasets/form', locals: { dataset: Dataset.new } %>
+
   <%= f.submit 'Register your plan', id: 'register-button' %>
   <div class="submission-errors"></div>
 <% end %>

@@ -16,7 +16,64 @@ module Api
 
       # GET /data_management_plans
       def index
-        dmps = DataManagementPlan.by_client(client_id: current_client[:id]).order(updated_at: :desc)
+        # TODO: We need a better way to distinguish between client types and who can see what
+        unless current_client[:name] === 'national_science_foundation'
+          dmps = DataManagementPlan.by_client(client_id: current_client[:id]).order(updated_at: :desc)
+
+        else
+          query = <<-SQL
+            SELECT dmp.id, dmp.title, dmp.created_at, dmp.updated_at,
+                   (SELECT i.value FROM identifiers i
+                    WHERE i.identifiable_id = dmp.id
+                    AND i.identifiable_type = 'DataManagementPlan'
+                    AND i.category = 1),
+                   (SELECT GROUP_CONCAT(DISTINCT p.email ORDER BY p.email SEPARATOR ', ')
+                    FROM persons_data_management_plans pdmp
+                      INNER JOIN persons p ON pdmp.person_id = p.id
+                    WHERE pdmp.data_management_plan_id = dmp.id
+                    AND pdmp.role = 'primary_contact'),
+                   (SELECT GROUP_CONCAT(
+                      DISTINCT
+                      CONCAT(p.name, CONCAT('|', o.name))
+                      ORDER BY p.name SEPARATOR ', ')
+                    FROM persons_data_management_plans pdmp
+                      INNER JOIN persons p ON pdmp.person_id = p.id
+                      LEFT OUTER JOIN persons_organizations po ON po.person_id = p.id
+                      LEFT OUTER JOIN organizations o ON po.organization_id = o.id
+                    WHERE pdmp.data_management_plan_id = dmp.id)
+            FROM data_management_plans dmp
+              INNER JOIN projects proj ON dmp.id = proj.data_management_plan_id
+              INNER JOIN awards a ON proj.id = a.project_id
+            WHERE a.funder_uri = 'https://dx.doi.org/10.13039/100000001'
+              AND (LENGTH(dmp.title) - LENGTH(REPLACE(dmp.title, ' ', '')) + 1) > 5
+            LIMIT 250
+          SQL
+
+          results = ActiveRecord::Base.connection.execute(query)
+
+          # TODO: Need to think security through!
+          #       Just giving NSF Awards API authorization on the DMP by default
+          #       Might make sense to do it when we first receive the DMP if it
+          #       is funded by NSF?
+          #results.each do |result|
+          #  OauthAuthorization.find_or_create_by(
+          #    oauth_application: doorkeeper_token.application,
+          #    data_management_plan_id: result[0]
+          #  )
+          #end
+
+          dmps = results.collect do |result|
+            OpenStruct.new({
+              title: result[1],
+              created_at: result[2],
+              updated_at: result[3],
+              doi: result[4],
+              primary_contact: result[5],
+              authors: result[6]
+            })
+          end
+        end
+
         render 'index', locals: {
           data_management_plans: dmps,
           caller: current_client[:name],
@@ -58,9 +115,13 @@ module Api
             render_error errors: (errs[:errors] << @errors)
           end
         else
-          errs = { 'errors': (@dmp.errors.collect { |e, m| { "#{e}": m } } || []) }
-          errs[:errors] << { dmp: 'already exists' } unless @dmp.new_record?
-          render_error errors: errs[:errors]
+          if @dmp.errors.any?
+            errs = { 'errors': (@dmp.errors.collect { |e, m| { "#{e}": m } } || []) }
+            errs[:errors] << { dmp: 'already exists' } unless @dmp.new_record?
+            render_error errors: errs[:errors]
+          else
+            render_show dmp: @dmp, status: 201
+          end
         end
       rescue ActionController::ParameterMissing
         render_error errors: [{ dmp: 'invalid json format' }]
@@ -71,19 +132,49 @@ module Api
       # rubocop:enable Metrics/PerceivedComplexity
 
       # PUT /data_management_plans/:id
-      def update; end
+      def update
+        if @dmp.present?
+          if dmp_params['dm_staff'].present? && dmp_params['dm_staff'].any?
+            dmp_params['dm_staff'].each do |person|
+
+p person.inspect
+
+              per = Person.from_json(json: person, provenance: current_client[:name])
+
+p per.inspect
+
+              pdmp = PersonDataManagementPlan.new(
+                person: per, role: person.fetch('contributor_type', 'author')
+              )
+              existing = @dmp.person_data_management_plans.collect { |r| r.person }
+              @dmp.person_data_management_plans << pdmp unless existing.include?(per)
+            end
+          end
+
+          award = Award.from_json(json: dmp_params['project']['funding'].first,
+            provenance: current_client[:name], project: @dmp.projects.first)
+          award.save unless award.new_record?
+          @dmp.projects.first.awards << award if award.new_record?
+
+          @dmp.save
+
+          render_show dmp: @dmp, status: 200
+        else
+          render_error errors: [{ dmp: 'not found' }]
+        end
+      end
 
       # DELETE /data_management_plans/:id
       def delete; end
 
       private
 
-      def render_show(dmp:)
+      def render_show(dmp:, status:)
         render 'show', locals: {
           data_management_plan: dmp,
           caller: current_client[:name],
           source: "POST #{api_v1_data_management_plans_url}"
-        }, status: 201
+        }, status: status
       end
 
       def render_error(errors:)

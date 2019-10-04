@@ -43,7 +43,8 @@ class Person < ApplicationRecord
     def initialize_from_json(provenance:, json:)
       ids = json.fetch('user_ids', json.fetch('contact_ids', []))
       person = find_by_identifiers(provenance: provenance, json_array: ids) if ids.any?
-      person = find_or_initialize_by(email: json['mbox']) if person.nil?
+      person = find_or_initialize_by(email: json['mbox']) if person.nil? && json['mbox'].present?
+      person = Person.new(name: json['name']) unless person.present?
       person
     end
 

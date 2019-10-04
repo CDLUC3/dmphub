@@ -48,6 +48,8 @@ gem 'recaptcha'
 # A simple HTTP and REST client for Ruby, inspired by the Sinatra's microframework style of specifying
 # actions: get, put, post, delete.
 gem 'rest-client'
+# Serrano is a low level client for Crossref APIs
+gem 'serrano'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a

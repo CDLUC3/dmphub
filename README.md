@@ -11,6 +11,10 @@ This repository covers work on a machine actionable DMP hub, from work funded by
 
 ![](public/topology.jpg)
 
+## Feedback
+
+We welcome any and all feedback. Please use Github Issues to provide suggestions or to report a bug, and a PR if if you wish to contribute.
+
 ## Installation
 
 - Clone this repository (you must have Ruby 2.4+)

@@ -17,6 +17,8 @@ module Api
       # GET /data_management_plans
       def index
         # TODO: We need a better way to distinguish between client types and who can see what
+        # This will all be replaced shortly with something more stable. It is a temporary query
+        # designed to test a specific interaction with an external system
         unless current_client[:name] === 'national_science_foundation'
           dmps = DataManagementPlan.by_client(client_id: current_client[:id]).order(updated_at: :desc)
 

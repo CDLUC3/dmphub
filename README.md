@@ -9,6 +9,7 @@ This repository covers work on a machine actionable DMP hub, from work funded by
 5) A separate application that will gather DOIs from the hub, scan the NSF awards API, and then return any award info to the Hub
 6) The Hub then sends any award info returned in step 5 to Datacite via their EventData api
 
+![](public/topology.jpg)
 
 ## API
 

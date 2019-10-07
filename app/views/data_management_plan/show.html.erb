@@ -40,9 +40,8 @@
       <div style="border: 1px solid #000;">
         <h3>Funding</h3>
         <% project.awards.each do |award| %>
-          <% name = FundrefService.find_by_uri(uri: award.funder_uri) %>
-          <p><%= link_to (name.present? ? name : award.funder_uri), award.funder_uri %>&nbsp;<strong> status:</strong> <%= award.status %>
-          <%= award.identifiers.first.present? ? "&nbsp;#{link_to award.identifiers.first.value, award.identifiers.first.value}".html_safe : '' %>
+          <p><%= link_to (award.funder_name.present? ? award.funder_name : award.funder_uri), award.funder_uri %>&nbsp;<strong> status:</strong> <%= award.status %>
+          <%= award.identifiers.first.present? ? " #{link_to award.identifiers.first.value, award.identifiers.first.value}".html_safe : '' %>
         <% end %>
       </div>
     <% end %>
@@ -56,7 +55,7 @@
     <% if identifiers.any? %>
       <h2>Relationships</h2>
       <% identifiers.each do |identifier| %>
-        <p><strong><%= humaniz_underscored(name: identifier.descriptor) %></strong><%= humaniz_underscored(name: identifier.provenance) %> - <%= identifier_to_link(identifier) %></p>
+        <p><strong><%= humaniz_underscored(name: identifier.descriptor) %></strong> <%= humaniz_underscored(name: identifier.provenance) %> - <%= identifier_to_link(identifier) %></p>
       <% end %>
     <% end %>
   <% end %>

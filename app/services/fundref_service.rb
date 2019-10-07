@@ -1,14 +1,23 @@
 # frozen_string_literal: true
 
 require 'serrano'
+require 'linkeddata'
 
 # Service that communicates with the Fundref API
 class FundrefService
+
+  include RDF
+
   class << self
 
     # Searches the Fundref API for the name
     def find_by_name(name:)
+      return nil unless name.present?
 
+      json = Serrano.funders()
+      process_error(action: 'find_by_name', response: json) unless json.fetch('status', 'bad request') != 'ok'
+
+      json.fetch('message', {}).fetch('items', [])
     end
 
     # Retrives the metadata for the given Fundref DOI
@@ -23,6 +32,17 @@ class FundrefService
     rescue StandardError => e
       process_error(action: 'find_by_uri', response: json, msg: e.message)
       nil
+    end
+
+    def retrieve_full_funder_rdf
+      uri = 'https://gitlab.com/crossref/open_funder_registry/blob/master/registry.rdf'
+
+      repo = RDF::Repository.load(uri)
+      repo.each_statement do |statement|
+        #puts "subject: #{statement.subject}, predicate: #{statement.predicate}, object: #{statement.object}"
+        p statement.to_triple
+      end
+
     end
 
     private

@@ -46,7 +46,6 @@ module Api
               INNER JOIN awards a ON proj.id = a.project_id
             WHERE a.funder_uri = 'https://dx.doi.org/10.13039/100000001'
               AND (LENGTH(dmp.title) - LENGTH(REPLACE(dmp.title, ' ', '')) + 1) > 5
-            LIMIT 250
           SQL
 
           results = ActiveRecord::Base.connection.execute(query)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_30_154930) do
+ActiveRecord::Schema.define(version: 2019_10_04_172100) do
 
   create_table "awards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "project_id"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2019_09_30_154930) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "funder_name"
     t.index ["funder_uri"], name: "index_awards_on_funder_uri"
     t.index ["project_id"], name: "index_awards_on_project_id"
     t.index ["status"], name: "index_awards_on_status"

@@ -12,6 +12,9 @@ class DataManagementPlanController < ApplicationController
     render status: 404 if doi.nil?
 
     @data_management_plan = DataManagementPlan.find(doi.identifiable_id)
+
+FundrefService.retrieve_full_funder_rdf
+
   end
 
   # GET /data_management_plan/new

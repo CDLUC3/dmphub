@@ -37,6 +37,10 @@ gem 'doorkeeper'
 gem 'doorkeeper-jwt'
 # Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 gem 'httparty'
+# This is a meta-distribution of RDF.rb including all currently available and usable
+# parsing/serialization extensions, intended to make producing and consuming Linked Data
+# with Ruby as quick & easy as possible.
+gem 'linkeddata'
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
 gem 'mysql2', '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.

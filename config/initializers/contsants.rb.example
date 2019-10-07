@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+DATACITE_SHOULDER = '10.12345'
+DATACITE_CLIENT_ID = 'MY.CLIENT_ID'
+DATACITE_CLIENT_SECRET = 'my_client_secret'
+DATACITE_MINT_URI = 'https://api.test.datacite.org/dois'
+
+ORCID_URI = 'https://sandbox.orcid.org/'
+ORCID_AUTH_URI = 'https://sandbox.orcid.org/oauth/authorize'
+ORCID_TOKEN_URI = 'https://api.sandbox.orcid.org/oauth/token'
+ORCID_API_URI = 'https://api.sandbox.orcid.org/v2.1'
+
+if Rails.env == 'production'
+  # Override default test/development constants here
+
+end

@@ -1,15 +1,28 @@
 # DMPHub
 
-This repository covers work on a machine actionable DMP hub, from work funded by an NSF EAGER grant (https://www.nsf.gov/awardsearch/showAward?AWD_ID=1745675&HistoricalAwards=false). This 'Hub' application:
+This repository covers work on a machine actionable DMP hub, from work funded by an NSF EAGER grant (https://www.nsf.gov/awardsearch/showAward?AWD_ID=1745675&HistoricalAwards=false). This 'Hub' application provides the following services:
 
-1) Accepts common standard metadata and PDF from systems like DMPRoadmap
-2) Sends that metadata to Datacite to mint a DOI (which it returns to the system from step 1)
-3) Provides landing pages for DMPs registered with the Hub
-4) Provides a simple entry form for users who want to manually enter the DMP info
-5) A separate application that will gather DOIs from the hub, scan the NSF awards API, and then return any award info to the Hub
-6) The Hub then sends any award info returned in step 5 to Datacite via their EventData api
+1) Allows DMPs to be 'registered' via an API call (in the illustration below this is repredented by a system based off of the [DMPRoadmap](https://github.com/DMPRoadmap/roadmap) codebase). For an example of how the DMPRoadmap codebase interacts with the Hub, please refer to the `app/services/dmphub/registration_service.rb` in the `dmphub` branch.
+2) This registration process mints a Datacite DOI for the DMP and returns that DOI back to the system that has registered their DMP.
+3) Once the DMP has been registered, its DOI resolves to a landing page that is hosted by the Hub. This landing page has an HTML version for humans wishing to view the DMP's metadata as well as a JSON version for machines wishing to make use of the metadata
+4) Provides API endpoints that allow other external systems to gather pertinent DMP metadata and enrich that metadata. In our example we use a [simple application](https://github.com/CDLUC3/nsf_award_scanner) that harvests award information from the NSF Awards API. The harvester app receives a list of DMP metadata and then searches the awards API for matching awards. If any are found it sends that information back to the hub.
+5) The Hub then sends the award information to Datacite's EventData to assert the relationship between the DMP and the Award
+6) The Hub preserves a copy of the DMP metadata and PDF in a repository (for future development)
 
 ![](public/topology.jpg)
+
+## Installation
+
+- Clone this repository (you must have Ruby 2.4+)
+- Manually add the following files to the config directory: `master.key`, `credentials.yml.enc`, `database.yml`, `initializers/constants.rb`, `initializers/devise.rb`. Refer to the examples of these files in the config directory. Then update the information in those files accordingly.
+- Run `bundle install`
+- Run `yarn install`
+- Run `bundle exec rake db:migrate`
+- Run `bundle exec rake initialize:all`
+- Run `rails s` to start the application and then go to `http://localhost:3000` and login as the temporary system admin account: username - super.user@example.org, password password_123 (this account gets created in the `initialize:all` task. you should of course change it when appropriate)
+
+You can also optionally edit and run the `bundle exec rake initialize:dmptool_nsf_client_apps` task to authoriize any applications you need to use the API
+
 
 ## API
 
@@ -18,7 +31,7 @@ This repository covers work on a machine actionable DMP hub, from work funded by
 You must first register your application with the DMPHub (this is currently an entry in the database table `oauth_applications`)
 
 ```shell
-curl -v -X POST http://dmptool-stg.cdlib.org/oauth/token -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -d "grant_type=client_credentials&client_id=[my application uid]&client_secret=[my application secret]"
+curl -v -X POST http://localhost:3000/oauth/token -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8" -H "Accept: application/json" -d "grant_type=client_credentials&client_id=[my application uid]&client_secret=[my application secret]"
 ```
 
 Returns `401 Unauthorized` for invalid client credentials or a `200` and the authorization token as JSON like the following:
@@ -70,13 +83,25 @@ curl -v -X http://localhost:3000/api/v1/data_management_plans
   -H "Authorization: Bearer [Your Authorization Token]"
   ```
 
-### Retrieve a specific DMP by its DOI or DMPHub ID
+### Retrieve a specific DMP by its DOI
 
 The DMP is returned as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json).
 
 ```shell
-curl -v http://localhost:3000/api/v1/data_management_plans/[DMP id]
+curl -v http://localhost:3000/api/v1/data_management_plans/[DOI]
   -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
   -H "Accept: application/json"
   -H "Authorization: Bearer [Your Authorization Token]"
 ```
+
+### Update a DMP
+
+You should send the DMP as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json).
+
+```shell
+curl -v -X 'PUT' http://localhost:3000/api/v1/data_management_plans
+  -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
+  -H "Accept: application/json"
+  -H "Authorization: Bearer [Your Authorization Token]"
+
+

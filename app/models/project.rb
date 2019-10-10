@@ -18,6 +18,9 @@ class Project < ApplicationRecord
       return nil unless json.present? && provenance.present? && json['title'].present? &&
                         json['start_on'].present? && json['end_on'].present?
 
+p "PROJECT:"
+p json
+
       json = json.with_indifferent_access
       project = find_or_initialize_by(data_management_plan: data_management_plan, title: json['title'])
       project.description = json['description']

@@ -12,9 +12,6 @@ class DataManagementPlanController < ApplicationController
     render status: 404 if doi.nil?
 
     @data_management_plan = DataManagementPlan.find(doi.identifiable_id)
-
-FundrefService.retrieve_full_funder_rdf
-
   end
 
   # GET /data_management_plan/new
@@ -58,16 +55,13 @@ FundrefService.retrieve_full_funder_rdf
     end
   end
 
+  def fundref_autocomplete
+    FundrefService.find_by_name(name: autocomplete_params.gsub())
+  end
+
   # rubocop:enable Metrics/MethodLength
 
   private
-
-  def add_current_user_to_dmp
-    return if @dmp.persons.collect(&:email).include?(current_user.email)
-
-    pdmp = ConversionService.user_to_person(user: current_user, role: 'creator')
-    @dmp.person_data_management_plans << pdmp
-  end
 
   def contact_params
     params.require(:contact).permit(:name, :email, :value)
@@ -79,6 +73,26 @@ FundrefService.retrieve_full_funder_rdf
       :ethical_issues_description, projects_attributes: project_params,
                                    person_data_management_plans_attributes: person_data_management_plan_params
     )
+  end
+
+  def autocomplete_params
+    params.require(:data_management_plan).permit(:funder_name)
+  end
+
+  def cleanse_autocomplete_text(text:)
+    # Remove non alphanumeric, space or dash characters
+    ret = text.gsub!(/[^0-9a-z\s\-]/i, '') if text.match?(/[^0-9a-z\s\-]/i)
+    # If ret is nil for any reason just use the unaltered title
+    ret = text if ret.nil?
+    # Remove stop words like 'The', 'An', etc.
+    ret.split(' ').select { |w| !Stopwords.is?(w) }.join(' ')
+  end
+
+  def add_current_user_to_dmp
+    return if @dmp.persons.collect(&:email).include?(current_user.email)
+
+    pdmp = ConversionService.user_to_person(user: current_user, role: 'creator')
+    @dmp.person_data_management_plans << pdmp
   end
 
   def params_to_rda_json

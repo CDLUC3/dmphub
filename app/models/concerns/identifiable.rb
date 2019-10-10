@@ -5,7 +5,7 @@ module Identifiable
   extend ActiveSupport::Concern
 
   included do
-    has_many :identifiers, as: :identifiable
+    has_many :identifiers, as: :identifiable, dependent: :destroy
 
     class << self
       def find_by_identifiers(provenance:, json_array:)
@@ -32,7 +32,7 @@ module Identifiable
           category: json['category'],
           identifiable_type: name
         ).first
-        find(identifier.identifiable_id) if identifier.present?
+        where(id: identifier.identifiable_id).first if identifier.present?
       end
     end
   end

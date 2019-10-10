@@ -28,4 +28,14 @@ namespace :initialize do
     Doorkeeper::Application.create(name: 'national_science_foundation',
                                    redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
   end
+
+  desc 'Fill in the funder name for any awards with a funder_uri but no name'
+  task funder_names_from_fundref: :environment do
+    Award.where(funder_name: nil).pluck(:funder_uri).uniq.each do |uri|
+      name = FundrefService.find_by_uri(uri: uri)
+      next unless name.present?
+
+      Award.where(funder_uri: uri).update_all(funder_name: name)
+    end
+  end
 end

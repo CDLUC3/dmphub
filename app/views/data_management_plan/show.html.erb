@@ -40,8 +40,9 @@
       <div style="border: 1px solid #000;">
         <h3>Funding</h3>
         <% project.awards.each do |award| %>
+          <% award_uri = award.identifiers.select { |id| id.category == 'url' }.first %>
           <p><%= link_to (award.funder_name.present? ? award.funder_name : award.funder_uri), award.funder_uri %>&nbsp;<strong> status:</strong> <%= award.status %>
-          <%= award.identifiers.first.present? ? " #{link_to award.identifiers.first.value, award.identifiers.first.value}".html_safe : '' %>
+          <%= award_uri.present? ? " #{link_to award_uri.value, award_uri.value}".html_safe : '' %>
         <% end %>
       </div>
     <% end %>

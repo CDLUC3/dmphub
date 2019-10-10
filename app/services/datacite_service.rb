@@ -22,6 +22,24 @@ class DataciteService
       nil
     end
 
+    def delete_doi(doi:)
+      resp = HTTParty.delete("#{DATACITE_SHOW_URI}#{doi}", basic_auth: options, headers: headers)
+      return true if %w[204 404].include?(resp.code.to_s)
+
+      process_error(action: 'delete_doi', response: resp)
+      Rails.logger.info "Removed the folowing DOI from Datacite: #{doi}"
+      false
+    end
+
+    def fetch_dois
+      url = "#{DATACITE_MINT_URI}?provider-id=#{DATACITE_CLIENT_ID}"
+      resp = HTTParty.get(url, basic_auth: options, headers: headers)
+      return false unless resp.code == 200
+      json = JSON.parse(resp.body)
+      dois = json['data'].collect { |d| d['id'] }.uniq
+p dois
+    end
+
     private
 
     def headers

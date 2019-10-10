@@ -54,6 +54,8 @@ gem 'recaptcha'
 gem 'rest-client'
 # Serrano is a low level client for Crossref APIs
 gem 'serrano'
+# REALLY JUST A LIST OF STOPWORDS WITH SOME HELPERS
+gem 'stopwords'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a

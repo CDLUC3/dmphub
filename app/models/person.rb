@@ -7,10 +7,10 @@ class Person < ApplicationRecord
   include Identifiable
 
   # Associations
-  has_many :person_data_management_plans
+  has_many :person_data_management_plans, dependent: :destroy
   has_many :data_management_plans, through: :person_data_management_plans
   has_many :projects, through: :data_management_plans
-  has_many :person_organizations
+  has_many :person_organizations, dependent: :destroy
   has_many :organizations, through: :person_organizations
 
   accepts_nested_attributes_for :identifiers, :organizations

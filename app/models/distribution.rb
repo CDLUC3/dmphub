@@ -6,8 +6,8 @@ class Distribution < ApplicationRecord
 
   # Associations
   belongs_to :dataset, optional: true
-  has_one :host
-  has_many :licenses
+  has_one :host, dependent: :destroy
+  has_many :licenses, dependent: :destroy
 
   # Validations
   validates :title, presence: true

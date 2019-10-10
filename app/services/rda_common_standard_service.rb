@@ -4,7 +4,9 @@
 class RdaCommonStandardService
   class << self
     def award_permitted_params
-      base_permitted_params + %i[funder_id funding_status grant_id]
+      base_permitted_params +
+        %i[funder_id funding_status grant_id] +
+        [award_ids: identifier_permitted_params]
     end
 
     def base_permitted_params

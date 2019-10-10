@@ -8,7 +8,7 @@ class Dataset < ApplicationRecord
 
   # Associations
   belongs_to :data_management_plan, optional: true
-  has_many :dataset_keywords
+  has_many :dataset_keywords, dependent: :destroy
   has_many :keywords, through: :dataset_keywords
   has_many :security_privacy_statements, dependent: :destroy
   has_many :technical_resources, dependent: :destroy

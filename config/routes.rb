@@ -28,7 +28,29 @@ Rails.application.routes.draw do
   # Handles DOI resolution to a landing page
   get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
 
-  resources :data_management_plan, only: %w[index new create]
+  resources :projects, only: %i[index new create] do
+    resources :data_management_plan, only: %i[edit update] do
+      resources :datasets
+    end
+  end
+
+=begin
+  resources :data_management_plan, only: %w[index new create] do
+    # TODO: For some reason `resources` isn't working here. perhaps after we change model
+    #       relationships from dmp -> projects to project -> dmps
+    #resources :datasets, only: %[new create]
+    get '/datasets/new', to: 'datasets#new', as: 'new_dataset'
+    post '/datasets', to: 'datasets#create', as: 'datasets'
+  end
+
+  # TODO: For some reason `resources` isn't working here. perhaps after we change model
+  #       relationships from dmp -> projects to project -> dmps
+  #resources :projects, only: %[new create]
+  get '/projects/new', to: 'projects#new', as: 'new_project'
+  post '/projects', to: 'projects#create', as: 'projects'
+=end
+
+  post '/fundref_autocomplete', to: 'data_management_plan#fundref_autocomplete'
 
   # API version 1
   namespace :api do

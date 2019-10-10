@@ -6,13 +6,13 @@ class DataManagementPlan < ApplicationRecord
   include Identifiable
 
   # Associations
-  belongs_to :oauth_authorization, foreign_key: 'id', optional: true
-  has_many :projects
+  belongs_to :oauth_authorization, foreign_key: 'id', optional: true, dependent: :destroy
+  has_many :projects, dependent: :destroy
 
-  has_many :person_data_management_plans
+  has_many :person_data_management_plans, dependent: :destroy
   has_many :persons, through: :person_data_management_plans
-  has_many :costs
-  has_many :datasets
+  has_many :costs, dependent: :destroy
+  has_many :datasets, dependent: :destroy
 
   accepts_nested_attributes_for :projects, :costs, :datasets,
                                 :person_data_management_plans

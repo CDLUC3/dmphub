@@ -46,8 +46,7 @@ module Api
             FROM data_management_plans dmp
               INNER JOIN projects proj ON dmp.id = proj.data_management_plan_id
               INNER JOIN awards a ON proj.id = a.project_id
-            WHERE a.funder_uri = 'https://dx.doi.org/10.13039/100000001'
-              AND (LENGTH(dmp.title) - LENGTH(REPLACE(dmp.title, ' ', '')) + 1) > 5
+            WHERE a.funder_uri = 'http://dx.doi.org/10.13039/100000001'
           SQL
 
           results = ActiveRecord::Base.connection.execute(query)
@@ -64,6 +63,11 @@ module Api
           #end
 
           dmps = results.collect do |result|
+            #OauthAuthorization.find_or_create_by(
+            #  oauth_application_id: current_client[:id],
+            #  data_management_plan_id: result[0]
+            #)
+
             OpenStruct.new({
               title: result[1],
               created_at: result[2],
@@ -109,7 +113,7 @@ module Api
               oauth_application: doorkeeper_token.application,
               data_management_plan: @dmp
             )
-            render_show dmp: @dmp
+            render_show dmp: @dmp, status: 201
           else
             rollback(dmp: @dmp)
             errs = { 'errors': (@dmp.errors.collect { |e, m| { "#{e}": m } } || []) }
@@ -151,6 +155,11 @@ p per.inspect
               @dmp.person_data_management_plans << pdmp unless existing.include?(per)
             end
           end
+
+          project = @dmp.projects.first
+          project.description = dmp_params['project']['description'] if dmp_params['project']['description']
+          project.start_on = dmp_params['project']['start_on'] if dmp_params['project']['start_on']
+          project.end_on = dmp_params['project']['end_on'] if dmp_params['project']['end_on']
 
           award = Award.from_json(json: dmp_params['project']['funding'].first,
             provenance: current_client[:name], project: @dmp.projects.first)

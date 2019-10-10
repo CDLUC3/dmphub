@@ -1,6 +1,7 @@
 <%= f.fields_for :awards, Award.new do |a| %>
-  <%= a.label :funder_uri, 'Funding Agency' %>
-  <%= a.text_field :funder_uri %>
+  <%= a.label :funder_name, 'Funding Agency' %>
+  <%= a.text_field :funder_name, href: fundref_autocomplete_path %>
+  <%= a.hidden_field :funder_uri, class: 'autocomplete-funder_name' %>
   <%= a.label :status %>
   <%= a.select :status, Award.statuses.keys %>
   <%= a.fields_for :identifiers, Identifier.new do |i| %>

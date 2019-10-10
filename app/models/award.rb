@@ -18,12 +18,10 @@ class Award < ApplicationRecord
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, project: nil)
-
-p "JSON PRESENT? #{json.present?}"
-p "PROV PRESENT? #{provenance.present?}"
-p "FUNDER ID PRESENT? #{json['funder_id'].present?}"
-
       return nil unless json.present? && provenance.present? && json['funder_id'].present?
+
+p "PROJECT:"
+p json
 
       json = json.with_indifferent_access
       award = find_or_initialize_by(project: project, funder_uri: json['funder_id'])
@@ -38,7 +36,25 @@ p "FUNDER ID PRESENT? #{json['funder_id'].present?}"
       }
       id = Identifier.from_json(json: ident, provenance: provenance)
       award.identifiers << id unless award.identifiers.include?(id)
+      add_additional_identifiers(provenance: provenance, json: json, award: award)
       award
+    end
+
+    private
+
+    def add_additional_identifiers(provenance:, json:, award:)
+      json.fetch('award_ids', []).each do |identifier|
+        next unless identifier['value'].present?
+
+        ident = {
+          'provenance': provenance.to_s,
+          'category': identifier.fetch('category', 'url'),
+          'value': identifier['value'],
+          'descriptor': 'identified_by'
+        }
+        id = Identifier.from_json(json: ident, provenance: provenance)
+        award.identifiers << id unless award.identifiers.include?(id)
+      end
     end
   end
 end

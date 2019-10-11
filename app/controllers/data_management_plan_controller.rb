@@ -6,17 +6,18 @@ class DataManagementPlanController < ApplicationController
 
   # GET /data_management_plan/:id
   def show
-    p params[:id]
-
     doi = Identifier.where(value: params[:id], category: 'doi', identifiable_type: 'DataManagementPlan').first
     render status: 404 if doi.nil?
 
-    @data_management_plan = DataManagementPlan.find(doi.identifiable_id)
+    @dmp = DataManagementPlan.find(doi.identifiable_id)
   end
 
   # GET /data_management_plan/new
   def new
-    @dmp = DataManagementPlan.new
+    @dmp = DataManagementPlan.new(
+      projects: [Project.new(awards: [Award.new])],
+      datasets: [Dataset.new]
+    )
   end
 
   # POST /data_management_plans
@@ -54,11 +55,6 @@ class DataManagementPlanController < ApplicationController
              status: :bad_request
     end
   end
-
-  def fundref_autocomplete
-    FundrefService.find_by_name(name: autocomplete_params.gsub())
-  end
-
   # rubocop:enable Metrics/MethodLength
 
   private
@@ -73,10 +69,6 @@ class DataManagementPlanController < ApplicationController
       :ethical_issues_description, projects_attributes: project_params,
                                    person_data_management_plans_attributes: person_data_management_plan_params
     )
-  end
-
-  def autocomplete_params
-    params.require(:data_management_plan).permit(:funder_name)
   end
 
   def cleanse_autocomplete_text(text:)

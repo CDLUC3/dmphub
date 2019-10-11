@@ -1,7 +1,7 @@
 <%= render partial: '/data_management_plan/header' %>
 
 <div class="t-step__fields">
-  <%= form_with model: @dmp, url: data_management_plan_index_path do |f| %>
+  <%= form_with model: @dmp, url: edit_data_management_plan_path(@dmp) do |f| %>
     <%= render partial: '/data_management_plan/form',
                locals: { form: f, data_management_plan: @dmp } %>
   <% end %>

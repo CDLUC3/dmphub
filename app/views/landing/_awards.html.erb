@@ -1,0 +1,35 @@
+<%# locals: awards %>
+
+<% if awards.any? %>
+  <details>
+    <summary>Funding</summary>
+
+    <div class="c-accordion__section">
+      <ul>
+        <% awards.each do |award| %>
+          <% grant = award.identifiers.select { |id| id.category == 'url' }.first&.value %>
+          <% identifiers = award.identifiers.select { |id| id.category != 'url' } %>
+
+          <li><strong>Status:</strong> <%= humanize_underscored(name: award.status) %></li>
+          <li><strong>Agency:</strong> <%= link_to award.funder_name, award.funder_uri %></li>
+
+          <% if grant.present? %>
+            <li><strong>Award:</strong> <%= link_to grant, grant %></li>
+          <% end %>
+
+          <% if identifiers.any? %>
+            <li>
+              <strong>Identifiers:</strong>
+              <ul>
+                <% identifiers.each do |identifier| %>
+                  <%= render partial: '/landing/identifier',
+                             locals: { identifier: identifier } %>
+                <% end %>
+              </ul>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+  </details>
+<% end %>

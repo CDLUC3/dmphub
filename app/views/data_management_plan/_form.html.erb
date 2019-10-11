@@ -1,42 +1,37 @@
-<%= f.label :description, 'Summary' %>
-<%= f.text_area :description %>
-<%= f.label :language %>
-<%= f.select :language, %w[en es de fr] %>
+<%# locals: form, data_management_plan %>
 
-<%= f.label :ethical_issues, 'Are there any ethical issue(s)?' %>
-<%= f.select :ethical_issues, %w[yes no], { include_blank: 'unknown' } %>
-<div class="ethical-considerations">
-  <%= f.label :ethical_issues_report, 'Link to your ethical policy' %>
-  <%= f.url_field :ethical_issues_report %>
-  <%= f.label :ethical_issues_description, 'Please describe the issue(s)' %>
-  <%= f.text_area :ethical_issues_description %>
+<%= form.label :description, 'Summary' %>
+<%= form.text_area :description %>
+<%= form.label :language %>
+<%= form.select :language, %w[en es de fr] %>
+
+<%= form.label :ethical_issues, 'Are there any ethical issue(s)?' %>
+<%= form.select :ethical_issues, %w[yes no], { include_blank: 'unknown' } %>
+<div id="component-id" class="c-fieldgroup" role="group" aria-labelledby="checkbox-id">
+  <%= form.label :ethical_issues_description, 'Please describe' %>
+  <%= form.text_area :ethical_issues_description %>
+  <%= form.label :ethical_issues_report, 'Report' %>
+  <%= form.url_field :ethical_issues_report %>
 </div>
 
-<h3>Primary contact</h3>
-<div class="primary-contact">
+<div id="primary-id" class="c-fieldgroup" aria-labelledby="primary-fieldgroup-label"
+     role="group">
+  <span id="primary-fieldgroup-label" class="c-fieldgroup__label">Primary Contact</span>
   <%= fields_for :contact do |c| %>
-    <%= c.label :name %>
+    <%= c.label :name, class: 'required' %>
     <%= c.text_field :name, value: current_user.name %>
-    <%= c.label :email %>
+    <%= c.label :email, class: 'required' %>
     <%= c.email_field :email, value: current_user.email %>
     <%= c.label :value, 'ORCID' %>
-    <%= c.text_field :value, value: current_user.orcid %>
+    <%= link_to "https://orcid.org/#{current_user.orcid}", class: "c-orcid required" %>
+    <%= c.hidden_field :value, value: current_user.orcid %>
   <% end %>
 </div>
 
-<h3>Other contacts</h3>
+<h3>Other Staff</h3>
 <div class="dm-staff-list">
-  <%= render partial: 'persons/index',
-             locals: {
-               person_data_management_plans: dmp.person_data_management_plans
-             } %>
-</div>
-<div class="dm-staff-form association">
-  <%= button_tag 'Add a contact', type: 'button', class: 'add-association-button' %>
+  <%= button_tag 'Add', class: 'e-button2', aria: { label: 'Add a staff member' } %>
   <div class="association-template">
-    <%= render partial: 'person_data_management_plans/form', locals: { f: f } %>
+    <%= render partial: 'person_data_management_plans/form', locals: { form: form } %>
   </div>
 </div>
-
-<hr>
-

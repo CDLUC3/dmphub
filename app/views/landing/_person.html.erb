@@ -1,0 +1,27 @@
+<%# locals: person %>
+
+<% orcid = person.identifiers.select { |id| id.category == 'orcid' }.first %>
+
+<li><strong>Name:</strong> <%= person.name %></li>
+
+<% if orcid.present? %>
+  <li><%= identifier_to_link(identifier: orcid) %></li>
+<% end %>
+
+<% if person.organizations.length == 1 %>
+  <li>
+    <strong>Organization:</strong>
+    <%= render partial: '/landing/organization',
+               locals: { org: person.organizations.first } %>
+  </li>
+
+<% elsif person.organizations.any? %>
+  <li>
+    <strong>Organizations:</strong>
+    <ul>
+      <% person.organizations.each do |org| %>
+        <li><%= render partial: '/landing/organization', locals: { org: org } %></li>
+      <% end %>
+    </ul>
+  </li>
+<% end %>

@@ -1,0 +1,39 @@
+<%# locals: project, data_management_plan, dataset %>
+<%
+current_path = request.path
+
+unless current_path.ends_with?('new')
+  if current_path.starts_with?('/project')
+    next_href = edit_data_management_plan_path(data_management_plan)
+
+  elsif current_path.starts_with?('/dataset') && !new_record
+    prev_href = edit_data_management_plan_path(data_management_plan)
+
+  else
+    prev_href = edit_project_path(project)
+    next_href = datasets_path
+  end
+end
+%>
+
+<nav class="c-progress" aria-label="progress">
+  <% if prev_href.present? %>
+    <a id="prev-link" href="<%= prev_href %>">&lt; Previous</a>
+  <% end %>
+
+  <ol>
+    <li<%= current_path.starts_with?('/project') ? ' aria-current=step' : '' %>>
+      Project
+    </li>
+    <li<%= current_path.starts_with?('/data_management_plan') ? ' aria-current=step' : '' %>>
+      DMP
+    </li>
+    <li<%= current_path.starts_with?('/dataset') ? ' aria-current=step' : '' %>>
+      Datasets
+    </li>
+  </ol>
+
+  <% if next_href.present? %>
+    <a id="next-link" href="<%= next_href %>">Next &gt;</a>
+  <% end %>
+</nav>

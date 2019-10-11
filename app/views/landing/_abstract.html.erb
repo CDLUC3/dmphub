@@ -1,0 +1,8 @@
+<%# locals: project, dmp %>
+
+<% if dmp.description.present? || project.description.present? %>
+  <h3>Abstract</h3>
+  <p>
+    <%= dmp.description&.html_safe || project.description.html_safe %>
+  </p>
+<% end %>

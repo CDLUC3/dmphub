@@ -2,13 +2,26 @@
 
 # Generic helper
 module ApplicationHelper
-  def safe_date(date)
+  def safe_date(date:)
     return 'Unknown' unless date.is_a?(Time)
 
     date.strftime('%b. %d, %Y')
   end
 
-  def identifier_to_link(identifier)
+  def safe_language(language:)
+    case language
+    when 'fr'
+      'French'
+    when 'de'
+      'German'
+    when 'es'
+      'Spanish'
+    else
+      'English'
+    end
+  end
+
+  def identifier_to_link(identifier:)
     return 'Unknown' unless identifier.present?
     return link_to(identifier.value, identifier.value) if identifier.value.start_with?('http')
 
@@ -16,7 +29,9 @@ module ApplicationHelper
     when 'doi'
       link_to "https://doi.org/#{identifier.value}", "https://dx.doi.org/#{identifier.value}"
     when 'orcid'
-      link_to "https://orcid.org/#{identifier.value}", "https://orcid.org/#{identifier.value}"
+      link_to "https://orcid.org/#{identifier.value}",
+              "https://orcid.org/#{identifier.value}",
+              class: 'c-orcid'
     when 'ror'
       link_to "https://ror.org/#{identifier.value}", "https://ror.org/#{identifier.value}"
     else
@@ -24,7 +39,7 @@ module ApplicationHelper
     end
   end
 
-  def humaniz_underscored(name:)
+  def humanize_underscored(name:)
     return nil unless name.present?
 
     name.to_s.split('_').map(&:capitalize).join(' ')
@@ -45,4 +60,5 @@ module ApplicationHelper
   def id_to_doi(dmp:, value:)
     value.gsub(dmp.id.to_s, dmp.doi)
   end
+
 end

@@ -1,0 +1,11 @@
+<%# locals: licenses %>
+
+<% if licenses.any? %>
+  <h6>Licenses</h6>
+
+  <ul>
+    <% licenses.each do |license| %>
+      <li><strong>Effective date: <%= safe_date(date: license.start_date) %></strong> <%= link_to license.license_uri, license.license_uri %></li>
+    <% end %>
+  </ul>
+<% end %>

@@ -1,0 +1,5 @@
+<%# locals: org %>
+
+<% ror = org.identifiers.select { |id| id.category == 'ror' }.first %>
+
+<%= ror.present? ? link_to(org.name, ror.value) : org.name %>

@@ -113,6 +113,14 @@ module Api
               oauth_application: doorkeeper_token.application,
               data_management_plan: @dmp
             )
+
+            # TODO: This is a temporary hack to auto-authorize the NSF API to
+            #       assert information about the DMP
+            OauthAuthorization.find_or_create_by(
+              oauth_application_id: 3,
+              data_management_plan: @dmp
+            )
+
             render_show dmp: @dmp, status: 201
           else
             rollback(dmp: @dmp)

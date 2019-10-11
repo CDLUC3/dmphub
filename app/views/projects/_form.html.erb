@@ -1,12 +1,12 @@
-<%= f.fields_for :projects, Project.new do |p| %>
-  <%= p.hidden_field :title %>
-  <%= p.label :description, 'Abstract' %>
-  <%= p.text_area :description %>
-  <%= p.label :start_on, 'Estimated Start Date' %>
-  <%= p.date_field :start_on %>
-  <%= p.label :end_on, 'Estimated End Date' %>
-  <%= p.date_field :end_on %>
+<%# locals: form, project %>
 
-  <%= render partial: '/awards/form', locals: { f: p } %>
-<% end %>
-<hr>
+<%= form.label :title, class: 'required' %>
+<%= form.text_field :title %>
+<%= form.label :description, 'Abstract' %>
+<%= form.text_area :description %>
+<%= form.label :start_on, 'Estimated Start Date', class: 'required' %>
+<%= form.date_field :start_on %>
+<%= form.label :end_on, 'Estimated End Date', class: 'required' %>
+<%= form.date_field :end_on %>
+
+<%= render partial: '/awards/form', locals: { form: form, award: project.awards.first } %>

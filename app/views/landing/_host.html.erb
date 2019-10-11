@@ -1,0 +1,29 @@
+<%# locals: host %>
+
+<h6>Host</h6>
+
+<ul>
+  <li><strong>Title:</strong> <%= host.title %></li>
+
+  <% if host.description.present? %>
+    <li><strong>Description:</strong> <%= host.description %></li>
+  <% end %>
+
+  <li><strong>Supports Versioning:</strong> <%= ConversionService.boolean_to_yes_no_unknown(host.support_versioning) %></li>
+
+  <% if host.backup_type.present? %>
+    <li><strong>Backup Type:</strong> <%= host.backup_type %></li>
+  <% end %>
+  <% if host.backup_frequency.present? %>
+    <li><strong>Backup Frequency:</strong> <%= host.backup_frequency %></li>
+  <% end %>
+  <% if host.storage_type.present? %>
+    <li><strong>Storage Type:</strong> <%= host.storage_type %></li>
+  <% end %>
+  <% if host.availability.present? %>
+    <li><strong>Availability:</strong> <%= host.availability %></li>
+  <% end %>
+  <% if host.geo_location.present? %>
+    <li><strong>Location:</strong> <%= host.geo_location %></li>
+  <% end %>
+</ul>

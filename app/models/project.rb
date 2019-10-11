@@ -18,7 +18,6 @@ class Project < ApplicationRecord
       return nil unless json.present? && provenance.present? && json['title'].present? &&
                         json['start_on'].present? && json['end_on'].present?
 
-p "PROJECT:"
 p json
 
       json = json.with_indifferent_access

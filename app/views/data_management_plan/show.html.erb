@@ -1,64 +1,25 @@
-<div style="text-align: center">
-  <h1><%= @data_management_plan.title %></h1>
-  <h2>Data Management Plan</h2>
-  <p><%= identifier_to_link(@data_management_plan.identifiers.select { |id| id.category == 'doi' }.first) %></p>
-  <p><strong>Created</strong>: <%= safe_date(@data_management_plan.created_at) %> &nbsp; <strong>Last Updated</strong>: <%= safe_date(@data_management_plan.updated_at) %></p>
+<% project = @dmp.projects.first %>
 
-  <% contact = @data_management_plan.primary_contact.person %>
-  <% if contact.present? %>
-    <div style="border: 1px solid #000;">
-      <h3>Primary Contact</h3>
-      <p><strong>Name:</strong><%= contact.name %></p>
-      <p><strong>ORCID:</strong><%= identifier_to_link(contact.identifiers.select { |id| id.category == 'orcid' }.first) %></p>
+<h2><%= @dmp.title %></h2>
 
-      <% if contact.organizations.any? %>
-        <p><strong><%= contact.organizations.length == 1 ? 'Organization' : 'Organizations' %></strong></p>
-        <% contact.organizations.each do |organization| %>
-          <p><%= organization.name %> <strong>ROR:</strong> <%= identifier_to_link(organization.identifiers.select { |id| id.category == 'ror' }.first) %></p>
-        <% end %>
-      <% end %>
-    </div>
+<%= render partial: '/landing/data_management_plan',
+           locals: { dmp: @dmp, project: project } %>
 
-    <% pdmps = @data_management_plan.persons %>
-    <% if pdmps.any? %>
-      <div style="border: 1px solid #000;">
-        <h3>Staff</h3>
-        <% pdmps.each do |pdmp| %>
-          <p><strong><%= pdmp.role.humanize %></strong> <%= pdmp.person.name %>
-            <% if pdmp.person.organizations.first.present? %>
-              &nbsp;from <%= pdmp.person.organizations.first.name %>
-            <% end %>
-          </p>
-        <% end %>
-      </div>
-    <% end %>
+<%= render partial: '/landing/abstract',
+           locals: { dmp: @dmp, project: project } %>
 
-    <% project = @data_management_plan.projects.first %>
-    <p><strong>Project Start</strong>: <%= safe_date(project.start_on) %> &nbsp; <strong>End</strong>: <%= safe_date(project.end_on) %></p>
+<%= render partial: '/landing/contact',
+           locals: { dmp: @dmp } %>
 
-    <% if project.awards.any? %>
-      <div style="border: 1px solid #000;">
-        <h3>Funding</h3>
-        <% project.awards.each do |award| %>
-          <% award_uri = award.identifiers.select { |id| id.category == 'url' }.first %>
-          <p><%= link_to (award.funder_name.present? ? award.funder_name : award.funder_uri), award.funder_uri %>&nbsp;<strong> status:</strong> <%= award.status %>
-          <%= award_uri.present? ? " #{link_to award_uri.value, award_uri.value}".html_safe : '' %>
-        <% end %>
-      </div>
-    <% end %>
-
-    <% if @data_management_plan.description.present? %>
-      <p><strong>Abstract</strong>:</p>
-      <p><%= @data_management_plan.description %></p>
-    <% end %>
-
-    <% identifiers = @data_management_plan.identifiers.select { |id| id.category != 'doi' } %>
-    <% if identifiers.any? %>
-      <h2>Relationships</h2>
-      <% identifiers.each do |identifier| %>
-        <p><strong><%= humaniz_underscored(name: identifier.descriptor) %></strong> <%= humaniz_underscored(name: identifier.provenance) %> - <%= identifier_to_link(identifier) %></p>
-      <% end %>
-    <% end %>
+<div id="accordion-data-management-plan" class="c-accordion">
+  <% persons = @dmp.persons %>
+  <% if persons.any? %>
+    <%= render partial: '/landing/staff', locals: { persons: persons } %>
   <% end %>
-
+  <% if project.awards.any? %>
+    <%= render partial: '/landing/awards', locals: { awards: project.awards } %>
+  <% end %>
+  <%= render partial: '/landing/ethics', locals: { dmp: @dmp } %>
+  <%= render partial: '/landing/costs', locals: { dmp: @dmp } %>
+  <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
 </div>

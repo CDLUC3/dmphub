@@ -1,10 +1,15 @@
-<nav style="display: flex; justify-content: space-between;">
-  <% if user_signed_in? %>
-    <%= link_to 'Dashboard', dashboard_path %>
-    <%= link_to 'Log out', destroy_user_session_path, method: :delete %>
-  <% else %>
-    <%= link_to 'Home', root_path %>
-    <%= link_to 'Log in / Sign up', login_path %>
-  <% end %>
-</nav>
-<hr style="margin-bottom: 50px;">
+<header class="c-header">
+  <!-- <a class="c-logo" href="/"><%#= image_tag 'icon_orcid.svg', alt: 'DMP Hub logo', style: 'height: 50px;' %></a> -->
+
+  <h1>DMP Registry</h1>
+
+  <nav>
+    <% if user_signed_in? %>
+      <%= link_to 'Dashboard', dashboard_path %>
+      <%= link_to 'Log out', destroy_user_session_path, method: :delete %>
+    <% else %>
+      <%= link_to 'Home', root_path %>
+      <%= link_to 'Log in / Sign up', login_path %>
+    <% end %>
+  </nav>
+</header>

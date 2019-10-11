@@ -1,0 +1,18 @@
+<details>
+  <summary>Ethics</summary>
+
+  <div class="c-accordion__section">
+    <p><strong>Ethical Issues?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></p>
+
+    <% if dmp.ethical_issues == true %>
+      <ul>
+        <% if dmp.ethical_issues_description.present? %>
+          <li><strong>Description:</strong> <%= dmp.ethical_issues_description%></li>
+        <% end %>
+        <% if dmp.ethical_issues_report.present? %>
+          <li><strong>Report:</strong> <%= link_to dmp.ethical_issues_report, dmp.ethical_issues_report %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+</details>

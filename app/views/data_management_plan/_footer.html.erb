@@ -1,0 +1,8 @@
+<%# locals: data_management_plan %>
+
+<%= render partial: '/shared/registration_footer',
+           locals: {
+             project: data_management_plan.projects.first,
+             data_management_plan: data_management_plan,
+             datasets: data_management_plan&.datasets
+           } %>

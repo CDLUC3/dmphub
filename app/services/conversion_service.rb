@@ -69,16 +69,15 @@ class ConversionService
     end
 
     # Converts input form params to RDA Common Standard JSON
-    def project_form_params_to_rda(params:, dmp_title:)
-      params.to_h.map do |_idx, hash|
-        {
-          'title': hash['title'] || dmp_title,
-          'description': hash['description'],
-          'start_on': hash['start_on'],
-          'end_on': hash['end_on'],
-          'funding': award_form_params_to_rda(params: hash['awards_attributes'])
-        }
-      end
+    def project_form_params_to_rda(params:)
+      hash = params.to_h
+      JSON.parse({
+        'title': hash['title'],
+        'description': hash['description'],
+        'start_on': hash['start_on'],
+        'end_on': hash['end_on'],
+        'funding': award_form_params_to_rda(params: hash['awards_attributes'])
+      }.to_json)
     end
 
     # Converts input form params to RDA Common Standard JSON

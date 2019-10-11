@@ -21,3 +21,6 @@ require("../views/data_management_plans/new")
 //
 // const images = require.context('../images', true)
 // const imagePath = (name) => images(name, true)
+
+/* TODO: temporary compiled JS until the ui library is inteegrated */
+"use strict";if(document.querySelector(".c-progress"))for(var steps=document.querySelectorAll(".c-progress li"),i=0;i<steps.length&&!steps[i].hasAttribute("aria-current");i++)steps[i].classList.add("completed"),steps[i].insertAdjacentHTML("afterbegin","<span>Completed step: </span>");

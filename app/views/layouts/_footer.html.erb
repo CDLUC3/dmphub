@@ -1,9 +1,10 @@
-<hr style="margin-top: 50px;">
-<nav style="display: flex; justify-content: space-between;">
-  <%= link_to 'About', '#' %>
-  <%= link_to 'Terms of use', '#' %>
-  <%= link_to 'Privacy Statement', '#' %>
-</nav>
+<footer class="c-footer">
+  <nav>
+    <%= link_to 'About', '#' %>
+    <%= link_to 'Terms of use', '#' %>
+    <%= link_to 'Privacy Statement', '#' %>
+  </nav>
 
-<p>DMPHub is a service of the <%= link_to 'University of California Curation Center (UC3) ', 'https://cdlib.org/uc3/' %> of the <%= link_to 'California Digital Library', 'https://cdlib.org' %></p>
-<p>Copyright <%= Date.today.year == 2019 ? '2019' : "2019-#{Date.today.year}" %> The Regents of the University of California</p>
+  <p>This product is a service of the <a href="https://www.cdlib.org/uc3/">University of California Curation Center</a> of the <a href="http://www.cdlib.org">California Digital Library.</a></p>
+  <p>Copyright 2010-2019 The Regents of the University of California.</p>
+</footer>

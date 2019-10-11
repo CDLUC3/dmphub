@@ -1,0 +1,13 @@
+<%# locals: person_data_management_plans %>
+
+<% roles = person_data_management_plans.map { |pdmp| pdmp.role }.uniq %>
+<% roles.sort { |a, b| a<=>b }.each do |role| %>
+  <li>
+    <strong><%= humanize_underscored(name: role).pluralize %>:</strong>
+    <% person_data_management_plans.select { |pdmp| pdmp.role == role }.each do |pdmp| %>
+      <ul>
+        <%= render partial: '/landing/person', locals: { person: pdmp.person } %>
+      </ul>
+    <% end %>
+  </li>
+<% end %>

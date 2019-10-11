@@ -1,0 +1,27 @@
+<%# locals: dmp, project %>
+
+<% doi = @dmp.identifiers.select { |id| id.category == 'doi' }.first %>
+<% identifiers = @dmp.identifiers.select { |id| id.category != 'doi' } %>
+
+<h3>Data Management Plan</h3>
+
+<ul>
+  <li><strong>DOI:</strong> <%= identifier_to_link(identifier: doi) %></li>
+  <li><strong>Created:</strong> <%= safe_date(date: dmp.created_at) %></li>
+  <li><strong>Modified:</strong> <%= safe_date(date: dmp.updated_at) %></li>
+  <li><strong>Language:</strong> <%= safe_language(language: dmp.language) %></li>
+  <li><strong>Project Start:</strong> <%= safe_date(date: project.start_on) %></li>
+  <li><strong>Project End:</strong> <%= safe_date(date: project.end_on) %></li>
+
+  <% if identifiers.any? %>
+    <li>
+      <strong>Identifiers:</strong>
+      <ul>
+        <% identifiers.each do |identifier| %>
+          <%= render partial: '/landing/identifier',
+                     locals: { identifier: identifier } %>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+</ul>

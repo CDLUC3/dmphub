@@ -1,0 +1,13 @@
+<%# locals: dataset %>
+
+<% metadata = dataset.metadata %>
+<% if metadata.any? %>
+  <h5>Metadata</h5>
+
+  <% metadata.each do |metadatum| %>
+    <% identifier = metadatum.identifiers.first %>
+    <p><strong><%= humanize_underscored(name: identifier.category) %></strong> <%= identifier.value %></p>
+    <p><strong>Language:</strong> <%= safe_language(language: metadatum.language) %></p>
+    <p><%= metadatum.description %></p>
+  <% end %>
+<% end %>

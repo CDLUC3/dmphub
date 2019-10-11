@@ -20,11 +20,10 @@ class Award < ApplicationRecord
     def from_json(json:, provenance:, project: nil)
       return nil unless json.present? && provenance.present? && json['funder_id'].present?
 
-p "PROJECT:"
-p json
-
       json = json.with_indifferent_access
       award = find_or_initialize_by(project: project, funder_uri: json['funder_id'])
+      # TODO: Don't hard code this, either find it in the DB or call Fundref API
+      award.funder_name = 'National Science Foundation (NSF)' if award.funder_uri == 'http://dx.doi.org/10.13039/100000001'
       award.status = json.fetch('funding_status', 'planned')
       return award unless json['grant_id'].present?
 

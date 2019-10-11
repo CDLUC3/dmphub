@@ -1,0 +1,11 @@
+<%# locals: dataset %>
+
+<% statements = dataset.security_privacy_statements %>
+<% if statements.any? %>
+  <h5>Security and Privacy</h5>
+
+  <% statements.each do |statement| %>
+    <p><strong><%= statement.title %></strong></p>
+    <p><%= statement.description %></p>
+  <% end %>
+<% end %>

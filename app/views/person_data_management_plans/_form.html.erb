@@ -1,6 +1,6 @@
-<%= f.fields_for :person_data_management_plans, PersonDataManagementPlan.new do |pdmp| %>
-  <%= pdmp.label :role %>
-  <%= pdmp.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
-  <%= render partial: 'persons/form', locals: { f: pdmp, rel: 'other' } %>
-  <%= pdmp.button 'X', class: 'remove-association', type: 'button' %>
+<%= form.fields_for :person_data_management_plans, PersonDataManagementPlan.new do |pdmp_form| %>
+  <%= pdmp_form.label :role %>
+  <%= pdmp_form.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
+  <%= render partial: 'persons/form', locals: { form: pdmp_form, rel: 'other' } %>
+  <%= pdmp_form.button 'X', class: 'remove-association', type: 'button' %>
 <% end %>

@@ -1,0 +1,40 @@
+<%# locals: datasets %>
+
+<details>
+  <summary>Datasets</summary>
+
+  <div class="c-accordion__section">
+    <% datasets.each do |dataset| %>
+      <h4><%= dataset.title %></h4>
+
+      <ul>
+        <li><strong>Type:</strong> <%= dataset.dataset_type %></li>
+        <li><strong>Language:</strong> <%= safe_language(language: dataset.language) %></li>
+        <li><strong>Summary:</strong> <%= dataset.description %></li>
+      </ul>
+
+      <h5>Overview</h5>
+
+      <ul>
+        <li><strong>Contains Personal Data?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dataset.personal_data) %></li>
+        <li><strong>Contains Sensitive Data?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dataset.sensitive_data) %></li>
+
+        <% if dataset.data_quality_assurance.present? %>
+          <li><strong>Data Quality Assurance:</strong> <%= dataset.data_quality_assurance %></li>
+        <% end %>
+
+        <% if dataset.preservation_statement.present? %>
+          <li><strong>Preservation Statement:</strong> <%= dataset.preservation_statement %></li>
+        <% end %>
+
+        <li><strong>Keywords:</strong> <%= dataset.keywords.collect { |k| k.value }.join(', ') %></li>
+      </ul>
+
+      <%= render partial: '/landing/security_statements', locals: { dataset: dataset } %>
+      <%= render partial: '/landing/technical_resources', locals: { dataset: dataset } %>
+      <%= render partial: '/landing/metadata', locals: { dataset: dataset } %>
+      <%= render partial: '/landing/distributions',
+                 locals: { distributions: dataset.distributions } %>
+    <% end %>
+  </div>
+</details>

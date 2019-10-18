@@ -1,0 +1,12 @@
+/* Rails wraps invalid form fields in a `<div class="field_with_errors"></div>` but
+   this breaks our nice grid layout, so remove the `<div>` and just add a `.error` class
+   to the invalid controls so that the effect is the same as a client side validation error */
+
+$.each($('form div.field_with_errors'), (idx, el) => {
+  const target = $(el);
+  const control = $(target.html());
+  if (control.prop("tagName") !== 'LABEL') {
+    control.addClass('error');
+  }
+  target.replaceWith(control);
+});

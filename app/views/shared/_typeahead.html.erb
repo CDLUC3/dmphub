@@ -1,0 +1,25 @@
+<%# locals: label, typeahead_id, typeahead_name, hidden_id, hidden_name, href %>
+
+<label for="<%= typeahead_id %>"><%= label %></label>
+<div class="js-typeahead">
+  <input class="typeahead"
+         list="<%= typeahead_id %>_list"
+         name="<%= typeahead_name %>"
+         id="<%= typeahead_id %>"
+         data-source="<%= href %>"
+         autocomplete="off"
+         aria-describedby="<%= typeahead_id %>_instructions"
+         aria-owns="<%= typeahead_id %>_list"
+         aria-expanded="false"
+         aria-autocomplete="both"
+         aria-activedescendant=""/>
+
+  <span id="<%= typeahead_id %>_instructions" class="hidden">When search results are available use the up and down arrows to move through the suggestions and enter to select.  Touch device users, explore by touch or with swipe gestures.</span>
+
+  <ul id="<%= typeahead_id %>_list" role="listbox" class="suggestions"></ul>
+
+  <input type="hidden"
+         name="<%= hidden_name %>"
+         id="<%= hidden_id %>"
+         data-source="<%= typeahead_id %>_crosswalk"/>
+</div>

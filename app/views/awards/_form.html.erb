@@ -1,14 +1,19 @@
 <%# locals: form, award %>
 
 <%= form.fields_for :awards, award do |award_form| %>
-  <%= award_form.label :funder_name, 'Funding Agency' %>
-  <%= award_form.text_field :funder_name, href: fundref_autocomplete_path, class: 'typeahead' %>
-  <%= award_form.hidden_field :funder_uri, class: 'autocomplete-funder_name' %>
+  <%= render partial: '/shared/typeahead',
+             locals: { label: 'Funding Agency',
+                       typeahead_id: 'project_awards_attributes_0_funder_name',
+                       typeahead_name: 'project[awards_attributes][0][funder_name]',
+                       hidden_id: 'project_awards_attributes_0_funder_uri',
+                       hidden_name: 'project[awards_attributes][0][funder_uri]',
+                       href: fundref_autocomplete_path } %>
+
   <%= award_form.label :status %>
   <%= award_form.select :status, Award.statuses.keys %>
   <%= award_form.fields_for :identifiers, Identifier.new do |identifier_form| %>
     <%= identifier_form.hidden_field :category, value: 'url' %>
     <%= identifier_form.label :value, 'URI' %>
-    <%= identifier_form.text_field :value %>
+    <%= identifier_form.url_field :value %>
   <% end %>
 <% end %>

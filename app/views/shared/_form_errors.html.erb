@@ -1,0 +1,10 @@
+<%# locals: model %>
+
+<% if model.errors.any? %>
+  <%= flash[:alert] || 'Unable to save your changes!' %>
+  <ul>
+    <% model.errors.full_messages.each do |err| %>
+      <li><%= err %></li>
+    <% end %>
+  </ul>
+<% end %>

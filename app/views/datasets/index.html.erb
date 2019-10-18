@@ -1,0 +1,13 @@
+<%= render partial: '/datasets/header' %>
+
+<div class="t-step__fields">
+  <%= button_tag 'Add a dataset', class: 'e-button2' %>
+
+  <div class="association-template">
+    <%= form_with model: Dataset.new, url: new_dataset_path do |f| %>
+      <%= render partial: 'datasets/form', locals: { form: f, dataset: Dataset.new } %>
+    <% end %>
+  </div>
+</div>
+
+<%= render partial: '/datasets/footer', locals: { datasets: @datasets } %>

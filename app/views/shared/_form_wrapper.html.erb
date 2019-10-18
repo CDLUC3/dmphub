@@ -1,0 +1,30 @@
+<%# locals: model, path, method %>
+
+<%#= render partial: '/shared/registration_header' %>
+
+<%= form_with model: model, url: path, method: method do |f| %>
+  <div class="t-step__fields">
+
+    <%= yield :form_content %>
+
+    <%= f.submit 'Save' %>
+    <div class="form-message">
+      <% if flash[:notice].present? %>
+        <span class="green"><%= flash[:notice] %></span>
+      <% end %>
+      <% if flash[:alert].present? %>
+        <span class="red"><%= flash[:notice] %></span>
+      <% end %>
+      <% if model.errors.any? %>
+        <%= render partial: '/shared/form_errors', locals: { model: model } %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<%#= render partial: '/shared/registration_footer',
+           locals: {
+             model: project,
+             data_management_plan: project.data_management_plan,
+             datasets: project.data_management_plan&.datasets
+           } %>

@@ -1,9 +1,9 @@
 <%= render partial: '/projects/header' %>
 
-<div class="t-step__fields">
-  <%= form_with model: @project, url: projecta_path, method: :put do |f| %>
+<%= form_with model: @project, url: project_path(@project), method: :put do |f| %>
+  <div class="t-step__fields">
     <%= render partial: '/projects/form', locals: { form: f, project: @project } %>
-  <% end %>
-</div>
+  </div>
+<% end %>
 
 <%= render partial: '/projects/footer', locals: { project: @project } %>

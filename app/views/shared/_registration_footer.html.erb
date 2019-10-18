@@ -2,11 +2,13 @@
 <%
 current_path = request.path
 
-unless current_path.ends_with?('new')
+if %w[/projects/new /projects].include?(current_path)
+  next_href = new_project_path
+else
   if current_path.starts_with?('/project')
     next_href = edit_data_management_plan_path(data_management_plan)
 
-  elsif current_path.starts_with?('/dataset') && !new_record
+  elsif current_path.starts_with?('/dataset')
     prev_href = edit_data_management_plan_path(data_management_plan)
 
   else
@@ -25,7 +27,7 @@ end
     <li<%= current_path.starts_with?('/project') ? ' aria-current=step' : '' %>>
       Project
     </li>
-    <li<%= current_path.starts_with?('/data_management_plan') ? ' aria-current=step' : '' %>>
+    <li<%= current_path.starts_with?('/data_m') ? ' aria-current=step' : '' %>>
       DMP
     </li>
     <li<%= current_path.starts_with?('/dataset') ? ' aria-current=step' : '' %>>

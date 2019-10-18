@@ -19,52 +19,44 @@ class ProjectsController < ApplicationController
       json: params_to_rda_json
     )
 
-    project.data_management_plan = DataManagementPlan.new(
+    data_management_plan = DataManagementPlan.new(
       title: project.title,
-      datasets: [Dataset.new]
+      #language: 'en',
+      datasets: [Dataset.new(title: 'Dataset')]
     )
+    data_management_plan.projects << project
 
-p project.inspect
-p project.awards.inspect
-p project.data_management_plan.inspect
-p project.data_management_plan.datasets.inspect
-render json: {message: 'You win!'}
-=begin
-    if project.save
-      begin
-        #project.data_management_plan.mint_doi(provenance: ConversionService.local_provenance)
+    @project = data_management_plan.projects.first
 
-        if project.data_management_plan.doi.present?
-          render js: { partial: 'projects/edit',
-                       locals: { project: project, message: 'Sweet!' }}
-        else
-          render json: {
-            message: 'Unable to generate a DOI at this time.'
-          }, status: :bad_request
-        end
-      rescue StandardError => e
-        render json: {
-          message: "Unable to save your changes! #{e.message}"
-        }, status: :bad_request
-      end
+    if data_management_plan.save
+      flash[:notice] = 'Auto-saved'
+      redirect_to edit_data_management_plan_path(data_management_plan)
     else
-      errs = @project.errors.collect { |er, m| "#{er} - #{m}" }.join(', ')
-      render json: {
-        message: "Unable to save your changes! #{errs}"
-      }, status: :bad_request
+      @project.awards << Award.new unless @project.awards.any?
+      errs = data_management_plan.errors.collect { |e, m| "#{e} - #{m}" }.join('<br>')
+      flash.now[:alert] = "Unable to save your changes! #{errs}"
+      render action: 'new'
+    end
+
+=begin
+    if data_management_plan.save
+      @message = "Auto-saved"
+      render 'edit'
+    else
+      errs = data_management_plan.errors.collect { |e, m| "#{e} - #{m}" }.join('<br>')
+      @message = "Unable to save your changes! #{errs}"
+      render template: '/projects/new'
     end
 =end
   end
 
+  # GET /fundref_autocomplete:q=:term
   def fundref_autocomplete
-    FundrefService.find_by_name(name: autocomplete_params)
+    json = FundrefService.find_by_name(name: params[:q])
+    render json: json
   end
 
   private
-
-  def autocomplete_params
-    params.require(:project).permit(:funder_name)
-  end
 
   def project_params
     params.require(:project).permit(:title, :description, :start_on, :end_on,

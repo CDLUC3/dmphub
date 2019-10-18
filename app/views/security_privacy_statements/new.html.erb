@@ -1,0 +1,11 @@
+<h2>Security and Privacy Statement</h2>
+<div class="c-required">required fields</div>
+
+<% content_for :form_content do %>
+  <%= render partial: '/security_privacy_statements/test_form',
+             locals: { statement: @statement } %>
+<% end %>
+
+<%= render partial: '/shared/form_wrapper',
+           locals: { model: @statement, path: security_privacy_statements_path,
+                     method: :post } %>

@@ -28,23 +28,26 @@ Rails.application.routes.draw do
   # Handles DOI resolution to a landing page
   get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
 
-  resources :data_management_plan, only: %w[index new create edit update]
+  resources :data_management_plan, only: %w[index edit update]
 
   # TODO: For some reason `resources` isn't working here. perhaps after we change model
   #       relationships from dmp -> projects to project -> dmps
-  #resources :projects, only: %[new create]
-  get '/projects/new', to: 'projects#new', as: 'new_project'
-  post '/projects', to: 'projects#create', as: 'projects', format: :json
-  get '/projects/:id', to: 'projects#edit', as: 'edit_project'
-  put '/projects/:id', to: 'projects#update', as: 'project', format: :json
-  #resources :datasets, only: %[new create]
-  get '/datasets', to: 'datasets#index'
-  post '/datasets', to: 'datasets#create', format: :json
-  get '/datasets/new', to: 'datasets#new', as: 'new_dataset'
-  get '/datasets/edit/:id', to: 'datasets#edit', as: 'edit_dataset'
-  put '/datasets/:id', to: 'datasets#update', as: 'dataset', format: :json
+  resources :projects, only: %w[new create edit update]
 
-  post '/fundref_autocomplete', to: 'data_management_plan#fundref_autocomplete'
+  resources :security_privacy_statements, only: %w[new create]
+
+  #get '/projects/new', to: 'projects#new', as: 'new_project'
+  #post '/projects', to: 'projects#create', as: 'projects', format: :json
+  #get '/projects/:id', to: 'projects#edit', as: 'edit_project'
+  #put '/projects/:id', to: 'projects#update', as: 'project', format: :json
+  #resources :datasets, only: %[new create]
+  #get '/datasets', to: 'datasets#index'
+  #post '/datasets', to: 'datasets#create', format: :json
+  #get '/datasets/new', to: 'datasets#new', as: 'new_dataset'
+  #get '/datasets/edit/:id', to: 'datasets#edit', as: 'edit_dataset'
+  #put '/datasets/:id', to: 'datasets#update', as: 'dataset', format: :json
+
+  get '/fundref_autocomplete', to: 'projects#fundref_autocomplete'
 
   # API version 1
   namespace :api do

@@ -13,7 +13,7 @@
 <% end %>
 
 <% if current_user.super_user? %>
-  <h2>Other Data Management Plans</h2>
+  <h2>Funded Data Management Plans</h2>
 
   <% if @other_plans.present? %>
     <%= render partial: '/data_management_plan/index', locals: { data_management_plans: @other_plans } %>

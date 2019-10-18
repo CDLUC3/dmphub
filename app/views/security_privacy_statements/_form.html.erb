@@ -1,6 +1,9 @@
+
+<%= render partial: 'shared/form_errors', locals: { errors: statement.errors } %>
+
 <%= fields_for statement do |s| %>
-  <%= s.label :title %>
-  <%= s.text_field :title %>
+  <%= s.label :title, class: 'required' %>
+  <%= s.text_field :title, title: statement.errors[:title] %>
   <%= s.label :description %>
   <%= s.text_area :description %>
   <%= s.button 'Add statement' %>

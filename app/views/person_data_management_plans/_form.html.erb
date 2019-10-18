@@ -1,6 +1,11 @@
+<% roles = PersonDataManagementPlan.roles.keys
+     .select { |k| k != 'primary_contact' }
+     .map { |k| [humanize_underscored(name: k), k] }
+     .sort { |a, b| a[0]<=>b[0] } %>
+
 <%= form.fields_for :person_data_management_plans, PersonDataManagementPlan.new do |pdmp_form| %>
   <%= pdmp_form.label :role %>
-  <%= pdmp_form.select :role, PersonDataManagementPlan.roles.keys.select { |k| k != 'primary_contact' } %>
+  <%= pdmp_form.select :role, roles %>
   <%= render partial: 'persons/form', locals: { form: pdmp_form, rel: 'other' } %>
   <%= pdmp_form.button 'X', class: 'remove-association', type: 'button' %>
 <% end %>

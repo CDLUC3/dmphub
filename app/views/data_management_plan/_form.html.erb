@@ -1,14 +1,14 @@
 <%# locals: form, data_management_plan %>
 
-<%= form.label :description, 'Summary' %>
+<%= form.label :description, 'Summary', class: 'textarea' %>
 <%= form.text_area :description %>
 <%= form.label :language %>
 <%= form.select :language, %w[en es de fr] %>
 
-<%= form.label :ethical_issues, 'Are there any ethical issue(s)?' %>
-<%= form.select :ethical_issues, %w[yes no], { include_blank: 'unknown' } %>
+<%= form.check_box :ethical_issues %>
+<%= form.label :ethical_issues, 'Any ethical concerns?' %>
 <div id="component-id" class="c-fieldgroup" role="group" aria-labelledby="checkbox-id">
-  <%= form.label :ethical_issues_description, 'Please describe' %>
+  <%= form.label :ethical_issues_description, 'Please describe', class: 'textarea' %>
   <%= form.text_area :ethical_issues_description %>
   <%= form.label :ethical_issues_report, 'Report' %>
   <%= form.url_field :ethical_issues_report %>
@@ -31,7 +31,7 @@
 <h3>Other Staff</h3>
 <div class="dm-staff-list">
   <%= button_tag 'Add', class: 'e-button2', aria: { label: 'Add a staff member' } %>
-  <div class="association-template">
+  <div class="association-template t-step__fields">
     <%= render partial: 'person_data_management_plans/form', locals: { form: form } %>
   </div>
 </div>

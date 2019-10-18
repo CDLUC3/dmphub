@@ -30,6 +30,31 @@ header nav a {
   margin-left: 15px;
   margin-right: 5px;
 }
+
+main {
+  margin-bottom: 25px;
+}
+
+.error {
+  border-color: red;
+}
+
+.field_with_errors {
+  display: inline;
+}
+.field_with_errors input,
+.field_with_errors textarea,
+.field_with_errors select {
+  border-color: red;
+}
+.form-message {
+  grid-column: 2/4;
+}
+
+.hidden {
+  display: none;
+}
+
 .t-step {
   min-height: 0vh;
 }
@@ -42,6 +67,29 @@ header nav a {
 
 .c-accordion__section ul {
   margin-bottom: 10px;
+}
+
+.typeahead {
+  min-width: 800px;
+}
+ul.suggestions {
+  position: relative;
+  display: block;
+  top: -15;
+  left: 0;
+  z-index: 9;
+  background-color: #f2f2f2;
+  border: 1px solid #d9d9d9;
+  color: #000;
+  list-style: none;
+}
+li.current-suggestion {
+  background-color: #0e5682;
+  color: #FFF;
+}
+
+form label {
+  clear: both;
 }
 
 footer nav {

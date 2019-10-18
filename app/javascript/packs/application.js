@@ -10,10 +10,13 @@ require("channels")
 require("jquery")
 require("jquery-autocomplete")
 
-require("../views/data_management_plans/add_section")
-require("../views/data_management_plans/ethical_issues")
-require("../views/data_management_plans/form_validation")
-require("../views/data_management_plans/new")
+require("../utils/add_section")
+require("../utils/debouncer")
+require("../utils/forms")
+require("../utils/typeahead")
+
+require("../views/data_management_plans/new_edit")
+require("../views/shared/form")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)

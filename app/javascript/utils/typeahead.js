@@ -63,9 +63,6 @@ const unhighlightSuggestion = (listItem) => {
 };
 
 const navigateSuggestions = (context, keyCode, listItem = null) => {
-
-console.log(keyCode);
-
   if (listItem) {
     const current = $(listItem);
 

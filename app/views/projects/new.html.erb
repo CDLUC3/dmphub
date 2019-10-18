@@ -1,9 +1,9 @@
-<%= render partial: '/projects/header' %>
+<h2>Project</h2>
+<div class="c-intro">Tell us about your research project:</div>
 
-<%= form_with model: @project, local: true do |f| %>
-  <div class="t-step__fields">
-    <%= render partial: '/projects/form', locals: { form: f, project: @project } %>
-  </div>
-<% end %>
-
-<%= render partial: '/projects/footer', locals: { project: @project } %>
+<%= render partial: '/shared/form_wrapper',
+           locals: { model: @project,
+                     path: projects_path,
+                     method: :post,
+                     form_partial: '/projects/form'
+                   } %>

@@ -1,6 +1,6 @@
 <%# locals: model %>
 
-<% if model.errors.any? %>
+<% if model.errors.any? || flash[:alert].present? %>
   <%= flash[:alert] || 'Unable to save your changes!' %>
   <ul>
     <% model.errors.full_messages.each do |err| %>

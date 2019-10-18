@@ -1,0 +1,14 @@
+<%
+payload = escape_javascript(
+  render partial: '/shared/form_wrapper',
+         locals: {
+           model: @project,
+           path: projects_path,
+           method: :post,
+           form_partial: '/projects/form'
+         })
+%>
+
+$('.form-wrapper').replaceWith("<%= payload %>");
+
+<%= render partial: '/shared/response_errors' %>

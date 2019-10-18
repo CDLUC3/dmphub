@@ -29,25 +29,12 @@ class ProjectsController < ApplicationController
     @project = data_management_plan.projects.first
 
     if data_management_plan.save
-      flash[:notice] = 'Auto-saved'
+      flash[:notice] = 'Your changes have been saved.'
       redirect_to edit_data_management_plan_path(data_management_plan)
     else
-      @project.awards << Award.new unless @project.awards.any?
-      errs = data_management_plan.errors.collect { |e, m| "#{e} - #{m}" }.join('<br>')
-      flash.now[:alert] = "Unable to save your changes! #{errs}"
-      render action: 'new'
+      flash[:alert] = 'Unable to save your changes!'
+      render status: :unprocessable_entity
     end
-
-=begin
-    if data_management_plan.save
-      @message = "Auto-saved"
-      render 'edit'
-    else
-      errs = data_management_plan.errors.collect { |e, m| "#{e} - #{m}" }.join('<br>')
-      @message = "Unable to save your changes! #{errs}"
-      render template: '/projects/new'
-    end
-=end
   end
 
   # GET /fundref_autocomplete:q=:term

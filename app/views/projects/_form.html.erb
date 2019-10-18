@@ -1,4 +1,4 @@
-<%# locals: form, project %>
+<%# locals: form, model (aka project in this context) %>
 
 <%= form.label :title, class: 'required' %>
 <%= form.text_field :title %>
@@ -9,4 +9,4 @@
 <%= form.label :end_on, 'Estimated End Date', class: 'required' %>
 <%= form.date_field :end_on %>
 
-<%= render partial: '/awards/form', locals: { form: form, award: project.awards.first } %>
+<%= render partial: '/awards/form', locals: { form: form, award: model.awards.first } %>

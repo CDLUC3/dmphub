@@ -1,5 +1,14 @@
-<%# locals: project, data_management_plan, dataset %>
+<%# locals: model %>
 <%
+case model.class.name
+when 'Project'
+  project = model
+  data_management_plan = model.data_management_plan
+when 'DataManagementPlan'
+  project = model.projects.first
+  data_management_plan = model
+end
+
 current_path = request.path
 
 if %w[/projects/new /projects].include?(current_path)

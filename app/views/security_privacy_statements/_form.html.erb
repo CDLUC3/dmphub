@@ -1,6 +1,3 @@
-
-<%= render partial: 'shared/form_errors', locals: { errors: statement.errors } %>
-
 <%= fields_for statement do |s| %>
   <%= s.label :title, class: 'required' %>
   <%= s.text_field :title, title: statement.errors[:title] %>

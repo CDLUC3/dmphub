@@ -8,5 +8,3 @@
 <%= form.date_field :start_on %>
 <%= form.label :end_on, 'Estimated End Date', class: 'required' %>
 <%= form.date_field :end_on %>
-
-<%= render partial: '/awards/form', locals: { form: form, award: model.awards.first } %>

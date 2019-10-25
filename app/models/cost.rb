@@ -21,7 +21,7 @@ class Cost < ApplicationRecord
       )
       cost.description = json['description']
       cost.value = json['value']
-      cost.currency_code = json['currency_code']
+      cost.currency_code = json['currencyCode']
       cost
     end
   end

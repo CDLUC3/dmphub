@@ -74,7 +74,7 @@ RSpec.describe Dataset, type: :model do
     end
 
     it 'finds the existing record rather than creating a new instance' do
-      dataset = create(:dataset, data_management_plan: create(:data_management_plan),
+      dataset = create(:dataset, data_management_plan: create(:data_management_plan, project: create(:project)),
                                  title: @jsons['minimal']['title'], dataset_type: 'dataset')
       obj = Dataset.from_json(
         provenance: Faker::Lorem.word,

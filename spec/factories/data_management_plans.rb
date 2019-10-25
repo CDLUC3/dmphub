@@ -19,7 +19,6 @@ FactoryBot.define do
 
     trait :complete do
       transient do
-        projects_count    { 1 }
         persons_count     { 1 }
         datasets_count    { 1 }
         costs_count       { 1 }
@@ -34,9 +33,6 @@ FactoryBot.define do
                                                     data_management_plan: data_management_plan, role: 'primary_contact')
         data_management_plan.person_data_management_plans << pdmp
 
-        evaluator.projects_count.times do
-          data_management_plan.projects << create(:project, :complete)
-        end
         evaluator.persons_count.times do
           per = create(:person, :complete)
           j = create(:person_data_management_plan, person: per, data_management_plan: data_management_plan,

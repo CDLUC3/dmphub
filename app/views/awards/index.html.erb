@@ -1,0 +1,26 @@
+<h2>Funding</h2>
+<div class="c-intro">Tell us about your funding sources:</div>
+
+<%= button_to 'Add a funding source', action: 'new' %>
+
+<% content_for :content do %>
+  <% if @project.awards.any? %>
+    <div id="award-<%= award.id %>" class="c-accordion">
+      <details>
+        <summary><%= award.funder_name %></summary>
+        <div class="c-accordion__section">
+          <%= render partial: '/shared/form_wrapper',
+                     locals: { model: @project,
+                               path: projects_path,
+                               http_method: 'post',
+                               form_partial: '/projects/form',
+                               autosave: false } %>
+        </div>
+      </details>
+    </div>
+  <% else %>
+    <p>No funding sources have been added yet. Click the button above to add a new funding source.</p>
+  <% end %>
+<% end %>
+
+<%= render partial: 'shared/registration_wrapper', locals: { model: @project } %>

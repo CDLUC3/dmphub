@@ -39,7 +39,8 @@ RSpec.describe Cost, type: :model do
     end
 
     it 'finds the existing record rather than creating a new instance' do
-      cost = create(:cost, data_management_plan: create(:data_management_plan), title: @jsons['minimal']['title'])
+      cost = create(:cost, data_management_plan: create(:data_management_plan, project: create(:project)),
+                           title: @jsons['minimal']['title'])
       obj = Cost.from_json(
         provenance: Faker::Lorem.word,
         data_management_plan: cost.data_management_plan,

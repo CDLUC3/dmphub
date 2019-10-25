@@ -3,10 +3,10 @@
 # A project
 class Project < ApplicationRecord
   # Associations
-  belongs_to :data_management_plan, optional: true
   has_many :awards, dependent: :destroy
+  has_many :data_management_plans, dependent: :destroy
 
-  accepts_nested_attributes_for :awards
+  accepts_nested_attributes_for :awards, :data_management_plans
 
   # Validations
   validates :title, :start_on, :end_on, presence: true
@@ -16,16 +16,14 @@ class Project < ApplicationRecord
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, data_management_plan: nil)
       return nil unless json.present? && provenance.present? && json['title'].present? &&
-                        json['start_on'].present? && json['end_on'].present?
-
-p json
+                        json['startOn'].present? && json['endOn'].present?
 
       json = json.with_indifferent_access
-      project = find_or_initialize_by(data_management_plan: data_management_plan, title: json['title'])
+      project = data_management_plan.project if data_management_plan.present?
+      project = find_or_initialize_by(title: json['title']) unless project.present?
       project.description = json['description']
-      project.start_on = json['start_on']
-      project.end_on = json['end_on']
-
+      project.start_on = json['startOn']
+      project.end_on = json['endOn']
       awards_from_json(provenance: provenance, json: json, project: project)
       project
     end

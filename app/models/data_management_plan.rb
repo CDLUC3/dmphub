@@ -7,14 +7,14 @@ class DataManagementPlan < ApplicationRecord
 
   # Associations
   belongs_to :oauth_authorization, foreign_key: 'id', optional: true, dependent: :destroy
-  has_many :projects, dependent: :destroy
+  belongs_to :project
 
   has_many :person_data_management_plans, dependent: :destroy
   has_many :persons, through: :person_data_management_plans
   has_many :costs, dependent: :destroy
   has_many :datasets, dependent: :destroy
 
-  accepts_nested_attributes_for :projects, :costs, :datasets,
+  accepts_nested_attributes_for :costs, :datasets,
                                 :person_data_management_plans
 
   # Validations
@@ -22,7 +22,6 @@ class DataManagementPlan < ApplicationRecord
 
   # Callbacks
   after_create :ensure_dataset!
-  after_create :ensure_project!
 
   # Scopes
   scope :by_client, lambda { |client_id:|
@@ -36,16 +35,17 @@ class DataManagementPlan < ApplicationRecord
       return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
-      dmp = find_by_identifiers(provenance: provenance, json_array: json['dmp_ids'])
+      dmp = find_by_identifiers(provenance: provenance, json_array: json['dmpIds'])
       dmp = find_or_initialize_by(title: json['title']) unless dmp.present?
       dmp.description = json['description']
       dmp.language = json.fetch('language', 'en')
-      dmp.ethical_issues = ConversionService.yes_no_unknown_to_boolean(json['ethical_issues_exist'])
-      dmp.ethical_issues_description = json['ethical_issues_description']
-      dmp.ethical_issues_report = json['ethical_issues_report']
+      dmp.ethical_issues = ConversionService.yes_no_unknown_to_boolean(json['ethicalIssuesExist'])
+      dmp.ethical_issues_description = json['ethicalIssuesDescription']
+      dmp.ethical_issues_report = json['ethicalIssuesReport']
+
+      dmp.project = project_from_json(provenance: provenance, json: json, dmp: dmp)
 
       persons_from_json(provenance: provenance, json: json, dmp: dmp)
-      projects_from_json(provenance: provenance, json: json, dmp: dmp)
       identifiers_from_json(provenance: provenance, json: json, dmp: dmp)
       datasets_from_json(provenance: provenance, json: json, dmp: dmp)
       costs_from_json(provenance: provenance, json: json, dmp: dmp)
@@ -55,30 +55,33 @@ class DataManagementPlan < ApplicationRecord
     def persons_from_json(provenance:, json:, dmp:)
       # Handle the primary contact for the DMP
       contact = Person.from_json(json: json['contact'], provenance: provenance)
-      dmp.person_data_management_plans << PersonDataManagementPlan.new(
+      pdmp = PersonDataManagementPlan.new(
         role: 'primary_contact', person: contact
       )
+      dmp.person_data_management_plans << pdmp unless dmp.person_exists?(person_data_management_plan: pdmp)
 
       # Handle other persons related to the DMP
-      json.fetch('dm_staff', []).each do |staff|
+      json.fetch('dmStaff', []).each do |staff|
         person = Person.from_json(json: staff, provenance: provenance)
-        dmp.person_data_management_plans << PersonDataManagementPlan.new(
-          role: staff.fetch('contributor_type', 'author'), person: person
+        pdmp = PersonDataManagementPlan.new(
+          role: staff.fetch('contributorType', 'author'), person: person
         )
+        dmp.person_data_management_plans << pdmp unless dmp.person_exists?(person_data_management_plan: pdmp)
       end
     end
 
-    def projects_from_json(provenance:, json:, dmp:)
+    def project_from_json(provenance:, json:, dmp:)
       if json['project'].present?
-        project = Project.from_json(json: json['project'], provenance: provenance,
-                                    data_management_plan: dmp)
+        project = Project.from_json(json: json['project'], provenance: provenance)
       end
-      dmp.projects << project if project.present?
+      return project if project.present?
+
+      Project.new(title: dmp.title, start_on: Time.now, end_on: (Time.now + 2.years))
     end
 
     def identifiers_from_json(provenance:, json:, dmp:)
       # Handle identifiers, costs and datasets
-      json.fetch('dmp_ids', []).each do |identifier|
+      json.fetch('dmpIds', []).each do |identifier|
         next unless identifier['value'].present?
 
         ident = {
@@ -94,12 +97,14 @@ class DataManagementPlan < ApplicationRecord
 
     def datasets_from_json(provenance:, json:, dmp:)
       json.fetch('datasets', []).each do |dataset|
-        dmp.datasets << Dataset.from_json(json: dataset, provenance: provenance, data_management_plan: dmp)
+        dataset = Dataset.from_json(json: dataset, provenance: provenance, data_management_plan: dmp)
+        dmp.datasets << dataset unless dataset.nil?
       end
     end
 
     def costs_from_json(provenance:, json:, dmp:)
       json.fetch('costs', []).each do |cost|
+        next unless cost['description'].present?
         dmp.costs << Cost.from_json(json: cost, provenance: provenance, data_management_plan: dmp)
       end
     end
@@ -132,6 +137,13 @@ class DataManagementPlan < ApplicationRecord
     )
   end
 
+  def person_exists?(person_data_management_plan:)
+    pdmps = person_data_management_plans.select do |pdmp|
+      pdmp.person == person_data_management_plan.person && pdmp.role == person_data_management_plan.role
+    end
+    pdmps.any?
+  end
+
   private
 
   # Create a default stub dataset unless one exists
@@ -139,15 +151,6 @@ class DataManagementPlan < ApplicationRecord
     return true if datasets.any?
 
     datasets << Dataset.new(title: title)
-    save
-  end
-
-  # Create a default stub project unless one exists
-  def ensure_project!
-    return true if projects.any?
-
-    projects << Project.create(title: title, description: description,
-                               start_on: Time.now, end_on: Time.now + 2.years)
     save
   end
 end

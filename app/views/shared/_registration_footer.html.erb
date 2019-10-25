@@ -4,6 +4,8 @@ case model.class.name
 when 'Project'
   project = model
   data_management_plan = model.data_management_plan
+when 'Award'
+
 when 'DataManagementPlan'
   project = model.projects.first
   data_management_plan = model
@@ -11,17 +13,19 @@ end
 
 current_path = request.path
 
-if %w[/projects/new /projects].include?(current_path)
-  next_href = new_project_path
-else
+if !%w[/projects/new].include?(current_path)
   if current_path.starts_with?('/project')
+    next_href = awards_path(project_id: project.id)
+
+  elsif current_path.starts_with?('/award')
+    prev_href = edit_project_path(project)
     next_href = edit_data_management_plan_path(data_management_plan)
 
   elsif current_path.starts_with?('/dataset')
     prev_href = edit_data_management_plan_path(data_management_plan)
 
   else
-    prev_href = edit_project_path(project)
+    prev_href = awards_path(project_id: project.id)
     next_href = datasets_path
   end
 end
@@ -35,6 +39,9 @@ end
   <ol>
     <li<%= current_path.starts_with?('/project') ? ' aria-current=step' : '' %>>
       Project
+    </li>
+    <li<%= current_path.starts_with?('/award') ? ' aria-current=step' : '' %>>
+      Funding
     </li>
     <li<%= current_path.starts_with?('/data_m') ? ' aria-current=step' : '' %>>
       DMP

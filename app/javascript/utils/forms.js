@@ -7,11 +7,17 @@ const requiredField = (selector) => {
 };
 
 const validateField = (context) => {
-  if (!$(context).val()) {
-    $(context).addClass('error');
-    return false;
+  const target = $(context);
+  /* Ignore fields in an association template. Templates are used to add sections */
+  if (!target.parent().is('.association-template')) {
+    if (!target.val()) {
+      target.addClass('error');
+      return false;
+    } else {
+      target.removeClass('error');
+      return true;
+    }
   } else {
-    $(context).removeClass('error');
     return true;
   }
 };
@@ -38,6 +44,12 @@ const validateRequirements = (context) => {
 const initForms = () => {
   $('body').on('change', 'form input, form select, form textarea', (e) => {
     dirty = true;
+
+    const form = $(e.target).closest('form');
+    if (form.closest('.form-wrapper').is('.autosave')) {
+      form.submit();
+      dirty = false
+    }
   });
 
   /* Only allow form submission if all requirements are met */
@@ -62,7 +74,6 @@ const initForms = () => {
     if (validateRequirements(form)) {
       form.submit();
     }
-    //return false;
   });
 
 };

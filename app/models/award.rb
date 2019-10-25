@@ -8,52 +8,80 @@ class Award < ApplicationRecord
 
   # Associations
   belongs_to :project, optional: true
+  belongs_to :organization
 
   accepts_nested_attributes_for :identifiers
-
-  # Validations
-  validates :funder_uri, :status, presence: true
 
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:, project: nil)
-      return nil unless json.present? && provenance.present? && json['funder_id'].present?
+      return nil unless json.present? && provenance.present? && json['funderId'].present?
 
       json = json.with_indifferent_access
-      award = find_or_initialize_by(project: project, funder_uri: json['funder_id'])
-      # TODO: Don't hard code this, either find it in the DB or call Fundref API
-      award.funder_name = 'National Science Foundation (NSF)' if award.funder_uri == 'http://dx.doi.org/10.13039/100000001'
-      award.status = json.fetch('funding_status', 'planned')
-      return award unless json['grant_id'].present?
+      identifier = find_identifier(provenance: provenance, json: json)
+      award = Award.find(id: identifier.identifiable_id) if identifier.present?
+      # We found a matching award that has already been funded so no updates needed
+      return award if award.present?
 
-      # Convert the grant_id into an identifier record
-      ident = {
-        'category': 'url',
-        'value': json['grant_id'],
-        'descriptor': 'funded_by'
-      }
-      id = Identifier.from_json(json: ident, provenance: provenance)
-      award.identifiers << id unless award.identifiers.include?(id)
-      add_additional_identifiers(provenance: provenance, json: json, award: award)
-      award
+      funder = organization_from_json(provenance: provenance, json: json)
+
+p json
+p "************* FUNDER: #{funder.inspect}"
+
+      awards = Award.where(project: project, organization: funder)
+                    .order(created_at: :desc)
+      if awards.any?
+        # Look for the most recent award that is not rejected/granted
+        awards = awards.select { |a| !%w[rejected granted].include?(a.status) }
+        if awards.any?
+          # There is an Award that has not been grnated or rejected so update it
+          award = awards.first
+          award.status = json.fetch('fundingStatus', 'planned')
+          award.identifiers << identifier if identifier.present?
+          award
+        else
+          # The only awards we know about are already rejected/granted
+          # If the incoming status is not also rejected/granted then
+          # consider this a new funding attempt
+          if !%w[rejected granted].include?(json['fundingStatus'])
+            new_award(provenance: provenance, json: json, project: project,
+                  funder: funder, identifier: identifier)
+          else
+            awards.first
+          end
+        end
+      else
+        # New funder, so create the Award
+        new_award(provenance: provenance, json: json, project: project,
+                  funder: funder, identifier: identifier)
+      end
     end
 
     private
 
-    def add_additional_identifiers(provenance:, json:, award:)
-      json.fetch('award_ids', []).each do |identifier|
-        next unless identifier['value'].present?
+    def find_identifier(provenance:, json:)
+      Identifier.where(provenance: provenance, identifiable_type: 'Award',
+        category: 'url', value: json['grantId']).first
+    end
 
-        ident = {
-          'provenance': provenance.to_s,
-          'category': identifier.fetch('category', 'url'),
-          'value': identifier['value'],
-          'descriptor': 'identified_by'
-        }
-        id = Identifier.from_json(json: ident, provenance: provenance)
-        award.identifiers << id unless award.identifiers.include?(id)
-      end
+    def organization_from_json(provenance:, json:)
+      # find the funder organization
+      hash = {
+        'name': json['funderName'],
+        'identifiers': [{
+          'category': 'doi',
+          'value': json['funderId']
+        }]
+      }
+      Organization.from_json(provenance: provenance, json: hash)
+    end
+
+    def new_award(provenance:, json:, project:, funder:, identifier:)
+      award = Award.new(project: project, organization: funder,
+                        status: json.fetch('fundingStatus', 'planned'))
+      award.identifiers << identifier if identifier.present?
+      award
     end
   end
 end

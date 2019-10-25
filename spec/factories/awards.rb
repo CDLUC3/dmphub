@@ -2,12 +2,15 @@
 
 FactoryBot.define do
   factory :award do |_award|
-    funder_uri { Faker::Internet.url }
     status     { Award.statuses.keys.sample }
 
     trait :complete do
       transient do
         identifier_count { 1 }
+      end
+
+      before :create do |award, evaluator|
+        award.organization = create(:organization, :complete) unless award.organization.present?
       end
 
       after :create do |award, evaluator|

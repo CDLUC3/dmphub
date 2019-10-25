@@ -17,6 +17,7 @@ class Person < ApplicationRecord
 
   # Validations
   validates :name, presence: true
+  validates :email, uniqueness: { case_sensitive: false }
 
   # Class Methods
   class << self
@@ -41,16 +42,16 @@ class Person < ApplicationRecord
     private
 
     def initialize_from_json(provenance:, json:)
-      ids = json.fetch('user_ids', json.fetch('contact_ids', []))
+      ids = json.fetch('staffIds', json.fetch('contactIds', []))
       person = find_by_identifiers(provenance: provenance, json_array: ids) if ids.any?
       person = find_or_initialize_by(email: json['mbox']) if person.nil? && json['mbox'].present?
-      person = Person.new(name: json['name']) unless person.present?
+      person = Person.new unless person.present?
       person
     end
 
     def identifiers_from_json(provenance:, json:, person:)
       # Attach any identifiers
-      json.fetch('user_ids', json.fetch('contact_ids', [])).each do |identifier|
+      json.fetch('staffIds', json.fetch('contactIds', [])).each do |identifier|
         ident = Identifier.from_json(provenance: provenance, json: {
                                        category: identifier.fetch('category', 'url'),
                                        value: identifier['value'],

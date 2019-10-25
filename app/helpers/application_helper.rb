@@ -45,16 +45,16 @@ module ApplicationHelper
     name.to_s.split('_').map(&:capitalize).join(' ')
   end
 
-  def landing_page_path(dmp:)
+  def landing_page_path_with_doi(dmp:)
     return root_path unless dmp.id.present? && dmp.doi.present?
 
-    id_to_doi(dmp: dmp, value: data_management_plan_path(dmp))
+    id_to_doi(dmp: dmp, value: landing_page_path(dmp))
   end
 
-  def landing_page_url(dmp:)
+  def landing_page_url_with_doi(dmp:)
     return root_url unless dmp.id.present? && dmp.doi.present?
 
-    id_to_doi(dmp: dmp, value: data_management_plan_url(dmp))
+    id_to_doi(dmp: dmp, value: landing_page_url(dmp))
   end
 
   def id_to_doi(dmp:, value:)

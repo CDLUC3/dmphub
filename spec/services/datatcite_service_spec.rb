@@ -44,7 +44,7 @@ RSpec.describe DataciteService, type: :model do
 
   describe 'mint_doi' do
     before(:each) do
-      @dmp = create(:data_management_plan, :complete)
+      @dmp = create(:data_management_plan, :complete, project: create(:project))
       stub_minting_error!
     end
 

@@ -31,10 +31,10 @@ class Dataset < ApplicationRecord
       dataset.dataset_type = json.fetch('type', 'dataset')
       dataset.publication_date = json['issued']
       dataset.language = json.fetch('language', 'en')
-      dataset.personal_data = ConversionService.yes_no_unknown_to_boolean(json['personal_data'])
-      dataset.sensitive_data = ConversionService.yes_no_unknown_to_boolean(json['sensitive_data'])
-      dataset.data_quality_assurance = json['data_quality_assurance']
-      dataset.preservation_statement = json['preservation_statement']
+      dataset.personal_data = ConversionService.yes_no_unknown_to_boolean(json['personalData'])
+      dataset.sensitive_data = ConversionService.yes_no_unknown_to_boolean(json['sensitiveData'])
+      dataset.data_quality_assurance = json['dataQualityAssurance']
+      dataset.preservation_statement = json['preservationStatement']
 
       identifiers_from_json(provenance: provenance, json: json, dataset: dataset)
       metadata_from_json(provenance: provenance, json: json, dataset: dataset)
@@ -49,7 +49,7 @@ class Dataset < ApplicationRecord
     private
 
     def initialize_from_json(provenance:, json:, dmp: nil)
-      dataset = find_by_identifiers(provenance: provenance, json_array: json['dataset_ids'])
+      dataset = find_by_identifiers(provenance: provenance, json_array: json['datasetIds'])
       unless dataset.present?
         dataset = find_or_initialize_by(
           title: json['title'],
@@ -61,7 +61,7 @@ class Dataset < ApplicationRecord
     end
 
     def identifiers_from_json(provenance:, json:, dataset:)
-      json.fetch('dataset_ids', []).each do |identifier|
+      json.fetch('datasetIds', []).each do |identifier|
         next unless identifier['value'].present?
 
         ident = {
@@ -76,7 +76,7 @@ class Dataset < ApplicationRecord
     end
 
     def statements_from_json(provenance:, json:, dataset:)
-      json.fetch('security_and_privacy_statements', []).each do |sps|
+      json.fetch('securityAndPrivacyStatements', []).each do |sps|
         dataset.security_privacy_statements << SecurityPrivacyStatement.from_json(
           json: sps, provenance: provenance, dataset: dataset
         )
@@ -84,7 +84,7 @@ class Dataset < ApplicationRecord
     end
 
     def technical_resources_from_json(provenance:, json:, dataset:)
-      json.fetch('technical_resources', []).each do |tr|
+      json.fetch('technicalResources', []).each do |tr|
         dataset.technical_resources << TechnicalResource.from_json(json: tr,
                                                                    provenance: provenance, dataset: dataset)
       end

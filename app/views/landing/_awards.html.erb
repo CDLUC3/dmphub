@@ -8,10 +8,11 @@
       <ul>
         <% awards.each do |award| %>
           <% grant = award.identifiers.select { |id| id.category == 'url' }.first&.value %>
+          <% ror = award.organization.identifiers.select { |i| i.category == 'ror' }.first %>
           <% identifiers = award.identifiers.select { |id| id.category != 'url' } %>
 
           <li><strong>Status:</strong> <%= humanize_underscored(name: award.status) %></li>
-          <li><strong>Agency:</strong> <%= link_to award.funder_name, award.funder_uri %></li>
+          <li><strong>Agency:</strong> <%= ror.present? ? link_to(award.organization.name, ror.value) : award.organization.name %></li>
 
           <% if grant.present? %>
             <li><strong>Award:</strong> <%= link_to grant, grant %></li>

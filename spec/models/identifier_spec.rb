@@ -24,7 +24,7 @@ RSpec.describe Identifier, type: :model do
   it 'factory can produce a valid model' do
     model = create(:identifier, identifiable: create(:award))
     expect(model.valid?).to eql(true), 'expected Award to be Identifiable'
-    model = create(:identifier, identifiable: create(:data_management_plan))
+    model = create(:identifier, identifiable: create(:data_management_plan, project: create(:project)))
     expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Identifiable'
     model = create(:identifier, identifiable: create(:dataset))
     expect(model.valid?).to eql(true), 'expected Dataset to be Identifiable'

@@ -1,27 +1,14 @@
-<%# locals: model, path, method, form_partial %>
+<%# locals: model, path, http_method, form_partial, autosave %>
 
-<div class="form-wrapper">
-  <%= render partial: '/shared/registration_header' %>
+<div class="form-wrapper<%= autosave ? ' autosave' : '' %>">
+  <%= render partial: '/shared/form_messages', locals: { model: model } %>
 
-  <%= form_with model: model, url: path, method: method do |f| %>
+  <%= form_with model: model, url: path, method: http_method.to_sym do |f| %>
     <div class="t-step__fields">
-
       <%= render partial: form_partial, locals: { form: f, model: model } %>
 
       <%= f.submit 'Save' %>
-      <div class="form-message">
-        <% if flash[:notice].present? %>
-          <span class="green"><%= flash[:notice] %></span>
-        <% end %>
-        <% if flash[:alert].present? %>
-          <span class="red"><%= flash[:notice] %></span>
-        <% end %>
-        <% if model.errors.any? %>
-          <%= render partial: '/shared/form_errors', locals: { model: model } %>
-        <% end %>
-      </div>
+      <%= render partial: '/shared/form_messages', locals: { model: model } %>
     </div>
   <% end %>
-
-  <%= render partial: '/shared/registration_footer', locals: { model: model } %>
 </div>

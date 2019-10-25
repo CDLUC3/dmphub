@@ -7,13 +7,10 @@ $(document).on('turbolinks:load', () => {
 
   /* Re-initialize the typeaheads after an ajax call */
   $('body').on('ajax:complete', (e) => {
-
-console.log('foo');
-
     initTypeaheadFields();
   });
 });
-
+/*
 $(() => {
   $('body').on('ajax:complete', (e) => {
 
@@ -22,3 +19,4 @@ console.log('bar');
     initTypeaheadFields();
   });
 });
+*/

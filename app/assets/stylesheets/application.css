@@ -47,8 +47,11 @@ main {
 .field_with_errors select {
   border-color: red;
 }
-.form-message {
-  grid-column: 2/4;
+.form-success {
+  color: green;
+}
+.form-error {
+  color: red;
 }
 
 .hidden {

@@ -15,9 +15,11 @@ class Organization < ApplicationRecord
   class << self
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
-      return nil unless json.present? && provenance.present? && json['name'].present?
+      return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
+      return nil unless json['name'].present?
+
       org = initialize_from_json(provenance: provenance, json: json)
       identifiers_from_json(provenance: provenance, json: json, org: org)
       org

@@ -1,0 +1,12 @@
+<%# locals: dmp %>
+
+<h2>Data Management Plan</h2>
+<div class="c-intro">Tell us about your plan for managing your research outputs:</div>
+
+<%= render partial: '/shared/form_wrapper',
+           locals: { model: @dmp,
+                     path: data_management_plan_path(@dmp),
+                     http_method: 'put',
+                     form_partial: '/data_management_plans/form',
+                     autosave: true
+                   } %>

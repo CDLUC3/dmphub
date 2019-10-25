@@ -1,0 +1,53 @@
+<%# locals: form, model %>
+<%= form.hidden_field :title %>
+
+<%= form.label :description, 'Summary', class: 'textarea' %>
+<%= form.text_area :description %>
+<%= form.label :language %>
+<%= form.select :language, %w[en es de fr] %>
+
+<%= form.check_box :ethical_issues %>
+<%= form.label :ethical_issues, 'Any ethical concerns?', id: 'c-ethical__label' %>
+
+<div id="c-ethicsreport" class="c-fieldgroup" role="group" aria-labelledby="c-ethical__label">
+  <%= form.label :ethical_issues_description, 'Please describe', class: 'textarea' %>
+  <%= form.text_area :ethical_issues_description %>
+  <%= form.label :ethical_issues_report, 'Report' %>
+  <%= form.url_field :ethical_issues_report %>
+</div>
+
+<div id="primary-id" class="c-fieldgroup" aria-labelledby="primary-fieldgroup-label" role="group">
+  <span id="primary-fieldgroup-label" class="c-fieldgroup__label">Primary Contact</span>
+  <%= fields_for :contact do |c| %>
+    <%
+    contact = model.primary_contact&.person
+    unless contact.present?
+      contact = PersonDataManagementPlan.new(
+        role: 'primary_contact',
+        person: Person.new(
+          name: current_user.name,
+          email: current_user.email,
+          identifiers: [Identifier.new(category: 'orcid', value: current_user.orcid)]
+        )
+      )
+    end
+    %>
+
+    <%= c.label :name, class: 'required' %>
+    <%= c.text_field :name, value: contact.person.name %>
+    <%= c.label :email, class: 'required' %>
+    <%= c.email_field :email, value: contact.person.email %>
+    <%= c.label :value, 'ORCID', class: 'required' %>
+    <%= c.text_field :value, value: contact.person.orcid.value %>
+    <%= link_to "https://orcid.org/#{contact.person.orcid.value}", class: "c-orcid" %>
+    <%= c.button 'X', id: 'remove-orcid' %>
+  <% end %>
+</div>
+
+<h3>Other Staff</h3>
+<div class="dm-staff-list association">
+  <%= button_tag 'Add', type: 'button', class: 'e-button2', aria: { label: 'Add a staff member' } %>
+  <div class="association-template t-step__fields">
+    <%= render partial: 'person_data_management_plans/form', locals: { form: form } %>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 <%= form.fields_for :person, Person.new do |person_form| %>
-  <%= person_form.label :name %>
-  <%= person_form.text_field :name, class: 'required' %>
+  <%= person_form.label :name, class: 'required' %>
+  <%= person_form.text_field :name %>
   <%= person_form.label :email %>
   <%= person_form.email_field :email %>
   <%= person_form.fields_for :identifiers, Identifier.new do |identifier_form| %>

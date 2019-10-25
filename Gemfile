@@ -35,6 +35,8 @@ gem 'devise'
 gem 'doorkeeper'
 # Doorkeeper JWT adds JWT token support to the Doorkeeper OAuth library.
 gem 'doorkeeper-jwt'
+# Bit fields for ActiveRecord
+gem 'flag_shih_tzu'
 # Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 gem 'httparty'
 # This is a meta-distribution of RDF.rb including all currently available and usable

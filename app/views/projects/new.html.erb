@@ -1,9 +1,15 @@
 <h2>Project</h2>
 <div class="c-intro">Tell us about your research project:</div>
 
-<%= render partial: '/shared/form_wrapper',
-           locals: { model: @project,
-                     path: projects_path,
-                     method: :post,
-                     form_partial: '/projects/form'
-                   } %>
+<%
+content_for :content do
+  render partial: '/shared/form_wrapper',
+         locals: { model: @project,
+                   path: projects_path,
+                   http_method: 'post',
+                   form_partial: '/projects/form',
+                   autosave: false }
+end
+%>
+
+<%= render partial: 'shared/registration_wrapper', locals: { model: @project } %>

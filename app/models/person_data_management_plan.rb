@@ -15,4 +15,5 @@ class PersonDataManagementPlan < ApplicationRecord
 
   # Validations
   validates :role, presence: true
+  validates :person, uniqueness: { scope: %i[data_management_plan role] }
 end

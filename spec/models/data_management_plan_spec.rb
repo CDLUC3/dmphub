@@ -13,12 +13,12 @@ RSpec.describe DataManagementPlan, type: :model do
     it { is_expected.to have_many(:persons) }
     it { is_expected.to have_many(:costs) }
     it { is_expected.to have_many(:datasets) }
-    it { is_expected.to have_many(:projects) }
+    it { is_expected.to belong_to(:project) }
     it { is_expected.to belong_to(:oauth_authorization) }
   end
 
   it 'factory can produce a valid model' do
-    model = build(:data_management_plan)
+    model = build(:data_management_plan, project: build(:project))
     expect(model.valid?).to eql(true)
   end
 
@@ -51,13 +51,13 @@ RSpec.describe DataManagementPlan, type: :model do
       expect(contact.person.email).to eql(@json['contact']['mbox'])
       person = obj.person_data_management_plans.reject { |pdmp| pdmp.role == 'primary_contact' }.first
       expect(person.person.email).to eql(@json['dm_staff'].first['mbox'])
-      expect(obj.projects.first.title).to eql(@json['project']['title'])
+      expect(obj.project.title).to eql(@json['project']['title'])
       expect(obj.costs.first.title).to eql(@json['costs'].first['title'])
       expect(obj.datasets.first.title).to eql(@json['datasets'].first['title'])
     end
 
     it 'returns the existing record if the identifier already exists' do
-      dmp = create(:data_management_plan, :complete)
+      dmp = create(:data_management_plan, :complete, project: create(:project))
       ident = dmp.identifiers.first
       obj = DataManagementPlan.from_json(provenance: ident.provenance,
                                          json: hash_to_json(hash: {
@@ -81,7 +81,7 @@ RSpec.describe DataManagementPlan, type: :model do
     end
 
     it 'finds the existing record rather than creating a new instance' do
-      dmp = create(:data_management_plan, title: @jsons['minimal']['title'])
+      dmp = create(:data_management_plan, title: @jsons['minimal']['title'], project: create(:project))
       obj = DataManagementPlan.from_json(
         provenance: Faker::Lorem.word,
         json: @jsons['minimal']
@@ -93,7 +93,7 @@ RSpec.describe DataManagementPlan, type: :model do
 
   context 'instance methods' do
     before(:each) do
-      @dmp = create(:data_management_plan, :complete)
+      @dmp = create(:data_management_plan, :complete, project: create(:project))
     end
 
     describe 'primary_contact' do

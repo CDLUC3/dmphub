@@ -1,12 +1,10 @@
-<% project = @dmp.projects.first %>
-
 <h2><%= @dmp.title %></h2>
 
 <%= render partial: '/landing/data_management_plan',
-           locals: { dmp: @dmp, project: project } %>
+           locals: { dmp: @dmp, project: @dmp.project } %>
 
 <%= render partial: '/landing/abstract',
-           locals: { dmp: @dmp, project: project } %>
+           locals: { dmp: @dmp, project: @dmp.project } %>
 
 <%= render partial: '/landing/contact',
            locals: { dmp: @dmp } %>
@@ -16,8 +14,8 @@
   <% if persons.any? %>
     <%= render partial: '/landing/staff', locals: { persons: persons } %>
   <% end %>
-  <% if project.awards.any? %>
-    <%= render partial: '/landing/awards', locals: { awards: project.awards } %>
+  <% if @dmp.project.awards.any? %>
+    <%= render partial: '/landing/awards', locals: { awards: @dmp.project.awards } %>
   <% end %>
   <%= render partial: '/landing/ethics', locals: { dmp: @dmp } %>
   <%= render partial: '/landing/costs', locals: { dmp: @dmp } %>

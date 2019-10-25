@@ -206,9 +206,7 @@ p per.inspect
       end
 
       def dmp_params
-        params.require(:dmp).permit(
-          RdaCommonStandardService.data_management_plan_permitted_params
-        ).to_h
+        params.require(:dmp).permit(RdaCommonStandardService.data_management_plan_permitted_params).to_h
       end
 
       def check_agent

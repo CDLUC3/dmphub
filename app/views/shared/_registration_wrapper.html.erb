@@ -1,0 +1,7 @@
+<%# locals: model %>
+
+<%= render partial: '/shared/registration_header' %>
+
+<%= yield :content %>
+
+<%= render partial: '/shared/registration_footer', locals: { model: model } %>

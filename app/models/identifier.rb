@@ -24,11 +24,11 @@ class Identifier < ApplicationRecord
       return nil unless json['value'].present?
 
       identifier = find_or_initialize_by(
-        category: json.fetch('category', 'url'),
+        category: ConversionService.to_identifier_category(rda_category: json.fetch('category', 'url')),
         provenance: provenance,
         value: json.fetch('value', '')
       )
-      identifier.descriptor = json['descriptor']
+      #identifier.descriptor = json.fetch('descriptor', 'identified_by')
       identifier
     end
   end

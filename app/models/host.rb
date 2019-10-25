@@ -20,12 +20,12 @@ class Host < ApplicationRecord
       host = initialize_from_json(provenance: provenance, json: json, distribution: distribution)
 
       host.description = json['description']
-      host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supports_versioning'])
-      host.backup_type = json['backup_type']
-      host.backup_frequency = json['backup_frequency']
-      host.storage_type = json['storage_type']
+      host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supportsVersioning'])
+      host.backup_type = json['backupType']
+      host.backup_frequency = json['backupFrequency']
+      host.storage_type = json['storageType']
       host.availability = json['availability']
-      host.geo_location = json['geo_location']
+      host.geo_location = json['geoLocation']
 
       identifiers_from_json(provenance: provenance, json: json, host: host)
       host
@@ -34,13 +34,13 @@ class Host < ApplicationRecord
     private
 
     def initialize_from_json(provenance:, json:, distribution:)
-      host = find_by_identifiers(provenance: provenance, json_array: json['host_ids'])
+      host = find_by_identifiers(provenance: provenance, json_array: json['hostIds'])
       host = find_or_initialize_by(title: json['title'], distribution: distribution) unless host.present?
       host
     end
 
     def identifiers_from_json(provenance:, json:, host:)
-      json.fetch('host_ids', []).each do |identifier|
+      json.fetch('hostIds', []).each do |identifier|
         next unless identifier['value'].present?
 
         ident = {

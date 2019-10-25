@@ -14,23 +14,19 @@ class ProjectsController < ApplicationController
 
   # POST /projects
   def create
-    project = Project.from_json(
-      provenance: ConversionService.local_provenance,
-      json: params_to_rda_json
-    )
-
+    # Since a project is currently a child of a DMP in the RDA Common Standard model
+    # we need to create a stub DMP and attach it's Project and initial Dataset
     data_management_plan = DataManagementPlan.new(
-      title: project.title,
-      #language: 'en',
-      datasets: [Dataset.new(title: 'Dataset')]
+      title: project_params[:title],
+      language: 'en',
+      datasets: [Dataset.new(title: 'Dataset')],
+      projects: [Project.new(project_params)]
     )
-    data_management_plan.projects << project
-
-    @project = data_management_plan.projects.first
 
     if data_management_plan.save
       flash[:notice] = 'Your changes have been saved.'
-      redirect_to edit_data_management_plan_path(data_management_plan)
+      @project = data_management_plan.projects.first
+      redirect_to awards_path(project_id: data_management_plan.projects.first.id)
     else
       flash[:alert] = 'Unable to save your changes!'
       render status: :unprocessable_entity
@@ -46,14 +42,7 @@ class ProjectsController < ApplicationController
   private
 
   def project_params
-    params.require(:project).permit(:title, :description, :start_on, :end_on,
-                                    awards_attributes: [:funder_uri, :funder_name, :status,
-                                                        identifiers_attributes: [:category,
-                                                                                 :value]])
-  end
-
-  def params_to_rda_json
-    ConversionService.project_form_params_to_rda(params: project_params)
+    params.require(:project).permit(:title, :description, :start_on, :end_on)
   end
 
 end

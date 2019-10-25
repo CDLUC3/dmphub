@@ -40,7 +40,7 @@ const removeSection = (context) => {
 
 const initSectionHandlers = () => {
   /* Add a section when the user clicks the button */
-  $('.association').on('click keypress', '.add-association-button', (e) => {
+  $('.association').on('click keypress', '.e-button2', (e) => {
     if (e.which === 13 || e.type === 'click') {
       addSection(e.target);
     }
@@ -55,6 +55,12 @@ const initSectionHandlers = () => {
 
   /* Hide all section templates by default */
   $('.association .association-template').hide();
+
+  /* Do not allow any templates to be submitted to the controller */
+  $('body').on('submit', 'form', (e) => {
+    $('.association .association-template').remove();
+  });
+
 };
 
 export default initSectionHandlers;

@@ -25,32 +25,26 @@ Rails.application.routes.draw do
   post '/search', to: 'home#search'
   get '/login', to: 'home#login', as: 'login'
 
+  resources :projects, only: %w[new create edit update] do
+    resources :awards
+  end
+  resources :data_management_plans, only: %w[edit update]
+  resources :datasets, only: %[index]
+
   # Handles DOI resolution to a landing page
-  get 'data_management_plans/*id', to: 'data_management_plan#show', as: 'data_management_plan'
-
-  resources :data_management_plan, only: %w[index edit update]
-
-  # TODO: For some reason `resources` isn't working here. perhaps after we change model
-  #       relationships from dmp -> projects to project -> dmps
-  resources :projects, only: %w[new create edit update]
-
-  resources :security_privacy_statements, only: %w[new create]
-
-  #get '/projects/new', to: 'projects#new', as: 'new_project'
-  #post '/projects', to: 'projects#create', as: 'projects', format: :json
-  #get '/projects/:id', to: 'projects#edit', as: 'edit_project'
-  #put '/projects/:id', to: 'projects#update', as: 'project', format: :json
-  #resources :datasets, only: %[new create]
-  #get '/datasets', to: 'datasets#index'
-  #post '/datasets', to: 'datasets#create', format: :json
-  #get '/datasets/new', to: 'datasets#new', as: 'new_dataset'
-  #get '/datasets/edit/:id', to: 'datasets#edit', as: 'edit_dataset'
-  #put '/datasets/:id', to: 'datasets#update', as: 'dataset', format: :json
+  get '/dmps/*id', to: 'data_management_plans#show', as: 'landing_page'
 
   get '/fundref_autocomplete', to: 'projects#fundref_autocomplete'
 
-  # API version 1
+  # API versions
   namespace :api do
+    namespace :v0 do
+      get '/me', format: :json, to: 'base_api#me'
+      get '/heartbeat', format: :json, to: 'base_api#heartbeat'
+
+      resources :data_management_plans, except: %w[show update]
+    end
+
     namespace :v1 do
       get '/me', format: :json, to: 'base_api#me'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'

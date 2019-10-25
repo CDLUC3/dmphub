@@ -23,11 +23,11 @@ class Distribution < ApplicationRecord
 
       distribution.description = json['description']
       distribution.format = json['format']
-      distribution.byte_size = json['byte_size']
-      distribution.access_url = json['access_url']
-      distribution.download_url = json['download_url']
-      distribution.available_until = json['available_until']
-      distribution.data_access = json.fetch('data_access', 'closed')
+      distribution.byte_size = json['byteSize']
+      distribution.access_url = json['accessUrl']
+      distribution.download_url = json['downloadUrl']
+      distribution.available_until = json['availableUntil']
+      distribution.data_access = json.fetch('dataAccess', 'closed')
 
       json.fetch('licenses', []).each do |license|
         lcsn = License.from_json(json: license, provenance: provenance, distribution: distribution)

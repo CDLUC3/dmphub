@@ -1,0 +1,18 @@
+<%# locals: model %>
+
+<% if flash[:notice].present? %>
+  <div class="form-success">
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+
+<% if model.errors.any? || flash[:alert].present? %>
+  <div class="form-error">
+    <%= flash[:alert] || 'Unable to save your changes!' %>
+    <ul>
+      <% model.errors.full_messages.each do |err| %>
+        <li><%= err %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

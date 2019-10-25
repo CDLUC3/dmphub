@@ -3,7 +3,7 @@
 json.ignore_nil!
 
 # A JSON representation of a Person in the Common Standard format
-json.merge! model_json_base(model: person, skip_hateoas: true)
+#json.merge! model_json_base(model: person, skip_hateoas: true)
 json.name person.name
 json.mbox person.email
 

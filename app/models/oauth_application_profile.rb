@@ -19,6 +19,26 @@ class OauthApplicationProfile < ApplicationRecord
 
   # Retrieve all of the ids of the entities the App has access to
   def authorized_entities(entity_clazz:)
+    return [] unless entity_clazz.present?
+
+    case entity_clazz.name
+    when 'DataManagementPlan'
+      OauthAuthorization.where(oauth_application: oauth_application)
+                        .pluck(:data_management_plan_id)
+    when 'User'
+      User.data_management_plans.pluck(:id)
+    else
+      authorization_by_rules(entity_clazz: entity_clazz)
+    end
+  end
+
+  private
+
+  def permission_to_entity_name(permission:)
+    permission.gsub('_creation', '').gsub('_assertion', '').camelcase
+  end
+
+  def authorization_by_rules(entity_clazz:)
     json = JSON.parse(rules)
 
     # Determine if the requested entity is authorized for the app
@@ -27,16 +47,6 @@ class OauthApplicationProfile < ApplicationRecord
       clazz_name == entity_clazz.name && send("#{k}?")
     end
     return [] if perms.empty?
-
-p "PERMITTED? #{send("#{perms.first}?")}"
-p json[perms.first]
-
-    ActiveRecord::Base.connection.execute(json[perms.first].to_s)
-  end
-
-  private
-
-  def permission_to_entity_name(permission:)
-    permission.gsub('_creation', '').gsub('_assertion', '').camelcase
+    ActiveRecord::Base.connection.execute(json[perms.first].to_s).map { |r| r[0] }.uniq
   end
 end

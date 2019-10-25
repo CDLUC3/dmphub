@@ -25,10 +25,6 @@ class Award < ApplicationRecord
       return award if award.present?
 
       funder = organization_from_json(provenance: provenance, json: json)
-
-p json
-p "************* FUNDER: #{funder.inspect}"
-
       awards = Award.where(project: project, organization: funder)
                     .order(created_at: :desc)
       if awards.any?

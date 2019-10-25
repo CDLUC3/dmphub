@@ -3,7 +3,7 @@
 json.ignore_nil!
 
 # A JSON representation of an Organization in the Common Standard format
-json.merge! model_json_base(model: organization, skip_hateoas: true)
+#json.merge! model_json_base(model: organization, skip_hateoas: true)
 json.name organization.name
 
 if organization.identifiers.any?

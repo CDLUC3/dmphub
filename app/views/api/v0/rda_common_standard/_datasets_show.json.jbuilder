@@ -3,7 +3,7 @@
 json.ignore_nil!
 
 # A JSON representation of a Dataset in the Common Standard format
-json.merge! model_json_base(model: dataset, skip_hateoas: true)
+#json.merge! model_json_base(model: dataset, skip_hateoas: true)
 json.title dataset.title
 json.description dataset.description
 json.type dataset.dataset_type

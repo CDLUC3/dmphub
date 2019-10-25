@@ -3,7 +3,7 @@
 json.ignore_nil!
 
 # A JSON representation of a Data Management Plan in the Common Standard format
-json.merge! model_json_base(model: data_management_plan)
+#json.merge! model_json_base(model: data_management_plan)
 json.title data_management_plan.title
 json.description data_management_plan.description
 json.language data_management_plan.language

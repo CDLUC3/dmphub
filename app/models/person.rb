@@ -21,6 +21,7 @@ class Person < ApplicationRecord
 
   # Class Methods
   class << self
+
     # Common Standard JSON to an instance of this object
     def from_json(json:, provenance:)
       return nil unless json.present? && provenance.present? && json['name'].present?

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # A JSON representation of an Dataset Metdata Entry in the Common Standard format
-json.merge! model_json_base(model: metadatum, skip_hateoas: true)
+#json.merge! model_json_base(model: metadatum, skip_hateoas: true)
 json.identifier do
   json.partial! 'api/v1/rda_common_standard/identifiers_show',
                 identifier: metadatum.identifiers.first

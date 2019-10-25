@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # A JSON representation of a Dataset in the Common Standard format
-json.merge! model_json_base(model: host, skip_hateoas: true)
+#json.merge! model_json_base(model: host, skip_hateoas: true)
 json.title host.title
 json.description host.description
 

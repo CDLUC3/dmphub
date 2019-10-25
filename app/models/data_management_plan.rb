@@ -7,7 +7,7 @@ class DataManagementPlan < ApplicationRecord
 
   # Associations
   belongs_to :oauth_authorization, foreign_key: 'id', optional: true, dependent: :destroy
-  belongs_to :project
+  belongs_to :project, optional: true
 
   has_many :person_data_management_plans, dependent: :destroy
   has_many :persons, through: :person_data_management_plans
@@ -137,6 +137,9 @@ class DataManagementPlan < ApplicationRecord
     )
   end
 
+  # Determine if the person is already associated with the DMP in a specific role
+  # This method is necessary because the dmp has not been saved and therefore
+  # the normal equality check always passes
   def person_exists?(person_data_management_plan:)
     pdmps = person_data_management_plans.select do |pdmp|
       pdmp.person == person_data_management_plan.person && pdmp.role == person_data_management_plan.role

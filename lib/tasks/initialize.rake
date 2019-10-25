@@ -27,7 +27,9 @@ namespace :initialize do
     )
     OauthApplicationProfile.create(
       oauth_application: dmptool,
-      dmp_creation: true,
+      data_management_plan_creation: true,
+      award_assertion: true,
+      person_assertion: true,
       rules: {}
     )
   end
@@ -50,14 +52,7 @@ namespace :initialize do
     OauthApplicationProfile.find_or_create_by(
       oauth_application: nsf,
       award_assertion: true,
-      person_assertion: true,
-      rules: {
-        awards: {
-          funder: {
-            identifiers: { category: 'doi', value: identifier.value }
-          }
-        }
-      }
+      rules: '{"award_assertion":"SELECT a.* FROM awards a INNER JOIN organizations o ON a.organization_id = o.id INNER JOIN identifiers i ON o.id = i.identifiable_id AND i.identifiable_type = \'Organization\' WHERE i.category = 1 AND i.value = \'http://dx.doi.org/10.13039/100000104\';"}'
     )
   end
 

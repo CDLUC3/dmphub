@@ -39,14 +39,12 @@ class OauthApplicationProfile < ApplicationRecord
   end
 
   def authorization_by_rules(entity_clazz:)
-    json = JSON.parse(rules)
-
     # Determine if the requested entity is authorized for the app
-    perms = json.keys.select do |k|
+    perms = rules.keys.select do |k|
       clazz_name = permission_to_entity_name(permission: k)
       clazz_name == entity_clazz.name && send("#{k}?")
     end
     return [] if perms.empty?
-    ActiveRecord::Base.connection.execute(json[perms.first].to_s).map { |r| r[0] }.uniq
+    ActiveRecord::Base.connection.execute(rules[perms.first].to_s).map { |r| r[0] }.uniq
   end
 end

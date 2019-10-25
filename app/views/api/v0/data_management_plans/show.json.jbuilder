@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
-json.application @application
-json.status @status
-json.source @source
-json.caller @caller
-json.time Time.now.utc.to_s
-
-json.total_items 1
+json.partial! 'api/v0/standard_response', items: [@dmp]
 
 json.items 1.times do
   json.dmp do

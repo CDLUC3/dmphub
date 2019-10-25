@@ -3,11 +3,11 @@
 case model.class.name
 when 'Project'
   project = model
-  data_management_plan = model.data_management_plan
+  data_management_plan = model.data_management_plans.first
 when 'Award'
 
 when 'DataManagementPlan'
-  project = model.projects.first
+  project = model.project
   data_management_plan = model
 end
 

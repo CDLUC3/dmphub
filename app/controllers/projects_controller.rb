@@ -8,7 +8,7 @@ class ProjectsController < ApplicationController
   def new
     @project = Project.new(
       awards: [Award.new],
-      data_management_plan: DataManagementPlan.new(datasets: [Dataset.new])
+      data_management_plans: [DataManagementPlan.new(datasets: [Dataset.new])]
     )
   end
 

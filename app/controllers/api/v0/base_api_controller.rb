@@ -26,12 +26,6 @@ module Api
 
       def has_doorkeeper_application_profile
         @profile = OauthApplicationProfile.where(oauth_application_id: doorkeeper_token.application.id).first
-
-p @profile.inspect
-p "DMP creation? #{@profile.data_management_plan_creation?}"
-p "Award assertion? #{@profile.award_assertion?}"
-p "Person assertion? #{@profile.person_assertion?}"
-
         render_error errors: 'Unauthorized', status: :unauthorized and return unless @profile.present?
       end
 

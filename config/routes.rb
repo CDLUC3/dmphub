@@ -43,21 +43,10 @@ Rails.application.routes.draw do
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
 
       resources :data_management_plans, except: %w[show update]
-    end
+      resources :awards, only: %w[index update]
 
-    namespace :v1 do
-      get '/me', format: :json, to: 'base_api#me'
-      get '/heartbeat', format: :json, to: 'base_api#heartbeat'
-
-      get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }
-      put 'data_management_plans/*id', to: 'data_management_plans#update', constraints: { id: /\S+/ }
-
-      resources :data_management_plans, except: %w[show update]
-      resources :datasets, only: %w[index show]
-      resources :organizations, only: %w[index show]
-      resources :persons, only: %w[index show]
-      resources :projects, only: %w[index show]
-      resources :users, only: %w[show]
+      #get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }
+      #put 'data_management_plans/*id', to: 'data_management_plans#update', constraints: { id: /\S+/ }
     end
   end
 end

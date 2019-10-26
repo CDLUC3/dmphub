@@ -39,6 +39,9 @@ gem 'doorkeeper-jwt'
 gem 'flag_shih_tzu'
 # Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 gem 'httparty'
+# A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for
+# modern web app frameworks and ORMs
+gem 'kaminari'
 # This is a meta-distribution of RDF.rb including all currently available and usable
 # parsing/serialization extensions, intended to make producing and consuming Linked Data
 # with Ruby as quick & easy as possible.

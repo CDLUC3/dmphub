@@ -10,6 +10,7 @@ module Api
       before_action :doorkeeper_authorize!, except: %i[heartbeat]
       before_action :has_doorkeeper_application_profile, except: %i[heartbeat]
       before_action :parse_request, except: %i[me heartbeat]
+      before_action :pagination_params, only: %i[index]
 
       def me
         render json: current_client.to_json
@@ -75,6 +76,15 @@ module Api
           Rails.logger.error @request.body
           return false
         end
+      end
+
+      def pagination_params
+        @page = params.fetch('page', 1).to_i
+        @per_page = params.fetch('per_page', 25).to_i
+      end
+
+      def paginate_response(results:)
+        results.page(@page).per(@per_page)
       end
 
       def award_permitted_params

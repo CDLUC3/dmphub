@@ -4,7 +4,8 @@ json.partial! 'api/v0/standard_response', items: @awards
 
 json.items @awards.each do |award|
   json.funding do
-    # Extract the
+    json.dmpDOI award.project.data_management_plans.first.doi
+
     project = award.project
     json.projectTitle project.title
     json.projectStartOn project.start_on.utc.to_s

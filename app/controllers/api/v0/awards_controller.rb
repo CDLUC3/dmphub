@@ -11,9 +11,7 @@ module Api
 
       # GET /awards
       def index
-        @source = "GET #{api_v0_awards_url}"
         award_ids = current_client[:profile].authorized_entities(entity_clazz: Award)
-        # TODO: figure out paging here so we're not sedning back large JSON
         join_hash = {
           project: {
             data_management_plans: {
@@ -23,13 +21,48 @@ module Api
             }
           }
         }
-        @awards = Award.joins(join_hash).includes(join_hash)
         @status = :ok
+        @awards = paginate_response(results: Award.joins(join_hash).includes(join_hash))
       end
 
       # PUT /awards/:id
       def update
-        @source = "POST #{api_v0_award_url(id: params[:id])}"
+        # Expecting the following format:
+        # {
+        #   "dmp": {
+        #     "dmpIds": [{
+        #       'category': 'doi',
+        #       'value': '10.234/erfere.234d'
+        #     }],
+        #     "dm_staff": [{
+        #       "name": 'Jane Doe',
+        #       "mbox": 'jane.doe@example.org',
+        #       "contributor_type": 'program_officer',
+        #       "organizations": [{
+        #         "name": 'National Science Foundation (NSF)'
+        #       }],
+        #     }],
+        #     "project": {
+        #     "start_on": award[:project_start],
+        #     "end_on": award[:project_end],
+        #     "funding": [{
+        #       "funder_id": 'http://dx.doi/path/to/funder',
+        #       "grant_id": 'http://awards.example.org/1234',
+        #       "funding_status": "granted",
+        #       "award_ids": [
+        #         'category': 'program',
+        #         'value': 'Genomics'
+        #       ]
+        #     }]
+        #   }
+        # }
+        # verify that `['funding']['funderId']` matches caller
+        # verify that Award ID in `params[:id]` matches an award for the `dmpDOI`
+        # verify that App has permission to make award assertions
+        # verify that App has permission to make person assertions if they are present
+
+        # Make assertions
+        # Return proper status code and base response
 
         award_permitted_params
       end

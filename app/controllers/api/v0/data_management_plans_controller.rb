@@ -18,8 +18,6 @@ module Api
 
       # POST /data_management_plans
       def create
-        @source = "POST #{api_v0_data_management_plans_url}"
-
         # Only proceed if the Application has permission too create
         if current_client[:profile].data_management_plan_creation?
           @dmp = DataManagementPlan.from_json(json: dmp_params, provenance: current_client[:name])
@@ -31,7 +29,6 @@ module Api
 
               if @dmp.save
                 setup_authorizations(dmp: @dmp)
-                @status = 'created'
                 render 'show', status: 201
               else
                 rollback(dmp: @dmp)

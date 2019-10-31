@@ -27,3 +27,15 @@ require("../views/shared/form")
 
 /* TODO: temporary compiled JS until the ui library is inteegrated */
 "use strict";if(document.querySelector(".c-progress"))for(var steps=document.querySelectorAll(".c-progress li"),i=0;i<steps.length&&!steps[i].hasAttribute("aria-current");i++)steps[i].classList.add("completed"),steps[i].insertAdjacentHTML("afterbegin","<span>Completed step: </span>");
+
+// Generic spinner for ajax requests
+$(document).on('turbolinks:load', () => {
+
+  $('body').on('ajax:send', () => {
+    $('.spinner').show();
+  }).on('ajax:complete', () => {
+    $('.spinner').hide();
+  });
+
+  $('.spinner').hide();
+});

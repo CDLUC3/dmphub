@@ -7,8 +7,8 @@
     <div class="c-accordion__section">
       <ul>
         <% awards.each do |award| %>
-          <% grant = award.identifiers.select { |id| id.category == 'url' }.first&.value %>
-          <% ror = award.organization.identifiers.select { |i| i.category == 'ror' }.first %>
+          <% grant = award.urls.first&.value %>
+          <% ror = award.organization.rors.first %>
           <% identifiers = award.identifiers.select { |id| id.category != 'url' } %>
 
           <li><strong>Status:</strong> <%= humanize_underscored(name: award.status) %></li>

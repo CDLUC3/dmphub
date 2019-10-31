@@ -4,7 +4,7 @@
 class Dataset < ApplicationRecord
   include Identifiable
 
-  enum dataset_type: %i[dataset software]
+  enum dataset_type: %i[dataset software http://purl.org/coar/resource_type/c_ddb1]
 
   # Associations
   belongs_to :data_management_plan, optional: true
@@ -18,99 +18,86 @@ class Dataset < ApplicationRecord
   # Validations
   validates :title, :dataset_type, presence: true
 
+  def errors
+    identifiers.each { |identifier| super.copy!(identifier.errors) }
+    security_privacy_statements.each { |statement| super.copy!(statement.errors) }
+    technical_resources.each { |resource| super.copy!(resource.errors) }
+    metadata.each { |metadatum| super.copy!(metadatum.errors) }
+    distributions.each { |distribution| super.copy!(distribution.errors) }
+    super
+  end
+
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:, data_management_plan: nil)
-      return nil unless json.present? && provenance.present? && json['title'].present?
+    def from_json!(provenance:, json:, data_management_plan:)
+      return nil unless json.present? && provenance.present? && data_management_plan.present?
 
       json = json.with_indifferent_access
-      dataset = initialize_from_json(provenance: provenance, json: json, dmp: data_management_plan)
+      return nil unless json['title'].present?
 
-      dataset.description = json['description']
-      dataset.dataset_type = json.fetch('type', 'dataset')
-      dataset.publication_date = json['issued']
-      dataset.language = json.fetch('language', 'en')
-      dataset.personal_data = ConversionService.yes_no_unknown_to_boolean(json['personalData'])
-      dataset.sensitive_data = ConversionService.yes_no_unknown_to_boolean(json['sensitiveData'])
-      dataset.data_quality_assurance = json['dataQualityAssurance']
-      dataset.preservation_statement = json['preservationStatement']
+      dataset = find_by_identifiers(
+        provenance: provenance,
+        json_array: json['datasetIds']
+      )
 
-      identifiers_from_json(provenance: provenance, json: json, dataset: dataset)
-      metadata_from_json(provenance: provenance, json: json, dataset: dataset)
-      statements_from_json(provenance: provenance, json: json, dataset: dataset)
-      technical_resources_from_json(provenance: provenance, json: json, dataset: dataset)
-      keywords_from_json(json: json, dataset: dataset)
-      distributions_from_json(provenance: provenance, json: json, dataset: dataset)
+      dataset = Dataset.new(data_management_plan: data_management_plan, title: json['title']) unless dataset.present?
 
-      dataset
-    end
+      Dataset.transaction do
+        dataset.title = json.fetch('title', data_management_plan.title)
+        dataset.description = json['description'] if json['description'].present?
+        dataset.dataset_type = json.fetch('type', 'dataset')
+        dataset.publication_date = json['issued'] if json['issued'].present?
+        dataset.language = json.fetch('language', 'en')
+        dataset.personal_data = ConversionService.yes_no_unknown_to_boolean(json['personalData'])
+        dataset.sensitive_data = ConversionService.yes_no_unknown_to_boolean(json['sensitiveData'])
+        dataset.data_quality_assurance = json['dataQualityAssurance'] if json['dataQualityAssurance'].present?
+        dataset.preservation_statement = json['preservationStatement'] if json['preservationStatement'].present?
 
-    private
+        json.fetch('securityAndPrivacyStatements', []).each do |sps|
+          stmt = SecurityPrivacyStatement.from_json!(
+            json: sps, provenance: provenance, dataset: dataset
+          )
+          dataset.security_privacy_statements << stmt unless dataset.security_privacy_statements.include?(stmt)
+        end
 
-    def initialize_from_json(provenance:, json:, dmp: nil)
-      dataset = find_by_identifiers(provenance: provenance, json_array: json['datasetIds'])
-      unless dataset.present?
-        dataset = find_or_initialize_by(
-          title: json['title'],
-          dataset_type: json.fetch('type', 'dataset'),
-          data_management_plan: dmp
-        )
-      end
-      dataset
-    end
+        json.fetch('technicalResources', []).each do |tr|
+          resource = TechnicalResource.from_json!(
+            json: tr, provenance: provenance, dataset: dataset
+          )
+          dataset.technical_resources << resource unless dataset.technical_resources.include?(resource)
+        end
 
-    def identifiers_from_json(provenance:, json:, dataset:)
-      json.fetch('datasetIds', []).each do |identifier|
-        next unless identifier['value'].present?
+        json.fetch('metadata', []).each do |metadatum|
+          datum = Metadatum.from_json!(
+            json: metadatum, provenance: provenance, dataset: dataset
+          )
+          dataset.metadata << datum unless dataset.metadata.include?(datum)
+        end
 
-        ident = {
-          'provenance': provenance.to_s,
-          'category': identifier.fetch('category', 'url'),
-          'value': identifier['value'],
-          'descriptor': 'is_metadata_for'
-        }
-        id = Identifier.from_json(json: ident, provenance: provenance)
-        dataset.identifiers << id unless dataset.identifiers.include?(id)
-      end
-    end
+        json.fetch('keywords', []).each do |keyword|
+          next if keyword.blank?
 
-    def statements_from_json(provenance:, json:, dataset:)
-      json.fetch('securityAndPrivacyStatements', []).each do |sps|
-        dataset.security_privacy_statements << SecurityPrivacyStatement.from_json(
-          json: sps, provenance: provenance, dataset: dataset
-        )
-      end
-    end
+          dk = DatasetKeyword.new(keyword: Keyword.find_or_initialize_by(value: keyword))
+          dataset.dataset_keywords << dk unless dataset.dataset_keywords.include?(dk)
+        end
 
-    def technical_resources_from_json(provenance:, json:, dataset:)
-      json.fetch('technicalResources', []).each do |tr|
-        dataset.technical_resources << TechnicalResource.from_json(json: tr,
-                                                                   provenance: provenance, dataset: dataset)
-      end
-    end
+        json.fetch('distributions', []).each do |distribution|
+          distro = Distribution.from_json!(
+            json: distribution, provenance: provenance, dataset: dataset
+          )
+          dataset.distributions << distro unless dataset.distributions.include?(distro)
+        end
 
-    def metadata_from_json(provenance:, json:, dataset:)
-      json.fetch('metadata', []).each do |metadatum|
-        dataset.metadata << Metadatum.from_json(json: metadatum,
-                                                provenance: provenance, dataset: dataset)
+        json.fetch('datasetIds', []).each do |id|
+          identifier = Identifier.from_json(provenance: provenance, json: json)
+          dataset.identifiers << identifier unless dataset.identifiers.include?(identifier)
+        end
+
+        dataset.save
+        dataset
       end
     end
 
-    def keywords_from_json(json:, dataset:)
-      json.fetch('keywords', []).each do |keyword|
-        next if keyword.blank?
-
-        key = Keyword.find_or_initialize_by(value: keyword)
-        dataset.dataset_keywords << DatasetKeyword.new(keyword: key)
-      end
-    end
-
-    def distributions_from_json(provenance:, json:, dataset:)
-      json.fetch('distributions', []).each do |distribution|
-        dataset.distributions << Distribution.from_json(json: distribution, provenance: provenance,
-                                                        dataset: dataset)
-      end
-    end
   end
 end

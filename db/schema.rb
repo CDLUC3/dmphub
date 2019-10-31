@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_10_24_150836) do
+ActiveRecord::Schema.define(version: 2019_10_31_152638) do
 
   create_table "awards", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "project_id"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "organization_id"
+    t.string "provenance"
     t.index ["organization_id"], name: "index_awards_on_organization_id"
     t.index ["project_id"], name: "index_awards_on_project_id"
     t.index ["status"], name: "index_awards_on_status"
@@ -31,6 +32,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.string "currency_code"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["data_management_plan_id"], name: "index_costs_on_data_management_plan_id"
   end
 
@@ -44,6 +46,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "project_id"
+    t.string "provenance"
     t.index ["project_id"], name: "index_data_management_plans_on_project_id"
   end
 
@@ -60,6 +63,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.text "preservation_statement", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["data_management_plan_id"], name: "index_datasets_on_data_management_plan_id"
     t.index ["dataset_type"], name: "index_datasets_on_dataset_type"
   end
@@ -85,6 +89,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.datetime "available_until"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["dataset_id"], name: "index_distributions_on_dataset_id"
   end
 
@@ -100,6 +105,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.string "geo_location"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["distribution_id"], name: "index_hosts_on_distribution_id"
   end
 
@@ -128,6 +134,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.datetime "start_date", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["distribution_id"], name: "index_licenses_on_distribution_id"
   end
 
@@ -137,6 +144,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["dataset_id"], name: "index_metadata_on_dataset_id"
   end
 
@@ -204,6 +212,8 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
+    t.text "alternate_names"
     t.index ["name"], name: "index_organizations_on_name"
   end
 
@@ -212,6 +222,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.string "email"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
   end
 
   create_table "persons_data_management_plans", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -220,6 +231,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.integer "role"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["data_management_plan_id"], name: "index_persons_data_management_plans_on_data_management_plan_id"
     t.index ["person_id"], name: "index_persons_data_management_plans_on_person_id"
   end
@@ -227,6 +239,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
   create_table "persons_organizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "person_id"
     t.bigint "organization_id"
+    t.string "provenance"
     t.index ["organization_id"], name: "index_persons_organizations_on_organization_id"
     t.index ["person_id"], name: "index_persons_organizations_on_person_id"
   end
@@ -238,6 +251,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["id", "start_on", "end_on"], name: "index_projects_on_id_and_start_on_and_end_on"
   end
 
@@ -247,6 +261,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["dataset_id"], name: "index_security_privacy_statements_on_dataset_id"
   end
 
@@ -255,6 +270,7 @@ ActiveRecord::Schema.define(version: 2019_10_24_150836) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
     t.index ["dataset_id"], name: "index_technical_resources_on_dataset_id"
   end
 

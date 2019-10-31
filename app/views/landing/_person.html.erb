@@ -1,6 +1,6 @@
 <%# locals: person %>
 
-<% orcid = person.identifiers.select { |id| id.category == 'orcid' }.first %>
+<% orcid = person.orcids.first %>
 
 <li><strong>Name:</strong> <%= person.name %></li>
 

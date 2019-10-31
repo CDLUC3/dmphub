@@ -1,0 +1,59 @@
+<%# locals: full_list, organizations, controller, action %>
+
+<div  class="organizations-table grid-table">
+  <div class="table-header col-large">Name</div>
+  <div class="table-header col-medium">ROR</div>
+  <div class="table-header col-medium">Fundref</div>
+  <div class="table-header col-large">Merge</div>
+
+  <% organizations.each do |org| %>
+    <div class="table-column">
+      <%= org.name %>
+    </div>
+
+    <% ror = org.rors.any? ? org.rors.first : Identifier.new(category: 'ror') %>
+    <% fundref = org.dois.any? ? org.dois.first : Identifier.new(category: 'doi') %>
+
+    <div class="table-column">
+      <%= form_with url: organization_path(org), method: :put do |f| %>
+        <%= fields_for :identifiers, ror do |identifier_form| %>
+          <%= identifier_form.hidden_field :category %>
+          <%= identifier_form.text_field :value %>
+          <% if identifier_form.object.value.present? %>
+            <%= link_to 'visit', identifier_form.object.value, target: '_blank' %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="table-column">
+      <%= form_with url: organization_path(org), method: :put do |f| %>
+        <%= fields_for :identifiers, fundref do |identifier_form| %>
+          <%= identifier_form.hidden_field :category %>
+          <%= identifier_form.text_field :value %>
+          <% if identifier_form.object.value.present? %>
+            <%= link_to 'visit', identifier_form.object.value, target: '_blank' %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="table-column">
+      <%= form_with url: organization_merge_path(org), method: :put do |f| %>
+        <% orgs = full_list.select { |i| i[1] != org.id } %>
+        <%= f.select :merge_with, orgs, include_blank: true %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="table-nav">
+    <% displayed = organizations.limit_value %>
+    <% total = organizations.total_count %>
+    Displaying <%= displayed > total ? total : displayed %> of <%= number_with_delimiter(total, delimiter: ',') %> Organizations
+  </div>
+  <div class="table-nav">
+    <%= paginate organizations,
+                 remote: true,
+                 params: { controller: controller, action: action } %>
+  </div>
+</div>

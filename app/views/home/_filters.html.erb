@@ -1,0 +1,12 @@
+<%# locals: funders %>
+
+<h3>Filters:</h3>
+<div class="dashboard-filters">
+  <%= form_with url: filter_path do |f| %>
+    <%= f.label :funder_id, 'Funder:' %>
+    <%= f.select :funder_id, funders.collect { |f| [f.name, f.id] }, include_blank: true %>
+    <%= f.label :organization_id, 'Research Org:' %>
+    <%= f.select :organization_id, organizations.collect { |o| [o.name, o.id] }, include_blank: true %>
+    <%= f.submit 'Filter' %>
+  <% end %>
+</div>

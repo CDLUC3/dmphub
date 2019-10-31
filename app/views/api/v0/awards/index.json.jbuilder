@@ -4,7 +4,7 @@ json.partial! 'api/v0/standard_response', items: @awards
 
 json.items @awards.each do |award|
   json.funding do
-    json.dmpDOI award.project.data_management_plans.first.doi
+    json.dmpDOI award.project.data_management_plans.first.dois.first
 
     project = award.project
     json.projectTitle project.title

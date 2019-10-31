@@ -6,10 +6,11 @@
     "title": "Dataset preservation costs",
     "description": "Cost for preservation of datasets for 10 year period",
     "value": 870.03,
-    "currency_code": "usd"
+    "currencyCode": "usd"
   },
   "minimal": {
-    "title": "Dataset preservation costs"
+    "title": "Dataset preservation costs",
+    "description": "Cost for preservation of datasets for 10 year period"
   },
   "invalid": {
     "description": "Cost for preservation of datasets for 10 year period",

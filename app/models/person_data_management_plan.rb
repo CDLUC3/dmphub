@@ -16,4 +16,9 @@ class PersonDataManagementPlan < ApplicationRecord
   # Validations
   validates :role, presence: true
   validates :person, uniqueness: { scope: %i[data_management_plan role] }
+
+  def errors
+    super.copy!(person.errors) if person.present?
+    super
+  end
 end

@@ -52,9 +52,7 @@ class ConversionService
     def user_to_person(user:, role:)
       return {} unless user.present? && user.is_a?(User)
 
-      ident = Identifier.find_by(value: user.orcid, category: 'orcid',
-                                 provenance: local_provenance, identifiable_type: 'Person')
-      person = Person.find(ident.identifiable_id) if ident.present?
+      person = Person.find_by_orcid(user.orcid)
       return PersonDataManagementPlan.new(person: person, role: role) if person.present?
 
       person = Person.find_or_initialize_by(name: user.name, email: user.email)

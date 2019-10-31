@@ -14,29 +14,37 @@ class Project < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:, data_management_plan: nil)
-      return nil unless json.present? && provenance.present? && json['title'].present? &&
-                        json['startOn'].present? && json['endOn'].present?
+    def from_json!(provenance:, json:, data_management_plan: nil)
+      return nil unless json.present? && provenance.present?
+      return nil unless json['title'].present?
 
-      json = json.with_indifferent_access
-      project = data_management_plan.project if data_management_plan.present?
-      project = find_or_initialize_by(title: json['title']) unless project.present?
-      project.description = json['description']
-      project.start_on = json['startOn']
-      project.end_on = json['endOn']
-      awards_from_json(provenance: provenance, json: json, project: project)
-      project
-    end
+      Project.transaction do
+        # If the DMP was provided use its project
+        project = data_management_plan.project if data_management_plan.present?
 
-    private
+        # TODO: We need a much more sophisticated way to determine if this is a new
+        #       Project, title's can and should not be unique!
+        project = find_or_initialize_by(title: json['title']) unless project.present?
 
-    def awards_from_json(provenance:, json:, project:)
-      return unless json['funding'].present? && json['funding'].any?
+        json.fetch('funding', []).each do |award|
+          award = Award.from_json!(provenance: provenance, project: project, json: award)
+          project.awards << award if award.present?
+        end
 
-      json['funding'].each do |award|
-        award = Award.from_json(json: award, provenance: provenance, project: project)
-        project.awards << award if award.present? && !project.awards.include?(award)
+        project.description = json['description'] if json['description'].present?
+        project.start_on = json.fetch('startOn', Time.now.utc)
+        project.end_on = json.fetch('endOn', Time.now.utc + 2.years)
+        project.save
+        project
       end
     end
   end
+
+  # Instance methods
+  def errors
+    awards.each { |award| super.copy!(award.errors) }
+    data_management_plans.each { |dmp| super.copy!(dmp.errors) }
+    super
+  end
+
 end

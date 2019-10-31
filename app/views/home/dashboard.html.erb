@@ -7,15 +7,18 @@
 <h2>My Data Management Plans</h2>
 
 <% if @data_management_plans.present? %>
-  <%= render partial: '/data_management_plans/index', locals: { data_management_plans: @data_management_plans } %>
+  <%= render partial: '/data_management_plans/index', locals: { data_management_plans: @data_management_plans, controller: 'home', action: 'dashboard' } %>
 <% else %>
   <p>You have no data management plans. Register a plan by clicking the button above.</p>
 <% end %>
 
 <% if current_user.super_user? %>
-  <h2>Funded Data Management Plans</h2>
+  <h2>All Data Management Plans</h2>
+
+  <%= render partial: '/home/filters',
+             locals: { funders: @funders, organizations: @organizations } %>
 
   <% if @other_plans.present? %>
-    <%= render partial: '/data_management_plans/index', locals: { data_management_plans: @other_plans } %>
+    <%= render partial: '/data_management_plans/index', locals: { data_management_plans: @other_plans, controller: 'home', action: 'dashboard' } %>
   <% end %>
 <% end %>

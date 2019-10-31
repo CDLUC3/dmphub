@@ -46,19 +46,19 @@ module ApplicationHelper
   end
 
   def landing_page_path_with_doi(dmp:)
-    return root_path unless dmp.id.present? && dmp.doi.present?
+    return root_path unless dmp.id.present? && dmp.dois.first.present?
 
     id_to_doi(dmp: dmp, value: landing_page_path(dmp))
   end
 
   def landing_page_url_with_doi(dmp:)
-    return root_url unless dmp.id.present? && dmp.doi.present?
+    return root_url unless dmp.id.present? && dmp.dois.first.present?
 
     id_to_doi(dmp: dmp, value: landing_page_url(dmp))
   end
 
   def id_to_doi(dmp:, value:)
-    value.gsub(dmp.id.to_s, dmp.doi)
+    value.gsub(dmp.id.to_s, dmp.dois.first)
   end
 
 end

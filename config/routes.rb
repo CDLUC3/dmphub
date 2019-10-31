@@ -21,13 +21,19 @@ Rails.application.routes.draw do
   root to: 'home#index'
 
   get '/dashboard', to: 'home#dashboard'
+  get '/admin', to: 'admin#dashboard'
 
   post '/search', to: 'home#search'
+  post '/filter', to: 'home#filter'
   get '/login', to: 'home#login', as: 'login'
 
   resources :projects, only: %w[new create edit update] do
     resources :awards
   end
+  resources :organizations, only: %w[update] do
+    post 'merge'
+  end
+
   resources :data_management_plans, only: %w[edit update]
   resources :datasets, only: %[index]
 

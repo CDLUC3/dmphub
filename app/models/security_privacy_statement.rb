@@ -10,13 +10,15 @@ class SecurityPrivacyStatement < ApplicationRecord
 
   # Scopes
   class << self
-    # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:, dataset: nil)
-      return nil unless json.present? && provenance.present? && json['title'].present?
+    def from_json!(provenance:, json:, dataset:)
+      return nil unless json.present? && provenance.present? && dataset.present?
 
       json = json.with_indifferent_access
+      return nil unless json['title'].present?
+
       statement = find_or_initialize_by(title: json['title'], dataset: dataset)
-      statement.description = json['description']
+      statement.description = json['description'] if json['description'].present?
+      statement.save
       statement
     end
   end

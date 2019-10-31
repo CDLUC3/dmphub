@@ -7,7 +7,9 @@ RSpec.describe Identifier, type: :model do
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to validate_presence_of(:value) }
     it { is_expected.to validate_presence_of(:provenance) }
+
     it { is_expected.to define_enum_for(:category).with(Identifier.categories.keys) }
+    it { is_expected.to define_enum_for(:descriptor).with(Identifier.descriptors.keys) }
 
     it 'should validate that :value is unique per :category+:provenance' do
       create(:identifier, category: Identifier.categories.keys.sample, identifiable: create(:person))
@@ -22,7 +24,7 @@ RSpec.describe Identifier, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:identifier, identifiable: create(:award))
+    model = create(:identifier, identifiable: create(:award, organization: create(:organization)))
     expect(model.valid?).to eql(true), 'expected Award to be Identifiable'
     model = create(:identifier, identifiable: create(:data_management_plan, project: create(:project)))
     expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Identifiable'

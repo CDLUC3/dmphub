@@ -32,7 +32,7 @@ json.data do
 
                 # Getting:
                 #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-                # ror = organization.identifiers.select { |i| i.category == 'ror' }.first
+                # ror = organization.rors.first
                 # if ror.present?
                 #  json.schemeUri 'https://ror.org'
                 #  json.nameIdentifier ror.value
@@ -42,7 +42,7 @@ json.data do
             end
           end
 
-          orcid = person.identifiers.select { |i| i.category == 'orcid' }.first
+          orcid = person.orcids.first
           if orcid.present?
             json.nameIdentifiers do
               json.array! [orcid] do |ident|
@@ -73,7 +73,7 @@ json.data do
 
               # Getting:
               #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-              # ror = organization.identifiers.select { |i| i.category == 'ror' }.first
+              # ror = organization.rors.first
               # if ror.present?
               #  json.schemeUri 'https://ror.org'
               #  json.nameIdentifier ror.value
@@ -83,7 +83,7 @@ json.data do
           end
         end
 
-        orcid = person.identifiers.select { |i| i.category == 'orcid' }.first
+        orcid = person.orcids.first
         if orcid.present?
           json.nameIdentifiers do
             json.array! [orcid] do |ident|
@@ -112,7 +112,7 @@ json.data do
       json.dateType hash[:type]
     end
 
-    json.identifiers [data_management_plan.doi] do |doi|
+    json.identifiers [data_management_plan.dois.first] do |doi|
       json.identifier "https://doi.org/#{doi}"
       json.identifierType 'DOI'
     end

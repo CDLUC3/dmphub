@@ -13,43 +13,32 @@ class Organization < ApplicationRecord
 
   # Scopes
   class << self
-    # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
+    def funders
+      joins(:identifiers).includes(:identifiers)
+        .where(identifiers: { category: 'doi' })
+    end
+
+    def from_json!(provenance:, json:)
       return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
       return nil unless json['name'].present?
 
-      org = initialize_from_json(provenance: provenance, json: json)
-      identifiers_from_json(provenance: provenance, json: json, org: org)
-      org
-    end
+      org = find_by_identifiers(
+        provenance: provenance,
+        json_array: json['identifiers']
+      ) if json['identifiers'].present?
 
-    private
+      org = Organization.find_or_initialize_by(name: json['name']) unless org.present?
 
-    def initialize_from_json(provenance:, json:)
-      if json['identifiers'].present?
-        org = find_by_identifiers(
-          provenance: provenance,
-          json_array: json['identifiers']
-        )
+      # Process any other identifiers
+      json.fetch('identifiers', []).each do |id|
+        identifier = Identifier.from_json(provenance: provenance, json: id)
+        org.identifiers << identifier if identifier.new_record?
       end
-      org = find_or_initialize_by(name: json['name']) unless org.present?
+
+      org.save
       org
-    end
-
-    def identifiers_from_json(provenance:, json:, org:)
-      return nil unless json.fetch('identifiers', []).any?
-
-      json['identifiers'].each do |identifier|
-        ident = {
-          'category': identifier.fetch('category', 'url'),
-          'value': identifier['value'],
-          'descriptor': 'identified_by'
-        }
-        id = Identifier.from_json(json: ident, provenance: provenance)
-        org.identifiers << id unless org.identifiers.include?(id)
-      end
     end
   end
 end

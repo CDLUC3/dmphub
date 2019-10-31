@@ -7,7 +7,28 @@ module Identifiable
   included do
     has_many :identifiers, as: :identifiable, dependent: :destroy
 
+    Identifier.categories.each do |category|
+      # Dynamically create methods accessor methods for each Identifier category
+      # a method to get specific identifier types (e.g. `orcids`)
+      define_method(category[0].downcase.pluralize) do
+        identifiers.select { |i| i.category == category[0] }
+      end
+    end
+
     class << self
+      # Dynamically create methods accessor methods for each Identifier category
+      # a scope to find by each Identifier category (e.g. `find_orcid(:value)`)
+      Identifier.categories.each do |category|
+        define_method("find_by_#{category[0].downcase}") do |value|
+          ids = Identifier.where(
+            category: category[0],
+            identifiable_type: self.name,
+            value: value
+          ).pluck(:identifiable_id)
+          where(id: ids)
+        end
+      end
+
       def find_by_identifiers(provenance:, json_array:)
         return nil unless json_array.is_a?(Array) && provenance.present?
 

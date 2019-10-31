@@ -1,6 +1,6 @@
 <%# locals: dmp, project %>
 
-<% doi = @dmp.identifiers.select { |id| id.category == 'doi' }.first %>
+<% doi = @dmp.dois.first %>
 <% identifiers = @dmp.identifiers.select { |id| id.category != 'doi' } %>
 
 <h3>Data Management Plan</h3>

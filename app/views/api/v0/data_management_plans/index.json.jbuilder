@@ -4,7 +4,7 @@ json.partial! 'api/v0/standard_response', items: @payload[:items]
 
 json.items data_management_plans.each do |dmp|
   json.dmp do
-    doi = dmp.doi
+    doi = dmp.dois.first
     next unless doi.present?
 
     json.uri api_v0_data_management_plan_url(doi).gsub(/%2F/, '/')

@@ -9,14 +9,22 @@ def open_json_mock(file_name:)
 end
 
 # Run validations against each of the JSON sets: invalid, minimal, complete
-def validate_invalid_json_to_model(clazz:, jsons:)
-  obj = clazz.from_json(json: jsons.fetch(:invalid, {}), provenance: 'Testing')
+def validate_invalid_json_to_model(clazz:, jsons:, **args)
+  obj = clazz.from_json!(merge_args(
+    json: jsons.fetch(:invalid, {}),
+    provenance: 'Testing',
+    args: args
+  ))
   expect(obj.nil?).to eql(true)
 end
 
-def validate_minimal_json_to_model(clazz:, jsons:)
+def validate_minimal_json_to_model(clazz:, jsons:, **args)
   @json = jsons.fetch('minimal', {})
-  obj = clazz.from_json(json: @json, provenance: 'Testing')
+  obj = clazz.from_json!(merge_args(
+    json: @json,
+    provenance: 'Testing',
+    args: args
+  ))
   expect(obj.is_a?(clazz)).to eql(true), "Expected #{obj.class.name} to be a #{clazz.name}"
   return obj if clazz == Identifier
 
@@ -24,12 +32,20 @@ def validate_minimal_json_to_model(clazz:, jsons:)
   obj
 end
 
-def validate_complete_json_to_model(clazz:, jsons:)
+def validate_complete_json_to_model(clazz:, jsons:, **args)
   @json = jsons.fetch('complete', {})
-  obj = clazz.from_json(json: @json, provenance: 'Testing')
+  obj = clazz.from_json!(merge_args(
+    json: @json,
+    provenance: 'Testing',
+    args: args
+  ))
   expect(obj.is_a?(clazz)).to eql(true), "Expected #{obj.class.name} to be a #{clazz.name}"
   return obj if clazz == Identifier
 
   expect(obj.valid?).to eql(true), obj.errors.collect { |e, m| "#{e} - #{m}" }.join(', ')
   obj
+end
+
+def merge_args(json:, provenance:, args: {})
+  args.merge({ json: json, provenance: provenance })
 end

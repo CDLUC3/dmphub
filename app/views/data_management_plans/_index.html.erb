@@ -1,5 +1,38 @@
-<ul>
-<% data_management_plans.each do |dmp| %>
-  <li><%= link_to dmp.title, landing_page_path_with_doi(dmp: dmp) %></li>
-<% end %>
-</ul>
+<%# locals: data_management_plans, controller, action %>
+
+<div  class="data-management-plans-table grid-table">
+  <div class="table-header col-medium">DOI</div>
+  <div class="table-header col-large">Title</div>
+  <div class="table-header col-small">Funded?</div>
+  <div class="table-header col-medium">Contact</div>
+  <div class="table-header col-small">Updated</div>
+
+  <% data_management_plans.each do |dmp| %>
+    <div class="table-column">
+      <%= link_to dmp.dois.first, landing_page_path_with_doi(dmp: dmp) %>
+    </div>
+    <div class="table-column">
+      <%= dmp.title.length > 49 ? "#{dmp.title[0..50]} ..." : dmp.title %>
+    </div>
+    <div class="table-column">
+      <%= dmp.project.awards.collect { |a| a.funded? }.first.to_s.camelize %>
+    </div>
+    <div class="table-column">
+      <%= dmp.primary_contact.person.name %>
+    </div>
+    <div class="table-column">
+      <%= safe_date(date: dmp.updated_at) %>
+    </div>
+  <% end %>
+
+  <div class="table-nav">
+    <% displayed = data_management_plans.limit_value %>
+    <% total = data_management_plans.total_count %>
+    Displaying <%= displayed > total ? total : displayed %> of <%= number_with_delimiter(total, delimiter: ',') %> DMPs
+  </div>
+  <div class="table-nav">
+    <%= paginate data_management_plans,
+                 remote: true,
+                 params: { controller: controller, action: action } %>
+  </div>
+</div>

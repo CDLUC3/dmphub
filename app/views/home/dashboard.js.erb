@@ -1,0 +1,13 @@
+<% if @other_plans.present? %>
+  <% payload = escape_javascript(
+      render partial: '/data_management_plans/index',
+      locals: { data_management_plans: @other_plans, controller: 'home', action: 'dashboard' }
+  ) %>
+
+  $('.data-management-plans-table').replaceWith("<%= payload %>");
+
+<% else %>
+  $('.data-management-plans-table').replaceWith(
+    "<p>There were no DMPs that matched your filter options. Try removing either the Funder or Research Organization.</p>"
+  );
+<% end %>

@@ -1,0 +1,12 @@
+<h1>Administration</h1>
+
+<h2>Organizations</h2>
+
+<% if @organizations.present? %>
+  <%= render partial: '/organizations/index',
+             locals: {
+              organizations: @organizations, full_list: @full_list,
+              controller: 'admin', action: 'dashboard' } %>
+<% else %>
+  <p>There are no organizations at this time.</p>
+<% end %>

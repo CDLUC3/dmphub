@@ -1,0 +1,11 @@
+console.log('<%= organizations.inspect %>');
+
+<% if @organizations.present? %>
+  <% payload = escape_javascript(
+      render partial: '/organizations/index',
+             locals: { organizations: @organizations, full_list: @full_list,
+                       controller: 'admin', action: 'dashboard' }
+  ) %>
+
+  $('.organizations-table').replaceWith("<%= payload %>");
+<% end %>

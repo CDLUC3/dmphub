@@ -7,35 +7,32 @@ class TechnicalResource < ApplicationRecord
   # Associations
   belongs_to :dataset, optional: true
 
+  def errors
+    identifiers.each { |identifier| super.copy!(identifier.errors) }
+    super
+  end
+
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
-    # rubocop:disable Metrics/MethodLength
-    def from_json(json:, provenance:, dataset: nil)
-      return nil unless json.present? && provenance.present? &&
-                        json['identifier'].present? &&
-                        json['identifier']['value'].present?
+    def from_json!(provenance:, json:, dataset:)
+      return nil unless json.present? && provenance.present? && dataset.present?
 
       json = json.with_indifferent_access
-      tech_resource = find_by_identifiers(
+      return nil unless json['identifier'].present? && json['identifier']['value'].present?
+
+      resource = find_by_identifiers(
         provenance: provenance,
         json_array: [json['identifier']]
       )
-      unless tech_resource.present?
-        tech_resource = find_or_initialize_by(
-          description: json['description'],
-          dataset: dataset
-        )
-      end
 
-      ident = {
-        'category': json['identifier'].fetch('category', 'url'),
-        'value': json['identifier']['value'],
-        'descriptor': 'identified_by'
-      }
-      tech_resource.identifiers << Identifier.from_json(json: ident, provenance: provenance)
-      tech_resource
+      resource = TechnicalResource.new(dataset: dataset) unless resource.present?
+
+      resource.description = json['description'] if json['description'].present?
+      identifier = Identifier.from_json(provenance: provenance, json: json['identifier'])
+      resource.identifiers << identifier unless resource.identifiers.include?(identifier)
+      resource.save
+      resource
     end
-    # rubocop:enable Metrics/MethodLength
   end
 end

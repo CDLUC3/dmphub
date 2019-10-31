@@ -38,8 +38,8 @@
     <%= c.label :email, class: 'required' %>
     <%= c.email_field :email, value: contact.person.email %>
     <%= c.label :value, 'ORCID', class: 'required' %>
-    <%= c.text_field :value, value: contact.person.orcid.value %>
-    <%= link_to "https://orcid.org/#{contact.person.orcid.value}", class: "c-orcid" %>
+    <%= c.text_field :value, value: contact.person.orcids.first.value %>
+    <%= link_to "https://orcid.org/#{contact.person.orcids.first.value}", class: "c-orcid" %>
     <%= c.button 'X', id: 'remove-orcid' %>
   <% end %>
 </div>

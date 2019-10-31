@@ -10,47 +10,43 @@ class Host < ApplicationRecord
   # Validations
   validates :title, presence: true
 
+  def errors
+    identifiers.each { |identifier| super.copy!(identifier.errors) }
+    super
+  end
+
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:, distribution: nil)
-      return nil unless json.present? && provenance.present?
+    def from_json!(provenance:, json:, distribution:)
+      return nil unless json.present? && provenance.present? && distribution.present?
 
       json = json.with_indifferent_access
-      host = initialize_from_json(provenance: provenance, json: json, distribution: distribution)
 
-      host.description = json['description']
+      host = find_by_identifiers(
+        provenance: provenance,
+        json_array: json.fetch('hostIds', [])
+      )
+
+      host = Host.find_or_initialize_by(distribution: distribution) unless host.present?
+
+      host.description = json['description'] if json['description'].present?
       host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supportsVersioning'])
-      host.backup_type = json['backupType']
-      host.backup_frequency = json['backupFrequency']
-      host.storage_type = json['storageType']
-      host.availability = json['availability']
-      host.geo_location = json['geoLocation']
+      host.backup_type = json['backupType'] if json['backupType'].present?
+      host.backup_frequency = json['backupFrequency'] if json['backupFrequency'].present?
+      host.storage_type = json['storageType'] if json['storageType'].present?
+      host.availability = json['availability'] if json['availability'].present?
+      host.geo_location = json['geoLocation'] if json['geoLocation'].present?
 
-      identifiers_from_json(provenance: provenance, json: json, host: host)
-      host
-    end
-
-    private
-
-    def initialize_from_json(provenance:, json:, distribution:)
-      host = find_by_identifiers(provenance: provenance, json_array: json['hostIds'])
-      host = find_or_initialize_by(title: json['title'], distribution: distribution) unless host.present?
-      host
-    end
-
-    def identifiers_from_json(provenance:, json:, host:)
-      json.fetch('hostIds', []).each do |identifier|
-        next unless identifier['value'].present?
-
-        ident = {
-          'category': identifier.fetch('category', 'url'),
-          'value': identifier['value'],
-          'descriptor': 'identified_by'
-        }
-        id = Identifier.from_json(json: ident, provenance: provenance)
-        host.identifiers << id unless host.identifiers.include?(id)
+      # Process any other identifiers
+      json.fetch('hostIds', []).each do |id|
+        identifier = Identifier.from_json(provenance: provenance, json: id)
+        host.identifiers << identifier unless host.identifiers.include?(identifier)
       end
+
+      host.save
+      host
     end
+
   end
 end

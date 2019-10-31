@@ -11,7 +11,7 @@ class Person < ApplicationRecord
   has_many :data_management_plans, through: :person_data_management_plans
   has_many :projects, through: :data_management_plans
   has_many :person_organizations, dependent: :destroy
-  has_many :organizations, through: :person_organizations
+  has_many :organizations, through: :person_organizations, autosave: true
 
   accepts_nested_attributes_for :identifiers, :organizations
 
@@ -19,60 +19,46 @@ class Person < ApplicationRecord
   validates :name, presence: true
   validates :email, uniqueness: { case_sensitive: false }
 
+  def errors
+    identifiers.each { |identifier| super.copy!(identifier.errors) }
+    organizations.each { |organization| super.copy!(organization.errors) }
+    super
+  end
+
   # Class Methods
   class << self
 
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:)
-      return nil unless json.present? && provenance.present? && json['name'].present?
+    def from_json!(provenance:, json:)
+      return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
+      return nil unless json['name'].present?
 
-      # Check any identifiers to see if the person already exists
-      person = initialize_from_json(provenance: provenance, json: json)
+      person = find_by_identifiers(
+        provenance: provenance,
+        json_array: json.fetch('staffIds', json.fetch('contactIds', []))
+      )
 
-      # Update the values if they were previously empty
+      person = Person.find_or_initialize_by(email: json['mbox']) unless person.present?
+
+      # TODO: Figure out when we should overwrite names
       person.name = json['name'] unless person.name.present?
-      person.email = json['mbox'] unless person.email.present?
 
-      identifiers_from_json(provenance: provenance, json: json, person: person)
-      organizations_from_json(provenance: provenance, json: json, person: person)
-      person
-    end
-
-    private
-
-    def initialize_from_json(provenance:, json:)
-      ids = json.fetch('staffIds', json.fetch('contactIds', []))
-      person = find_by_identifiers(provenance: provenance, json_array: ids) if ids.any?
-      person = find_or_initialize_by(email: json['mbox']) if person.nil? && json['mbox'].present?
-      person = Person.new unless person.present?
-      person
-    end
-
-    def identifiers_from_json(provenance:, json:, person:)
-      # Attach any identifiers
-      json.fetch('staffIds', json.fetch('contactIds', [])).each do |identifier|
-        ident = Identifier.from_json(provenance: provenance, json: {
-                                       category: identifier.fetch('category', 'url'),
-                                       value: identifier['value'],
-                                       descriptor: 'identified_by'
-                                     })
-        person.identifiers << ident unless person.identifiers.include?(ident) || ident.nil?
+      # Process any other identifiers
+      json.fetch('staffIds', json.fetch('contactIds', [])).each do |id|
+        identifier = Identifier.from_json(provenance: provenance, json: id)
+        person.identifiers << identifier unless person.identifiers.include?(identifier)
       end
-    end
 
-    def organizations_from_json(provenance:, json:, person:)
-      # Attach any organizations
+      # Process any organizations
       json.fetch('organizations', []).each do |org|
-        org = Organization.from_json(json: org, provenance: provenance)
-        person.organizations << org unless person.organizations.include?(org)
+        organization = Organization.from_json!(provenance: provenance, json: org)
+        person.organizations << organization unless person.organizations.include?(organization)
       end
-    end
-  end
 
-  # Instance Methods
-  def orcid
-    identifiers.select { |identifier| identifier.category == 'orcid' }.first
+      person.save
+      person
+    end
   end
 end

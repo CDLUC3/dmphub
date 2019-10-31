@@ -60,7 +60,7 @@ RSpec.describe OauthApplicationProfile, type: :model do
              WHERE i.category = 1
              AND i.value = \'http://dx.doi.org/10.13039/100000104\'
           SQL
-        }.to_json
+        }
       end
 
       it 'returns an empty array if the application is not authorized' do

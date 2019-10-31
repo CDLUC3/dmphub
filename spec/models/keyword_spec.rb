@@ -19,4 +19,18 @@ RSpec.describe Keyword, type: :model do
     model = create(:keyword)
     expect(model.valid?).to eql(true)
   end
+
+  describe 'cascading deletes' do
+    it 'deletes the dataset_keyword' do
+      dataset = create(:dataset)
+      model = create(:keyword)
+      dataset.keywords << model
+      dataset.save
+      model.destroy
+      expect(DatasetKeyword.last).to eql(nil)
+      dataset.reload
+      expect(dataset.keywords.empty?).to eql(true)
+    end
+  end
+
 end

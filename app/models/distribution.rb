@@ -12,31 +12,41 @@ class Distribution < ApplicationRecord
   # Validations
   validates :title, presence: true
 
+  def errors
+    licenses.each { |license| super.copy!(license.errors) }
+    super.copy!(host.errors) if host.present?
+    super
+  end
+
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
-    def from_json(json:, provenance:, dataset: nil)
-      return nil unless json.present? && provenance.present? && json['title'].present?
+    def from_json!(provenance:, json:, dataset:)
+      return nil unless json.present? && provenance.present? && distribution.present?
 
       json = json.with_indifferent_access
-      distribution = find_or_initialize_by(dataset: dataset, title: json['title'])
+      return nil unless json['title'].present?
 
-      distribution.description = json['description']
-      distribution.format = json['format']
-      distribution.byte_size = json['byteSize']
-      distribution.access_url = json['accessUrl']
-      distribution.download_url = json['downloadUrl']
-      distribution.available_until = json['availableUntil']
-      distribution.data_access = json.fetch('dataAccess', 'closed')
+      distro = Distribution.find_or_initialize_by(dataset: dataset, title: json['title']) unless distro.present?
+
+      distro.description = json['description'] if json['description'].present?
+      distro.format = json['format'] if json['format'].present?
+      distro.byte_size = json['byteSize'] if json['byteSize'].present?
+      distro.access_url = json['accessUrl'] if json['accessUrl'].present?
+      distro.download_url = json['downloadUrl'] if json['downloadUrl'].present?
+      distro.available_until = json['availableUntil'] if json['availableUntil'].present?
+      distro.data_access = json.fetch('dataAccess', 'closed')
 
       json.fetch('licenses', []).each do |license|
-        lcsn = License.from_json(json: license, provenance: provenance, distribution: distribution)
-        distribution.licenses << lcsn unless distribution.licenses.include?(lcsn)
+        lcsn = License.from_json!(json: license, provenance: provenance, distribution: distro)
+        distro.licenses << lcsn unless distro.licenses.include?(lcsn)
       end
-      return distribution unless json['host'].present?
 
-      distribution.host = Host.from_json(json: json['host'], provenance: provenance, distribution: distribution)
-      distribution
+      distro.host = Host.from_json!(provenance: provenance, json: json, distribution: distro)
+
+      distro.save
+      distro
     end
+
   end
 end

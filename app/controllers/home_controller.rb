@@ -10,29 +10,21 @@ class HomeController < ApplicationController
   # POST /search
   def search; end
 
+  # POST /filter
+  def filter
+    @page = 1
+    @other_plans = paginate_response(results: apply_filters)&.order(:title)
+  end
+
   # GET /dashboard
   def dashboard
-    @data_management_plans = current_user.data_management_plans
+    @data_management_plans = paginate_response(results: current_user.data_management_plans)&.order(:title)
+
+    @funders = Organization.funders.order(:name)
+    @organizations = Organization.all.order(:name) - @funders
 
     if current_user.super_user?
-      # TODO: This is impractical, just here temporarily for testing with the NSF Awards
-      #       data.
-      query = <<-SQL
-        SELECT dmp.id
-        FROM data_management_plans dmp
-          INNER JOIN projects proj ON dmp.id = proj.data_management_plan_id
-          INNER JOIN awards a ON proj.id = a.project_id
-          INNER JOIN identifiers i ON a.id = i.identifiable_id
-            AND i.identifiable_type = 'Award' AND i.category = 5
-      SQL
-
-      results = ActiveRecord::Base.connection.execute(query)
-
-      ids = results.collect.map { |result| result[0] }
-
-      p ids
-
-      @other_plans = DataManagementPlan.where(id: ids.to_a) if ids.any?
+      @other_plans = paginate_response(results: apply_filters)&.order(:title)
     end
   end
 
@@ -46,4 +38,28 @@ class HomeController < ApplicationController
   def search_params
     params.require(:search).permit(:search_words)
   end
+
+  def apply_filters
+    return all_dmps unless params[:organization_id].present? || params[:funder_id].present?
+
+    return DataManagementPlan.find_by_organization(
+      organization_id: params[:organization_id]
+    ) if params[:organization_id].present? && !params[:funder_id].present?
+
+    return DataManagementPlan.find_by_funder(
+      organization_id: params[:funder_id]
+    ) if params[:funder_id].present? && !params[:organization_id].present?
+
+    DataManagementPlan.find_by_organization(organization_id: params[:organization_id])
+                      .find_by_funder(organization_id: params[:funder_id])
+  end
+
+  def all_dmps
+    join_hash = {
+      project: { awards: :identifiers },
+      person_data_management_plans: :person
+    }
+    DataManagementPlan.includes(:identifiers, join_hash).all
+  end
+
 end

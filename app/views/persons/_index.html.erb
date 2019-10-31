@@ -3,6 +3,6 @@
     <% next unless pdmp.person.name.present? %>
 
     <% person = pdmp.person %>
-    <strong><%= pdmp.role.humanize %></strong>: <%= person.name %> (<%= person.email %>) <%= link_to identifier_to_link(person.orcid), identifier_to_link(person.orcid) %> (X)
+    <strong><%= pdmp.role.humanize %></strong>: <%= person.name %> (<%= person.email %>) <%= link_to identifier_to_link(person.orcids.first), identifier_to_link(person.orcids.first) %> (X)
   <% end %>
 </ul>

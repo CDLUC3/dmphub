@@ -5,7 +5,6 @@ require 'rails_helper'
 RSpec.describe DataManagementPlan, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:title) }
-    it { is_expected.to validate_presence_of(:language) }
   end
 
   context 'associations' do
@@ -22,8 +21,84 @@ RSpec.describe DataManagementPlan, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  describe 'from_json' do
+  describe 'errors' do
+    before :each do
+      @model = build(:data_management_plan, project: build(:project))
+    end
+    it 'includes person errors' do
+      @model.person_data_management_plans << build(:person_data_management_plan, person: build(:person, name: nil), role: 'author')
+      @model.validate
+      expect(@model.errors.full_messages.include?('Name can\'t be blank')).to eql(true)
+    end
+    it 'includes person_data_management_plan errors' do
+      @model.person_data_management_plans << build(:person_data_management_plan, person: build(:person), role: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Name can\'t be blank')).to eql(true)
+    end
+    it 'includes cost errors' do
+      @model.costs << build(:cost, title: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Title can\'t be blank')).to eql(true)
+    end
+    it 'includes dataset errors' do
+      @model.datasets << build(:dataset, title: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Title can\'t be blank')).to eql(true)
+    end
+    it 'includes identifier errors' do
+      @model.identifiers << build(:identifier, category: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
+    end
+  end
+
+  describe 'cascading deletes' do
+    before :each do
+      @project = create(:project)
+      @model = create(:data_management_plan, project: @project)
+    end
+    it 'does not delete the project' do
+      @model.destroy
+      expect(Project.last).to eql(@project)
+    end
+    it 'does not delete associated persons' do
+      person = create(:person)
+      @model.person_data_management_plans << create(:person_data_management_plan, person: person, role: 'author')
+      @model.save
+      @model.destroy
+      expect(Person.where(id: person.id).any?).to eql(true)
+    end
+    it 'deletes associated person_data_management_plans' do
+      pdmp = create(:person_data_management_plan, person: create(:person), role: 'author')
+      @model.person_data_management_plans << pdmp
+      @model.save
+      @model.destroy
+      expect(PersonDataManagementPlan.where(id: pdmp.id).empty?).to eql(true)
+    end
+    it 'deletes associated costs' do
+      cost = create(:cost)
+      @model.costs << cost
+      @model.save
+      @model.destroy
+      expect(Cost.where(id: cost.id).empty?).to eql(true)
+    end
+    it 'deletes associated datasets' do
+      dataset = create(:dataset)
+      @model.datasets << dataset
+      @model.destroy
+      expect(Dataset.where(id: dataset.id).empty?).to eql(true)
+    end
+    it 'deletes associated identifiers' do
+      model = create(:metadatum, :complete)
+      identifier = model.identifiers.first
+      model.destroy
+      expect(Identifier.where(id: identifier.id).empty?).to eql(true)
+    end
+  end
+
+  describe 'from_json!' do
     before(:each) do
+      @project = build(:project)
       @jsons = open_json_mock(file_name: 'data_management_plans.json')
     end
 
@@ -44,33 +119,34 @@ RSpec.describe DataManagementPlan, type: :model do
       obj = validate_complete_json_to_model(clazz: DataManagementPlan, jsons: @jsons)
       expect(obj.title).to eql(@json['title'])
       expect(obj.language).to eql(@json['language'])
-      expect(ConversionService.boolean_to_yes_no_unknown(obj.ethical_issues)).to eql(@json['ethical_issues_exist'])
-      expect(obj.ethical_issues_report).to eql(@json['ethical_issues_report'])
-      expect(obj.ethical_issues_description).to eql(@json['ethical_issues_description'])
+      expect(ConversionService.boolean_to_yes_no_unknown(obj.ethical_issues)).to eql(@json['ethicalIssuesExist'])
+      expect(obj.ethical_issues_report).to eql(@json['ethicalIssuesReport'])
+      expect(obj.ethical_issues_description).to eql(@json['ethicalIssuesDescription'])
       contact = obj.person_data_management_plans.select { |pdmp| pdmp.role == 'primary_contact' }.first
       expect(contact.person.email).to eql(@json['contact']['mbox'])
       person = obj.person_data_management_plans.reject { |pdmp| pdmp.role == 'primary_contact' }.first
-      expect(person.person.email).to eql(@json['dm_staff'].first['mbox'])
+      expect(person.person.email).to eql(@json['dmStaff'].first['mbox'])
       expect(obj.project.title).to eql(@json['project']['title'])
       expect(obj.costs.first.title).to eql(@json['costs'].first['title'])
       expect(obj.datasets.first.title).to eql(@json['datasets'].first['title'])
     end
 
     it 'returns the existing record if the identifier already exists' do
-      dmp = create(:data_management_plan, :complete, project: create(:project))
+      dmp = create(:data_management_plan, :complete, project: @project)
       ident = dmp.identifiers.first
-      obj = DataManagementPlan.from_json(provenance: ident.provenance,
+      obj = DataManagementPlan.from_json!(provenance: ident.provenance,
+                                         project: @project,
                                          json: hash_to_json(hash: {
                                                               title: Faker::Lorem.sentence,
                                                               contact: {
                                                                 name: Faker::Lorem.word,
                                                                 mbox: Faker::Internet.email,
-                                                                contact_ids: [{
+                                                                contactIds: [{
                                                                   category: 'orcid',
                                                                   value: Faker::Number.number(digits: 9)
                                                                 }]
                                                               },
-                                                              dmp_ids: [{
+                                                              dmpIds: [{
                                                                 category: ident.category,
                                                                 value: ident.value
                                                               }]
@@ -81,8 +157,8 @@ RSpec.describe DataManagementPlan, type: :model do
     end
 
     it 'finds the existing record rather than creating a new instance' do
-      dmp = create(:data_management_plan, title: @jsons['minimal']['title'], project: create(:project))
-      obj = DataManagementPlan.from_json(
+      dmp = create(:data_management_plan, title: @jsons['minimal']['title'])
+      obj = DataManagementPlan.from_json!(
         provenance: Faker::Lorem.word,
         json: @jsons['minimal']
       )
@@ -93,7 +169,7 @@ RSpec.describe DataManagementPlan, type: :model do
 
   context 'instance methods' do
     before(:each) do
-      @dmp = create(:data_management_plan, :complete, project: create(:project))
+      @dmp = create(:data_management_plan, :complete)
     end
 
     describe 'primary_contact' do

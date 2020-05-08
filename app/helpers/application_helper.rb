@@ -58,7 +58,7 @@ module ApplicationHelper
   end
 
   def id_to_doi(dmp:, value:)
-    value.gsub(dmp.id.to_s, dmp.dois.first)
+    value.gsub(dmp.id.to_s, dmp.dois.first&.value)
   end
 
 end

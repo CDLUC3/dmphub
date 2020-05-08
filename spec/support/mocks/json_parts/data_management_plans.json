@@ -8,7 +8,7 @@
     "language": "en",
     "ethicalIssuesExist": "yes",
     "ethicalIssuesDescription": "Before I will go out for data collection, I will demand and get ethical clearance from ASTU and make sure that it will be with consent of the health centres for long term preservation and sharing of the collected data. In case some sensitive data are featuring the research output, the security of these data will be ensured in such a way that its accession requires special authorization or totally protected indefinately. Once the data are published the owner of the data will be the authors for public open access under creative commons attributes 4.0 international license. There will be no restriction on the reuse of the data as far as the attributions are acknowledged as per the CC-BY license.",
-    "ethicalIssuesReport": "",
+    "ethicalIssuesReport": "http://reports.example.org/123",
     "dmpIds": [{
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
@@ -87,7 +87,7 @@
         "funderName": "National Money Federation",
         "funderId": "http://dx.doi.org/10.13039/100000001",
         "grantId": "4785y94657095",
-        "fundingStatuses": "applied"
+        "fundingStatus": "applied"
       }]
     },
     "datasets": [{

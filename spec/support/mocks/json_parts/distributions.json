@@ -14,8 +14,8 @@
     "licenses": [{
       "created": "2019-09-10 20:49:02 UTC",
       "modified": "2019-09-10 20:49:02 UTC",
-      "license_ref": "http://lang.biz/britney",
-      "start_date": "2019-10-10 20:49:02 UTC"
+      "licenseRef": "http://lang.biz/britney",
+      "startDate": "2019-10-10 20:49:02 UTC"
     }],
     "host": {
       "created": "2019-09-10 18:35:11 UTC",

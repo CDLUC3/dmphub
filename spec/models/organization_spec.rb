@@ -16,12 +16,38 @@ RSpec.describe Organization, type: :model do
     it { is_expected.to have_many(:identifiers) }
   end
 
+  describe 'cascading deletes' do
+    it 'does not delete associated persons' do
+      model = create(:organization, :complete)
+      person = create(:person, organizations: [model])
+      model.destroy
+      expect(Person.last).to eql(person)
+    end
+    it 'deletes associated identifiers' do
+      model = create(:organization, :complete)
+      identifier = model.identifiers.first
+      model.destroy
+      expect(Identifier.where(id: identifier.id).empty?).to eql(true)
+    end
+  end
+
+  describe 'errors' do
+    before :each do
+      @model = build(:organization)
+    end
+    it 'includes identifier errors' do
+      @model.identifiers << build(:identifier, category: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
+    end
+  end
+
   it 'factory can produce a valid model' do
     model = create(:organization)
     expect(model.valid?).to eql(true)
   end
 
-  describe 'from_json' do
+  describe 'from_json!' do
     before(:each) do
       @jsons = open_json_mock(file_name: 'organizations.json')
     end
@@ -47,17 +73,26 @@ RSpec.describe Organization, type: :model do
     it 'returns the existing record if the identifier already exists' do
       org = create(:organization, :complete)
       ident = org.identifiers.first
-      obj = Organization.from_json(provenance: ident.provenance,
-                                   json: hash_to_json(hash: {
-                                                        name: Faker::Lorem.word,
-                                                        identifiers: [{
-                                                          category: ident.category,
-                                                          value: ident.value
-                                                        }]
-                                                      }))
+      json = { hash: {
+        name: Faker::Lorem.word,
+        identifiers: [{
+          category: ident.category,
+          value: ident.value
+        }]
+      }}
+      obj = Organization.from_json!(provenance: ident.provenance,
+                                    json: hash_to_json(json))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(org.id)
       expect(obj.identifiers.length).to eql(org.identifiers.length)
+    end
+
+    it 'creates a new record' do
+      obj = Organization.from_json!(
+        provenance: Faker::Lorem.word,
+        json: @jsons['minimal']
+      )
+      expect(obj.new_record?).to eql(false)
     end
   end
 end

@@ -11,6 +11,11 @@ class Organization < ApplicationRecord
   # Validations
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
+  def errors
+    identifiers.each { |identifier| super.copy!(identifier.errors) }
+    super
+  end
+
   # Scopes
   class << self
     def funders

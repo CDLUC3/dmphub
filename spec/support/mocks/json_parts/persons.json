@@ -29,7 +29,7 @@
     "minimal": {
       "name": "Hidden to protect the innocent",
       "mbox": "foobar-testing@yahoo.com",
-      "contact_ids": [{
+      "contactIds": [{
         "value": "000-0002-0003-0004"
       }]
     },
@@ -51,10 +51,6 @@
       "organizations": [{
         "created": "2019-07-17 14:34:07 UTC",
         "modified": "2019-07-17 14:34:07 UTC",
-        "links": [{
-          "rel": "self",
-          "href": "http://localhost:3000/api/v1/organizations/2"
-        }],
         "name": "Death Star",
         "identifiers": [{
           "created": "2019-07-17 14:34:07 UTC",
@@ -75,7 +71,7 @@
     },
     "minimal": {
       "name": "Darth Vader",
-      "contributor_type": "data_librarian"
+      "contributorType": "data_librarian"
     },
     "invalid": {
       "name": "Darth Vader"

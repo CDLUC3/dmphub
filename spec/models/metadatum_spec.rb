@@ -16,6 +16,17 @@ RSpec.describe Metadatum, type: :model do
     expect(model.valid?).to eql(true)
   end
 
+  describe 'errors' do
+    before :each do
+      @model = build(:metadatum)
+    end
+    it 'includes identifier errors' do
+      @model.identifiers << build(:identifier, category: nil)
+      @model.validate
+      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
+    end
+  end
+
   describe 'cascading deletes' do
     it 'does not delete the dataset' do
       dataset = create(:dataset)
@@ -71,7 +82,7 @@ RSpec.describe Metadatum, type: :model do
       expect(obj.identifiers.length).to eql(metadatum.identifiers.length)
     end
 
-    it 'createsa a new record' do
+    it 'creates a new record' do
       obj = Metadatum.from_json!(
         provenance: Faker::Lorem.word,
         dataset: @dataset,

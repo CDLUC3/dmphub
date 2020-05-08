@@ -10,15 +10,19 @@
     "funding": [{
       "created": "2019-07-17 14:34:07 UTC",
       "modified": "2019-07-17 14:34:07 UTC",
-      "funder_id": "http://dx.doi.org/10.13039/100000001",
-      "grant_id": "",
-      "funding_statuses": "applied"
+      "funderId": "http://dx.doi.org/10.13039/100000001",
+      "funderName": "Death Star",
+      "grantId": "http://awards.example.org/123",
+      "fundingStatus": "applied"
     }]
   },
   "minimal": {
     "title": "The prevalence of contagious infections in Adama city",
     "startOn": "2019-09-15 20:13:20 UTC",
-    "endOn": "2020-09-14 20:13:20 UTC"
+    "endOn": "2020-09-14 20:13:20 UTC",
+    "funding": [{
+      "funderName": "Death Star"
+    }]
   },
   "invalid": {
     "title": "The prevalence of contagious infections in Adama city",

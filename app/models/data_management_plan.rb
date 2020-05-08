@@ -18,7 +18,7 @@ class DataManagementPlan < ApplicationRecord
                                 :person_data_management_plans
 
   # Validations
-  validates :title, :language, presence: true
+  validates :title, presence: true
 
   # Callbacks
   before_validation :ensure_dataset
@@ -31,7 +31,7 @@ class DataManagementPlan < ApplicationRecord
   # Class Methods
   class << self
     # Common Standard JSON to an instance of this object
-    def from_json!(provenance:, json:)
+    def from_json!(provenance:, json:, project: nil)
       return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
@@ -41,9 +41,7 @@ class DataManagementPlan < ApplicationRecord
         json_array: json['dmpIds']
       )
 
-      # TODO: We need a more definitive way to detect duplicates here
-      #       title could be easily shared
-      dmp = DataManagementPlan.new(title: json['title']) unless dmp.present?
+      dmp = DataManagementPlan.find_or_initialize_by(project: project, title: json['title']) unless dmp.present?
 
       DataManagementPlan.transaction do
 
@@ -53,7 +51,8 @@ class DataManagementPlan < ApplicationRecord
         dmp.ethical_issues_description = json['ethicalIssuesDescription'] if json['ethicalIssuesDescription'].present?
         dmp.ethical_issues_report = json['ethicalIssuesReport'] if json['ethicalIssuesReport'].present?
 
-        dmp.project = Project.from_json!(provenance: provenance, json: json['project'], data_management_plan: dmp)
+        dmp.project = project if project.present?
+        dmp.project = Project.from_json!(provenance: provenance, json: json['project'], data_management_plan: dmp) unless project.present?
 
         # Handle the primary contact for the DMP
         if json['contact'].present?

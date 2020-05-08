@@ -1,9 +1,15 @@
 # locals: items
 
-json.application @application
+# Retrieve the application name from the branding file or default to the
+# application class name
+app = Rails.configuration.branding.fetch(:application, {})
+                                  .fetch(:name, Rails.application.class.name)
+
+# Standard API response attributes and pagination URLs
+json.application app
 json.status Rack::Utils::HTTP_STATUS_CODES[response.status]
 json.time Time.now.utc.to_s
-json.caller @caller
+json.caller @client.name
 json.source "#{request.method} #{request.url}"
 
 # Pagination Links

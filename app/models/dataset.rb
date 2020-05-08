@@ -34,17 +34,16 @@ class Dataset < ApplicationRecord
       return nil unless json.present? && provenance.present? && data_management_plan.present?
 
       json = json.with_indifferent_access
-      return nil unless json['title'].present?
+      return nil unless json['title'].present? || data_management_plan.title.present?
 
       dataset = find_by_identifiers(
         provenance: provenance,
         json_array: json['datasetIds']
       )
 
-      dataset = Dataset.new(data_management_plan: data_management_plan, title: json['title']) unless dataset.present?
+      dataset = Dataset.find_or_initialize_by(data_management_plan: data_management_plan, title: json.fetch('title', data_management_plan.title)) unless dataset.present?
 
       Dataset.transaction do
-        dataset.title = json.fetch('title', data_management_plan.title)
         dataset.description = json['description'] if json['description'].present?
         dataset.dataset_type = json.fetch('type', 'dataset')
         dataset.publication_date = json['issued'] if json['issued'].present?
@@ -90,7 +89,7 @@ class Dataset < ApplicationRecord
         end
 
         json.fetch('datasetIds', []).each do |id|
-          identifier = Identifier.from_json(provenance: provenance, json: json)
+          identifier = Identifier.from_json(provenance: provenance, json: id)
           dataset.identifiers << identifier unless dataset.identifiers.include?(identifier)
         end
 

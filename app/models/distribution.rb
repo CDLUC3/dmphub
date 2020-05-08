@@ -14,6 +14,7 @@ class Distribution < ApplicationRecord
 
   def errors
     licenses.each { |license| super.copy!(license.errors) }
+    host.validate if host.present? # has_one relationship does not auto-validate
     super.copy!(host.errors) if host.present?
     super
   end
@@ -22,7 +23,7 @@ class Distribution < ApplicationRecord
   class << self
     # Common Standard JSON to an instance of this object
     def from_json!(provenance:, json:, dataset:)
-      return nil unless json.present? && provenance.present? && distribution.present?
+      return nil unless json.present? && provenance.present? && dataset.present?
 
       json = json.with_indifferent_access
       return nil unless json['title'].present?
@@ -39,10 +40,10 @@ class Distribution < ApplicationRecord
 
       json.fetch('licenses', []).each do |license|
         lcsn = License.from_json!(json: license, provenance: provenance, distribution: distro)
-        distro.licenses << lcsn unless distro.licenses.include?(lcsn)
+        distro.licenses << lcsn unless lcsn.nil? || distro.licenses.include?(lcsn)
       end
 
-      distro.host = Host.from_json!(provenance: provenance, json: json, distribution: distro)
+      distro.host = Host.from_json!(provenance: provenance, json: json['host'], distribution: distro)
 
       distro.save
       distro

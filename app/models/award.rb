@@ -12,6 +12,8 @@ class Award < ApplicationRecord
 
   accepts_nested_attributes_for :identifiers, :organization
 
+  validates :organization, :status, presence: true
+
   def funded?
     granted? && urls.any?
   end
@@ -53,6 +55,7 @@ class Award < ApplicationRecord
           identifier = Identifier.from_json(provenance: provenance, json: id)
           award.identifiers << identifier unless award.identifiers.include?(identifier)
         end
+        award.provenance = provenance
         award.save
         award
       end

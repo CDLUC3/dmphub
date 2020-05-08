@@ -22,6 +22,7 @@ class Host < ApplicationRecord
       return nil unless json.present? && provenance.present? && distribution.present?
 
       json = json.with_indifferent_access
+      return nil unless json['title'].present?
 
       host = find_by_identifiers(
         provenance: provenance,
@@ -29,7 +30,7 @@ class Host < ApplicationRecord
       )
 
       host = Host.find_or_initialize_by(distribution: distribution) unless host.present?
-
+      host.title = json['title']
       host.description = json['description'] if json['description'].present?
       host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supportsVersioning'])
       host.backup_type = json['backupType'] if json['backupType'].present?

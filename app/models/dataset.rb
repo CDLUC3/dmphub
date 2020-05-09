@@ -2,6 +2,7 @@
 
 # A dataset
 class Dataset < ApplicationRecord
+  include Authorizable
   include Identifiable
 
   enum dataset_type: %i[dataset software http://purl.org/coar/resource_type/c_ddb1]

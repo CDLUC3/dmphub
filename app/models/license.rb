@@ -2,6 +2,8 @@
 
 # A Dataset Distribution License
 class License < ApplicationRecord
+  include Authorizable
+  
   # Associations
   belongs_to :distribution, optional: true
 

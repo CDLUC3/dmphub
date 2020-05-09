@@ -31,14 +31,12 @@ gem 'jbuilder', '~> 2.7'
 gem 'bootsnap', '>= 1.4.2', require: false
 # Devise is a flexible authentication solution for Rails based on Warden.
 gem 'devise'
-# Doorkeeper introduce OAuth 2 provider functionality to your Rails application.
-gem 'doorkeeper'
-# Doorkeeper JWT adds JWT token support to the Doorkeeper OAuth library.
-gem 'doorkeeper-jwt'
 # Bit fields for ActiveRecord
 gem 'flag_shih_tzu'
 # Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 gem 'httparty'
+# A ruby implementation of the RFC 7519 OAuth JSON Web Token (JWT) standard.
+gem 'jwt'
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for
 # modern web app frameworks and ORMs
 gem 'kaminari'
@@ -47,7 +45,7 @@ gem 'kaminari'
 # with Ruby as quick & easy as possible.
 gem 'linkeddata'
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
-gem 'mysql2', '~> 0.4.10'
+gem 'mysql2' # , '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
 gem 'omniauth'
 # ORCID OAuth 2.0 Strategy for the OmniAuth Ruby authentication framework.
@@ -58,9 +56,11 @@ gem 'recaptcha'
 # actions: get, put, post, delete.
 gem 'rest-client'
 # Serrano is a low level client for Crossref APIs
-gem 'serrano'
+# gem 'serrano'
 # REALLY JUST A LIST OF STOPWORDS WITH SOME HELPERS
 gem 'stopwords'
+# A collection of text algorithms (http://github.com/threedaymonk/text)
+gem 'text'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a

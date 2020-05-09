@@ -4,6 +4,7 @@
 class Person < ApplicationRecord
   self.table_name = 'persons'
 
+  include Authorizable
   include Identifiable
 
   # Associations

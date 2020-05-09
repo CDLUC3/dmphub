@@ -2,6 +2,8 @@
 
 # A Dataset Security and Privacy Statement
 class SecurityPrivacyStatement < ApplicationRecord
+  include Authorizable
+  
   # Associations
   belongs_to :dataset, optional: true
 

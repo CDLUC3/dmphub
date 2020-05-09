@@ -2,6 +2,7 @@
 
 # A data management plan
 class Award < ApplicationRecord
+  include Authorizable
   include Identifiable
 
   enum status: %i[planned applied granted rejected]

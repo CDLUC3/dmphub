@@ -3,170 +3,196 @@
 module Api
   module V0
     # Base API Controller
+    # rubocop:disable Metrics/ClassLength
     class BaseApiController < ApplicationController
+      # Skipping the standard Rails authenticity tokens passed in UI
+      skip_before_action :verify_authenticity_token
+
       respond_to :json
 
-      before_action :check_agent
-      before_action :doorkeeper_authorize!, except: %i[heartbeat]
-      before_action :has_doorkeeper_application_profile, except: %i[heartbeat]
-      before_action :parse_request, except: %i[me heartbeat]
+      # Verify the JWT
+      before_action :authorize_request, except: %i[heartbeat]
+      before_action :check_agent, except: %i[heartbeat]
 
-      def me
-        render json: current_client.to_json
-      end
+      # Prep default instance variables for views
+      before_action :base_response_content
+      before_action :pagination_params, except: %i[heartbeat]
+
+      # Parse the incoming JSON
+      before_action :parse_request, only: %i[create update]
+
+      attr_reader :client
 
       def heartbeat
-        render json: {
-          application: Rails.application.class.name.split('::').first,
-          status: 'ok'
-        }
+        render 'api/v0/heartbeat', status: :ok
+      end
+
+      protected
+
+      def render_error(errors:, status:)
+        @payload = { errors: [errors] }
+        render '/api/v0/error', status: status && return
       end
 
       private
 
-      def has_doorkeeper_application_profile
-        @profile = OauthApplicationProfile.where(oauth_application_id: doorkeeper_token.application.id).first
-        render_error errors: 'Unauthorized', status: :unauthorized and return unless @profile.present?
-      end
+      attr_accessor :json
 
-      # Find the user that owns the access token
-      def current_client
-        {
-          id: doorkeeper_token.application.id,
-          uid: doorkeeper_token.application.uid,
-          name: doorkeeper_token.application.name,
-          redirect_uri: doorkeeper_token.application.redirect_uri,
-          created_at: doorkeeper_token.application.created_at.to_s,
-          profile: @profile
-        }
-      end
+      # ==========================
+      # CALLBACKS
+      # ==========================
+      def authorize_request
+        auth_svc = Api::V0::Auth::Jwt::AuthorizationService.new(
+          headers: request.headers
+        )
+        @client = auth_svc.call
+        log_access if @client.present?
+        return true if @client.present?
 
-      def render_error(errors:, status:)
-        @status = status.to_s.humanize
-        @payload = {
-            total_items: 0,
-            items: [],
-            errors: [errors]
-          }
-        render '/api/v0/data_management_plans/error', status: status
-      end
-
-      def base_response_content
-        @application = Rails.application.class.name.split('::').first
-        @caller = doorkeeper_token.application.name
+        render_error(errors: auth_svc.errors, status: :unauthorized)
       end
 
       # Make sure that the user agent matches the caller application/client
       def check_agent
-        expecting = "#{current_client[:name]} (#{current_client[:uid]})"
+        expecting = "#{@client.name} (#{@client.client_id})"
         request.headers.fetch('HTTP_USER_AGENT', nil).downcase == expecting.downcase
+      end
+
+      # Set the generic application and caller variables used in all responses
+      def base_response_content
+        @application = ApplicationService.application_name
+        @caller = caller_name
+      end
+
+      # Retrieve the requested pagination params or use defaults
+      # only allow 100 per page as the max
+      def pagination_params
+        @page = params.fetch('page', 1).to_i
+        @per_page = params.fetch('per_page', 20).to_i
+        @per_page = 100 if @per_page > 100
       end
 
       # Parse the body of the incoming request
       def parse_request
-        return false unless @request.present? && @request.body.present?
+        return false unless request.present? && request.body.present?
 
         begin
-          @json = JSON.parse(@request.body.read)
-
-        rescue JSON::ParserError => pe
-          Rails.logger.error "JSON Parse error on #{@request.path} -> #{pe.message}"
-          Rails.logger.error @request.headers
-          Rails.logger.error @request.body
-          return false
+          body = request.body.read
+          @json = JSON.parse(body).with_indifferent_access
+        rescue JSON::ParserError => e
+          Rails.logger.error "JSON Parser: #{e.message}"
+          Rails.logger.error request.body
+          render_error(errors: 'Invalid JSON format', status: :bad_request)
+          false
         end
       end
+      # rubocop:enable Metrics/AbcSize
 
-      def award_permitted_params
-        base_permitted_params +
-          %i[funderId funderName fundingStatus grantId] +
-          [awardIds: identifier_permitted_params]
+      # ==========================
+
+      def log_access
+        obj = client
+        return false unless obj.present?
+
+        obj.update(last_access: Time.now) if obj.is_a?(ApiClient)
+        true
       end
 
-      def base_permitted_params
-        %i[created modified links]
+      # Returns either the User name or the ApiClient name
+      def caller_name
+        obj = client
+        return request.remote_ip unless obj.present?
+        obj.name
       end
 
-      def cost_permitted_params
-        base_permitted_params + %i[title description value currencyCode]
+      def paginate_response(results:)
+        results = results.page(@page).per(@per_page)
+        @total_items = results.total_count
+        results
       end
 
-      def data_management_plan_permitted_params
-        base_permitted_params +
-          %i[title description language ethicalIssuesExist
-             ethicalIssuesDescription ethicalIssuesReport downloadURL] +
-          [dmStaff: person_permitted_params, contact: person_permitted_params,
-           datasets: dataset_permitted_params, costs: cost_permitted_params,
-           project: project_permitted_params, dmpIds: identifier_permitted_params]
-      end
-
-      def dataset_permitted_params
-        base_permitted_params +
-          %i[title description type issued language personalData sensitiveData keywords
-             dataQualityAssurance preservationStatement] +
-          [datasetIds: identifier_permitted_params,
-           securityAndPrivacyStatements: security_and_privacy_statement_permitted_params,
-           technicalResources: technical_resource_permitted_params,
-           metadata: metadatum_permitted_params,
-           distributions: distribution_permitted_params]
-      end
-
-      def distribution_permitted_params
-        base_permitted_params +
-          %i[title description format byteSize accessUrl downloadUrl dataAccess
-             availableUntil] +
-          [licenses: license_permitted_params, host: host_permitted_params]
-      end
-
-      def host_permitted_params
-        base_permitted_params +
-          %i[title description supportsVersioning backupType backupFrequency
-             storageType availability geoLocation certifiedWith pidSystem] +
-          [hostIds: identifier_permitted_params]
+      # =========================
+      # PERMIITTED PARAMS HEPERS
+      # =========================
+      def plan_permitted_params
+        %i[created title description language ethical_issues_exist
+           ethical_issues_description ethical_issues_report] +
+          [dmp_ids: identifier_permitted_params,
+           contact: contributor_permitted_params,
+           contributors: contributor_permitted_params,
+           costs: cost_permitted_params,
+           project: project_permitted_params,
+           datasets: dataset_permitted_params]
       end
 
       def identifier_permitted_params
-        base_permitted_params + %i[provenance category value]
+        %i[type identifier]
       end
 
-      def keyword_permitted_params
-        base_permitted_params + %i[value]
+      def contributor_permitted_params
+        %i[firstname surname mbox role] +
+          [affiliations: affiliation_permitted_params,
+           contributor_ids: identifier_permitted_params]
       end
 
-      def license_permitted_params
-        base_permitted_params + %i[licenseRef startDate]
+      def affiliation_permitted_params
+        %i[name abbreviation] +
+          [affiliation_ids: identifier_permitted_params]
       end
 
-      def metadatum_permitted_params
-        base_permitted_params + %i[description language] +
-          [identifier: identifier_permitted_params]
-      end
-
-      def organization_permitted_params
-        base_permitted_params + %i[name] + [identifiers: identifier_permitted_params]
-      end
-
-      def person_permitted_params
-        base_permitted_params + %i[name mbox contributorType] +
-          [contactIds: identifier_permitted_params,
-           staffIds: identifier_permitted_params,
-           organizations: organization_permitted_params]
+      def cost_permitted_params
+        %i[title description value currency_code]
       end
 
       def project_permitted_params
-        base_permitted_params + %i[title description startOn endOn] +
-          [funding: award_permitted_params]
+        %i[title description start_on end_on] +
+          [funding: funding_permitted_params]
+      end
+
+      def funding_permitted_params
+        %i[name funding_status] +
+          [funder_ids: identifier_permitted_params,
+           grant_ids: identifier_permitted_params]
+      end
+
+      def dataset_permitted_params
+        %i[title description type issued language personal_data sensitive_data
+           keywords data_quality_assurance preservation_statement] +
+          [dataset_ids: identifier_permitted_params,
+           metadata: metadatum_permitted_params,
+           security_and_privacy_statements: security_and_privacy_statement_permitted_params,
+           technical_resources: technical_resource_permitted_params,
+           distributions: distribution_permitted_params]
+      end
+
+      def metadatum_permitted_params
+        %i[description language] + [identifier: identifier_permitted_params]
       end
 
       def security_and_privacy_statement_permitted_params
-        base_permitted_params + %i[title description]
+        %i[title description]
       end
 
       def technical_resource_permitted_params
-        base_permitted_params + %i[description] +
-          [identifier: identifier_permitted_params]
+        %i[description] + [identifier: identifier_permitted_params]
       end
 
+      def distribution_permitted_params
+        %i[title description format byte_size access_url download_url
+           data_access available_until] +
+          [licenses: license_permitted_params, host: host_permitted_params]
+      end
+
+      def license_permitted_params
+        %i[license_ref start_date]
+      end
+
+      def host_permitted_params
+        %i[title description supports_versioning backup_type backup_frequency
+           storage_type availability geo_location certified_with pid_system] +
+          [host_ids: identifier_permitted_params]
+      end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

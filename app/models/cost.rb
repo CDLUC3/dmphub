@@ -2,6 +2,8 @@
 
 # A Data Management Plan Cost
 class Cost < ApplicationRecord
+  include Authorizable
+  
   # Associations
   belongs_to :data_management_plan, optional: true
 

@@ -3,6 +3,7 @@
 # A data management plan
 # rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
+  include Authorizable
   include Identifiable
 
   # Associations
@@ -13,6 +14,7 @@ class DataManagementPlan < ApplicationRecord
   has_many :persons, through: :person_data_management_plans
   has_many :costs, dependent: :destroy
   has_many :datasets, dependent: :destroy
+  has_many :history, class_name: 'ApiClientHistories', dependent: :destroy
 
   accepts_nested_attributes_for :costs, :datasets,
                                 :person_data_management_plans

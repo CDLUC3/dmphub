@@ -2,6 +2,7 @@
 
 # An Organization
 class Organization < ApplicationRecord
+  include Authorizable
   include Identifiable
 
   # Associations

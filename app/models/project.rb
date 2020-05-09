@@ -2,6 +2,8 @@
 
 # A project
 class Project < ApplicationRecord
+  include Authorizable
+  
   # Associations
   has_many :awards, dependent: :destroy
   has_many :data_management_plans, dependent: :destroy

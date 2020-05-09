@@ -75,7 +75,7 @@ end
         return nil unless dmp.present? && dmp.is_a?(DataManagementPlan)
 
         # Associate the DMP with the Client/Application who created it
-        Api::AuthorizationService.authorize!(dmp: dmp, entity: doorkeeper_token.application)
+        Api::V0::Auth::Jwt::AuthorizationService.authorize!(dmp: dmp, entity: doorkeeper_token.application)
       end
 
       def retrieveDataManagementPlan(downloadUrl:)

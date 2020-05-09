@@ -7,7 +7,8 @@ class OrcidService
   class << self
     # get orcid emails as returned by API
     def email_lookup(orcid:, bearer_token:)
-      resp = RestClient.get "#{ORCID_API_URI}/#{orcid}/email", headers(bearer_token)
+      uri = Rails.configuration.x.orcid.api_uri
+      resp = RestClient.get "#{uri}/#{orcid}/email", headers(bearer_token)
       my_info = JSON.parse(resp.body)
       return [] unless my_info['email'].present? && my_info['email'].any?
 
@@ -18,7 +19,8 @@ class OrcidService
     end
 
     def employment_lookup(orcid:, bearer_token:)
-      resp = RestClient.get "#{ORCID_API_URI}/#{orcid}/employments", headers(bearer_token)
+      uri = Rails.configuration.x.orcid.api_uri
+      resp = RestClient.get "#{uri}/#{orcid}/employments", headers(bearer_token)
       my_info = JSON.parse(resp.body)
       return [] unless my_info['employment-summary'].present? && my_info['employment-summary'].any?
 
@@ -34,7 +36,7 @@ class OrcidService
 
     def headers(token)
       {
-        'User-Agent': Rails.application.class.name.split('::').first,
+        'User-Agent': ApplicationService.application_name,
         'Content-type': 'application/vnd.orcid+json',
         'Authorization': "Bearer #{token}"
       }

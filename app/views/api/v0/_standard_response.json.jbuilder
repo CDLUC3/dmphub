@@ -1,24 +1,33 @@
-# locals: items
+# frozen_string_literal: true
 
-# Retrieve the application name from the branding file or default to the
-# application class name
-app = Rails.configuration.branding.fetch(:application, {})
-                                  .fetch(:name, Rails.application.class.name)
+# locals: response, request, total_items
+
+total_items ||= 0
+paginator = Api::V1::PaginationPresenter.new(current_url: request.path,
+                                             per_page: @per_page,
+                                             total_items: total_items,
+                                             current_page: @page)
+
+json.prettify!
+json.ignore_nil!
 
 # Standard API response attributes and pagination URLs
-json.application app
-json.status Rack::Utils::HTTP_STATUS_CODES[response.status]
+json.application @application
+json.source "#{request.method} #{request.path}"
 json.time Time.now.utc.to_s
-json.caller @client.name
-json.source "#{request.method} #{request.url}"
+json.caller @caller
+json.code response.status
+json.message Rack::Utils::HTTP_STATUS_CODES[response.status]
 
 # Pagination Links
-if items.respond_to?(:total_count) && items.total_count > 0
+if total_items.positive?
   json.page @page
   json.per_page @per_page
-  json.total_items items.total_count
+  json.total_items total_items
 
   # Prepare the base URL by removing the old pagination params
-  json.prev prev_page_link(current_url: request.url) unless @page == 1
-  json.next next_page_link(current_url: request.url) unless @page >= (items.total_count / @per_page)
+  json.prev paginator.prev_page_link if paginator.prev_page?
+  json.next paginator.next_page_link if paginator.next_page?
+else
+  json.total_items 0
 end

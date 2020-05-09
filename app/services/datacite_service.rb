@@ -8,7 +8,8 @@ class DataciteService
   class << self
     def mint_doi(data_management_plan:, provenance:)
       json = json_from_template(provenance: provenance, dmp: data_management_plan)
-      resp = HTTParty.post(DATACITE_MINT_URI, basic_auth: options, body: json, headers: headers)
+      uri = Rails.configuration.x.datacite.mint_uri
+      resp = HTTParty.post(uri, basic_auth: options, body: json, headers: headers)
       process_error(action: 'mint_doi', response: resp) unless resp.code == 201
 
       json = JSON.parse(resp.body)
@@ -23,7 +24,8 @@ class DataciteService
     end
 
     def delete_doi(doi:)
-      resp = HTTParty.delete("#{DATACITE_SHOW_URI}#{doi}", basic_auth: options, headers: headers)
+      uri = Rails.configuration.x.datacite.show_uri
+      resp = HTTParty.delete("#{uri}#{doi}", basic_auth: options, headers: headers)
       return true if %w[204 404].include?(resp.code.to_s)
 
       process_error(action: 'delete_doi', response: resp)
@@ -32,26 +34,31 @@ class DataciteService
     end
 
     def fetch_dois
-      url = "#{DATACITE_MINT_URI}?provider-id=#{DATACITE_CLIENT_ID}"
+      uri = Rails.configuration.x.datacite.mint_uri
+      id = Rails.configuration.x.datacite.client_id
+      url = "#{uri}?provider-id=#{id}"
       resp = HTTParty.get(url, basic_auth: options, headers: headers)
       return false unless resp.code == 200
+
       json = JSON.parse(resp.body)
-      dois = json['data'].collect { |d| d['id'] }.uniq
-p dois
+      json['data'].collect { |d| d['id'] }.uniq
     end
 
     private
 
     def headers
       {
-        'User-Agent': Rails.application.class.name.split('::').first,
+        'User-Agent': ApplicationService.application_name,
         'Content-Type': 'application/vnd.api+json',
         'Accept': 'application/json'
       }
     end
 
     def options
-      { username: DATACITE_CLIENT_ID, password: DATACITE_CLIENT_SECRET }
+      {
+        username: Rails.configuration.x.datacite.client_id,
+        password: Rails.configuration.x.datacite.client_secret
+      }
     end
 
     def process_error(action:, response:, msg: nil)
@@ -66,7 +73,11 @@ p dois
     def json_from_template(provenance:, dmp:)
       ActionController::Base.new.render_to_string(
         template: '/datacite/_minter',
-        locals: { prefix: DATACITE_SHOULDER, data_management_plan: dmp, provenance: provenance }
+        locals: {
+          prefix: Rails.configuration.x.datacite.shoulder,
+          data_management_plan: dmp,
+          provenance: provenance
+        }
       )
     end
   end

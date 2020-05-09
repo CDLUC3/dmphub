@@ -2,6 +2,7 @@
 
 # A Dataset Technical Resource
 class TechnicalResource < ApplicationRecord
+  include Authorizable
   include Identifiable
 
   # Associations

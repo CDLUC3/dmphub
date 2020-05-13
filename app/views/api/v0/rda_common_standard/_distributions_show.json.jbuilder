@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # A JSON representation of a Dataset Distribution in the Common Standard format
-#json.merge! model_json_base(model: distribution, skip_hateoas: true)
 json.title distribution.title
 json.description distribution.description
 json.format distribution.format

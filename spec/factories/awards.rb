@@ -2,14 +2,14 @@
 
 FactoryBot.define do
   factory :award do |_award|
-    status     { Award.statuses.keys.sample }
+    status { Award.statuses.keys.sample }
 
     trait :complete do
       transient do
         identifier_count { 1 }
       end
 
-      before :create do |award, evaluator|
+      before :create do |award, _evaluator|
         award.organization = create(:organization, :complete) unless award.organization.present?
       end
 

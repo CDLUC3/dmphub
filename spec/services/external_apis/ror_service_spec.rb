@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe ExternalApis::RorService do
+  include Mocks::Ror
+
   describe '#ping' do
     before(:each) do
       @headers = described_class.headers
@@ -28,8 +30,8 @@ RSpec.describe ExternalApis::RorService do
       stub_request(:get, @heartbeat).with(headers: @headers).to_return(status: 200)
     end
 
-    it 'returns an empty array if term is blank' do
-      expect(described_class.search(term: nil)).to eql([])
+    it 'returns nil if term is blank' do
+      expect(described_class.search(term: nil)).to eql(nil)
     end
 
     context 'ROR did not return a 200 status' do
@@ -39,8 +41,8 @@ RSpec.describe ExternalApis::RorService do
         stub_request(:get, uri).with(headers: @headers)
                                .to_return(status: 404, body: '', headers: {})
       end
-      it 'returns an empty array' do
-        expect(described_class.search(term: @term)).to eql([])
+      it 'returns nil' do
+        expect(described_class.search(term: @term)).to eql(nil)
       end
       it 'logs the response as an error' do
         allow(described_class).to receive(:handle_http_failure).and_return(true)
@@ -49,7 +51,7 @@ RSpec.describe ExternalApis::RorService do
       end
     end
 
-    it 'returns an empty string if ROR found no matches' do
+    it 'returns nil if ROR found no matches' do
       results = {
         'number_of_results': 0,
         'time_taken': 23,
@@ -60,67 +62,39 @@ RSpec.describe ExternalApis::RorService do
       uri = "#{@search}?page=1&query=#{term}"
       stub_request(:get, uri).with(headers: @headers)
                              .to_return(status: 200, body: results.to_json, headers: {})
-      expect(described_class.search(term: term)).to eql([])
+      expect(described_class.search(term: term)).to eql(nil)
     end
 
     context 'Successful response from API' do
       before(:each) do
-        results = {
-          'number_of_results': 2,
-          'time_taken': 5,
-          'items': [
-            {
-              'id': 'https://ror.org/1234567890',
-              'name': 'Example University',
-              'types': ['Education'],
-              'links': ['http://example.edu/'],
-              'aliases': ['Example'],
-              'acronyms': ['EU'],
-              'status': 'active',
-              'country': { 'country_name': 'United States', 'country_code': 'US' },
-              'external_ids': {
-                'GRID': { 'preferred': 'grid.12345.1', 'all': 'grid.12345.1' }
-              }
-            }, {
-              'id': 'https://ror.org/0987654321',
-              'name': 'Universidade de Example',
-              'types': ['Education'],
-              'links': [],
-              'aliases': ['Example'],
-              'acronyms': ['EU'],
-              'status': 'active',
-              'country': { 'country_name': 'Mexico', 'country_code': 'MX' },
-              'external_ids': {
-                'GRID': { 'preferred': 'grid.98765.8', 'all': 'grid.98765.8' }
-              }
-            }
-          ]
-        }
-        term = Faker::Lorem.word
+        @results = JSON.parse(mock_success).with_indifferent_access
+      end
+
+      it 'returns nil if the ROR results had no exact match on the name' do
+        term = 'Berkeley'
         uri = "#{@search}?page=1&query=#{term}"
         stub_request(:get, uri).with(headers: @headers)
-                               .to_return(status: 200, body: results.to_json, headers: {})
-        @orgs = described_class.search(term: term)
+                               .to_return(status: 200, body: @results.to_json, headers: {})
+        @org = described_class.search(term: term)
+        expect(@org).to eql(nil)
       end
-
-      it 'returns both results' do
-        expect(@orgs.length).to eql(2)
+      it 'returns an existing Organization' do
+        term = 'Berkeley College'
+        uri = "#{@search}?page=1&query=#{term}"
+        stub_request(:get, uri).with(headers: @headers)
+                               .to_return(status: 200, body: @results.to_json, headers: {})
+        expected = create(:organization, name: term, provenance: 'ror')
+        @org = described_class.search(term: term)
+        expect(@org).to eql(expected)
       end
-
-      it 'includes the website in the name (if available)' do
-        expected = {
-          id: 'https://ror.org/1234567890',
-          name: 'Example University (example.edu)'
-        }
-        expect(@orgs.map { |i| i[:name] }.include?(expected[:name])).to eql(true)
-      end
-
-      it 'includes the country in the name (if no website is available)' do
-        expected = {
-          id: 'https://ror.org/0987654321',
-          name: 'Universidade de Example (Mexico)'
-        }
-        expect(@orgs.map { |i| i[:name] }.include?(expected[:name])).to eql(true)
+      it 'returns a new Organization' do
+        term = 'Berkeley College'
+        uri = "#{@search}?page=1&query=#{term}"
+        stub_request(:get, uri).with(headers: @headers)
+                               .to_return(status: 200, body: @results.to_json, headers: {})
+        @org = described_class.search(term: term)
+        expect(@org.name).to eql(term)
+        expect(@org.new_record?).to eql(true)
       end
     end
   end
@@ -273,59 +247,41 @@ RSpec.describe ExternalApis::RorService do
       it 'returns an empty array if there are no items' do
         expect(described_class.send(:parse_results, json: nil)).to eql([])
       end
-      it 'ignores items with no name or id' do
+      it 'ignores items with no name' do
         json = { 'items': [
-          { 'id': Faker::Internet.url, 'name': Faker::Lorem.word },
-          { 'id': Faker::Internet.url },
-          { 'name': Faker::Lorem.word }
+          { 'id': SecureRandom.uuid, 'url': Faker::Internet.url },
+          { 'id': SecureRandom.uuid, 'name': Faker::Lorem.word }
         ] }.to_json
         items = described_class.send(:parse_results, json: JSON.parse(json))
         expect(items.length).to eql(1)
       end
       it 'returns the correct number of results' do
         json = { 'items': [
-          { 'id': Faker::Internet.url, 'name': Faker::Lorem.word },
-          { 'id': Faker::Internet.url, 'name': Faker::Lorem.word }
+          { 'id': SecureRandom.uuid, 'name': Faker::Lorem.unique.word },
+          { 'id': SecureRandom.uuid, 'name': Faker::Lorem.unique.word }
         ] }.to_json
         items = described_class.send(:parse_results, json: JSON.parse(json))
         expect(items.length).to eql(2)
       end
     end
 
-    describe '#org_name' do
-      it 'returns nil if there is no name' do
-        json = { 'country': { 'country_name': 'Nowhere' } }.to_json
-        expect(described_class.send(:org_name, item: JSON.parse(json))).to eql('')
+    describe '#org_country(item:)' do
+      it 'returns empty string if no :country is not present' do
+        item = JSON.parse({ 'country': nil }.to_json)
+        expect(described_class.send(:org_country, item: item)).to eql('')
       end
-      it 'properly appends the website if available' do
-        json = {
-          'name': 'Example College',
-          'links': ['https://example.edu'],
-          'country': { 'country_name': 'Nowhere' }
-        }.to_json
-        expected = 'Example College (example.edu)'
-        expect(described_class.send(:org_name, item: JSON.parse(json))).to eql(expected)
+      it 'returns empty string if no :country[:country_name] is not present' do
+        item = JSON.parse({ 'country': { country_code: 'FOO' } }.to_json)
+        expect(described_class.send(:org_country, item: item)).to eql('')
       end
-      it 'properly appends the country if available and no website is available' do
-        json = {
-          'name': 'Example College',
-          'country': { 'country_name': 'Nowhere' }
-        }.to_json
-        expected = 'Example College (Nowhere)'
-        expect(described_class.send(:org_name, item: JSON.parse(json))).to eql(expected)
-      end
-      it 'properly handles an item with no website or country' do
-        json = {
-          'name': 'Example College',
-          'links': [],
-          'country': {}
-        }.to_json
-        expected = 'Example College'
-        expect(described_class.send(:org_name, item: JSON.parse(json))).to eql(expected)
+      it 'returns the country name' do
+        name = Faker::Lorem.word
+        item = JSON.parse({ 'country': { country_name: name } }.to_json)
+        expect(described_class.send(:org_country, item: item)).to eql(name)
       end
     end
 
-    describe '#org_website' do
+    describe '#org_website(item:)' do
       it 'returns nil if no :links are in the json' do
         item = JSON.parse({ 'links': nil }.to_json)
         expect(described_class.send(:org_website, item: item)).to eql(nil)
@@ -343,28 +299,105 @@ RSpec.describe ExternalApis::RorService do
       end
     end
 
-    describe '#fundref_id' do
+    describe '#gather_names(item:)' do
+      it 'returns an empty array if no item is present' do
+        expect(described_class.send(:gather_names, item: nil)).to eql([])
+      end
+      it 'returns an empty array if item is not a Hash' do
+        expect(described_class.send(:gather_names, item: [])).to eql([])
+      end
+      it 'returns an empty array if no names are available' do
+        hash = { name: Faker::Lorem.word }
+        expect(described_class.send(:gather_names, item: hash)).to eql([])
+      end
+      it 'returns the names' do
+        hash = {
+          domain: Faker::Internet.url,
+          aliases: [Faker::Company.unique.name, Faker::Company.unique.name],
+          acronyms: [Faker::Lorem.unique.word, Faker::Lorem.unique.word],
+          labels: [{ label: Faker::Company.unique.name, iso639: 'fr' }]
+        }
+        results = described_class.send(:gather_names, item: hash)
+        expect(results.include?(hash[:domain]))
+        expect(results.include?(hash[:aliases].first))
+        expect(results.include?(hash[:aliases].last))
+        expect(results.include?(hash[:acronyms].first))
+        expect(results.include?(hash[:acronyms].last))
+        expect(results.include?(hash[:labels].first[:label]))
+      end
+    end
+
+    describe '#deserialize_identifier' do
       before(:each) do
-        @hash = { 'external_ids': {} }
+        @category = Identifier.categories.keys.sample.to_s
+        @value = SecureRandom.uuid
       end
-      it 'returns a blank if no external_ids are present' do
-        json = JSON.parse(@hash.to_json)
-        expect(described_class.send(:fundref_id, item: json)).to eql('')
+      it 'returns nil if :category is not present' do
+        result = described_class.send(:deserialize_identifier, category: nil, value: @value)
+        expect(result).to eql(nil)
       end
-      it 'returns a blank if no FundRef ids are present' do
-        @hash['external_ids'] = { 'FundRef': {} }
-        json = JSON.parse(@hash.to_json)
-        expect(described_class.send(:fundref_id, item: json)).to eql('')
+      it 'returns nil if :value is not present' do
+        result = described_class.send(:deserialize_identifier, category: @category, value: nil)
+        expect(result).to eql(nil)
       end
-      it 'returns the preferred id when specified' do
-        @hash['external_ids'] = { 'FundRef': { 'preferred': '1', 'all': %w[2 1] } }
-        json = JSON.parse(@hash.to_json)
-        expect(described_class.send(:fundref_id, item: json)).to eql('1')
+      it 'returns exisiting Identifier' do
+        org = create(:organization)
+        identifier = create(:identifier, identifiable: org, category: @category,
+                                         value: @value, provenance: 'ror')
+        result = described_class.send(:deserialize_identifier, category: @category,
+                                                               value: @value)
+        expect(result).to eql(identifier)
       end
-      it 'returns the firstid if no preferred is specified' do
-        @hash['external_ids'] = { 'FundRef': { 'preferred': nil, 'all': %w[2 1] } }
-        json = JSON.parse(@hash.to_json)
-        expect(described_class.send(:fundref_id, item: json)).to eql('2')
+      it 'initializes an Identifier' do
+        result = described_class.send(:deserialize_identifier, category: @category,
+                                                               value: @value)
+        expect(result.new_record?).to eql(true)
+        expect(result.identifiable_type).to eql('Organization')
+        expect(result.provenance).to eql('ror')
+        expect(result.send(:"#{@category}?")).to eql(true)
+        expect(result.value).to eql(@value)
+      end
+    end
+
+    describe '#deserialize_organization(item:)' do
+      before(:each) do
+        @item = {
+          ror: Faker::Internet.url,
+          url: Faker::Internet.url,
+          name: Faker::Movies::StarWars.planet,
+          acronyms: [Faker::Lorem.unique.word],
+          types: [Faker::Lorem.unique.word, Faker::Lorem.unique.word],
+          domain: Faker::Internet.url,
+          country: Faker::Movies::StarWars.planet,
+          abbreviation: Faker::Lorem.word.upcase
+        }
+      end
+      it 'returns nil if :item is not present' do
+        result = described_class.send(:deserialize_organization, item: nil)
+        expect(result).to eql(nil)
+      end
+      it 'returns nil if :item[:name] is not present' do
+        result = described_class.send(:deserialize_organization, item: {})
+        expect(result).to eql(nil)
+      end
+      it 'returns exisiting Identifier' do
+        org = create(:organization, name: @item[:name], provenance: 'ror')
+        result = described_class.send(:deserialize_organization, item: @item)
+        expect(result).to eql(org)
+      end
+      it 'initializes an Identifier' do
+        result = described_class.send(:deserialize_organization, item: @item)
+        expect(result.new_record?).to eql(true)
+        expect(result.name).to eql(@item[:name])
+        expect(result.alternate_names.include?(@item[:acronyms].first)).to eql(true)
+        expect(result.alternate_names.include?(@item[:domain])).to eql(true)
+        expect(result.types).to eql(@item[:types].to_s)
+        expect(result.attrs['domain']).to eql(@item[:domain])
+        expect(result.attrs['country']).to eql(@item[:country])
+        expect(result.attrs['abbreviation']).to eql(@item[:abbreviation])
+        expect(result.provenance).to eql('ror')
+        expect(result.rors.first.value).to eql(@item[:ror])
+        expect(result.urls.first.value).to eql(@item[:url])
       end
     end
   end

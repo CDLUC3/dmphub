@@ -3,15 +3,9 @@
 # A Dataset Technical Resource
 class TechnicalResource < ApplicationRecord
   include Authorizable
-  include Identifiable
 
   # Associations
   belongs_to :dataset, optional: true
-
-  def errors
-    identifiers.each { |identifier| super.copy!(identifier.errors) }
-    super
-  end
 
   # Scopes
   class << self

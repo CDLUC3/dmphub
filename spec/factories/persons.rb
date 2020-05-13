@@ -9,6 +9,13 @@ FactoryBot.define do
       transient do
         identifier_count { 1 }
         organization_count { 1 }
+        role_count { 1 }
+      end
+
+      before :create do |person, evaluator|
+        evaluator.role_count.times do
+          person.identifiers << create(:identifier, category: 'credit', identifiable: person, descriptor: 'identified_by')
+        end
       end
 
       after :create do |person, evaluator|

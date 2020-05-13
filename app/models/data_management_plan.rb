@@ -7,7 +7,6 @@ class DataManagementPlan < ApplicationRecord
   include Identifiable
 
   # Associations
-  belongs_to :oauth_authorization, foreign_key: 'id', optional: true, dependent: :destroy
   belongs_to :project, optional: true
 
   has_many :person_data_management_plans, dependent: :destroy
@@ -15,6 +14,7 @@ class DataManagementPlan < ApplicationRecord
   has_many :costs, dependent: :destroy
   has_many :datasets, dependent: :destroy
   has_many :history, class_name: 'ApiClientHistories', dependent: :destroy
+  has_many :authorizations, class_name: 'ApiClientAuthorization', dependent: :destroy
 
   accepts_nested_attributes_for :costs, :datasets,
                                 :person_data_management_plans

@@ -32,9 +32,11 @@ module Api
         def to_rda_identifier_category(category:)
           case category
           when 'orcid'
-            'HTTP-ORCID'
+            'ORCID'
           when 'ror'
-            'HTTP-ROR'
+            'ROR'
+          when 'credit'
+            'CRediT'
           else
             category.upcase
           end
@@ -43,10 +45,12 @@ module Api
         # Translates identifier categories to RDA Common Standard
         def to_identifier_category(rda_category:)
           case rda_category
-          when 'HTTP-ORCID'
+          when 'ORCID'
             'orcid'
-          when 'HTTP-ROR'
+          when 'ROR'
             'ror'
+          when 'CRediT'
+            'credit'
           else
             rda_category.downcase
           end

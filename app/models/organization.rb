@@ -17,6 +17,11 @@ class Organization < ApplicationRecord
     super
   end
 
+  # Always return the attrs JSON as a has with indifferent access
+  def attrs
+    super().with_indifferent_access
+  end
+
   # Scopes
   class << self
     def funders

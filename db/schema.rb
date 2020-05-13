@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_08_201342) do
+ActiveRecord::Schema.define(version: 2020_05_12_215911) do
 
   create_table "api_client_authorizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "api_client_id", null: false
@@ -197,6 +197,8 @@ ActiveRecord::Schema.define(version: 2020_05_08_201342) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "provenance"
     t.text "alternate_names"
+    t.json "attrs", null: false
+    t.text "types"
     t.index ["name"], name: "index_organizations_on_name"
   end
 
@@ -254,6 +256,7 @@ ActiveRecord::Schema.define(version: 2020_05_08_201342) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.string "provenance"
+    t.string "title", null: false
     t.index ["dataset_id"], name: "index_technical_resources_on_dataset_id"
   end
 

@@ -3,7 +3,7 @@
 # A Dataset Distribution
 class Distribution < ApplicationRecord
   include Authorizable
-  
+
   enum data_access: %i[closed open shared]
 
   # Associations

@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :organization do
     name { Faker::Company.unique.name }
+    attrs { {} }
 
     trait :complete do
       transient do

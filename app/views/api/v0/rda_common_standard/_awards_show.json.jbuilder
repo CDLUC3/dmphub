@@ -1,8 +1,13 @@
 # frozen_string_literal: true
 
 # A JSON representation of an Award in the Common Standard format
-#json.merge! model_json_base(model: award, skip_hateoas: true)
-json.funderId award.organization.dois.first&.value
-json.funderName award.organization.name
-json.grantId award.identifiers.first&.value
-json.fundingStatus award.status
+json.name award.organization&.name
+json.funder_id do
+  json.partial! 'api/v0/rda_common_standard/identifiers_show',
+                identifier: award.organization&.rors&.first
+end
+json.grant_id do
+  json.partial! 'api/v0/rda_common_standard/identifiers_show',
+                identifier: award.urls&.first
+end
+json.funding_status award.status

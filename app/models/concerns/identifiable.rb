@@ -4,6 +4,7 @@
 module Identifiable
   extend ActiveSupport::Concern
 
+  # rubocop:disable Metrics/BlockLength
   included do
     has_many :identifiers, as: :identifiable, dependent: :destroy
 
@@ -22,7 +23,7 @@ module Identifiable
         define_method("find_by_#{category[0].downcase}") do |value|
           ids = Identifier.where(
             category: category[0],
-            identifiable_type: self.name,
+            identifiable_type: name,
             value: value
           ).pluck(:identifiable_id)
           where(id: ids)
@@ -57,4 +58,5 @@ module Identifiable
       end
     end
   end
+  # rubocop:enable Metrics/BlockLength
 end

@@ -30,7 +30,7 @@ FactoryBot.define do
           dataset.keywords << create(:keyword)
         end
         evaluator.technical_resource_count.times do
-          dataset.technical_resources << create(:technical_resource, :complete)
+          dataset.technical_resources << create(:technical_resource)
         end
         evaluator.security_privacy_statement_count.times do
           dataset.security_privacy_statements << create(:security_privacy_statement)

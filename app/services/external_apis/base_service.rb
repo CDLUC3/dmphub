@@ -104,6 +104,25 @@ module ExternalApis
         resp
       end
 
+      # Makes a GET request to the specified uri with the additional headers.
+      # Additional headers are combined with the base headers defined above.
+      def http_post(uri:, additional_headers: {}, data: {}, basic_auth: nil, debug: false)
+        return nil unless uri.present?
+
+        opts = options(additional_headers: additional_headers, debug: debug)
+        opts[:body] = data
+        opts[:basic_auth] = basic_auth if basic_auth.present?
+        HTTParty.post(uri, opts)
+      rescue URI::InvalidURIError => e
+        handle_uri_failure(method: "BaseService.http_get #{e.message}",
+                           uri: uri)
+        nil
+      rescue HTTParty::Error => e
+        handle_http_failure(method: "BaseService.http_get #{e.message}",
+                            http_response: resp)
+        resp
+      end
+
       # Options for the HTTParty call
       def options(additional_headers: {}, debug: false)
         hash = {

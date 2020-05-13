@@ -2,20 +2,12 @@
 
 FactoryBot.define do
   factory :data_management_plan do
-    transient do
-      doorkeeper_application { create(:doorkeeper_application) }
-    end
-
     title                       { Faker::Movies::StarWars.wookiee_sentence }
     description                 { Faker::Lorem.paragraph }
     ethical_issues              { [nil, true, false].sample }
     ethical_issues_description  { Faker::Lorem.paragraph }
     ethical_issues_report       { Faker::Internet.url }
     language                    { %w[en fr de es].sample }
-
-    after :create do |dmp, opts|
-      create(:oauth_authorization, data_management_plan: dmp, oauth_application: opts.doorkeeper_application)
-    end
 
     trait :complete do
       transient do
@@ -27,12 +19,12 @@ FactoryBot.define do
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
-
         contact = create(:person, :complete)
         pdmp = create(:person_data_management_plan, person: contact,
                                                     data_management_plan: data_management_plan, role: 'primary_contact')
         data_management_plan.person_data_management_plans << pdmp
 
+        # Add contributors
         evaluator.persons_count.times do
           per = create(:person, :complete)
           j = create(:person_data_management_plan, person: per, data_management_plan: data_management_plan,

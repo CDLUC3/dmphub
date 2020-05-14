@@ -1,25 +1,11 @@
 /* Represents an Dataset Technical Resource */
 {
   "complete": {
-    "created": "2019-09-10 18:35:11 UTC",
-    "modified": "2019-09-10 18:35:11 UTC",
-    "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
-    "identifier": {
-      "created": "2019-09-06 18:11:55 UTC",
-      "modified": "2019-09-06 18:11:55 UTC",
-      "category": "url",
-      "provenance": "zenodo",
-      "value": "http://example.org/dataset/123456789"
-    }
+    "title": "Electron microscope",
+    "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem."
   },
   "minimal": {
-    "identifier": {
-      "created": "2019-09-06 18:11:55 UTC",
-      "modified": "2019-09-06 18:11:55 UTC",
-      "category": "url",
-      "provenance": "zenodo",
-      "value": "http://example.org/dataset/123456789"
-    }
+    "title": "Electron microscope"
   },
   "invalid": {
     "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem."

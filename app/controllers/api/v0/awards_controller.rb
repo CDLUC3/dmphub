@@ -6,7 +6,6 @@ module Api
     class AwardsController < BaseApiController
       protect_from_forgery with: :null_session, only: [:create]
 
-      before_action :base_response_content
       before_action :authorize_award_assertions
       before_action :authorized_for_award
 

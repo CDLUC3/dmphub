@@ -1,8 +1,6 @@
 /* Represents an Dataset Security and Privacy Statement */
 {
   "complete": {
-    "created": "2019-07-17 14:34:07 UTC",
-    "modified": "2019-07-17 14:34:07 UTC",
     "title": "Researcher anonymity",
     "description": "The name of the individuals who will be assisting in the data collection will be retained confidential until the research is published and removed soon afterwards. Sensitive data such as personal details will be confidential while all the other data will be permanently available in the NADRE repository."
   },

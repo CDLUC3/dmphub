@@ -91,7 +91,7 @@ module ExternalApis
           handle_http_failure(method: 'Datacite fetch_dois', http_response: resp)
           return []
         end
-        JSON.parse(resp.body)
+        json = JSON.parse(resp.body)
         json['data'].collect { |d| d['id'] }.uniq
       # If a JSON parse error occurs then return results of a local table search
       rescue JSON::ParserError => e

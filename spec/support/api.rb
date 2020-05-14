@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
-def mock_access_token
-  @doorkeeper_application = create(:doorkeeper_application)
-  setup_access_token(
-    doorkeeper_application: @doorkeeper_application
-  )
+def mock_access_token(client:)
+  payload = {
+    grant_type: 'client_credentials',
+    client_id: client.client_id,
+    client_secret: client.client_secret
+  }
+  Api::V0::Auth::Jwt::JsonWebToken.encode(payload: payload)
 end
 
 def hash_to_json(hash:)
@@ -17,56 +19,40 @@ def body_to_json
   @json = @json.with_indifferent_access if @response.body && @json != [{}]
 end
 
-def get_access_token(doorkeeper_application:)
-  params = {
-    client_id: doorkeeper_application.uid,
-    client_secret: doorkeeper_application.secret,
-    grant_type: 'client_credentials'
-  }
-  post oauth_token_path, params: params, headers: token_headers
-  json = body_to_json
-  "#{json[:token_type]} #{json[:access_token]}"
-end
-
-def setup_access_token(doorkeeper_application:)
-  @access_token = get_access_token(doorkeeper_application: doorkeeper_application)
-end
-
-def token_headers
-  { 'Content-Type' => 'application/x-www-form-urlencoded;charset=UTF-8', 'Accept' => 'application/json' }
-end
-
 def default_headers
   { 'Content-Type' => 'application/json', 'Accept' => 'application/json' }
 end
 
-def default_authenticated_headers(authorization:)
+def default_authenticated_headers(client:, token: mock_access_token(client: client))
   default_headers.merge(
-    'User-Agent' => @doorkeeper_application.name,
-    'Authorization' => authorization.to_s
+    'User-Agent': "#{client.name} (#{client.client_id})",
+    'Authorization': token
   )
 end
 
+# rubocop:disable Metrics/AbcSize
 def validate_base_response(json:)
   return false unless json.present?
 
-  expect(json['generation_date'].present?).to eql(true), 'expected to find `generation_date`'
-  expect(json['caller'].present?).to eql(true), 'expected to find `caller` Name'
-  expect(json['source'].present?).to eql(true), 'expected to find `source` URL'
-  expect(json['content'].present?).to eql(true), 'expected to find `content`'
+  expect(json['application'].present?).to eql(true), 'expected to find `application`'
+  expect(json['status'].present?).to eql(true), 'expected to find `status`'
+  expect(json['code'].present?).to eql(true), 'expected to find `code`'
+  expect(json['time'].present?).to eql(true), 'expected to find `time`'
+  expect(json['caller'].present?).to eql(true), 'expected to find `caller`'
+  expect(json['source'].present?).to eql(true), 'expected to find `source`'
+  expect(json['items'].present?).to eql(true), 'expected to find `items`'
   true
 end
 
-# methods for use with JSON/View validation
-def validate_base_json_elements(model:, rendered:)
-  return false unless model.present? && rendered.present?
+def validate_pagination(json:)
+  return false unless json.present?
 
-  validate_created_at_presence(model: model, rendered: rendered)
+  expect(json['page'].present?).to eql(true), 'expected to find `page`'
+  expect(json['per_page'].present?).to eql(true), 'expected to find `per_page`'
+  expect(json['total_items'].present?).to eql(true), 'expected to find `total_items`'
+  first_page = json['page'] == 1
+  last_page = json['page'] >= (json['total_items'] / json['per_page'])
+  expect(json['prev'].present?).to eql(true), 'expected to find `prev`' unless first_page
+  expect(json['next'].present?).to eql(true), 'expected to find `next`' unless last_page
 end
-
-def validate_created_at_presence(model:, rendered:)
-  return false unless model.present? && rendered.present?
-
-  expect(rendered['created']).to eql(model.created_at.to_s)
-  expect(rendered['modified']).to eql(model.updated_at.to_s)
-end
+# rubocop:enable Metrics/AbcSize

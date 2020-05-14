@@ -5,199 +5,156 @@
     "modified": "2019-07-17 14:34:07 UTC",
     "title": "The prevalence of contagious infections in Adama city",
     "description": "Contagious infections are among the top health threats worldwide. The main attributing factors are said to be linked to poor sanitation and low income. Despite their emerging and re-emerging nature, little are addressed here in Adama in particular and in Ethiopia in general. The objective of the present study is to investigate the current status of contagious diseases and predict the future prospect on health and economic well-being of the City's citizens. Primary data will be collected from 20 health centre in Adama city and subjected to qualitative and quantitative data analysis. The result of the research will be used as inputs in health policy of the city municipality.",
-    "language": "en",
-    "ethicalIssuesExist": "yes",
-    "ethicalIssuesDescription": "Before I will go out for data collection, I will demand and get ethical clearance from ASTU and make sure that it will be with consent of the health centres for long term preservation and sharing of the collected data. In case some sensitive data are featuring the research output, the security of these data will be ensured in such a way that its accession requires special authorization or totally protected indefinately. Once the data are published the owner of the data will be the authors for public open access under creative commons attributes 4.0 international license. There will be no restriction on the reuse of the data as far as the attributions are acknowledged as per the CC-BY license.",
-    "ethicalIssuesReport": "http://reports.example.org/123",
-    "dmpIds": [{
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
-      "category": "doi",
-      "provenance": "datacite",
-      "value": "10.80030/abc123.zy98"
-    }, {
-      "created": "2019-07-10 22:53:53 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
-      "category": "url",
-      "provenance": "dmptool",
-      "value": "https://dmptool.org/plans/43552/export.pdf"
-    }],
+    "language": "eng",
+    "ethical_issues_exist": "yes",
+    "ethical_issues_description": "Before I will go out for data collection, I will demand and get ethical clearance from ASTU and make sure that it will be with consent of the health centres for long term preservation and sharing of the collected data. In case some sensitive data are featuring the research output, the security of these data will be ensured in such a way that its accession requires special authorization or totally protected indefinately. Once the data are published the owner of the data will be the authors for public open access under creative commons attributes 4.0 international license. There will be no restriction on the reuse of the data as far as the attributions are acknowledged as per the CC-BY license.",
+    "ethical_issues_report": "http://reports.example.org/123",
+    "dmp_id": {
+      "type": "DOI",
+      "identifier": "10.80030/abc123.zy98"
+    },
     "contact": {
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
       "name": "Hidden to protect the innocent",
       "mbox": "foobar-testing@yahoo.com",
-      "organizations": [],
-      "contactIds": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
-        "category": "orcid",
-        "provenance": "dmptool",
-        "value": "000-0002-0003-0004"
-      }]
+      "affiliation": {},
+      "contact_id": {
+        "type": "ORCID",
+        "identifier": "000-0002-0003-0004"
+      }
     },
-    "dmStaff": [{
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
+    "contributor": [{
       "name": "Darth Vader",
       "mbox": "darth.vader@deathstar.org",
-      "organizations": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
-        "links": [{
-          "rel": "self",
-          "href": "http://localhost:3000/api/v1/organizations/2"
-        }],
+      "affiliation": {
         "name": "Death Star",
-        "identifiers": [{
-          "created": "2019-07-17 14:34:07 UTC",
-          "modified": "2019-07-17 14:34:07 UTC",
-          "category": "ror",
-          "provenance": "dmptool",
-          "value": "https://ror.org/03fkerfgkje3894t935t"
-        }]
-      }],
-      "staffIds": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
-        "category": "orcid",
-        "provenance": "dmptool",
-        "value": "000-0002-0003-0005"
-      }],
-      "contributorType": "data_librarian"
+        "affiliation_id": {
+          "type": "ROR",
+          "identifier": "https://ror.org/03fkerfgkje3894t935t"
+        }
+      },
+      "contributor_id": {
+        "type": "ORCID",
+        "identifier": "000-0002-0003-0005"
+      },
+      "roles": [
+        "type": "CRediT",
+        "identifier": "https://dictionary.casrai.org/Contributor_Roles/Project_administration"
+      ]
     }],
-    "costs": [{
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
+    "cost": {
       "title": "Dataset preservation costs",
       "description": "Cost for preservation of datasets for 10 year period",
       "value": 870.03,
-      "currencyCode": "usd"
-    }],
+      "currency_code": "usd"
+    },
     "project": {
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
       "title": "The prevalence of contagious infections in Adama city",
       "description": "Contagious infections are among the top health threats worldwide. The main attributing factors are said to be linked to poor sanitation and low income. Despite their emerging and re-emerging nature, little are addressed here in Adama in particular and in Ethiopia in general. The objective of the present study is to investigate the current status of contagious diseases and predict the future prospect on health and economic well-being of the City's citizens. Primary data will be collected from 20 health centre in Adama city and subjected to qualitative and quantitative data analysis. The result of the research will be used as inputs in health policy of the city municipality.",
-      "startOn": "2019-09-15 20:13:20 UTC",
-      "endOn": "2020-09-14 20:13:20 UTC",
+      "start": "2019-09-15 20:13:20 UTC",
+      "end": "2020-09-14 20:13:20 UTC",
       "funding": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
-        "funderName": "National Money Federation",
-        "funderId": "http://dx.doi.org/10.13039/100000001",
-        "grantId": "4785y94657095",
-        "fundingStatus": "applied"
+        "name": "National Money Federation",
+        "funder_id": {
+          "type": "CROSSREF",
+          "identifier": "http://dx.doi.org/10.13039/100000001"
+        },
+        "grant_id": {
+          "type": "URL",
+          "identifier": "http://example.org/awards/1223423"
+        },
+        "funding_status": "applied"
       }]
     },
-    "datasets": [{
-      "created": "2019-07-17 14:34:07 UTC",
-      "modified": "2019-07-17 14:34:07 UTC",
+    "dataset": [{
       "title": "List of infections.",
       "description": "The extensive list of contagious infection cases as a spreadsheet.",
       "type": "dataset",
-      "language": "en",
+      "language": "eng",
       "issued": "2019-09-10 22:19:59 UTC",
-      "personalData": "no",
-      "sensitiveData": "unknown",
-      "dataQualityAssurance": "As the data are not that much big, availability of storage is not an issue. Moreover, the data will be deposited in national repository (NADRE), deposited in Google drive, in hardcopies and storage devices like external hard disc storage. ASTU will own the data as the funding belongs to it. As the copies will be available in library (ASTU library) and online repository, the data could be recovered from either of the two.",
-      "preservationStatement": "The data will be deposited in the NADRE repository in addition to the hard copy and softcopy archiving at the University’s library. The costs and time budgets required for data preparation and sharing activities are detailed in the final project proposal document budget breakdown.",
-      "datasetIds": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
-        "category": "url",
-        "provenance": "dmptool",
-        "value": "https://example.org/datasets/1"
-      }],
+      "personal_data": "no",
+      "sensitive_data": "unknown",
+      "data_quality_assurance": "As the data are not that much big, availability of storage is not an issue. Moreover, the data will be deposited in national repository (NADRE), deposited in Google drive, in hardcopies and storage devices like external hard disc storage. ASTU will own the data as the funding belongs to it. As the copies will be available in library (ASTU library) and online repository, the data could be recovered from either of the two.",
+      "preservation_statement": "The data will be deposited in the NADRE repository in addition to the hard copy and softcopy archiving at the University’s library. The costs and time budgets required for data preparation and sharing activities are detailed in the final project proposal document budget breakdown.",
+      "dataset_id": {
+        "type": "URL",
+        "identifier": "https://example.org/datasets/1"
+      },
       "keywords": ["contagion","infection","Adama"],
-      "securityAndPrivacyStatements": [{
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
+      "security_and_privacy": [{
         "title": "Researcher anonymity",
         "description": "The name of the individuals who will be assisting in the data collection will be retained confidential until the research is published and removed soon afterwards. Sensitive data such as personal details will be confidential while all the other data will be permanently available in the NADRE repository."
       },
       {
-        "created": "2019-07-17 14:34:07 UTC",
-        "modified": "2019-07-17 14:34:07 UTC",
         "title": "Data sharing",
         "description": "Potential users need to have NADRE account to get open access to the data which they can use and share to third body under the Creative Commons attribution license. The data availability will not be restricted once deposited in the repository while still we pursue for persistent identifier of our data for unlimited accessibility."
       }],
-      "technicalResources": [{
-        "created": "2019-09-10 18:35:11 UTC",
-        "modified": "2019-09-10 18:35:11 UTC",
-        "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
-        "identifier": {
-          "created": "2019-09-06 18:11:55 UTC",
-          "modified": "2019-09-06 18:11:55 UTC",
-          "category": "url",
-          "provenance": "zenodo",
-          "value": "http://example.org/dataset/123456789"
-        }
+      "technical_resource": [{
+        "title": "Electron microscope"
+        "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem."
       }],
       "metadata": [{
-        "created": "2019-09-10 18:51:27 UTC",
-        "modified": "2019-09-10 18:51:27 UTC",
-        "identifier": {
-          "created": "2019-09-06 18:11:55 UTC",
-          "modified": "2019-09-06 18:11:55 UTC",
-          "category": "url",
-          "provenance": "zenodo",
-          "value": "http://example.org/dataset/123456789"
+        "metadata_standard_id": {
+          "type": "URL",
+          "identifier": "http://example.org/dataset/123456789"
         },
         "description": "Final copy of the spreadsheet",
-        "language": "en"
+        "language": "eng"
       }],
-      "distributions": [{
-        "created": "2019-09-10 20:49:02 UTC",
-        "modified": "2019-09-10 20:49:02 UTC",
+      "distribution": [{
         "title": "Dolores deleniti deserunt rerum.",
         "description": "Vel et eaque. Inventore quis rem. Aut soluta non.",
         "format": "enim",
-        "byteSize": 60266422.08,
-        "accessUrl": "http://breitenbergwisoky.biz/oscar",
-        "downloadUrl": "http://mcdermott.name/zane.swift",
-        "dataAccess": "shared",
-        "availableUntil": "2019-10-10 20:49:02 UTC",
-        "licenses": [{
-          "created": "2019-09-10 20:49:02 UTC",
-          "modified": "2019-09-10 20:49:02 UTC",
-          "licenseRef": "http://lang.biz/britney",
-          "startDate": "2019-10-10 20:49:02 UTC"
+        "byte_size": 60266422.08,
+        "access_url": "http://breitenbergwisoky.biz/oscar",
+        "download_url": "http://mcdermott.name/zane.swift",
+        "data_access": "shared",
+        "available_until": "2019-10-10 20:49:02 UTC",
+        "license": [{
+          "license_ref": "http://lang.biz/britney",
+          "start_date": "2019-10-10 20:49:02 UTC"
         }],
         "host": {
-          "created": "2019-09-10 18:35:11 UTC",
-          "modified": "2019-09-10 18:35:11 UTC",
           "title": "Est molestiae delectus aut.",
           "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
-          "hostIds": [{
-            "created": "2019-09-06 18:11:55 UTC",
-            "modified": "2019-09-06 18:11:55 UTC",
-            "category": "url",
-            "provenance": "zenodo",
-            "value": "http://example.org/dataset/123456789"
-          }],
-          "supportsVersioning": "yes",
-          "backupType": "beatae",
-          "backupFrequency": "et",
-          "storageType": "est",
+          "url": "http://example.org/dataset/123456789",
+          "supports_versioning": "yes",
+          "backup_type": "beatae",
+          "backup_frequency": "et",
+          "storage_type": "est",
           "availability": "earum",
-          "geoLocation": "Lothal",
-          "certifiedWith": ["etum","blah"],
-          "pidSystem": ["ark"]
+          "geo_location": "Lothal",
+          "certified_with": ["etum","blah"],
+          "pid_system": ["ark"]
         }
       }]
     }]
   },
   "minimal": {
     "title": "The prevalence of contagious infections in Adama city",
+    "ethical_issues_exist": "unknown",
+    "language": "eng",
+    "modified": "2019-07-17 14:34:07 UTC",
+    "dmp_id": {
+      "type": "DOI",
+      "identifier": "10.80030/abc123.zy98"
+    },
     "contact": {
       "name": "Hidden to protect the innocent",
       "mbox": "foobar-testing@yahoo.com",
-      "contactIds": [{
-        "category": "orcid",
-        "value": "000-0002-0003-0004"
+      "contact_id": {
+        "type": "ORCID",
+        "identifier": "000-0002-0003-0004"
       }]
-    }
+    },
+    "dataset": [{
+      "title": "List of infections.",
+      "personal_data": "no",
+      "sensitive_data": "unknown",
+      "dataset_id": {
+        "type": "URL",
+        "identifier": "https://example.org/datasets/1"
+      }]
+    }]
   },
   "invalid": {
     "description": "Cost for preservation of datasets for 10 year period"

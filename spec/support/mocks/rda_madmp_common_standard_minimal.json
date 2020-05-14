@@ -1,13 +1,12 @@
 {
   "dmp": {
     "title": "Minimal DMP",
-    "language": "en",
     "contact": {
       "mbox": "cc@example.com",
       "name": "Charlie Chaplin",
-      "contact_ids": [{
-        "value": "http://orcid.org/0000-0000-0000-0000",
-        "category": "orcid"
+      "contact_id": [{
+        "identifier": "http://orcid.org/0000-0000-0000-0000",
+        "type": "ORCID"
       }]
     }
   }

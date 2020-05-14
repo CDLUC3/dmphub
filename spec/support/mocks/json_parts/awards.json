@@ -1,19 +1,29 @@
 /* Represents an Award (aka Funding) */
 {
   "complete": {
-    "created": "2019-07-17 14:34:07 UTC",
-    "modified": "2019-07-17 14:34:07 UTC",
-    "funderName": "National Money Federation",
-    "funderId": "http://dx.doi.org/10.13039/100000001",
-    "grantId": "http://example.org/awards/1",
-    "fundingStatus": "applied"
+    "name": "National Money Federation",
+    "funder_id": {
+      "type": "CROSSREF",
+      "identifier": "http://dx.doi.org/10.13039/100000001"
+    },
+    "grantId": {
+      "type": "URL",
+      "identifier": "http://example.org/awards/1"
+    },
+    "funding_status": "applied"
   },
   "minimal": {
-    "funderName": "National Money Federation",
-    "funderId": "http://dx.doi.org/10.13039/100000001",
-    "fundingStatus": "planned"
+    "funder_id": {
+      "type": "CROSSREF",
+      "identifier": "http://dx.doi.org/10.13039/100000001"
+    },
+    "grantId": {
+      "type": "URL",
+      "identifier": "http://example.org/awards/1"
+    }
   },
   "invalid": {
-    "fundingStatus": "applied"
+    "name": "National Money Federation",
+    "funding_status": "applied"
   }
 }

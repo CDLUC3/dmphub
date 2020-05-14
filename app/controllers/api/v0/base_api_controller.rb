@@ -15,6 +15,7 @@ module Api
       before_action :check_agent, except: %i[heartbeat]
 
       # Prep default instance variables for views
+      before_action :set_default_response_format
       before_action :base_response_content
       before_action :pagination_params, except: %i[heartbeat]
 
@@ -30,8 +31,8 @@ module Api
       protected
 
       def render_error(errors:, status:)
-        @payload = { errors: [errors] }
-        render '/api/v0/error', status: status && return
+        @payload = { errors: errors }
+        render '/api/v0/error', status: status
       end
 
       private
@@ -54,8 +55,13 @@ module Api
 
       # Make sure that the user agent matches the caller application/client
       def check_agent
-        expecting = "#{@client.name} (#{@client.client_id})"
-        request.headers.fetch('HTTP_USER_AGENT', nil).downcase == expecting.downcase
+        expecting = "#{client.name} (#{client.client_id})"
+        request.headers.fetch('HTTP_USER_AGENT', '').downcase == expecting.downcase
+      end
+
+      # Force all responses to be in JSON format
+      def set_default_response_format
+        request.format = :json
       end
 
       # Set the generic application and caller variables used in all responses
@@ -86,7 +92,6 @@ module Api
           false
         end
       end
-      # rubocop:enable Metrics/AbcSize
 
       # ==========================
 
@@ -102,9 +107,11 @@ module Api
       def caller_name
         obj = client
         return request.remote_ip unless obj.present?
+
         obj.name
       end
 
+      # Applies pagination to specified ActiveRecord Resultset
       def paginate_response(results:)
         results = results.page(@page).per(@per_page)
         @total_items = results.total_count

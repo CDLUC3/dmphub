@@ -1,51 +1,37 @@
 /* Represents an Dataset Distribution */
 {
   "complete": {
-    "created": "2019-09-10 20:49:02 UTC",
-    "modified": "2019-09-10 20:49:02 UTC",
     "title": "Dolores deleniti deserunt rerum.",
     "description": "Vel et eaque. Inventore quis rem. Aut soluta non.",
     "format": "enim",
-    "byteSize": 60266422.08,
-    "accessUrl": "http://breitenbergwisoky.biz/oscar",
-    "downloadUrl": "http://mcdermott.name/zane.swift",
-    "dataAccess": "shared",
-    "availableUntil": "2019-10-10 20:49:02 UTC",
-    "licenses": [{
-      "created": "2019-09-10 20:49:02 UTC",
-      "modified": "2019-09-10 20:49:02 UTC",
-      "licenseRef": "http://lang.biz/britney",
-      "startDate": "2019-10-10 20:49:02 UTC"
+    "byte_size": 60266422.08,
+    "access_url": "http://breitenbergwisoky.biz/oscar",
+    "download_url": "http://mcdermott.name/zane.swift",
+    "data_access": "shared",
+    "available_until": "2019-10-10 20:49:02 UTC",
+    "license": [{
+      "license_ref": "http://lang.biz/britney",
+      "start_date": "2019-10-10 20:49:02 UTC"
     }],
     "host": {
-      "created": "2019-09-10 18:35:11 UTC",
-      "modified": "2019-09-10 18:35:11 UTC",
       "title": "Est molestiae delectus aut.",
       "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
-      "hostIds": [{
-        "created": "2019-09-06 18:11:55 UTC",
-        "modified": "2019-09-06 18:11:55 UTC",
-        "category": "url",
-        "provenance": "zenodo",
-        "value": "http://example.org/dataset/123456789"
-      }],
-      "supportsVersioning": "yes",
-      "backupType": "beatae",
-      "backupFrequency": "et",
-      "storageType": "est",
+      "url": "http://example.org/dataset/123456789",
+      "supports_versioning": "yes",
+      "backup_type": "beatae",
+      "backup_frequency": "et",
+      "storage_type": "est",
       "availability": "earum",
-      "geoLocation": "Lothal",
-      "certifiedWith": ["etum","blah"],
-      "pidSystem": ["ark"]
+      "geo_location": "Lothal",
+      "certified_with": ["etum","blah"],
+      "pid_system": ["ark"]
     }
   },
   "minimal": {
-    "title": "Dolores deleniti deserunt rerum."
+    "title": "Dolores deleniti deserunt rerum.",
+    "data_access": "shared"
   },
   "invalid": {
-    "description": "Vel et eaque. Inventore quis rem. Aut soluta non.",
-    "format": "enim",
-    "byteSize": 60266422.08,
-    "accessUrl": "http://breitenbergwisoky.biz/oscar"
+    "description": "Vel et eaque. Inventore quis rem. Aut soluta non."
   }
 }

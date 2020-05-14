@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::V1::DataManagementPlansController, type: :request do
+RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   include DataciteMocks
 
   before(:each) do

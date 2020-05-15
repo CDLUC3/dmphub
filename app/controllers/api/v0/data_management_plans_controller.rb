@@ -17,25 +17,27 @@ module Api
       end
 
       # POST /data_management_plans
+      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def create
         # Only proceed if the Application has permission too create
         if current_client[:profile].data_management_plan_creation?
 
-project = Project.from_json!(provenance: current_client[:name], json: dmp_params['project'])
-p project.inspect
-project.awards.each do |a|
-  p a.inspect
-  p a.organization.inspect
-  a.identifiers.each do |i|
-    p i.inspect
-  end
-end
-#render_error errors: errs, status: :unprocessable_entity
+          project = Project.from_json!(provenance: current_client[:name], json: dmp_params['project'])
+          p project.inspect
+          project.awards.each do |a|
+            p a.inspect
+            p a.organization.inspect
+            a.identifiers.each do |i|
+              p i.inspect
+            end
+          end
+          # render_error errors: errs, status: :unprocessable_entity
 
-
-          #@dmp = DataManagementPlan.from_json!(json: dmp_params, provenance: current_client[:name])
+          # @dmp = DataManagementPlan.from_json!(json: dmp_params, provenance: current_client[:name])
 
           if @dmp.present?
+            # rubocop: disable Metrics/BlockNesting
             if @dmp.project.save
               # Mint the DOI if we did not recieve a DOI in the input
               @dmp.mint_doi(provenance: current_client[:name]) if @dmp.present? && @dmp.new_record?
@@ -44,7 +46,7 @@ end
                 setup_authorizations(dmp: @dmp)
                 head :created, location: landing_page_url(id: @dmp.dois.first&.value)
               else
-                #rollback(dmp: @dmp)
+                # rollback(dmp: @dmp)
                 errs = @dmp.project.errors
                 @dmp.project.destroy
                 Rails.logger.warn "Error saving DMP during api/v0/data_management_plans#create: #{errs}"
@@ -55,15 +57,18 @@ end
               Rails.logger.warn "Error saving Project during api/v0/data_management_plans#create: #{errs}"
               render_error errors: "Unable to register your DMP: #{errs}", status: :unprocessable_entity
             end
+            # rubocop: enable Metrics/BlockNesting
           else
             render_error errors: 'Invalid json format', status: :bad_request
           end
         else
           render_error errors: 'Unauthorized', status: :unauthorized
         end
-      rescue ActionController::ParameterMissing => pm
-        render_error errors: "Invalid json format (#{pm.message})", status: :bad_request
+      rescue ActionController::ParameterMissing => e
+        render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       end
+      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 
@@ -78,7 +83,7 @@ end
         Api::V0::Auth::Jwt::AuthorizationService.authorize!(dmp: dmp, entity: doorkeeper_token.application)
       end
 
-      def retrieveDataManagementPlan(downloadUrl:)
+      def retrieve_data_management_plan(download_url:)
         # TODO: if a downloadURL was provided, retrieve the file and then
         #       send it to the repository service for preservation
       end

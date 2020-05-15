@@ -62,12 +62,12 @@ RSpec.describe TechnicalResource, type: :model do
       technical_resource = create(:technical_resource, :complete)
       ident = technical_resource.identifiers.first
       json = hash_to_json(hash: {
-        description: Faker::Lorem.paragraph,
-        identifier: {
-          category: ident.category,
-          value: ident.value
-        }
-      })
+                            description: Faker::Lorem.paragraph,
+                            identifier: {
+                              category: ident.category,
+                              value: ident.value
+                            }
+                          })
       obj = TechnicalResource.from_json!(provenance: ident.provenance,
                                          json: json, dataset: @dataset)
       expect(obj.new_record?).to eql(false)

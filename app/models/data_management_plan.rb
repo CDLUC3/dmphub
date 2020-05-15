@@ -33,6 +33,8 @@ class DataManagementPlan < ApplicationRecord
   # Class Methods
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, project: nil)
       return nil unless json.present? && provenance.present?
 
@@ -45,8 +47,8 @@ class DataManagementPlan < ApplicationRecord
 
       dmp = DataManagementPlan.find_or_initialize_by(project: project, title: json['title']) unless dmp.present?
 
+      # rubocop:disable Metrics/BlockLength
       DataManagementPlan.transaction do
-
         dmp.description = json['description'] if json['description'].present?
         dmp.language = json.fetch('language', 'en')
         dmp.ethical_issues = ConversionService.yes_no_unknown_to_boolean(json['ethicalIssuesExist'])
@@ -92,15 +94,17 @@ class DataManagementPlan < ApplicationRecord
         dmp.save
         dmp
       end
-
+      # rubocop:enable Metrics/BlockLength
     end
+    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
     def find_by_organization(organization_id:)
       return all unless organization_id.present?
 
-      joins(:identifiers, person_data_management_plans: { person: :person_organizations} )
+      joins(:identifiers, person_data_management_plans: { person: :person_organizations })
         .joins('INNER JOIN organizations p_org ON `persons_organizations`.`organization_id` = p_org.id')
-        .includes(:identifiers, person_data_management_plans: { person: :person_organizations} )
+        .includes(:identifiers, person_data_management_plans: { person: :person_organizations })
         .where('p_org.id = ?', organization_id)
     end
 

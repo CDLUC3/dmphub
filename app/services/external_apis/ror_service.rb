@@ -205,7 +205,7 @@ module ExternalApis
                                          category: category.to_sym)
       end
 
-      # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def deserialize_organization(item:)
         return nil unless item.present? && item[:name].present?
 
@@ -227,7 +227,7 @@ module ExternalApis
         org.identifiers << url if url.present?
         org
       end
-      # rubocop:enable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     end
   end
   # rubocop:enable Metrics/ClassLength

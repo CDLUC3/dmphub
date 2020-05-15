@@ -69,13 +69,13 @@ RSpec.describe Metadatum, type: :model do
       metadatum = create(:metadatum, :complete)
       ident = metadatum.identifiers.first
       json = hash_to_json(hash: {
-        description: Faker::Lorem.paragraph,
-        language: %w[en fr es de].sample,
-        identifier: {
-          category: ident.category,
-          value: ident.value
-        }
-      })
+                            description: Faker::Lorem.paragraph,
+                            language: %w[en fr es de].sample,
+                            identifier: {
+                              category: ident.category,
+                              value: ident.value
+                            }
+                          })
       obj = Metadatum.from_json!(provenance: ident.provenance, json: json, dataset: @dataset)
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(metadatum.id)

@@ -79,7 +79,7 @@ RSpec.describe Organization, type: :model do
           category: ident.category,
           value: ident.value
         }]
-      }}
+      } }
       obj = Organization.from_json!(provenance: ident.provenance,
                                     json: hash_to_json(json))
       expect(obj.new_record?).to eql(false)

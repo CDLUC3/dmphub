@@ -31,6 +31,8 @@ class Dataset < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, data_management_plan:)
       return nil unless json.present? && provenance.present? && data_management_plan.present?
 
@@ -42,8 +44,11 @@ class Dataset < ApplicationRecord
         json_array: json['datasetIds']
       )
 
-      dataset = Dataset.find_or_initialize_by(data_management_plan: data_management_plan, title: json.fetch('title', data_management_plan.title)) unless dataset.present?
+      unless dataset.present?
+        dataset = Dataset.find_or_initialize_by(data_management_plan: data_management_plan, title: json.fetch('title', data_management_plan.title))
+      end
 
+      # rubocop:disable Metrics/BlockLength
       Dataset.transaction do
         dataset.description = json['description'] if json['description'].present?
         dataset.dataset_type = json.fetch('type', 'dataset')
@@ -97,7 +102,9 @@ class Dataset < ApplicationRecord
         dataset.save
         dataset
       end
+      # rubocop:enable Metrics/BlockLength
     end
-
+    # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

@@ -30,7 +30,6 @@ def default_authenticated_headers(client:, token: mock_access_token(client: clie
   )
 end
 
-# rubocop:disable Metrics/AbcSize
 def validate_base_response(json:)
   return false unless json.present?
 
@@ -55,4 +54,3 @@ def validate_pagination(json:)
   expect(json['prev'].present?).to eql(true), 'expected to find `prev`' unless first_page
   expect(json['next'].present?).to eql(true), 'expected to find `next`' unless last_page
 end
-# rubocop:enable Metrics/AbcSize

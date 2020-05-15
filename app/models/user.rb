@@ -83,7 +83,9 @@ class User < ApplicationRecord
     person_ids = Person.where(id: ident_ids)
     return [] unless person_ids.any?
 
-    ids = PersonDataManagementPlan.where(person_id: person_ids, role: %w[primary_contact principal_investigator author]).pluck(:data_management_plan_id)
+    ids = PersonDataManagementPlan.where(person_id: person_ids,
+                                         role: %w[primary_contact principal_investigator author])
+                                  .pluck(:data_management_plan_id)
     DataManagementPlan.where(id: ids)
   end
 

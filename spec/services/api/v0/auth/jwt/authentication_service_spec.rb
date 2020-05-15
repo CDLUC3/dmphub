@@ -126,11 +126,9 @@ RSpec.describe Api::V0::Auth::Jwt::AuthenticationService do
         expect(svc.call).to eql(@jwt)
       end
     end
-
   end
 
   context 'private methods' do
-
     describe '#client' do
       before(:each) do
         @service = described_class.new

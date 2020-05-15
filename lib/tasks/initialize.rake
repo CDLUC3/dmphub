@@ -10,7 +10,9 @@ namespace :initialize do
 
   desc 'Create the default Super User if no users exist. (Be sure to change the password!)'
   task super_user: :environment do
-    User.create(first_name: 'Super', last_name: 'User', email: 'super.user@example.org', password: 'password_123', role: 'super_user') if User.all.empty?
+    if User.all.empty?
+      User.create(first_name: 'Super', last_name: 'User', email: 'super.user@example.org', password: 'password_123', role: 'super_user')
+    end
   end
 
   desc 'Create a default client application for API access/testing'
@@ -37,7 +39,7 @@ namespace :initialize do
   desc ' Create the NSF Awards API Scanner application'
   task nsf_client_app: :environment do
     org = Organization.find_or_create_by(name: 'National Science Foundation')
-    identifier = Identifier.find_or_create_by(
+    Identifier.find_or_create_by(
       identifiable_type: 'Organization',
       identifiable_id: org.id,
       category: 1,
@@ -52,7 +54,12 @@ namespace :initialize do
     OauthApplicationProfile.find_or_create_by(
       oauth_application: nsf,
       award_assertion: true,
-      rules: '{"award_assertion":"SELECT a.* FROM awards a INNER JOIN organizations o ON a.organization_id = o.id INNER JOIN identifiers i ON o.id = i.identifiable_id AND i.identifiable_type = \'Organization\' WHERE i.category = 1 AND i.value = \'http://dx.doi.org/10.13039/100000104\';"}'
+      rules: '{"award_assertion":"SELECT a.* FROM awards a \
+                                  INNER JOIN organizations o ON a.organization_id = o.id \
+                                  INNER JOIN identifiers i ON o.id = i.identifiable_id \
+                                    AND i.identifiable_type = \'Organization\' \
+                                  WHERE i.category = 1 \
+                                  AND i.value = \'http://dx.doi.org/10.13039/100000104\';"}'
     )
   end
 

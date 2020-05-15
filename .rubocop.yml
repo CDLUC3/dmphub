@@ -7,17 +7,35 @@ AllCops:
     - 'test/**/*'
 
 # Reasonable line-length check; it's too easy for the cure to be worse than the disease
-Metrics/LineLength:
+Layout/LineLength:
   Max: 150
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
 
-# AbcSize is very low at 15 and often catches perfectly readable methods because of two small if statements
+Lint/RaiseException:
+  Enabled: true
+Lint/StructNewOverride:
+  Enabled: true
+
+# AbcSize is very low at 15 and often catches perfectly readable methods
+# because of two small if statements
 Metrics/AbcSize:
-  Max: 30
-
-# The default MethodLength can flag methods which essentially do nothing, simply because they invoke another method with several parameters
-Metrics/MethodLength:
-  Max: 20
-
+  Max: 45
 Metrics/BlockLength:
   Exclude:
+    - 'config/routes.rb'
+    - 'lib/tasks/**/*'
     - 'spec/**/*'
+# The default MethodLength can flag methods which essentially do nothing, simply
+# because they invoke another method with several parameters
+Metrics/MethodLength:
+  Max: 30
+
+Style/ExponentialNotation:
+  Enabled: true
+Style/HashEachMethods:
+  Enabled: true
+Style/HashTransformKeys:
+  Enabled: true
+Style/HashTransformValues:
+  Enabled: true

@@ -11,7 +11,7 @@ module Api
 
       # GET /awards
       def index
-        award_ids = current_client[:profile].authorized_entities(entity_clazz: Award)
+        # award_ids = current_client[:profile].authorized_entities(entity_clazz: Award)
         join_hash = {
           project: {
             data_management_plans: {
@@ -26,6 +26,8 @@ module Api
       end
 
       # PUT /awards/:id
+      # rubocop:disable Metrics/AbcSize
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def update
         # Expecting the following format:
         # {
@@ -92,6 +94,8 @@ module Api
           render_error errors: 'Unauthorized', status: :unauthorized
         end
       end
+      # rubocop:enable Metrics/AbcSize
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 
@@ -121,22 +125,21 @@ module Api
         @award.status = Award.statuses[params['fundingStatus']] if params['fundingStatus'].present?
 
         grant_id = Identifier.from_json(provenance: current_client[:name], json: {
-          category: 'url',
-          value: params['grantId']
-        })
+                                          category: 'url',
+                                          value: params['grantId']
+                                        })
 
-p "GRANT ID: #{grant_id}"
+        p "GRANT ID: #{grant_id}"
 
         @award.identifiers << grant_id if grant_id.present?
         params.fetch('awardIds', []).each do |identifier|
           ident = Identifier.from_json(provenance: current_client[:name], json: identifier)
 
-p "IDENT: #{ident}"
+          p "IDENT: #{ident}"
 
           @award.identifiers << ident unless @award.identifiers.include?(ident)
         end
       end
-
     end
   end
 end

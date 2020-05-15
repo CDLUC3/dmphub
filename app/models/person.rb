@@ -28,8 +28,8 @@ class Person < ApplicationRecord
 
   # Class Methods
   class << self
-
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:)
       return nil unless json.present? && provenance.present?
 
@@ -61,5 +61,6 @@ class Person < ApplicationRecord
       person.save
       person
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

@@ -3,7 +3,7 @@
 # A Data Management Plan Cost
 class Cost < ApplicationRecord
   include Authorizable
-  
+
   # Associations
   belongs_to :data_management_plan, optional: true
 
@@ -13,12 +13,13 @@ class Cost < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, data_management_plan:)
       return nil unless json.present? && provenance.present? && data_management_plan.present?
 
       json = json.with_indifferent_access
       return nil unless json['title'].present? &&
-            (json['description'].present? || json['value'].present?)
+                        (json['description'].present? || json['value'].present?)
 
       cost = Cost.find_or_initialize_by(data_management_plan: data_management_plan, title: json['title'])
 
@@ -28,5 +29,6 @@ class Cost < ApplicationRecord
       cost.save
       cost
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

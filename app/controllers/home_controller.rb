@@ -23,9 +23,7 @@ class HomeController < ApplicationController
     @funders = Organization.funders.order(:name)
     @organizations = Organization.all.order(:name) - @funders
 
-    if current_user.super_user?
-      @other_plans = paginate_response(results: apply_filters)&.order(:title)
-    end
+    @other_plans = paginate_response(results: apply_filters)&.order(:title) if current_user.super_user?
   end
 
   # GET /login
@@ -39,20 +37,26 @@ class HomeController < ApplicationController
     params.require(:search).permit(:search_words)
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity
   def apply_filters
     return all_dmps unless params[:organization_id].present? || params[:funder_id].present?
 
-    return DataManagementPlan.find_by_organization(
-      organization_id: params[:organization_id]
-    ) if params[:organization_id].present? && !params[:funder_id].present?
+    if params[:organization_id].present? && !params[:funder_id].present?
+      return DataManagementPlan.find_by_organization(
+        organization_id: params[:organization_id]
+      )
+    end
 
-    return DataManagementPlan.find_by_funder(
-      organization_id: params[:funder_id]
-    ) if params[:funder_id].present? && !params[:organization_id].present?
+    if params[:funder_id].present? && !params[:organization_id].present?
+      return DataManagementPlan.find_by_funder(
+        organization_id: params[:funder_id]
+      )
+    end
 
     DataManagementPlan.find_by_organization(organization_id: params[:organization_id])
                       .find_by_funder(organization_id: params[:funder_id])
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def all_dmps
     join_hash = {
@@ -61,5 +65,4 @@ class HomeController < ApplicationController
     }
     DataManagementPlan.includes(:identifiers, join_hash).all
   end
-
 end

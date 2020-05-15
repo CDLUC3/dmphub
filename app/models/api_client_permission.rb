@@ -62,7 +62,7 @@ class ApiClientPermission < ApplicationRecord
 
     rule = rules[perms.first].to_s.gsub(/;$/, '')
     has_where = rule.split(' from ').last.downcase.match?(/\s+where\s+/)
-    rule += " #{has_where ? 'AND' : 'WHERE'} #{entity_clazz.table_name}.id = %{id};" % { id: id }
+    rule += format(" #{has_where ? 'AND' : 'WHERE'} #{entity_clazz.table_name}.id = %{:id};", id: id)
     ActiveRecord::Base.connection.execute(rule).map { |r| r[0] }.any?
   end
 end

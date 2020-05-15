@@ -36,18 +36,18 @@ class Award < ApplicationRecord
       Award.transaction do
         # find or create the Award URL
         award_url = Identifier.from_json(provenance: provenance, json: {
-          'category': 'url', 'value': json['grantId']
-        })
+                                           'category': 'url', 'value': json['grantId']
+                                         })
         # Find or create the Funder Organization
         funder = Organization.from_json!(provenance: provenance, json: {
-          'name': json['funderName'],
-          'identifiers': [{ 'category': 'doi', 'value': json['funderId'] }]
-        })
+                                           'name': json['funderName'],
+                                           'identifiers': [{ 'category': 'doi', 'value': json['funderId'] }]
+                                         })
 
         existing_award = locate_existing_award(project: project, funder: funder)
 
         award = initialize_award(project: project, funder: funder, json: json,
-          award_url: award_url, existing_award: existing_award)
+                                 award_url: award_url, existing_award: existing_award)
 
         award.status = json['fundingStatus']
 
@@ -69,16 +69,13 @@ class Award < ApplicationRecord
       # If the Award URL is not present or its a new one
       if !award_url.present? || award_url.new_record?
         # If the Project has no awards for this Funder
-        if !existing_award.present?
+        award = existing_award
+        unless award.present?
           # Create a new Award for the funder and attach the Award URL
           award = Award.new(project: project, organization: funder,
                             status: json.fetch('fundingStatus', 'planned'))
-          award.identifiers << award_url if award_url.present?
-        else
-          # Update the award for the funder
-          award = existing_award
-          award.identifiers << award_url if award_url.present?
         end
+        award.identifiers << award_url if award_url.present?
       else
         # Update the Award associated with the Award URL
         award = Award.find_by(id: award_url.identifiable_id)
@@ -93,8 +90,7 @@ class Award < ApplicationRecord
       end
       return nil if existing_awards.empty?
 
-      existing_award = existing_awards.sort { |a, b| b.updated_at<=>a.updated_at }.first
+      existing_awards.min { |a, b| b.updated_at <=> a.updated_at }
     end
-
   end
 end

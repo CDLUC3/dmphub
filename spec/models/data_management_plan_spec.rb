@@ -135,22 +135,22 @@ RSpec.describe DataManagementPlan, type: :model do
       dmp = create(:data_management_plan, :complete, project: @project)
       ident = dmp.identifiers.first
       obj = DataManagementPlan.from_json!(provenance: ident.provenance,
-                                         project: @project,
-                                         json: hash_to_json(hash: {
-                                                              title: Faker::Lorem.sentence,
-                                                              contact: {
-                                                                name: Faker::Lorem.word,
-                                                                mbox: Faker::Internet.email,
-                                                                contactIds: [{
-                                                                  category: 'orcid',
-                                                                  value: Faker::Number.number(digits: 9)
-                                                                }]
-                                                              },
-                                                              dmpIds: [{
-                                                                category: ident.category,
-                                                                value: ident.value
-                                                              }]
-                                                            }))
+                                          project: @project,
+                                          json: hash_to_json(hash: {
+                                                               title: Faker::Lorem.sentence,
+                                                               contact: {
+                                                                 name: Faker::Lorem.word,
+                                                                 mbox: Faker::Internet.email,
+                                                                 contactIds: [{
+                                                                   category: 'orcid',
+                                                                   value: Faker::Number.number(digits: 9)
+                                                                 }]
+                                                               },
+                                                               dmpIds: [{
+                                                                 category: ident.category,
+                                                                 value: ident.value
+                                                               }]
+                                                             }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(dmp.id)
       expect(obj.identifiers.length).to eql(dmp.identifiers.length)

@@ -24,6 +24,7 @@ class Distribution < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, dataset:)
       return nil unless json.present? && provenance.present? && dataset.present?
 
@@ -50,6 +51,6 @@ class Distribution < ApplicationRecord
       distro.save
       distro
     end
-
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

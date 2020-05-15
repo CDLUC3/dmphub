@@ -19,6 +19,7 @@ class Host < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, distribution:)
       return nil unless json.present? && provenance.present? && distribution.present?
 
@@ -49,6 +50,6 @@ class Host < ApplicationRecord
       host.save
       host
     end
-
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

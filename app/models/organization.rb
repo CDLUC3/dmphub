@@ -26,19 +26,22 @@ class Organization < ApplicationRecord
   class << self
     def funders
       joins(:identifiers).includes(:identifiers)
-        .where(identifiers: { category: 'doi' })
+                         .where(identifiers: { category: 'doi' })
     end
 
+    # rubocop:disable Metrics/CyclomaticComplexity
     def from_json!(provenance:, json:)
       return nil unless json.present? && provenance.present?
 
       json = json.with_indifferent_access
       return nil unless json['name'].present?
 
-      org = find_by_identifiers(
-        provenance: provenance,
-        json_array: json['identifiers']
-      ) if json['identifiers'].present?
+      if json['identifiers'].present?
+        org = find_by_identifiers(
+          provenance: provenance,
+          json_array: json['identifiers']
+        )
+      end
 
       org = Organization.find_or_initialize_by(name: json['name']) unless org.present?
 
@@ -51,5 +54,6 @@ class Organization < ApplicationRecord
       org.save
       org
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
   end
 end

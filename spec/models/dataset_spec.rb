@@ -142,12 +142,12 @@ RSpec.describe Dataset, type: :model do
       obj = Dataset.from_json!(provenance: ident.provenance,
                                data_management_plan: @data_management_plan,
                                json: hash_to_json(hash: {
-                                                   title: Faker::Lorem.sentence,
-                                                   datasetIds: [{
-                                                     category: ident.category,
-                                                     value: ident.value
-                                                   }]
-                                                 }))
+                                                    title: Faker::Lorem.sentence,
+                                                    datasetIds: [{
+                                                      category: ident.category,
+                                                      value: ident.value
+                                                    }]
+                                                  }))
       expect(obj.new_record?).to eql(false)
       expect(obj.id).to eql(dataset.id)
       expect(obj.identifiers.length).to eql(dataset.identifiers.length)

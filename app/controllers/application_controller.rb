@@ -2,7 +2,6 @@
 
 # Base Application Controller
 class ApplicationController < ActionController::Base
-
   before_action :pagination_params, only: %i[dashboard index]
 
   private

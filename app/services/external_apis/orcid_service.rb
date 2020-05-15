@@ -45,7 +45,7 @@ module ExternalApis
       end
 
       # get orcid emails as returned by API
-      # rubocop:disable Metrics/CyclomaticComplexity, Metricss/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def email_lookup(orcid:, bearer_token:)
         return [] unless orcid.present? && bearer_token.present?
 
@@ -64,10 +64,10 @@ module ExternalApis
         log_error(method: 'ORCID email_lookup', error: e)
         []
       end
-      # rubocop:enable Metrics/CyclomaticComplexity, Metricss/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       # get orcid affiliation info
-      # rubocop:disable Metrics/CyclomaticComplexity, Metricss/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def employment_lookup(orcid:, bearer_token:)
         return [] unless orcid.present? && bearer_token.present?
 
@@ -87,7 +87,7 @@ module ExternalApis
         log_error(method: 'ORCID employment_lookup', error: e)
         []
       end
-      # rubocop:enable Metrics/CyclomaticComplexity, Metricss/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 

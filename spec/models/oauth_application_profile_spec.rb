@@ -72,9 +72,9 @@ RSpec.describe OauthApplicationProfile, type: :model do
       end
       it 'returns the correct award ids for an authorized application' do
         @award.organization.identifiers << create(:identifier,
-          category: 'doi',
-          identifiable: @award.organization,
-          value: 'http://dx.doi.org/10.13039/100000104')
+                                                  category: 'doi',
+                                                  identifiable: @award.organization,
+                                                  value: 'http://dx.doi.org/10.13039/100000104')
         expect(@profile.authorized_entities(entity_clazz: Award).first).to eql(@award.id)
       end
     end

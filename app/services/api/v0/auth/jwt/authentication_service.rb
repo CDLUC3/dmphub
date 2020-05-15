@@ -24,9 +24,7 @@ module Api
 
             @errors = {}
 
-            if @client_id.nil? || @client_secret.nil? || type != 'client_credentials'
-              @errors[:client_authentication] = 'Invalid grant type'
-            end
+            @errors[:client_authentication] = 'Invalid grant type' if @client_id.nil? || @client_secret.nil? || type != 'client_credentials'
           end
 
           # Returns the JWT if the authentication succeeds

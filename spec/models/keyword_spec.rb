@@ -32,5 +32,4 @@ RSpec.describe Keyword, type: :model do
       expect(dataset.keywords.empty?).to eql(true)
     end
   end
-
 end

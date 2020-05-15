@@ -3,7 +3,7 @@
 # A project
 class Project < ApplicationRecord
   include Authorizable
-  
+
   # Associations
   has_many :awards, dependent: :destroy
   has_many :data_management_plans, dependent: :destroy
@@ -16,6 +16,7 @@ class Project < ApplicationRecord
   # Scopes
   class << self
     # Common Standard JSON to an instance of this object
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def from_json!(provenance:, json:, data_management_plan: nil)
       return nil unless json.present? && provenance.present?
       return nil unless json['title'].present?
@@ -40,6 +41,7 @@ class Project < ApplicationRecord
         project
       end
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 
   # Instance methods
@@ -48,5 +50,4 @@ class Project < ApplicationRecord
     data_management_plans.each { |dmp| super.copy!(dmp.errors) }
     super
   end
-
 end

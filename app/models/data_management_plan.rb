@@ -9,15 +9,14 @@ class DataManagementPlan < ApplicationRecord
   # Associations
   belongs_to :project, optional: true
 
-  has_many :person_data_management_plans, dependent: :destroy
-  has_many :persons, through: :person_data_management_plans
+  has_many :contributors_data_management_plans, dependent: :destroy
+  has_many :contributors, through: :contributors_data_management_plans
   has_many :costs, dependent: :destroy
   has_many :datasets, dependent: :destroy
-  has_many :history, class_name: 'ApiClientHistories', dependent: :destroy
-  has_many :authorizations, class_name: 'ApiClientAuthorization', dependent: :destroy
+  has_many :history, class_name: 'ApiClientHistory', dependent: :destroy
 
   accepts_nested_attributes_for :costs, :datasets,
-                                :person_data_management_plans
+                                :contributors_data_management_plans
 
   # Validations
   validates :title, presence: true
@@ -27,7 +26,7 @@ class DataManagementPlan < ApplicationRecord
 
   # Scopes
   scope :by_client, lambda { |client_id:|
-    where(id: OauthAuthorization.where(oauth_application_id: client_id).pluck(:data_management_plan_id))
+    where(api_client_id: client_id)
   }
 
   # Class Methods
@@ -60,20 +59,20 @@ class DataManagementPlan < ApplicationRecord
 
         # Handle the primary contact for the DMP
         if json['contact'].present?
-          contact = Person.from_json!(json: json['contact'], provenance: provenance)
-          pdmp = PersonDataManagementPlan.new(
+          contact = Contributor.from_json!(json: json['contact'], provenance: provenance)
+          pdmp = ContributorsDataManagementPlan.new(
             role: 'primary_contact', person: contact
           )
-          dmp.person_data_management_plans << pdmp unless dmp.person_exists?(person_data_management_plan: pdmp)
+          dmp.contributors_data_management_plans << pdmp unless dmp.contributor_exists?(contributor_data_management_plan: pdmp)
         end
 
-        # Handle other persons related to the DMP
+        # Handle other contributors related to the DMP
         json.fetch('dmStaff', []).each do |staff|
-          person = Person.from_json!(json: staff, provenance: provenance)
-          pdmp = PersonDataManagementPlan.new(
+          person = Contributor.from_json!(json: staff, provenance: provenance)
+          pdmp = ContributorsDataManagementPlan.new(
             role: staff.fetch('contributorType', 'author'), person: person
           )
-          dmp.person_data_management_plans << pdmp unless dmp.person_exists?(person_data_management_plan: pdmp)
+          dmp.contributors_data_management_plans << pdmp unless dmp.contributor_exists?(contributor_data_management_plan: pdmp)
         end
 
         json.fetch('datasets', []).each do |dataset|
@@ -99,33 +98,33 @@ class DataManagementPlan < ApplicationRecord
     # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
     # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
-    def find_by_organization(organization_id:)
-      return all unless organization_id.present?
+    def find_by_organization(affiliation_id:)
+      return all unless affiliation_id.present?
 
-      joins(:identifiers, person_data_management_plans: { person: :person_organizations })
-        .joins('INNER JOIN organizations p_org ON `persons_organizations`.`organization_id` = p_org.id')
-        .includes(:identifiers, person_data_management_plans: { person: :person_organizations })
-        .where('p_org.id = ?', organization_id)
+      joins(:identifiers, contributors_data_management_plans: { contributor: :contributors_affiliations })
+        .joins('INNER JOIN affiliations p_org ON `contributors_affiliations`.`affiliation_id` = p_org.id')
+        .includes(:identifiers, contributors_data_management_plans: { contributor: :contributors_affiliations })
+        .where('p_org.id = ?', affiliation_id)
     end
 
-    def find_by_funder(organization_id:)
-      return all unless organization_id.present?
+    def find_by_funder(affiliation_id:)
+      return all unless affiliation_id.present?
 
       joins(:identifiers, project: :awards)
-        .joins('INNER JOIN organizations a_org ON `awards`.`organization_id` = a_org.id')
-        .includes(:identifiers, project: :awards)
-        .where('a_org.id = ?', organization_id)
+        .joins('INNER JOIN affiliations a_org ON `fundings`.`affiliation_id` = a_org.id')
+        .includes(:identifiers, project: :fundings)
+        .where('a_org.id = ?', affiliation_id)
     end
   end
 
   # Instance Methods
 
   def primary_contact
-    PersonDataManagementPlan.where(data_management_plan_id: id, role: 'primary_contact').first
+    ContributorsDataManagementPlan.where(data_management_plan_id: id, role: 'primary_contact').first
   end
 
-  def persons
-    PersonDataManagementPlan.where(data_management_plan_id: id).where.not(role: 'primary_contact')
+  def contributors
+    ContributorsDataManagementPlan.where(data_management_plan_id: id).where.not(role: 'primary_contact')
   end
 
   def mint_doi(provenance:)
@@ -145,16 +144,16 @@ class DataManagementPlan < ApplicationRecord
     identifiers.each { |identifier| super.copy!(identifier.errors) }
     datasets.each { |dataset| super.copy!(dataset.errors) }
     costs.each { |cost| super.copy!(cost.errors) }
-    person_data_management_plans.each { |pdmp| super.copy!(pdmp.errors) }
+    contributors_data_management_plans.each { |pdmp| super.copy!(pdmp.errors) }
     super
   end
 
   # Determine if the person is already associated with the DMP in a specific role
   # This method is necessary because the dmp has not been saved and therefore
   # the normal equality check always passes
-  def person_exists?(person_data_management_plan:)
-    pdmps = person_data_management_plans.select do |pdmp|
-      pdmp.person == person_data_management_plan.person && pdmp.role == person_data_management_plan.role
+  def contributor_exists?(contributor_data_management_plan:)
+    pdmps = contributors_data_management_plans.select do |pdmp|
+      pdmp.person == contributors_data_management_plans.contributor && pdmp.role == contributor_data_management_plan.role
     end
     pdmps.any?
   end

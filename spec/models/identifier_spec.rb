@@ -11,10 +11,19 @@ RSpec.describe Identifier, type: :model do
     it { is_expected.to define_enum_for(:category).with(Identifier.categories.keys) }
     it { is_expected.to define_enum_for(:descriptor).with(Identifier.descriptors.keys) }
 
-    it 'should validate that :value is unique per :category+:provenance' do
-      create(:identifier, category: Identifier.categories.keys.sample, identifiable: create(:person))
+    it 'should validate that :value is unique per :category + :provenance + :identifiable' do
+      required = Identifier.send(:requires_universal_uniqueness)
+      category = Identifier.categories.keys.reject { |i| required.include?(i) }.first
+      create(:identifier, category: category, identifiable: create(:contributor))
       subject.value = 'Duplicate'
-      is_expected.to validate_uniqueness_of(:value).scoped_to(:category, :provenance)
+      is_expected.to validate_uniqueness_of(:value).scoped_to(:category, :provenance, :identifiable_id)
+                                                   .case_insensitive.with_message('has already been taken')
+    end
+    it 'should validate that :value is unique per :category' do
+      category = Identifier.send(:requires_universal_uniqueness).first
+      create(:identifier, category: category, identifiable: create(:contributor))
+      subject.value = 'Duplicate'
+      is_expected.to validate_uniqueness_of(:value).scoped_to(:category)
                                                    .case_insensitive.with_message('has already been taken')
     end
   end
@@ -24,7 +33,7 @@ RSpec.describe Identifier, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = create(:identifier, identifiable: create(:award, organization: create(:organization)))
+    model = create(:identifier, identifiable: create(:funding, affiliation: create(:affiliation)))
     expect(model.valid?).to eql(true), 'expected Award to be Identifiable'
     model = create(:identifier, identifiable: create(:data_management_plan, project: create(:project)))
     expect(model.valid?).to eql(true), 'expected DataManagementPlan to be Identifiable'
@@ -34,45 +43,64 @@ RSpec.describe Identifier, type: :model do
     expect(model.valid?).to eql(true), 'expected Host to be Identifiable'
     model = create(:identifier, identifiable: create(:metadatum))
     expect(model.valid?).to eql(true), 'expected Metadatum to be Identifiable'
-    model = create(:identifier, identifiable: create(:organization))
+    model = create(:identifier, identifiable: create(:affiliation))
     expect(model.valid?).to eql(true), 'expected Organization to be Identifiable'
-    model = create(:identifier, identifiable: create(:person))
+    model = create(:identifier, identifiable: create(:contributor))
     expect(model.valid?).to eql(true), 'expected Person to be Identifiable'
-    model = create(:identifier, identifiable: create(:technical_resource))
-    expect(model.valid?).to eql(true), 'expected TechnicalResource to be Identifiable'
   end
 
-  describe 'from_json' do
+  describe '#by_provenance_and_category_and_value(provenance:, category: value:)' do
     before(:each) do
-      @jsons = open_json_mock(file_name: 'identifiers.json')
+      @provenance = Faker::Lorem.unique.word
+      @identifiable = create(:affiliation)
+      @value = SecureRandom.uuid
     end
 
-    it 'invalid JSON does not create a valid Identifier instance' do
-      validate_invalid_json_to_model(clazz: Identifier, jsons: @jsons)
+    context 'a category that is universally unique (e.g. doi, url, etc.)' do
+      before(:each) do
+        @category = described_class.send(:requires_universal_uniqueness).first
+        @expected = create(:identifier, category: @category, provenance: @provenance,
+                                        identifiable: @identifiable, value: @value)
+      end
+
+      it 'same identifiable and category but different provenance' do
+        results = described_class.by_provenance_and_category_and_value(
+          provenance: Faker::Lorem.unique.word.downcase, category: @category, value: @value
+        )
+        expect(results.first).to eql(@expected)
+        expect(results.length).to eql(1)
+      end
     end
 
-    it 'minimal JSON creates a valid Identifier instance' do
-      obj = validate_minimal_json_to_model(clazz: Identifier, jsons: @jsons)
-      expect(obj.category).to eql(@json['category'])
-      expect(obj.value).to eql(@json['value'])
-      expect(obj.provenance).to eql('Testing')
-    end
+    context 'a category that is not universally unique (e.g. program)' do
+      before(:each) do
+        required = described_class.send(:requires_universal_uniqueness)
+        @category = described_class.categories.keys.reject { |i| required.include?(i) }.first
+        @expected = create(:identifier, category: @category, provenance: @provenance,
+                                        identifiable: @identifiable, value: @value)
+      end
 
-    it 'complete JSON creates a valid Identifier instance' do
-      obj = validate_complete_json_to_model(clazz: Identifier, jsons: @jsons)
-      expect(obj.category).to eql(@json['category'])
-      expect(obj.value).to eql(@json['value'])
-      expect(obj.provenance).to eql('Testing')
-    end
-
-    it 'returns the existing record if it already exists' do
-      identifier = create(:identifier, identifiable: create(:person))
-      obj = Identifier.from_json(
-        provenance: identifier.provenance,
-        json: { category:  identifier.category, value: identifier.value }
-      )
-      expect(obj.new_record?).to eql(false)
-      expect(obj.id).to eql(identifier.id)
+      it 'same identifiable and category but different provenance' do
+        # The one it should not find
+        create(:identifier, category: @category, provenance: Faker::Lorem.unique.word.downcase,
+                            identifiable: @identifiable, value: @value)
+        results = described_class.by_provenance_and_category_and_value(
+          provenance: @provenance, category: @category, value: @value
+        )
+        expect(results.first).to eql(@expected)
+        expect(results.length).to eql(1)
+      end
+      it 'same identifiable and provenance but different category' do
+        # The one it should not find
+        create(:identifier, category: described_class.categories.keys.last,
+                            provenance: @provenance, identifiable: @identifiable,
+                            value: @value)
+        results = described_class.by_provenance_and_category_and_value(
+          provenance: @provenance, category: @category, value: @value
+        )
+        expect(results.first).to eql(@expected)
+        expect(results.length).to eql(1)
+      end
     end
   end
 end

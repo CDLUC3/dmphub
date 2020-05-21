@@ -4,7 +4,7 @@ require 'rails_helper'
 
 describe 'API V0 - Identifier Show' do
   before(:each) do
-    @identifier = create(:identifier, identifiable: create(:organization))
+    @identifier = create(:identifier, identifiable: create(:affiliation))
     render partial: 'api/v0/rda_common_standard/identifiers_show.json.jbuilder',
            locals: { identifier: @identifier }
     @json = JSON.parse(rendered)

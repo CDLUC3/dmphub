@@ -1,0 +1,20 @@
+/* locals: award */
+const html = `
+  <div id="award-${@funding.id}" class="c-accordion">
+      <details>
+        <summary>${@funding.affiliation&.name} - ${@funding.status}</summary>
+        <div class="c-accordion__section">
+          ${render partial: '/shared/form_wrapper',
+                   locals: { model: @funding,
+                             path: fundings_path(@funding),
+                             http_method: 'put',
+                             form_partial: '/fundings/form',
+                             autosave: true
+                           }
+          }
+        </div>
+      </details>
+    </div>
+`
+
+$('body c-accordion:last-child').after(html);

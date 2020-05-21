@@ -14,8 +14,8 @@ class AddApiClients < ActiveRecord::Migration[6.0]
 
     create_table :api_client_permissions do |t|
       t.references :api_client, index: true, null: false
-      t.integer :permissions, null: false
-      t.text :rules
+      t.integer :permission, null: false
+      t.text :rule
       t.timestamps null: false
     end
 
@@ -30,7 +30,7 @@ class AddApiClients < ActiveRecord::Migration[6.0]
     create_table :api_client_authorizations do |t|
       t.references :api_client, index: true, null: false
       t.integer :authorizable_id, null: false
-      t.integer :authorizable_type, null: false
+      t.string :authorizable_type, null: false
       t.timestamps null: false
     end
   end

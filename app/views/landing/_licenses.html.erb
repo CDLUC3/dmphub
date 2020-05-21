@@ -5,7 +5,7 @@
 
   <ul>
     <% licenses.each do |license| %>
-      <li><strong>Effective date: <%= safe_date(date: license.start_date) %></strong> <%= link_to license.license_uri, license.license_uri %></li>
+      <li><strong>Effective date: <%= safe_date(date: license.start_date) %></strong> <%= link_to license.license_ref, license.license_ref %></li>
     <% end %>
   </ul>
 <% end %>

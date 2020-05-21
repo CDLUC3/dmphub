@@ -27,7 +27,7 @@ describe 'API V0 - Project Show' do
   end
 
   it 'has a funding attribute' do
-    expect(@json['funding'].length).to eql(@project.awards.length)
+    expect(@json['funding'].length).to eql(@project.fundings.length)
   end
 end
 

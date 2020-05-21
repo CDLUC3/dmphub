@@ -124,12 +124,12 @@ module Api
       def plan_permitted_params
         %i[created title description language ethical_issues_exist
            ethical_issues_description ethical_issues_report] +
-          [dmp_ids: identifier_permitted_params,
+          [dmp_id: identifier_permitted_params,
            contact: contributor_permitted_params,
-           contributors: contributor_permitted_params,
-           costs: cost_permitted_params,
+           contributor: contributor_permitted_params,
+           cost: cost_permitted_params,
            project: project_permitted_params,
-           datasets: dataset_permitted_params]
+           dataset: dataset_permitted_params]
       end
 
       def identifier_permitted_params
@@ -137,14 +137,15 @@ module Api
       end
 
       def contributor_permitted_params
-        %i[firstname surname mbox role] +
-          [affiliations: affiliation_permitted_params,
-           contributor_ids: identifier_permitted_params]
+        %i[name mbox roles] +
+          [affiliation: affiliation_permitted_params,
+           contributor_id: identifier_permitted_params,
+           contact_id: identifier_permitted_params]
       end
 
       def affiliation_permitted_params
         %i[name abbreviation] +
-          [affiliation_ids: identifier_permitted_params]
+          [affiliation_id: identifier_permitted_params]
       end
 
       def cost_permitted_params
@@ -152,28 +153,28 @@ module Api
       end
 
       def project_permitted_params
-        %i[title description start_on end_on] +
+        %i[title description start end] +
           [funding: funding_permitted_params]
       end
 
       def funding_permitted_params
         %i[name funding_status] +
-          [funder_ids: identifier_permitted_params,
-           grant_ids: identifier_permitted_params]
+          [funder_id: identifier_permitted_params,
+           grant_id: identifier_permitted_params]
       end
 
       def dataset_permitted_params
         %i[title description type issued language personal_data sensitive_data
            keywords data_quality_assurance preservation_statement] +
-          [dataset_ids: identifier_permitted_params,
+          [dataset_id: identifier_permitted_params,
            metadata: metadatum_permitted_params,
-           security_and_privacy_statements: security_and_privacy_statement_permitted_params,
-           technical_resources: technical_resource_permitted_params,
-           distributions: distribution_permitted_params]
+           security_and_privacy: security_and_privacy_statement_permitted_params,
+           technical_resource: technical_resource_permitted_params,
+           distribution: distribution_permitted_params]
       end
 
       def metadatum_permitted_params
-        %i[description language] + [identifier: identifier_permitted_params]
+        %i[description language] + [metadata_standard_id: identifier_permitted_params]
       end
 
       def security_and_privacy_statement_permitted_params
@@ -181,13 +182,13 @@ module Api
       end
 
       def technical_resource_permitted_params
-        %i[description] + [identifier: identifier_permitted_params]
+        %i[title description]
       end
 
       def distribution_permitted_params
         %i[title description format byte_size access_url download_url
            data_access available_until] +
-          [licenses: license_permitted_params, host: host_permitted_params]
+          [license: license_permitted_params, host: host_permitted_params]
       end
 
       def license_permitted_params
@@ -197,7 +198,7 @@ module Api
       def host_permitted_params
         %i[title description supports_versioning backup_type backup_frequency
            storage_type availability geo_location certified_with pid_system] +
-          [host_ids: identifier_permitted_params]
+          [url: identifier_permitted_params]
       end
     end
     # rubocop:enable Metrics/ClassLength

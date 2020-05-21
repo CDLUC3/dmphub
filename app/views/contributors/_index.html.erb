@@ -1,0 +1,8 @@
+<ul class="other-contacts">
+  <% contributors_data_management_plans.each do |pdmp| %>
+    <% next unless pdmp.contributor.name.present? %>
+
+    <% contributor = pdmp.contributor %>
+    <strong><%= pdmp.role.humanize %></strong>: <%= contributor.name %> (<%= contributor.email %>) <%= link_to identifier_to_link(contributor.orcids.first), identifier_to_link(contributor.orcids.first) %> (X)
+  <% end %>
+</ul>

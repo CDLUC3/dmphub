@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   resources :projects, only: %w[new create edit update] do
     resources :awards
   end
-  resources :organizations, only: %w[update] do
+  resources :affiliations, only: %w[update] do
     post 'merge'
   end
 
@@ -42,8 +42,8 @@ Rails.application.routes.draw do
       post '/authenticate', format: :json, to: 'authentication#authenticate'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
 
-      resources :data_management_plans, except: %w[show update]
-      resources :awards, only: %w[index update]
+      resources :data_management_plans, except: %w[delete]
+      resources :fundings, only: %w[index update]
 
       # get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }
       # put 'data_management_plans/*id', to: 'data_management_plans#update', constraints: { id: /\S+/ }

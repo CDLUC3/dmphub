@@ -11,7 +11,7 @@ json.data_access distribution.data_access
 json.available_until distribution.available_until.to_s
 
 if distribution.licenses.any?
-  json.licenses distribution.licenses do |license|
+  json.license distribution.licenses do |license|
     json.partial! 'api/v0/rda_common_standard/licenses_show', license: license
   end
 end

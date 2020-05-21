@@ -1,0 +1,5 @@
+<%# locals: affiliation %>
+
+<% ror = affiliation.rors.first %>
+
+<%= ror.present? ? link_to(affiliation.name, ror.value) : affiliation.name %>

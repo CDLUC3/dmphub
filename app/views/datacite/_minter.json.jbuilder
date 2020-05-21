@@ -18,31 +18,29 @@ json.data do
       json.resourceTypeGeneral 'Text'
     end
 
-    creator = data_management_plan.person_data_management_plans.select { |per| per.role == 'primary_contact' }.first&.person
+    creator = data_management_plan.contributors_data_management_plans.select { |per| per.role == 'primary_contact' }.first&.contributor
     if creator.present?
       json.creators do
-        json.array! [creator] do |person|
-          json.name person.name
+        json.array! [creator] do |contributor|
+          json.name contributor.name
           json.nameType 'Personal'
 
-          if person.organizations.any?
+          if contributor.affiliation.present?
             json.affiliation do
-              json.array! person.organizations do |organization|
-                json.name organization.name
+              json.name contributor.affiliation.name
 
-                # Getting:
-                #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-                # ror = organization.rors.first
-                # if ror.present?
-                #  json.schemeUri 'https://ror.org'
-                #  json.nameIdentifier ror.value
-                #  json.nameIdentifierScheme 'ROR'
-                # end
-              end
+              # Getting:
+              #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+              # ror = organization.rors.first
+              # if ror.present?
+              #  json.schemeUri 'https://ror.org'
+              #  json.nameIdentifier ror.value
+              #  json.nameIdentifierScheme 'ROR'
+              # end
             end
           end
 
-          orcid = person.orcids.first
+          orcid = contributor.orcids.first
           if orcid.present?
             json.nameIdentifiers do
               json.array! [orcid] do |ident|
@@ -56,30 +54,28 @@ json.data do
       end
     end
 
-    contributors = data_management_plan.person_data_management_plans.reject { |per| per.role == 'primary_contact' }
+    contributors = data_management_plan.contributors_data_management_plans.reject { |per| per.role == 'primary_contact' }
     if contributors.any?
       json.contributors contributors do |contributor|
-        next unless contributor.person.present?
+        next unless contributor.contributor.present?
 
-        person = contributor.person
+        person = contributor.contributor
         json.name person.name
         json.nameType 'Personal'
         json.contributorType contributor.role.humanize
 
-        if person.organizations.any?
+        if person.affiliation.present?
           json.affiliation do
-            json.array! person.organizations do |organization|
-              json.name organization.name
+            json.name person.affiliation.name
 
-              # Getting:
-              #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
-              # ror = organization.rors.first
-              # if ror.present?
-              #  json.schemeUri 'https://ror.org'
-              #  json.nameIdentifier ror.value
-              #  json.nameIdentifierScheme 'ROR'
-              # end
-            end
+            # Getting:
+            #    {"status":"422","title":"found unpermitted parameters: :nameIdentifier, :nameIdentifierScheme"}
+            # ror = organization.rors.first
+            # if ror.present?
+            #  json.schemeUri 'https://ror.org'
+            #  json.nameIdentifier ror.value
+            #  json.nameIdentifierScheme 'ROR'
+            # end
           end
         end
 

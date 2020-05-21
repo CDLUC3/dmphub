@@ -11,7 +11,7 @@ describe 'API V0 - Award Show' do
   end
 
   it 'has a license_ref attribute' do
-    expect(@json['license_ref']).to eql(@license.license_uri)
+    expect(@json['license_ref']).to eql(@license.license_ref)
   end
 
   it 'has a start_date attribute' do

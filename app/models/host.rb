@@ -34,7 +34,7 @@ class Host < ApplicationRecord
       host = Host.find_or_initialize_by(distribution: distribution) unless host.present?
       host.title = json['title']
       host.description = json['description'] if json['description'].present?
-      host.supports_versioning = ConversionService.yes_no_unknown_to_boolean(json['supportsVersioning'])
+      host.supports_versioning = Api::V0::ConversionService.yes_no_unknown_to_boolean(json['supportsVersioning'])
       host.backup_type = json['backupType'] if json['backupType'].present?
       host.backup_frequency = json['backupFrequency'] if json['backupFrequency'].present?
       host.storage_type = json['storageType'] if json['storageType'].present?

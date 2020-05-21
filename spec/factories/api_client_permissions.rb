@@ -2,7 +2,6 @@
 
 FactoryBot.define do
   factory :api_client_permission do
-    permissions { [1, 2, 6, 7].sample }
-    rules { '{}' }
+    permission { ApiClientPermission.permissions.keys.map(&:to_s).sample }
   end
 end

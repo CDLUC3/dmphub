@@ -8,9 +8,15 @@ module Api
 
       before_action :base_response_content
 
+      def index
+        dmps = DataManagementPlan.joins(:authorizations).includes(:authorizations)
+                                 .where(authorizations: { api_client_id: current_client[:id] })
+        @payload = { items: dmps }
+      end
+
       # GET /data_management_plans/:id
       def show
-        render(json: empty_response, status: :not_found) unless authorized?
+        render_error(errors: [], status: :not_found) unless authorized?
 
         @source = "GET #{api_v0_data_management_plan_url(@dmp.dois.first.value)}"
         render 'show'
@@ -86,6 +92,12 @@ module Api
       def retrieve_data_management_plan(download_url:)
         # TODO: if a downloadURL was provided, retrieve the file and then
         #       send it to the repository service for preservation
+      end
+
+      def authorized?
+        return false unless @dmp.present? && @client.present?
+
+        @dmp.authorizations.map(&:api_client_id).include?(@client.id)
       end
     end
   end

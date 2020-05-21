@@ -212,14 +212,14 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
         allow_any_instance_of(MockController).to receive(:authorize_request).and_return(true)
         allow_any_instance_of(MockController).to receive(:check_agent).and_return(true)
 
-        Organization.destroy_all
-        4.times { create(:organization) }
-        @orgs = Organization.all
+        Affiliation.destroy_all
+        4.times { create(:affiliation) }
+        @orgs = Affiliation.all
       end
 
       it 'sets the results to the correct page' do
         get api_v0_paginator_path, params: { page: 2, per_page: 2 }
-        expect(assigns(:payload)[:items].first).to eql(Organization.all.third)
+        expect(assigns(:payload)[:items].first).to eql(Affiliation.all.third)
       end
       it 'sets the results to the correct per_page' do
         get api_v0_paginator_path, params: { page: 2, per_page: 2 }
@@ -252,7 +252,7 @@ class MockController < Api::V0::BaseApiController
   end
 
   def paginator
-    @payload = { items: paginate_response(results: Organization.all) }
+    @payload = { items: paginate_response(results: Affiliation.all) }
     @dmps = []
     render 'api/v0/data_management_plans/index', status: :ok
   end

@@ -1,0 +1,19 @@
+<%# locals: form, award %>
+
+<%= form.fields_for :fundings, funding do |funding_form| %>
+  <%= render partial: '/shared/typeahead',
+             locals: { label: 'Funding Agency',
+                       typeahead_id: 'project_fundings_attributes_0_funder_name',
+                       typeahead_name: 'project[fundings_attributes][0][funder_name]',
+                       hidden_id: 'project_fundings_attributes_0_funder_uri',
+                       hidden_name: 'project[fundings_attributes][0][funder_uri]',
+                       href: fundref_autocomplete_path } %>
+
+  <%= funding_form.label :status %>
+  <%= funding_form.select :status, Funding.statuses.keys %>
+  <%= funding_form.fields_for :identifiers, Identifier.new do |identifier_form| %>
+    <%= identifier_form.hidden_field :category, value: 'url' %>
+    <%= identifier_form.label :value, 'URI' %>
+    <%= identifier_form.url_field :value %>
+  <% end %>
+<% end %>

@@ -11,25 +11,25 @@ FactoryBot.define do
 
     trait :complete do
       transient do
-        persons_count     { 1 }
-        datasets_count    { 1 }
-        costs_count       { 1 }
-        identifiers_count { 1 }
+        contributors_count { 1 }
+        datasets_count     { 1 }
+        costs_count        { 1 }
+        identifiers_count  { 1 }
       end
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
-        contact = create(:person, :complete)
-        pdmp = create(:person_data_management_plan, person: contact,
-                                                    data_management_plan: data_management_plan, role: 'primary_contact')
-        data_management_plan.person_data_management_plans << pdmp
+        contact = create(:contributor, :complete)
+        pdmp = create(:contributors_data_management_plan, contributor: contact,
+                                                          data_management_plan: data_management_plan, role: 'primary_contact')
+        data_management_plan.contributors_data_management_plans << pdmp
 
         # Add contributors
-        evaluator.persons_count.times do
-          per = create(:person, :complete)
-          j = create(:person_data_management_plan, person: per, data_management_plan: data_management_plan,
-                                                   role: %w[author principal_investigator data_librarian].sample)
-          data_management_plan.person_data_management_plans << j
+        evaluator.contributors_count.times do
+          per = create(:contributor, :complete)
+          j = create(:contributors_data_management_plan, contributor: per, data_management_plan: data_management_plan,
+                                                         role: ContributorsDataManagementPlan.roles.keys.sample)
+          data_management_plan.contributors_data_management_plans << j
         end
         evaluator.costs_count.times do
           data_management_plan.costs << create(:cost)

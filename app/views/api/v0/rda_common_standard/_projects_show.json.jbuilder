@@ -7,8 +7,8 @@ json.description project.description
 json.start project.start_on.to_s
 json.end project.end_on.to_s
 
-if project.awards.any?
-  json.funding project.awards do |award|
-    json.partial! 'api/v0/rda_common_standard/awards_show', award: award
+if project.fundings.any?
+  json.funding project.fundings do |funding|
+    json.partial! 'api/v0/rda_common_standard/fundings_show', funding: funding
   end
 end

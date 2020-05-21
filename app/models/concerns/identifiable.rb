@@ -8,21 +8,21 @@ module Identifiable
   included do
     has_many :identifiers, as: :identifiable, dependent: :destroy
 
-    Identifier.categories.each do |category|
+    Identifier.categories.each_key do |category|
       # Dynamically create methods accessor methods for each Identifier category
       # a method to get specific identifier types (e.g. `orcids`)
-      define_method(category[0].downcase.pluralize) do
-        identifiers.select { |i| i.category == category[0] }
+      define_method(category.downcase.pluralize) do
+        identifiers.select { |i| i.category == category }
       end
     end
 
     class << self
       # Dynamically create methods accessor methods for each Identifier category
       # a scope to find by each Identifier category (e.g. `find_orcid(:value)`)
-      Identifier.categories.each do |category|
-        define_method("find_by_#{category[0].downcase}") do |value|
+      Identifier.categories.each_key do |category|
+        define_method("find_by_#{category.downcase}") do |value|
           ids = Identifier.where(
-            category: category[0],
+            category: category,
             identifiable_type: name,
             value: value
           ).pluck(:identifiable_id)
@@ -37,6 +37,7 @@ module Identifiable
         # Loop through the identifiers and if we find a match then return the
         # asscociated model
         json_array.each do |json|
+          json = json.with_indifferent_access
           next unless json['value'].present? && json['category'].present?
 
           obj = find_association(provenance: provenance, json: json)
@@ -48,6 +49,7 @@ module Identifiable
       private
 
       def find_association(provenance:, json:)
+        json = json.with_indifferent_access
         identifier = Identifier.where(
           provenance: provenance,
           value: json['value'],

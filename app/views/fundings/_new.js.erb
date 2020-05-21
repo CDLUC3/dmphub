@@ -1,0 +1,19 @@
+const html = `
+  <div id="new-funding" class="c-accordion">
+      <details>
+        <summary>New Funding</summary>
+        <div class="c-accordion__section">
+          ${render partial: '/shared/form_wrapper',
+                   locals: { model: @funding,
+                             path: fundings_path,
+                             http_method: 'post',
+                             form_partial: '/fundings/form',
+                             autosave: true
+                           }
+          }
+        </div>
+      </details>
+    </div>
+`
+
+$('body c-accordion:last-child').after(html);

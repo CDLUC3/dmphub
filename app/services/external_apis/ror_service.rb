@@ -201,7 +201,7 @@ module ExternalApis
         return nil unless category.present? && value.present?
 
         Identifier.find_or_initialize_by(provenance: 'ror', value: value,
-                                         identifiable_type: 'Organization',
+                                         identifiable_type: 'Affiliation',
                                          category: category.to_sym)
       end
 
@@ -215,7 +215,7 @@ module ExternalApis
         return ror.identifiable if ror.present? && !ror.new_record?
         return url.identifiable if url.present? && !url.new_record?
 
-        org = Organization.find_or_initialize_by(provenance: 'ror', name: item[:name])
+        org = Affiliation.find_or_initialize_by(provenance: 'ror', name: item[:name])
         org.alternate_names = gather_names(item: item)
         org.types = item[:types]
         org.attrs = {

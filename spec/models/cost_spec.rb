@@ -45,7 +45,7 @@ RSpec.describe Cost, type: :model do
       expect(obj.title).to eql(@json['title'])
       expect(obj.description).to eql(@json['description'])
       expect(obj.value).to eql(@json['value'])
-      expect(obj.currency_code).to eql(@json['currencyCode'])
+      expect(obj.currency_code).to eql(@json['currency_code'])
     end
 
     it 'finds the existing record rather than creating a new instance' do

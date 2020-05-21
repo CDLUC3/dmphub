@@ -8,7 +8,7 @@ class License < ApplicationRecord
   belongs_to :distribution, optional: true
 
   # Validations
-  validates :license_uri, :start_date, presence: true
+  validates :license_ref, :start_date, presence: true
 
   # Scopes
   class << self
@@ -17,9 +17,9 @@ class License < ApplicationRecord
       return nil unless json.present? && provenance.present? && distribution.present?
 
       json = json.with_indifferent_access
-      return nil unless json['licenseRef'].present?
+      return nil unless json['license_ref'].present?
 
-      license = find_or_initialize_by(distribution: distribution, license_uri: json['licenseRef'])
+      license = find_or_initialize_by(distribution: distribution, license_ref: json['license_ref'])
       license.start_date = json.fetch('startDate', Time.now.to_s)
       license.save
       license

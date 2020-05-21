@@ -46,7 +46,7 @@ describe 'API V0 - Distribution Show' do
   end
 
   it 'has a licenses attribute' do
-    expect(@json['licenses'].length).to eql(@distribution.licenses.length)
+    expect(@json['license'].length).to eql(@distribution.licenses.length)
   end
 end
 

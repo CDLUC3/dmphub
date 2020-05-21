@@ -1,0 +1,11 @@
+<%= form.fields_for :person, Contributor.new do |contributor_form| %>
+  <%= contributor_form.label :name, class: 'required' %>
+  <%= contributor_form.text_field :name %>
+  <%= contributor_form.label :email %>
+  <%= contributor_form.email_field :email %>
+  <%= contributor_form.fields_for :identifiers, Identifier.new do |identifier_form| %>
+    <%= contributor_form.hidden_field :category, value: 'orcid' %>
+    <%= contributor_form.label :value, 'ORCID' %>
+    <%= contributor_form.text_field :value %>
+  <% end %>
+<% end %>

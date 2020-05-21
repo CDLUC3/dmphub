@@ -1,0 +1,59 @@
+<%# locals: full_list, affiliations, controller, action %>
+
+<div  class="organizations-table grid-table">
+  <div class="table-header col-large">Name</div>
+  <div class="table-header col-medium">ROR</div>
+  <div class="table-header col-medium">Fundref</div>
+  <div class="table-header col-large">Merge</div>
+
+  <% affiliations.each do |affiliation| %>
+    <div class="table-column">
+      <%= affiliation.name %>
+    </div>
+
+    <% ror = affiliation.rors.any? ? affiliation.rors.first : Identifier.new(category: 'ror') %>
+    <% fundref = affiliation.crossrefs.any? ? affiliation.crossrefs.first : Identifier.new(category: 'doi') %>
+
+    <div class="table-column">
+      <%= form_with url: affiliation_path(affiliation), method: :put do |f| %>
+        <%= fields_for :identifiers, ror do |identifier_form| %>
+          <%= identifier_form.hidden_field :category %>
+          <%= identifier_form.text_field :value %>
+          <% if identifier_form.object.value.present? %>
+            <%= link_to 'visit', identifier_form.object.value, target: '_blank' %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="table-column">
+      <%= form_with url: affiliation_path(affiliation), method: :put do |f| %>
+        <%= fields_for :identifiers, fundref do |identifier_form| %>
+          <%= identifier_form.hidden_field :category %>
+          <%= identifier_form.text_field :value %>
+          <% if identifier_form.object.value.present? %>
+            <%= link_to 'visit', identifier_form.object.value, target: '_blank' %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="table-column">
+      <%= form_with url: affiliation_merge_path(affiliation), method: :put do |f| %>
+        <% affils = full_list.select { |i| i[1] != affiliation.id } %>
+        <%= f.select :merge_with, affils, include_blank: true %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="table-nav">
+    <% displayed = affiliations.limit_value %>
+    <% total = affiliations.total_count %>
+    Displaying <%= displayed > total ? total : displayed %> of <%= number_with_delimiter(total, delimiter: ',') %> Affiliations
+  </div>
+  <div class="table-nav">
+    <%= paginate affiliations,
+                 remote: true,
+                 params: { controller: controller, action: action } %>
+  </div>
+</div>

@@ -9,13 +9,13 @@ FactoryBot.define do
 
     trait :complete do
       transient do
-        award_count { 1 }
+        funding_count { 1 }
         data_management_plan_count { 1 }
       end
 
       after :create do |project, evaluator|
-        evaluator.award_count.times do
-          project.awards << create(:award, :complete)
+        evaluator.funding_count.times do
+          project.fundings << create(:funding, :complete)
         end
         evaluator.data_management_plan_count.times do
           project.data_management_plans << create(:data_management_plan, :complete)

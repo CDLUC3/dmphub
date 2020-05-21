@@ -101,7 +101,7 @@ RSpec.describe Api::V0::Auth::Jwt::AuthenticationService do
       end
 
       it 'returns nil if the Client is not an ApiClient' do
-        org = build(:organization)
+        org = build(:affiliation)
         svc = described_class.new(
           json: {
             grant_type: 'client_credentials',

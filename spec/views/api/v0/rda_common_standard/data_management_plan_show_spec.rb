@@ -49,12 +49,12 @@ describe 'API V0 - Data Management Plan Show' do
   end
 
   it 'has a contact attribute' do
-    expected = @data_management_plan.primary_contact.person
+    expected = @data_management_plan.primary_contact.contributor
     expect(@json['contact']['name']).to eql(expected.name)
   end
 
   it 'has a contributor attribute' do
-    expected = @data_management_plan.persons
+    expected = @data_management_plan.contributors
     expect(@json['contributor'].length).to eql(expected.length)
   end
 

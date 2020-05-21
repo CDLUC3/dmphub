@@ -13,7 +13,8 @@ RSpec.describe DataManagementPlan, type: :model do
     it { is_expected.to have_many(:costs) }
     it { is_expected.to have_many(:datasets) }
     it { is_expected.to belong_to(:project) }
-    it { is_expected.to belong_to(:oauth_authorization) }
+    it { is_expected.to have_many(:history) }
+    it { is_expected.to have_many(:authorizations) }
   end
 
   it 'factory can produce a valid model' do

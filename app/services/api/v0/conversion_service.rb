@@ -31,10 +31,6 @@ module Api
         # Translates RDA Common Standard identifier categories
         def to_rda_identifier_category(category:)
           case category
-          when 'orcid'
-            'ORCID'
-          when 'ror'
-            'ROR'
           when 'credit'
             'CRediT'
           else
@@ -45,15 +41,21 @@ module Api
         # Translates identifier categories to RDA Common Standard
         def to_identifier_category(rda_category:)
           case rda_category
-          when 'ORCID'
-            'orcid'
-          when 'ROR'
-            'ror'
           when 'CRediT'
             'credit'
           else
             rda_category.downcase
           end
+        end
+
+        # Convert from a role to the CRediT URL
+        def to_credit_taxonomy(role:)
+          "https://dictionary.casrai.org/Contributor_Roles/#{role.capitalize}"
+        end
+
+        # Convert from a CRediT URL to a role
+        def from_credit_taxonomy(role:)
+          role.split('/').last.downcase
         end
 
         # Converts a User to a Person

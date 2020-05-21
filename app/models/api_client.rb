@@ -21,10 +21,9 @@ class ApiClient < ApplicationRecord
   # = Validations =
   # ===============
 
-  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  # Using case_sensitive here because callback always forces name to lower case
+  validates :name, presence: true, uniqueness: { case_sensitive: true }
   validates :contact_email, presence: true, email: { allow_nil: false }
-  validates :client_id, presence: true
-  validates :client_secret, presence: true
 
   # ===========================
   # = Public instance methods =
@@ -49,6 +48,6 @@ class ApiClient < ApplicationRecord
   protected
 
   def name_to_downcase
-    self.name = name.downcase
+    self.name = name.downcase if name.present?
   end
 end

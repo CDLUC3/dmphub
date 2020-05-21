@@ -5,10 +5,10 @@ class Project < ApplicationRecord
   include Authorizable
 
   # Associations
-  has_many :awards, dependent: :destroy
+  has_many :fundings, dependent: :destroy
   has_many :data_management_plans, dependent: :destroy
 
-  accepts_nested_attributes_for :awards, :data_management_plans
+  accepts_nested_attributes_for :fundings, :data_management_plans
 
   # Validations
   validates :title, :start_on, :end_on, presence: true
@@ -29,14 +29,14 @@ class Project < ApplicationRecord
         #       Project, title's can and should not be unique!
         project = find_or_initialize_by(title: json['title']) unless project.present?
 
-        json.fetch('funding', []).each do |award|
-          award = Award.from_json!(provenance: provenance, project: project, json: award)
-          project.awards << award if award.present?
+        json.fetch('funding', []).each do |funding|
+          funding = Funding.from_json!(provenance: provenance, project: project, json: funding)
+          project.awards << funding if funding.present?
         end
 
         project.description = json['description'] if json['description'].present?
-        project.start_on = json.fetch('startOn', Time.now.utc)
-        project.end_on = json.fetch('endOn', Time.now.utc + 2.years)
+        project.start_on = json.fetch('start', Time.now.utc)
+        project.end_on = json.fetch('end', Time.now.utc + 2.years)
         project.save
         project
       end
@@ -46,7 +46,7 @@ class Project < ApplicationRecord
 
   # Instance methods
   def errors
-    awards.each { |award| super.copy!(award.errors) }
+    fundings.each { |funding| super.copy!(funding.errors) }
     data_management_plans.each { |dmp| super.copy!(dmp.errors) }
     super
   end

@@ -2,8 +2,9 @@
 
 # Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
-  enum category: %i[ark doi orcid ror crossref url duns program sub_program credit]
-  enum descriptor: %i[identified_by is_metadata_for funded_by described_by]
+  enum category: %i[ark doi credit duns fundref handle isni orcid openid program
+                    ror sub_program url]
+  enum descriptor: %i[described_by funded_by identified_by is_metadata_for]
 
   # Associations
   belongs_to :identifiable, polymorphic: true

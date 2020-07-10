@@ -29,7 +29,6 @@ module Api
           def deserialize(provenance:, json: {}, is_contact: false)
             return nil unless valid?(is_contact: is_contact, json: json)
 
-            json = json.with_indifferent_access
             contributor = marshal_contributor(provenance: provenance,
                                               is_contact: is_contact, json: json)
             return nil unless contributor.valid?
@@ -44,7 +43,6 @@ module Api
           def valid?(is_contact:, json: {})
             return false unless json.present?
 
-            json = json.with_indifferent_access
             return false unless json[:name].present? || json[:mbox].present?
 
             is_contact ? true : json[:roles].present?

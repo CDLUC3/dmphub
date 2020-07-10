@@ -7,7 +7,7 @@ FactoryBot.define do
     ethical_issues              { [nil, true, false].sample }
     ethical_issues_description  { Faker::Lorem.paragraph }
     ethical_issues_report       { Faker::Internet.url }
-    language                    { %w[en fr de es].sample }
+    language                    { Api::V0::ConversionService::LANGUAGES.sample }
 
     trait :complete do
       transient do

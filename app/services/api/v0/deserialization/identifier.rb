@@ -14,7 +14,6 @@ module Api
           def deserialize(provenance:, identifiable:, json: {})
             return nil unless identifiable.present? && valid?(json: json)
 
-            json = json.with_indifferent_access
             identifier = find_existing(provenance: provenance,
                                        identifiable: identifiable,
                                        json: json)
@@ -35,7 +34,6 @@ module Api
           def valid?(json:)
             return false unless json.present?
 
-            json = json.with_indifferent_access
             json[:type].present? && json[:identifier].present?
           end
 

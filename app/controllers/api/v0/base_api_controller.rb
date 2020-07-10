@@ -30,6 +30,12 @@ module Api
 
       protected
 
+      def model_errors(model:)
+        return [] unless model.present? && model.respond_to?(:errors)
+
+        model.errors.any? ? model.errors.collect { |e, m| "#{e} - #{m}" }.join(', ') : []
+      end
+
       def render_error(errors:, status:)
         @payload = { errors: errors }
         render '/api/v0/error', status: status

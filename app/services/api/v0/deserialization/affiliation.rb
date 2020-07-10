@@ -18,8 +18,6 @@ module Api
           def deserialize(provenance:, json: {})
             return nil unless valid?(json: json)
 
-            json = json.with_indifferent_access
-
             # Try to find the Org by the identifier
             affiliation = find_by_identifier(provenance: provenance, json: json)
 
@@ -37,7 +35,6 @@ module Api
           def valid?(json: {})
             return false unless json.present?
 
-            json = json.with_indifferent_access
             id = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))[:identifier]
             json[:name].present? || id.present?
           end

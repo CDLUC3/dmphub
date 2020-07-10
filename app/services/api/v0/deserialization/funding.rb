@@ -40,7 +40,6 @@ module Api
           def valid?(json: {})
             return false unless json.present?
 
-            json = json.with_indifferent_access
             json[:name].present? || json.fetch(:funder_id, {})[:identifier].present?
           end
 

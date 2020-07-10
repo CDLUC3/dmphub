@@ -57,7 +57,7 @@
       "funding": [{
         "name": "Example Funder",
         "funder_id": {
-          "type": "CROSSREF",
+          "type": "FUNDREF",
           "identifier": "http://dx.doi.org/10.13039/100000001"
         },
         "grant_id": {

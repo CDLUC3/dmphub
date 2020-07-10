@@ -145,7 +145,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         @json = { type: @nonuniquers.sample, identifier: @value }
       end
       it 'returns nil if the :provenance does not match' do
-        create(:identifier, identifiable: @identifiable, provenance: 'foo',
+        create(:identifier, identifiable: @identifiable, provenance: 'foo bar',
                             category: @json[:type], value: @value)
         result = described_class.send(:find_existing, provenance: @provenance,
                                                       identifiable: @identifiable,

@@ -10,17 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_05_20_185148) do
+ActiveRecord::Schema.define(version: 2020_07_14_161333) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
     t.text "alternate_names"
     t.json "attrs", null: false
     t.text "types"
+    t.bigint "provenance_id"
     t.index ["name"], name: "index_affiliations_on_name"
+    t.index ["provenance_id"], name: "index_affiliations_on_provenance_id"
   end
 
   create_table "api_client_authorizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -71,10 +72,11 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.string "email"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
     t.bigint "affiliation_id"
     t.text "roles"
+    t.bigint "provenance_id"
     t.index ["affiliation_id"], name: "index_contributors_on_affiliation_id"
+    t.index ["provenance_id"], name: "index_contributors_on_provenance_id"
   end
 
   create_table "contributors_data_management_plans", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -83,9 +85,10 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.integer "role"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["contributor_id"], name: "index_contributors_data_management_plans_on_contributor_id"
     t.index ["data_management_plan_id"], name: "index_contribs_dmps"
+    t.index ["provenance_id"], name: "index_contributors_data_management_plans_on_provenance_id"
   end
 
   create_table "costs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -96,8 +99,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.string "currency_code"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["data_management_plan_id"], name: "index_costs_on_data_management_plan_id"
+    t.index ["provenance_id"], name: "index_costs_on_provenance_id"
   end
 
   create_table "data_management_plans", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -110,8 +114,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "project_id"
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["project_id"], name: "index_data_management_plans_on_project_id"
+    t.index ["provenance_id"], name: "index_data_management_plans_on_provenance_id"
   end
 
   create_table "datasets", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -127,9 +132,10 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.text "preservation_statement", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["data_management_plan_id"], name: "index_datasets_on_data_management_plan_id"
     t.index ["dataset_type"], name: "index_datasets_on_dataset_type"
+    t.index ["provenance_id"], name: "index_datasets_on_provenance_id"
   end
 
   create_table "datasets_keywords", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -153,8 +159,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.datetime "available_until"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["dataset_id"], name: "index_distributions_on_dataset_id"
+    t.index ["provenance_id"], name: "index_distributions_on_provenance_id"
   end
 
   create_table "fundings", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -163,9 +170,10 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "affiliation_id"
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["affiliation_id"], name: "index_funding_on_organization_id"
     t.index ["project_id"], name: "index_funding_on_project_id"
+    t.index ["provenance_id"], name: "index_fundings_on_provenance_id"
     t.index ["status"], name: "index_funding_on_status"
   end
 
@@ -181,23 +189,24 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.string "geo_location"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
     t.text "certified_with"
     t.text "pid_system"
+    t.bigint "provenance_id"
     t.index ["distribution_id"], name: "index_hosts_on_distribution_id"
+    t.index ["provenance_id"], name: "index_hosts_on_provenance_id"
   end
 
   create_table "identifiers", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "value", null: false
     t.integer "category", default: 0, null: false
-    t.string "provenance", null: false
     t.bigint "identifiable_id"
     t.string "identifiable_type"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.integer "descriptor", default: 0
+    t.bigint "provenance_id"
     t.index ["category"], name: "index_identifiers_on_category"
-    t.index ["provenance"], name: "index_identifiers_on_provenance"
+    t.index ["provenance_id"], name: "index_identifiers_on_provenance_id"
   end
 
   create_table "keywords", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -212,8 +221,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.datetime "start_date", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["distribution_id"], name: "index_licenses_on_distribution_id"
+    t.index ["provenance_id"], name: "index_licenses_on_provenance_id"
   end
 
   create_table "metadata", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -222,8 +232,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["dataset_id"], name: "index_metadata_on_dataset_id"
+    t.index ["provenance_id"], name: "index_metadata_on_provenance_id"
   end
 
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -233,8 +244,28 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["id", "start_on", "end_on"], name: "index_projects_on_id_and_start_on_and_end_on"
+    t.index ["provenance_id"], name: "index_projects_on_provenance_id"
+  end
+
+  create_table "provenance_alterations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "provenance_id", null: false
+    t.integer "alteration_id", null: false
+    t.string "alteration_type", null: false
+    t.text "change_log"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["alteration_id", "alteration_type"], name: "index_provenance_alterations_on_id_type"
+    t.index ["provenance_id"], name: "index_provenance_alterations_on_provenance_id_id"
+  end
+
+  create_table "provenances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["name"], name: "index_provenances_on_name"
   end
 
   create_table "security_privacy_statements", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -243,8 +274,9 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["dataset_id"], name: "index_security_privacy_statements_on_dataset_id"
+    t.index ["provenance_id"], name: "index_security_privacy_statements_on_provenance_id"
   end
 
   create_table "technical_resources", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -252,9 +284,10 @@ ActiveRecord::Schema.define(version: 2020_05_20_185148) do
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
     t.string "title", null: false
+    t.bigint "provenance_id"
     t.index ["dataset_id"], name: "index_technical_resources_on_dataset_id"
+    t.index ["provenance_id"], name: "index_technical_resources_on_provenance_id"
   end
 
   create_table "users", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

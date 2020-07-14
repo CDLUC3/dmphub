@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 # A data management plan
-# rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 
@@ -60,9 +60,9 @@ class DataManagementPlan < ApplicationRecord
   def primary_contact=(contributor)
     unless contributor.is_a?(Contributor)
       # See if there is already a Contact defined.
-      current = contributors_data_management_plans.where(primary_contact: true).first
+      current = contributors_data_management_plans.where(role: 'primary_contact').first
       # Delete the old one
-      current.destroy unless current.contributor == contributor
+      current.destroy if current.present? && current.contributor != contributor
       unless current.present?
         # Add the new one
         contributors_data_management_plans << ContributorsDataManagementPlan.new(
@@ -86,21 +86,25 @@ class DataManagementPlan < ApplicationRecord
     )
   end
 
-  def errors
-    identifiers.each { |identifier| super.copy!(identifier.errors) }
-    datasets.each { |dataset| super.copy!(dataset.errors) }
-    costs.each { |cost| super.copy!(cost.errors) }
-    contributors_data_management_plans.each { |pdmp| super.copy!(pdmp.errors) }
-    super
-  end
+  #def errors
+#p "BEFORE"
+#p super.collect{|e,m| "#{e} - #{m}"}.join(', ')
+
+    #identifiers.each { |identifier| super.copy!(identifier.errors) }
+    #datasets.each { |dataset| super.copy!(dataset.errors) }
+    #costs.each { |cost| super.copy!(cost.errors) }
+    #contributors_data_management_plans.each { |cdmp| super.copy!(cdmp.errors) }
+
+#p "AFTER"
+#p super.collect{|e,m| "#{e} - #{m}"}.join(', ')
+
+    #super
+  #end
 
   private
 
   # Create a default stub dataset unless one exists
   def ensure_dataset
-    return true if datasets.any?
-
-    datasets << Dataset.new(title: title)
+    datasets << Dataset.new(title: title, provenance: provenance) unless datasets.any?
   end
 end
-# rubocop:enable Metrics/ClassLength

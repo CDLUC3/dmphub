@@ -9,6 +9,10 @@ FactoryBot.define do
     ethical_issues_report       { Faker::Internet.url }
     language                    { Api::V0::ConversionService::LANGUAGES.sample }
 
+    before :create do |data_management_plan|
+      data_management_plan.provenance = build(:provenance) unless data_management_plan.provenance.present?
+    end
+
     trait :complete do
       transient do
         contributors_count { 1 }
@@ -19,10 +23,7 @@ FactoryBot.define do
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
-        contact = create(:contributor, :complete)
-        pdmp = create(:contributors_data_management_plan, contributor: contact,
-                                                          data_management_plan: data_management_plan, role: 'primary_contact')
-        data_management_plan.contributors_data_management_plans << pdmp
+        data_management_plan.primary_contact = create(:contributor, :complete)
 
         # Add contributors
         evaluator.contributors_count.times do

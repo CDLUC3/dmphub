@@ -11,6 +11,10 @@ FactoryBot.define do
     availability          { Faker::Lorem.word }
     geo_location          { Faker::Movies::StarWars.planet }
 
+    before :create do |host|
+      host.provenance = build(:provenance) unless host.provenance.present?
+    end
+
     trait :complete do
       transient do
         identifiers_count { 1 }

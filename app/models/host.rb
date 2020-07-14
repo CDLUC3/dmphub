@@ -2,6 +2,7 @@
 
 # A Dataset Distribution Host
 class Host < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

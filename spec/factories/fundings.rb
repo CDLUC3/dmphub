@@ -4,6 +4,10 @@ FactoryBot.define do
   factory :funding do |_funding|
     status { Funding.statuses.keys.sample }
 
+    before :create do |funding|
+      funding.provenance = build(:provenance) unless funding.provenance.present?
+    end
+
     trait :complete do
       transient do
         identifier_count { 1 }

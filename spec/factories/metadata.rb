@@ -5,6 +5,10 @@ FactoryBot.define do
     description { Faker::Lorem.paragraph }
     language    { %w[en fr de es].sample }
 
+    before :create do |metadatum|
+      metadatum.provenance = build(:provenance) unless metadatum.provenance.present?
+    end
+
     trait :complete do
       transient do
         identifier_count { 1 }

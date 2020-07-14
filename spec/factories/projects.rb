@@ -7,6 +7,10 @@ FactoryBot.define do
     start_on              { Time.now + 5.days }
     end_on                { Time.now + 370.days }
 
+    before :create do |project|
+      project.provenance = build(:provenance) unless project.provenance.present?
+    end
+
     trait :complete do
       transient do
         funding_count { 1 }

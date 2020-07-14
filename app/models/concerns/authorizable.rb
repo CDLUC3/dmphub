@@ -9,6 +9,10 @@ module Authorizable
     has_many :authorizations, as: :authorizable, dependent: :destroy,
                               class_name: 'ApiClientAuthorization'
 
+    validates_associated :authorizations
+
+    accepts_nested_attributes_for :authorizations
+
     # Determine whether the ApiClient has Authorization for the Authorizable
     def authorized?(api_client:)
       return false unless api_client.present? && api_client.is_a?(ApiClient)

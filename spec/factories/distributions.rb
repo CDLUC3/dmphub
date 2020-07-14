@@ -11,6 +11,10 @@ FactoryBot.define do
     data_access           { Distribution.data_accesses.keys.sample }
     available_until       { Time.now + 30.days }
 
+    before :create do |distribution|
+      distribution.provenance = build(:provenance) unless distribution.provenance.present?
+    end
+
     trait :complete do
       transient do
         license_count { 1 }

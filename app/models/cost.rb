@@ -2,6 +2,7 @@
 
 # A Data Management Plan Cost
 class Cost < ApplicationRecord
+  include Alterable
   include Authorizable
 
   # Associations

@@ -12,6 +12,10 @@ FactoryBot.define do
     data_quality_assurance      { Faker::Lorem.paragraph }
     preservation_statement      { Faker::Lorem.paragraph }
 
+    before :create do |dataset|
+      dataset.provenance = build(:provenance) unless dataset.provenance.present?
+    end
+
     trait :complete do
       transient do
         identifier_count                  { 1 }

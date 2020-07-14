@@ -7,6 +7,10 @@ FactoryBot.define do
     alternate_names { [] }
     types           { [] }
 
+    before :create do |affiliation|
+      affiliation.provenance = build(:provenance) unless affiliation.provenance.present?
+    end
+
     trait :complete do
       transient do
         identifier_count { 1 }

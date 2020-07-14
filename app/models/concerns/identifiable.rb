@@ -8,6 +8,10 @@ module Identifiable
   included do
     has_many :identifiers, as: :identifiable, dependent: :destroy
 
+    validates_associated :identifiers
+
+    accepts_nested_attributes_for :identifiers
+
     Identifier.categories.each_key do |category|
       # Dynamically create methods accessor methods for each Identifier category
       # a method to get specific identifier types (e.g. `orcids`)

@@ -2,8 +2,12 @@
 
 FactoryBot.define do
   factory :contributor do
-    name  { Faker::Movies::StarWars.character }
+    name  { Faker::Music::PearlJam.musician }
     email { Faker::Internet.unique.email }
+
+    before :create do |contributor|
+      contributor.provenance = build(:provenance) unless contributor.provenance.present?
+    end
 
     trait :complete do
       transient do

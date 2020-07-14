@@ -2,6 +2,7 @@
 
 # An Organization
 class Affiliation < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

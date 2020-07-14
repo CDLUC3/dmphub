@@ -2,6 +2,7 @@
 
 # A data management plan
 class Funding < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

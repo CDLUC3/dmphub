@@ -2,6 +2,7 @@
 
 # A person
 class Contributor < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

@@ -6,5 +6,9 @@ FactoryBot.define do
     description           { Faker::Lorem.paragraph }
     value                 { Faker::Number.decimal(l_digits: 2) }
     currency_code         { %w[usd gbd cad].sample }
+
+    before :create do |cost|
+      cost.provenance = build(:provenance) unless cost.provenance.present?
+    end
   end
 end

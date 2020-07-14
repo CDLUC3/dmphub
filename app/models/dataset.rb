@@ -2,6 +2,7 @@
 
 # A dataset
 class Dataset < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

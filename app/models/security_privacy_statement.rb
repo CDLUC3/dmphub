@@ -2,6 +2,7 @@
 
 # A Dataset Security and Privacy Statement
 class SecurityPrivacyStatement < ApplicationRecord
+  include Alterable
   include Authorizable
 
   # Associations

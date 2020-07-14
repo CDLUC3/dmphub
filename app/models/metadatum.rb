@@ -2,6 +2,7 @@
 
 # A Dataset Metadata
 class Metadatum < ApplicationRecord
+  include Alterable
   include Authorizable
   include Identifiable
 

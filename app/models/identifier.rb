@@ -2,6 +2,8 @@
 
 # Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
+  include Alterable
+
   enum category: %i[ark doi credit duns fundref handle isni orcid openid program
                     ror sub_program url]
   enum descriptor: %i[described_by funded_by identified_by is_metadata_for]
@@ -10,7 +12,7 @@ class Identifier < ApplicationRecord
   belongs_to :identifiable, polymorphic: true
 
   # Validations
-  validates :category, :value, :provenance, :value, presence: true
+  validates :category, :value, :provenance, presence: true
 
   # Categories that need to be universally unique (e.g. DOI, URL or ORCID)
   # Should be unique for the :category

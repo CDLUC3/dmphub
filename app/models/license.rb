@@ -2,6 +2,7 @@
 
 # A Dataset Distribution License
 class License < ApplicationRecord
+  include Alterable
   include Authorizable
 
   # Associations

@@ -37,13 +37,14 @@ module Api
           #     }
           #   }
           def deserialize(provenance:, json: {})
-            return nil unless valid?(json: json)
+            return nil unless provenance.present? && valid?(json: json)
 
             # First attempt to look the DMP up by its identifier
             dmp = find_by_identifier(provenance: provenance, json: json)
 
             # Get the Contact
-            contact = Api::V0::Contributor.deserialize(provenance: provenance, json: json, is_contact: true)
+            contact = Api::V0::Deserialization::Contributor.deserialize(provenance: provenance, json: json,
+                                                                        is_contact: true)
 
             # Find of Initialize the DMP by the title and Contact if it was not found by ID
             dmp = find_by_contact_and_title(provenance: provenance, contact: contact, json: json) unless dmp.present?
@@ -60,11 +61,8 @@ module Api
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
 
-p "WE MADE IT!!!!!!!!!"
-p dmp.inspect
-p dmp.valid?
-
             dmp.save
+            dmp
           end
 
           private
@@ -96,7 +94,7 @@ p dmp.valid?
 
             # If no good result was found just initialize a new one
             dmp = ::DataManagementPlan.new(provenance: provenance, title: json[:title])
-            dmp.contact = contact
+            dmp.primary_contact = contact
             attach_identifier(provenance: provenance, dmp: dmp, json: json)
           end
 

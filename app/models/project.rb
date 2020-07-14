@@ -2,6 +2,7 @@
 
 # A project
 class Project < ApplicationRecord
+  include Alterable
   include Authorizable
 
   # ============ #

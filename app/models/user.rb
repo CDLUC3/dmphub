@@ -11,13 +11,13 @@ class User < ApplicationRecord
   enum role: %i[user admin super_user]
 
   # Doorkeeper associations
-  has_many :access_grants, class_name: 'Doorkeeper::AccessGrant',
-                           foreign_key: :resource_owner_id, dependent: :delete_all
+  # has_many :access_grants, class_name: 'Doorkeeper::AccessGrant',
+  #                          foreign_key: :resource_owner_id, dependent: :delete_all
 
-  has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
-                           foreign_key: :resource_owner_id, dependent: :delete_all
+  # has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
+  #                          foreign_key: :resource_owner_id, dependent: :delete_all
 
-  belongs_to :organization, optional: true
+  belongs_to :affiliation, optional: true
 
   # Validations
   validates :accept_terms, acceptance: true
@@ -77,15 +77,15 @@ class User < ApplicationRecord
   def data_management_plans
     return unless role == 'user'
 
-    ident_ids = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Person').pluck(:identifiable_id)
+    ident_ids = Identifier.where(value: orcid, category: 'orcid', identifiable_type: 'Contributor').pluck(:identifiable_id)
     return [] unless ident_ids.any?
 
-    person_ids = Person.where(id: ident_ids)
-    return [] unless person_ids.any?
+    contributor_ids = Contributor.where(id: ident_ids)
+    return [] unless contributor_ids.any?
 
-    ids = PersonDataManagementPlan.where(person_id: person_ids,
-                                         role: %w[primary_contact principal_investigator author])
-                                  .pluck(:data_management_plan_id)
+    ids = ContributorDataManagementPlan.where(contributor_id: contributor_ids,
+                                              roles: %w[primary_contact principal_investigator author])
+                                       .pluck(:data_management_plan_id)
     DataManagementPlan.where(id: ids)
   end
 

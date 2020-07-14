@@ -21,10 +21,10 @@ FactoryBot.define do
       end
 
       after :create do |distribution, evaluator|
-        distribution.host = create(:host) unless distribution.host.present?
+        distribution.host = create(:host, provenance: distribution.provenance) unless distribution.host.present?
 
         evaluator.license_count.times do
-          distribution.licenses << create(:license)
+          distribution.licenses << create(:license, provenance: distribution.provenance)
         end
       end
     end

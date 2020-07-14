@@ -19,7 +19,8 @@ FactoryBot.define do
 
       after :create do |funding, evaluator|
         evaluator.identifier_count.times do
-          funding.identifiers << create(:identifier, category: 'url', identifiable: funding, descriptor: 'funded_by')
+          funding.identifiers << create(:identifier, category: 'url', identifiable: funding, descriptor: 'funded_by',
+                                                     provenance: funding.provenance)
         end
       end
     end

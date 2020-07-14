@@ -58,15 +58,15 @@ class DataManagementPlan < ApplicationRecord
 
   # rubocop:disable Style/GuardClause
   def primary_contact=(contributor)
-    unless contributor.is_a?(Contributor)
-      # See if there is already a Contact defined.
+    if contributor.is_a?(Contributor)
+      # See if there is already a Primary Contact defined.
       current = contributors_data_management_plans.where(role: 'primary_contact').first
       # Delete the old one
       current.destroy if current.present? && current.contributor != contributor
       unless current.present?
         # Add the new one
         contributors_data_management_plans << ContributorsDataManagementPlan.new(
-          contributor: contributor, role: 'primary_contact'
+          contributor: contributor, role: 'primary_contact', provenance: contributor.provenance
         )
       end
     end
@@ -85,21 +85,6 @@ class DataManagementPlan < ApplicationRecord
       descriptor: 'is_metadata_for'
     )
   end
-
-  #def errors
-#p "BEFORE"
-#p super.collect{|e,m| "#{e} - #{m}"}.join(', ')
-
-    #identifiers.each { |identifier| super.copy!(identifier.errors) }
-    #datasets.each { |dataset| super.copy!(dataset.errors) }
-    #costs.each { |cost| super.copy!(cost.errors) }
-    #contributors_data_management_plans.each { |cdmp| super.copy!(cdmp.errors) }
-
-#p "AFTER"
-#p super.collect{|e,m| "#{e} - #{m}"}.join(', ')
-
-    #super
-  #end
 
   private
 

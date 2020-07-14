@@ -7,9 +7,9 @@ module Alterable
   included do
     belongs_to :provenance
 
-    has_many :alterations, as: :alterable, class_name: 'ProvenanceAlteration'
+    has_many :alterations, as: :alterable
 
-    accepts_nested_attributes_for :provenance, :alterations
+    accepts_nested_attributes_for :alterations
 
     validates_associated :alterations
 
@@ -22,9 +22,7 @@ module Alterable
     def record_alterations
       throw(:abort) unless provenance.present?
 
-p provenance.inspect
-
-      alterations << ProvenanceAlteration.new(change_log: changes.to_json, provenance: provenance)
+      alterations << Alteration.new(change_log: changes.to_json, provenance: provenance) if changes.any?
     end
   end
 end

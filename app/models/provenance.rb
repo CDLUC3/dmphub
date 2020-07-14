@@ -3,7 +3,7 @@
 # An external system
 class Provenance < ApplicationRecord
   # Associations
-  has_many :alterations, class_name: 'ProvenanceAlteration'
+  has_many :alterations
 
   # Validations
   validates :name, presence: true, uniqueness: { case_sensitive: false }

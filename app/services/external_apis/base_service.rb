@@ -87,6 +87,11 @@ module ExternalApis
         Rails.configuration.x.application.helpdesk_email
       end
 
+      # Retrieve or create the specified Provenance record
+      def provenance(name:)
+        Provenance.find_or_initialize_by(name: name)
+      end
+
       # Makes a GET request to the specified uri with the additional headers.
       # Additional headers are combined with the base headers defined above.
       def http_get(uri:, additional_headers: {}, debug: false)

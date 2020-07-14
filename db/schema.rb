@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_14_161333) do
+ActiveRecord::Schema.define(version: 2020_07_14_201729) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -22,6 +22,17 @@ ActiveRecord::Schema.define(version: 2020_07_14_161333) do
     t.bigint "provenance_id"
     t.index ["name"], name: "index_affiliations_on_name"
     t.index ["provenance_id"], name: "index_affiliations_on_provenance_id"
+  end
+
+  create_table "alterations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "alterable_id", null: false
+    t.string "alterable_type", default: "", null: false
+    t.text "change_log", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "provenance_id", null: false
+    t.index ["alterable_id", "alterable_type"], name: "index_alterations_on_alterable_id_and_alterable_type"
+    t.index ["provenance_id"], name: "index_alterations_on_provenance_id"
   end
 
   create_table "api_client_authorizations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -249,17 +260,6 @@ ActiveRecord::Schema.define(version: 2020_07_14_161333) do
     t.index ["provenance_id"], name: "index_projects_on_provenance_id"
   end
 
-  create_table "provenance_alterations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.bigint "provenance_id", null: false
-    t.integer "alteration_id", null: false
-    t.string "alteration_type", null: false
-    t.text "change_log"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["alteration_id", "alteration_type"], name: "index_provenance_alterations_on_id_type"
-    t.index ["provenance_id"], name: "index_provenance_alterations_on_provenance_id_id"
-  end
-
   create_table "provenances", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
     t.string "description"
@@ -311,9 +311,9 @@ ActiveRecord::Schema.define(version: 2020_07_14_161333) do
     t.string "unlock_token"
     t.datetime "locked_at"
     t.string "orcid"
-    t.bigint "organization_id"
+    t.bigint "affiliation_id"
+    t.index ["affiliation_id"], name: "index_users_on_affiliation_id"
     t.index ["email"], name: "index_users_on_email"
-    t.index ["organization_id"], name: "index_users_on_organization_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end

@@ -19,10 +19,10 @@ FactoryBot.define do
 
       after :create do |project, evaluator|
         evaluator.funding_count.times do
-          project.fundings << create(:funding, :complete)
+          project.fundings << create(:funding, :complete, provenance: project.provenance)
         end
         evaluator.data_management_plan_count.times do
-          project.data_management_plans << create(:data_management_plan, :complete)
+          project.data_management_plans << create(:data_management_plan, :complete, provenance: project.provenance)
         end
       end
     end

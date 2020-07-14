@@ -27,21 +27,23 @@ FactoryBot.define do
 
         # Add contributors
         evaluator.contributors_count.times do
-          per = create(:contributor, :complete)
+          per = create(:contributor, :complete, provenance: data_management_plan.provenance)
           j = create(:contributors_data_management_plan, contributor: per, data_management_plan: data_management_plan,
-                                                         role: ContributorsDataManagementPlan.roles.keys.sample)
+                                                         role: ContributorsDataManagementPlan.roles.keys.sample,
+                                                         provenance: data_management_plan.provenance)
           data_management_plan.contributors_data_management_plans << j
         end
         evaluator.costs_count.times do
-          data_management_plan.costs << create(:cost)
+          data_management_plan.costs << create(:cost, provenance: data_management_plan.provenance)
         end
         evaluator.datasets_count.times do
-          data_management_plan.datasets << create(:dataset, :complete)
+          data_management_plan.datasets << create(:dataset, :complete, provenance: data_management_plan.provenance)
         end
         evaluator.identifiers_count.times do
           data_management_plan.identifiers << create(:identifier, category: 'doi',
                                                                   identifiable: data_management_plan,
-                                                                  descriptor: Identifier.descriptors.keys.sample)
+                                                                  descriptor: Identifier.descriptors.keys.sample,
+                                                                  provenance: data_management_plan.provenance)
         end
       end
     end

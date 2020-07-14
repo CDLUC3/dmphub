@@ -9,5 +9,11 @@ FactoryBot.define do
     accept_terms        { true }
     role                { 'user' }
     secret              { Faker::Crypto.sha256 }
+
+    trait :complete do
+      after :create do |user|
+        user.affiliation = create(:affiliation) unless user.affiliation.present?
+      end
+    end
   end
 end

@@ -22,12 +22,6 @@ class Funding < ApplicationRecord
     granted? && urls.any?
   end
 
-  def errors
-    identifiers.each { |identifier| super.copy!(identifier.errors) }
-    super.copy!(affiliation.errors) if affiliation.present?
-    super
-  end
-
   private
 
   # Ensure defaults

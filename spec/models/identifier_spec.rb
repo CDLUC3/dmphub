@@ -8,15 +8,15 @@ RSpec.describe Identifier, type: :model do
     it { is_expected.to validate_presence_of(:value) }
     it { is_expected.to validate_presence_of(:provenance) }
 
-    it { is_expected.to define_enum_for(:category).with(Identifier.categories.keys) }
-    it { is_expected.to define_enum_for(:descriptor).with(Identifier.descriptors.keys) }
+    it { is_expected.to define_enum_for(:category).with_values(Identifier.categories.keys) }
+    it { is_expected.to define_enum_for(:descriptor).with_values(Identifier.descriptors.keys) }
 
     it 'should validate that :value is unique per :category + :provenance + :identifiable' do
       required = Identifier.send(:requires_universal_uniqueness)
       category = Identifier.categories.keys.reject { |i| required.include?(i) }.first
-      create(:identifier, category: category, identifiable: create(:contributor))
+      create(:identifier, category: category, identifiable: create(:contributor), provenance: create(:provenance))
       subject.value = 'Duplicate'
-      is_expected.to validate_uniqueness_of(:value).scoped_to(:category, :provenance, :identifiable_id)
+      is_expected.to validate_uniqueness_of(:value).scoped_to(:category, :provenance_id, :identifiable_id)
                                                    .case_insensitive.with_message('has already been taken')
     end
     it 'should validate that :value is unique per :category' do
@@ -51,7 +51,7 @@ RSpec.describe Identifier, type: :model do
 
   describe '#by_provenance_and_category_and_value(provenance:, category: value:)' do
     before(:each) do
-      @provenance = Faker::Lorem.unique.word
+      @provenance = create(:provenance)
       @identifiable = create(:affiliation)
       @value = SecureRandom.uuid
     end
@@ -74,7 +74,7 @@ RSpec.describe Identifier, type: :model do
 
     context 'a category that is not universally unique (e.g. program)' do
       before(:each) do
-        required = described_class.send(:requires_universal_uniqueness)
+        required = described_class.send(:requires_universal_uniqueness).map(&:to_s)
         @category = described_class.categories.keys.reject { |i| required.include?(i) }.first
         @expected = create(:identifier, category: @category, provenance: @provenance,
                                         identifiable: @identifiable, value: @value)
@@ -82,7 +82,7 @@ RSpec.describe Identifier, type: :model do
 
       it 'same identifiable and category but different provenance' do
         # The one it should not find
-        create(:identifier, category: @category, provenance: Faker::Lorem.unique.word.downcase,
+        create(:identifier, category: @category, provenance: create(:provenance),
                             identifiable: @identifiable, value: @value)
         results = described_class.by_provenance_and_category_and_value(
           provenance: @provenance, category: @category, value: @value

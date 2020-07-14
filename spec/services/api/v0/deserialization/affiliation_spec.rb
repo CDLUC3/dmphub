@@ -4,14 +4,14 @@ require 'rails_helper'
 
 RSpec.describe Api::V0::Deserialization::Affiliation do
   before(:each) do
-    @provenance = Faker::Lorem.unique.word
+    @provenance = create(:provenance)
     @name = Faker::Company.name
     @abbrev = Faker::Lorem.word.upcase
     @affiliation = create(:affiliation, name: @name, alternate_names: [@abbrev])
     @category = 'ror'
     @value = SecureRandom.uuid
     @identifier = create(:identifier, identifiable: @affiliation, category: @category,
-                                      value: @value)
+                                      value: @value, provenance: @provenance)
     @affiliation.reload
   end
 

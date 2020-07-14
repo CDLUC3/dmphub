@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V0::Deserialization::Funding do
   before(:each) do
-    @provenance = Faker::Lorem.word.downcase
+    @provenance = create(:provenance)
     @funder = create(:affiliation, name: Faker::Company.name)
     @funding = create(:funding, affiliation: @funder)
     @funder_id = create(:identifier, identifiable: @funder, category: 'ror',

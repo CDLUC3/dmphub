@@ -83,7 +83,7 @@ RSpec.describe ExternalApis::RorService do
         uri = "#{@search}?page=1&query=#{term}"
         stub_request(:get, uri).with(headers: @headers)
                                .to_return(status: 200, body: @results.to_json, headers: {})
-        expected = create(:affiliation, name: term, provenance: 'ror')
+        expected = create(:affiliation, name: term, provenance: create(:provenance, name: 'ror'))
         @org = described_class.search(term: term)
         expect(@org).to eql(expected)
       end
@@ -329,6 +329,7 @@ RSpec.describe ExternalApis::RorService do
 
     describe '#deserialize_identifier' do
       before(:each) do
+        @provenance = create(:provenance, name: 'ror')
         @category = Identifier.categories.keys.sample.to_s
         @value = SecureRandom.uuid
       end
@@ -343,7 +344,7 @@ RSpec.describe ExternalApis::RorService do
       it 'returns exisiting Identifier' do
         org = create(:affiliation)
         identifier = create(:identifier, identifiable: org, category: @category,
-                                         value: @value, provenance: 'ror')
+                                         value: @value, provenance: @provenance)
         result = described_class.send(:deserialize_identifier, category: @category,
                                                                value: @value)
         expect(result).to eql(identifier)
@@ -353,7 +354,7 @@ RSpec.describe ExternalApis::RorService do
                                                                value: @value)
         expect(result.new_record?).to eql(true)
         expect(result.identifiable_type).to eql('Affiliation')
-        expect(result.provenance).to eql('ror')
+        expect(result.provenance).to eql(@provenance)
         expect(result.send(:"#{@category}?")).to eql(true)
         expect(result.value).to eql(@value)
       end
@@ -361,6 +362,7 @@ RSpec.describe ExternalApis::RorService do
 
     describe '#deserialize_organization(item:)' do
       before(:each) do
+        @provenance = create(:provenance, name: 'ror')
         @item = {
           ror: Faker::Internet.url,
           url: Faker::Internet.url,
@@ -381,7 +383,7 @@ RSpec.describe ExternalApis::RorService do
         expect(result).to eql(nil)
       end
       it 'returns exisiting Identifier' do
-        org = create(:affiliation, name: @item[:name], provenance: 'ror')
+        org = create(:affiliation, name: @item[:name], provenance: @provenance)
         result = described_class.send(:deserialize_organization, item: @item)
         expect(result).to eql(org)
       end
@@ -391,11 +393,11 @@ RSpec.describe ExternalApis::RorService do
         expect(result.name).to eql(@item[:name])
         expect(result.alternate_names.include?(@item[:acronyms].first)).to eql(true)
         expect(result.alternate_names.include?(@item[:domain])).to eql(true)
-        expect(result.types).to eql(@item[:types].to_s)
-        expect(result.attrs['domain']).to eql(@item[:domain])
-        expect(result.attrs['country']).to eql(@item[:country])
-        expect(result.attrs['abbreviation']).to eql(@item[:abbreviation])
-        expect(result.provenance).to eql('ror')
+        expect(result.types).to eql(@item[:types])
+        expect(result.attrs[:domain]).to eql(@item[:domain])
+        expect(result.attrs[:country]).to eql(@item[:country])
+        expect(result.attrs[:abbreviation]).to eql(@item[:abbreviation])
+        expect(result.provenance).to eql(@provenance)
         expect(result.rors.first.value).to eql(@item[:ror])
         expect(result.urls.first.value).to eql(@item[:url])
       end

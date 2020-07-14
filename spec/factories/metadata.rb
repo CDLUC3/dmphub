@@ -16,7 +16,9 @@ FactoryBot.define do
 
       after :create do |metadatum, evaluator|
         evaluator.identifier_count.times do
-          metadatum.identifiers << create(:identifier, category: 'url', identifiable: metadatum, descriptor: Identifier.descriptors.keys.sample)
+          metadatum.identifiers << create(:identifier, category: 'url', identifiable: metadatum,
+                                                       descriptor: Identifier.descriptors.keys.sample,
+                                                       provenance: metadatum.provenance)
         end
       end
     end

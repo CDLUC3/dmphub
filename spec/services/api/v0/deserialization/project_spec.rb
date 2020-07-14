@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V0::Deserialization::Project do
   before(:each) do
     @dmp = build(:data_management_plan)
-    @provenance = Faker::Lorem.word.downcase
+    @provenance = create(:provenance)
     @project = create(:project, provenance: @provenance, title: Faker::Lorem.sentence)
     @dmp.project = @project
 

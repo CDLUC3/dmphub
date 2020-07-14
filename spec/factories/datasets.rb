@@ -28,22 +28,24 @@ FactoryBot.define do
 
       after :create do |dataset, evaluator|
         evaluator.identifier_count.times do
-          dataset.identifiers << create(:identifier, category: 'url', identifiable: dataset, descriptor: Identifier.descriptors.keys.sample)
+          dataset.identifiers << create(:identifier, category: 'url', identifiable: dataset,
+                                                     descriptor: Identifier.descriptors.keys.sample,
+                                                     provenance: dataset.provenance)
         end
-        evaluator.keyword_count.times do
-          dataset.keywords << create(:keyword)
-        end
+        # evaluator.keyword_count.times do
+        #   dataset.keywords << create(:keyword)
+        # end
         evaluator.technical_resource_count.times do
-          dataset.technical_resources << create(:technical_resource)
+          dataset.technical_resources << create(:technical_resource, provenance: dataset.provenance)
         end
         evaluator.security_privacy_statement_count.times do
-          dataset.security_privacy_statements << create(:security_privacy_statement)
+          dataset.security_privacy_statements << create(:security_privacy_statement, provenance: dataset.provenance)
         end
         evaluator.metadatum_count.times do
-          dataset.metadata << create(:metadatum, :complete)
+          dataset.metadata << create(:metadatum, :complete, provenance: dataset.provenance)
         end
         evaluator.distribution_count.times do
-          dataset.distributions << create(:distribution, :complete)
+          dataset.distributions << create(:distribution, :complete, provenance: dataset.provenance)
         end
       end
     end

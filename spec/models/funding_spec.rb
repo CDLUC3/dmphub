@@ -4,34 +4,18 @@ require 'rails_helper'
 
 RSpec.describe Funding, type: :model do
   context 'validations' do
-    it { is_expected.to define_enum_for(:status).with(Funding.statuses.keys) }
+    it { is_expected.to define_enum_for(:status).with_values(Funding.statuses.keys) }
   end
 
   context 'associations' do
-    it { is_expected.to belong_to(:project) }
+    it { is_expected.to belong_to(:project).optional }
     it { is_expected.to belong_to(:affiliation) }
     it { is_expected.to have_many(:identifiers) }
     it { is_expected.to have_many(:authorizations) }
   end
 
-  describe 'errors' do
-    before :each do
-      @model = build(:funding)
-    end
-    it 'includes affiliation errors' do
-      @model.affiliation = build(:affiliation, name: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('Name can\'t be blank')).to eql(true)
-    end
-    it 'includes identifier errors' do
-      @model.identifiers << build(:identifier, category: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
-    end
-  end
-
   it 'factory can produce a valid model' do
-    model = create(:funding, affiliation: build(:affiliation))
+    model = create(:funding, affiliation: build(:affiliation, provenance: build(:provenance)))
     expect(model.valid?).to eql(true)
   end
 

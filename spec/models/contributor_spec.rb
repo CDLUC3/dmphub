@@ -3,6 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe Contributor, type: :model do
+  before(:each) do
+    @provenance = create(:provenance)
+  end
+
   context 'validations' do
     it { is_expected.to validate_presence_of(:name) }
     it 'validates uniqueness of email' do
@@ -16,7 +20,7 @@ RSpec.describe Contributor, type: :model do
     it { is_expected.to have_many(:authorizations) }
     it { is_expected.to have_many(:data_management_plans) }
     it { is_expected.to have_many(:projects) }
-    it { is_expected.to belong_to(:affiliation) }
+    it { is_expected.to belong_to(:affiliation).optional }
   end
 
   it 'factory can produce a valid model' do
@@ -24,26 +28,11 @@ RSpec.describe Contributor, type: :model do
     expect(model.valid?).to eql(true)
   end
 
-  describe 'errors' do
-    before :each do
-      @model = build(:contributor)
-    end
-    it 'includes affiliation errors' do
-      @model.affiliation = build(:affiliation, name: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('Name can\'t be blank')).to eql(true)
-    end
-    it 'includes identifier errors' do
-      @model.identifiers << build(:identifier, category: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
-    end
-  end
-
   describe 'cascading deletes' do
     it 'does not delete associated data_management_plans' do
       model = create(:contributor, :complete)
-      dmp = create(:data_management_plan, project: create(:project), contributors: [model])
+      dmp = create(:data_management_plan, :complete)
+      create(:contributors_data_management_plan, contributor: model, data_management_plan: dmp)
       model.destroy
       expect(DataManagementPlan.last).to eql(dmp)
     end

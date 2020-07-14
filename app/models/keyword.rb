@@ -2,8 +2,6 @@
 
 # A Dataset Keyword
 class Keyword < ApplicationRecord
-  include Alterable
-  
   # Associations
   has_many :dataset_keywords, dependent: :destroy
   has_many :datasets, through: :dataset_keywords

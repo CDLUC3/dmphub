@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Api::V0::Deserialization::DataManagementPlan do
   before(:each) do
-    @provenance = Faker::Lorem.word.downcase
+    @provenance = create(:provenance)
     @dmp = create(:data_management_plan, :complete, provenance: @provenance)
 
     @json = {
@@ -92,18 +92,20 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       end
     end
 
-    describe '#find_by_dmp_and_title(provenance:, dmp:, json:)' do
-      it 'returns an existing Project record' do
-        result = described_class.send(:find_by_dmp_and_title, provenance: @provenance, dmp: @dmp, json: @json)
-        expect(result).to eql(@project)
+    describe '#find_by_contact_and_title(provenance:, contact:, json:)' do
+      it 'returns an existing DataManagementPlan record' do
+        result = described_class.send(:find_by_contact_and_title, provenance: @provenance,
+                                                                  contact: @dmp.primary_contact, json: @json)
+        expect(result).to eql(@dmp)
       end
-      it 'initializes a Project record' do
+      it 'initializes a DataManagementPlan record' do
         json = {
           title: Faker::Lorem.unique.word,
           start: Time.now.to_formatted_s(:iso8601),
           end: (Time.now + 2.years).to_formatted_s(:iso8601)
         }
-        result = described_class.send(:find_by_dmp_and_title, provenance: @provenance, dmp: @dmp, json: json)
+        result = described_class.send(:find_by_contact_and_title, provenance: @provenance,
+                                                                  contact: @dmp.primary_contact, json: json)
         expect(result.new_record?).to eql(true)
         expect(result.title).to eql(json[:title])
         expect(result.provenance).to eql(@provenance)

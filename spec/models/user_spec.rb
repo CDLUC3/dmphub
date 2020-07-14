@@ -18,13 +18,13 @@ RSpec.describe User, type: :model do
   end
 
   context 'associations' do
-    it { is_expected.to have_many(:access_grants) }
-    it { is_expected.to have_many(:access_tokens) }
-    it { is_expected.to belong_to(:organization) }
+    # it { is_expected.to have_many(:access_grants) }
+    # it { is_expected.to have_many(:access_tokens) }
+    it { is_expected.to belong_to(:affiliation).optional }
   end
 
   it 'factory can produce a valid model' do
-    model = create(:user, organization: create(:organization))
+    model = create(:user, affiliation: create(:affiliation, provenance: create(:provenance)))
     expect(model.valid?).to eql(true)
   end
 

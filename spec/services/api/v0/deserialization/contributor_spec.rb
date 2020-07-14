@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::V0::Deserialization::Contributor do
   before(:each) do
     @affiliation = create(:affiliation)
-    @provenance = Faker::Lorem.unique.word.downcase
+    @provenance = create(:provenance)
     @name = Faker::Movies::StarWars.character
     @email = Faker::Internet.email
     @role = Api::V0::ConversionService.to_credit_taxonomy(role: 'investigation')

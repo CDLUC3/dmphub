@@ -19,12 +19,9 @@ class Identifier < ApplicationRecord
   validates :value, uniqueness: { scope: %i[category], case_sensitive: false },
                     if: proc { |id| requires_universal_uniqueness.include?(id.category) }
   # Other categories (e.g. PROGRAM) should be unique per provenance + identifiable
-  validates :value, uniqueness: { scope: %i[category provenance identifiable_id],
+  validates :value, uniqueness: { scope: %i[category provenance_id identifiable_id],
                                   case_sensitive: false },
                     unless: proc { |id| requires_universal_uniqueness.include?(id.category) }
-
-  # Callbacks
-  before_validation :ensure_provenance
 
   # Scopes
   scope :by_provenance_and_category_and_value, lambda { |provenance:, category:, value:|
@@ -35,10 +32,6 @@ class Identifier < ApplicationRecord
 
   private
 
-  def ensure_provenance
-    @provenance = ApplicationService.application_name unless @provenance.present?
-  end
-
   def requires_universal_uniqueness
     ::Identifier.requires_universal_uniqueness
   end
@@ -47,7 +40,7 @@ class Identifier < ApplicationRecord
     # Categories that REQUIRE that the value is unique regardless of provenance
     # and Identifiable type
     def requires_universal_uniqueness
-      %i[ark doi orcid ror crossref url credit]
+      %i[ark doi orcid ror fundref url credit]
     end
   end
 end

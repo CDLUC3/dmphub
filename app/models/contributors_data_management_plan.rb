@@ -3,7 +3,7 @@
 # A Data Management Plan to Person Relationship
 class ContributorsDataManagementPlan < ApplicationRecord
   include Alterable
-  
+
   self.table_name = 'contributors_data_management_plans'
 
   enum role: %i[primary_contact curator author principal_investigator investigator
@@ -18,9 +18,4 @@ class ContributorsDataManagementPlan < ApplicationRecord
   # Validations
   validates :role, presence: true
   validates :contributor, uniqueness: { scope: %i[data_management_plan role] }
-
-  def errors
-    super.copy!(contributor.errors) if contributor.present?
-    super
-  end
 end

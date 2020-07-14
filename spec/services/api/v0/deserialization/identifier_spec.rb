@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe Api::V0::Deserialization::Identifier do
   before(:each) do
-    @uniquers = Identifier.send(:requires_universal_uniqueness)
+    @uniquers = Identifier.send(:requires_universal_uniqueness).map(&:to_s)
     @nonuniquers = Identifier.categories.keys.reject { |cat| @uniquers.include?(cat) }
-    @provenance = Faker::Lorem.unique.word.downcase
+    @provenance = create(:provenance)
     @value = SecureRandom.uuid
-    @identifiable = build(:affiliation)
+    @identifiable = build(:affiliation, provenance: @provenance)
   end
 
   describe '#valid?(json:)' do
@@ -129,7 +129,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
                             category: @json[:type], value: @value)
       end
       it 'returns the identifier' do
-        id = create(:identifier, identifiable: @identifiable, provenance: 'foo',
+        id = create(:identifier, identifiable: @identifiable, provenance: @provenance,
                                  category: @json[:type], value: @value)
         result = described_class.send(:find_existing, provenance: @provenance,
                                                       identifiable: @identifiable,
@@ -145,7 +145,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         @json = { type: @nonuniquers.sample, identifier: @value }
       end
       it 'returns nil if the :provenance does not match' do
-        create(:identifier, identifiable: @identifiable, provenance: 'foo bar',
+        create(:identifier, identifiable: @identifiable, provenance: create(:provenance),
                             category: @json[:type], value: @value)
         result = described_class.send(:find_existing, provenance: @provenance,
                                                       identifiable: @identifiable,
@@ -182,6 +182,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
   def validate_identifier(result:, provenance:, category:, value:)
     expect(result.is_a?(Identifier)).to eql(true), 'expected it to be an Identifier'
     expect(result.category.to_s).to eql(category.to_s), 'expected categories to match'
+    expect(result.provenance).to eql(provenance), 'expected provenance to match'
     expect(result.value).to eql(value), 'expected values to match'
   end
 end

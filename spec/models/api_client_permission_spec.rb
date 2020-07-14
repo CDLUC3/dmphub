@@ -6,7 +6,7 @@ RSpec.describe ApiClientPermission, type: :model do
   context 'validations' do
     subject { create(:api_client_permission, api_client: create(:api_client)) }
 
-    it { is_expected.to define_enum_for(:permission).with(%w[data_management_plan_creation award_assertion person_assertion]) }
+    it { is_expected.to define_enum_for(:permission).with_values(ApiClientPermission.permissions.keys) }
   end
 
   context 'associations' do
@@ -15,15 +15,15 @@ RSpec.describe ApiClientPermission, type: :model do
 
   context 'instance methods' do
     before(:each) do
-      @award1 = create(:award, status: 'planned', organization: create(:organization))
-      @award2 = create(:award, status: 'applied', organization: create(:organization))
-      rule = 'SELECT * FROM awards where status = 0;'
-      @model = build(:api_client_permission, rule: rule, permission: 'award_assertion')
+      @award1 = create(:funding, status: 'planned', affiliation: create(:affiliation))
+      @award2 = create(:funding, status: 'applied', affiliation: create(:affiliation))
+      rules = 'SELECT * FROM fundings where status = 0;'
+      @model = build(:api_client_permission, rules: rules, permission: 'funding_assertion')
     end
 
     describe '#authorized_entities' do
-      it 'returns [] if no :rule is defined' do
-        @model.rule = nil
+      it 'returns [] if no :rules is defined' do
+        @model.rules = nil
         expect(@model.authorized_entities).to eql([])
       end
       it 'returns true if the :secret matches' do
@@ -35,8 +35,8 @@ RSpec.describe ApiClientPermission, type: :model do
     end
 
     describe '#authorized?(obj:)' do
-      it 'returns false if no :rule is defined' do
-        @model.rule = nil
+      it 'returns false if no :rules is defined' do
+        @model.rules = nil
         expect(@model.authorized?(object: @award1)).to eql(false)
       end
       it 'returns false if no :object is specified' do
@@ -45,10 +45,10 @@ RSpec.describe ApiClientPermission, type: :model do
       it 'returns false if no :object is the wrong type for the permission' do
         expect(@model.authorized?(object: Project.new)).to eql(false)
       end
-      it 'returns false if the :rule check does not pass' do
+      it 'returns false if the :rules check does not pass' do
         expect(@model.authorized?(object: @award2)).to eql(false)
       end
-      it 'returns true if the :rule check passes' do
+      it 'returns true if the :rules check passes' do
         expect(@model.authorized?(object: @award1)).to eql(true)
       end
     end

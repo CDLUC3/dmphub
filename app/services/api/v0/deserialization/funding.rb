@@ -49,8 +49,8 @@ module Api
 
             funding = ::Funding.find_or_initialize_by(project: project,
                                                       affiliation: affiliation)
-            funding[:provenance] = provenance unless funding.provenance.present?
-            funding[:status] = json[:funding_status]
+            funding.provenance = provenance unless funding.provenance.present?
+            funding.status = json[:funding_status]
             return funding unless json[:grant_id].present?
 
             # Attach the Grant ID/URL

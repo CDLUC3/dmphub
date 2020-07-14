@@ -23,12 +23,6 @@ class Contributor < ApplicationRecord
   # Callbacks
   before_validation :ensure_roles
 
-  def errors
-    identifiers.each { |identifier| super.copy!(identifier.errors) }
-    super.copy!(affiliation.errors) if affiliation.present?
-    super
-  end
-
   private
 
   def ensure_roles

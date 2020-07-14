@@ -14,6 +14,7 @@ RSpec.describe Affiliation, type: :model do
   context 'associations' do
     it { is_expected.to have_many(:contributors) }
     it { is_expected.to have_many(:authorizations) }
+    it { is_expected.to have_many(:alterations) }
     it { is_expected.to have_many(:identifiers) }
   end
 
@@ -34,20 +35,9 @@ RSpec.describe Affiliation, type: :model do
       model = create(:affiliation, :complete)
       create(:api_client_authorization, authorizable: model,
                                         api_client: create(:api_client))
-      authorization = model.authorizations.first
+      authorization = model.reload.authorizations.first
       model.destroy
       expect(ApiClientAuthorization.where(id: authorization.id).empty?).to eql(true)
-    end
-  end
-
-  describe 'errors' do
-    before :each do
-      @model = build(:affiliation)
-    end
-    it 'includes identifier errors' do
-      @model.identifiers << build(:identifier, category: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('Category can\'t be blank')).to eql(true)
     end
   end
 

@@ -18,76 +18,33 @@ RSpec.describe DataManagementPlan, type: :model do
   end
 
   it 'factory can produce a valid model' do
-    model = build(:data_management_plan)
-    expect(model.valid?).to eql(true)
-  end
-
-  describe 'errors' do
-    before :each do
-      @model = build(:data_management_plan, project: build(:project))
-    end
-    it 'includes its own errors' do
-      @model.title = nil
-      @model.validate
-      expect(@model.errors.full_messages.include?('title can\'t be blank')).to eql(true)
-    end
-    it 'includes contributor errors' do
-      @model.contributors_data_management_plans << build(:contributors_data_management_plan,
-                                                         contributor: build(:contributor, name: nil), role: 'principal_investigator')
-      @model.validate
-      expect(@model.errors.full_messages.include?('name can\'t be blank')).to eql(true)
-    end
-    it 'includes contributor_data_management_plan errors' do
-      @model.contributors_data_management_plans << build(:contributors_data_management_plan,
-                                                         contributor: build(:contributor), role: nil)
-      @model.validate
-
-p @model.errors.collect{|e,m| "#{e} - #{m}"}.join(", ")
-
-      expect(@model.errors.full_messages.include?('role can\'t be blank')).to eql(true)
-    end
-    it 'includes cost errors' do
-      @model.costs << build(:cost, title: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('title can\'t be blank')).to eql(true)
-    end
-    it 'includes dataset errors' do
-      @model.datasets << build(:dataset, title: nil)
-      @model.validate
-      expect(@model.errors.full_messages.include?('title can\'t be blank')).to eql(true)
-    end
-    it 'includes identifier errors' do
-      @model.identifiers << build(:identifier, value: nil)
-      @model.validate
-
-p @model.identifiers.inspect
-p @model.identifiers.first.valid?
-p @model.identifiers.first.errors.collect{|e,m| "#{e}-#{m}"}.join(", ")
-p @model.errors.collect{|e,m| "#{e} - #{m}"}.join(", ")
-
-      expect(@model.errors.full_messages.include?('value can\'t be blank')).to eql(true)
-    end
+    model = build(:data_management_plan, provenance: create(:provenance))
+    expect(model.valid?).to eql(true), model.errors.full_messages
   end
 
   describe 'cascading deletes' do
     before :each do
+      @provenance = create(:provenance)
       @project = create(:project)
-      @model = create(:data_management_plan, project: @project)
+      @model = create(:data_management_plan, project: @project, provenance: @provenance)
     end
     it 'does not delete the project' do
       @model.destroy
       expect(Project.last).to eql(@project)
     end
     it 'does not delete associated contributors' do
-      contributor = create(:contributor)
-      @model.contributors_data_management_plans << create(:contributors_data_management_plan,
-                                                          contributor: contributor, role: 'principal_investigator')
+      contributor = create(:contributor, provenance: @provenance)
+      @model.contributors_data_management_plans << build(:contributors_data_management_plan,
+                                                         contributor: contributor, role: 'principal_investigator',
+                                                         provenance: @provenance)
       @model.save
       @model.destroy
       expect(Contributor.where(id: contributor.id).any?).to eql(true)
     end
     it 'deletes associated person_data_management_plans' do
-      cdmp = create(:contributors_data_management_plan, contributor: create(:contributor), role: 'principal_investigator')
+      cdmp = build(:contributors_data_management_plan, contributor: create(:contributor),
+                                                       role: 'principal_investigator',
+                                                       provenance: @provenance)
       @model.contributors_data_management_plans << cdmp
       @model.save
       @model.destroy

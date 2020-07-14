@@ -18,11 +18,6 @@ class Affiliation < ApplicationRecord
 
   before_validation :ensure_defaults
 
-  def errors
-    identifiers.each { |identifier| super.copy!(identifier.errors) }
-    super
-  end
-
   # Scopes
   class << self
     def funders

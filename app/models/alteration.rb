@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
-# An external system
+# A change log
 class Alteration < ApplicationRecord
   # Associations
   belongs_to :provenance
+
   belongs_to :alterable, polymorphic: true
 
-  # Validations
-  validates :provenance, :alterable, presence: true
+  # validations
+  validates :provenance, :alterable, :change_log, presence: true
 end

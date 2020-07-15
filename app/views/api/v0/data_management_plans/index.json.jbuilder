@@ -3,7 +3,7 @@
 json.partial! 'api/v0/standard_response', items: @payload[:items]
 
 # rubocop:disable Metrics/BlockLength
-json.items @dmps.each do |dmp|
+json.items @payload[:items].each do |dmp|
   json.dmp do
     doi = dmp.dois.first
     next unless doi.present?
@@ -20,14 +20,17 @@ json.items @dmps.each do |dmp|
     end
 
     json.contact do
-      affiliation = dmp.primary_contact.organizations.last
+      affiliation = dmp.primary_contact.affiliation
 
       json.name dmp.primary_contact.name
-      json.affiliation do
-        json.name affiliation.name
-        json.affiliation_id do
-          json.partial! 'api/v0/rda_common_standard/identifiers_show',
-                        identifier: affiliation.rors.first
+
+      if affiliation.present?
+        json.affiliation do
+          json.name affiliation.name
+          json.affiliation_id do
+            json.partial! 'api/v0/rda_common_standard/identifiers_show',
+                          identifier: affiliation.rors.first
+          end
         end
       end
       json.contact_id do

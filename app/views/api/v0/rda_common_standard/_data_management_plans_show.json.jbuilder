@@ -22,15 +22,15 @@ end
 if data_management_plan.primary_contact.present?
   json.contact do
     json.partial! 'api/v0/rda_common_standard/contributors_show',
-                  contributor: data_management_plan.primary_contact.contributor,
+                  contributor: data_management_plan.primary_contact,
                   rel: 'primary_contact'
   end
 end
 
 if data_management_plan.contributors.any?
-  json.contributor data_management_plan.contributors do |pdmp|
+  json.contributor data_management_plan.contributors_data_management_plans do |cdmp|
     json.partial! 'api/v0/rda_common_standard/contributors_show',
-                  contributor: pdmp.contributor, rel: pdmp.role
+                  contributor: cdmp.contributor, rel: cdmp.role
   end
 end
 

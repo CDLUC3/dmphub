@@ -8,6 +8,10 @@
         "identifier": "http://orcid.org/0000-0000-0000-0000",
         "type": "ORCID"
       }]
+    },
+    "dmp_id": {
+      "type": "DOI",
+      "identifier": "1234567890"
     }
   }
 }

@@ -9,26 +9,44 @@ module Api
       before_action :base_response_content
 
       def index
-        dmps = DataManagementPlan.joins(:authorizations).includes(:authorizations)
-                                 .where(authorizations: { api_client_id:  client[:id] })
-        @payload = { items: dmps }
+        dmp_ids = ApiClientAuthorization.by_api_client_and_type(
+          api_client_id: client[:id],
+          authorizable_type: 'DataManagementPlan'
+        ).pluck(:authorizable_id)
+
+        @payload = { items: DataManagementPlan.where(id: dmp_ids) }
       end
 
       # GET /data_management_plans/:id
       def show
-        render_error(errors: [], status: :not_found) unless authorized?
+        @dmp = DataManagementPlan.find_by_doi(params[:id]).first
+        if authorized?
+          @source = "GET #{api_v0_data_management_plan_url(@dmp.dois.first.value)}"
+        else
+          render_error(errors: [], status: :not_found)
+        end
 
-        @source = "GET #{api_v0_data_management_plan_url(@dmp.dois.first.value)}"
-        render 'show'
+        #render 'show'
       end
 
       # POST /data_management_plans
-      # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/MethodLength
       def create
         # Only proceed if the Application has permission
         if permitted?
-          dmp = Api::V0::Deserialization::Plan.deserialize!(json: dmp_params)
+          provenance = Provenance.by_api_client(api_client: client)
+          @dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
+            provenance: provenance, json: dmp_params.to_h
+          )
+
+p @dmp.inspect
+
+          if @dmp.present?
+
+          else
+            msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
+            render_error errors: "Invalid JSON format - #{msg}", status: :bad_request
+          end
 
 =begin
           # TODO: Determine how to handle multiple projects
@@ -70,13 +88,12 @@ module Api
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       end
-      # rubocop:enable Metrics/MethodLength, Metrics/AbcSize
-      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/MethodLength
 
       private
 
       def dmp_params
-        params.require(:dmp).permit(plan_permitted_params) #.to_h
+        params.require(:dmp).permit(plan_permitted_params)
       end
 
       def setup_authorizations(dmp:)
@@ -92,13 +109,13 @@ module Api
       end
 
       def permitted?
-        ApiClientPermission.data_management_plan_creation.map(&:api_client_id).include?(client.id)
+        return false unless client.present? && client.permissions.any?
+
+        client.permissions.where(permission: 'data_management_plan_creation').any?
       end
 
       def authorized?
-        return false unless @dmp.present? && @client.present?
-
-        @dmp.authorizations.map(&:api_client_id).include?(@client.id)
+        @dmp.present? && @client.present? && @dmp.authorized?(api_client: @client)
       end
     end
   end

@@ -23,7 +23,8 @@ FactoryBot.define do
 
       after :create do |data_management_plan, evaluator|
         # Ensure there is a primary contact!
-        data_management_plan.primary_contact = create(:contributor, :complete)
+        data_management_plan.primary_contact = create(:contributor, :complete) unless data_management_plan.primary_contact.present?
+        data_management_plan.project = create(:project, :complete, data_management_plan_count: 0) unless data_management_plan.project.present?
 
         # Add contributors
         evaluator.contributors_count.times do

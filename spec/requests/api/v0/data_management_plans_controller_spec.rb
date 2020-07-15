@@ -6,30 +6,32 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   include DataciteMocks
 
   before(:each) do
-    auth = mock_access_token(client: create(:api_client))
+    @client = create(:api_client)
+    create(:api_client_permission, api_client: @client, permission: 'data_management_plan_creation')
+    auth = mock_access_token(client: @client)
     @dmps = [
       create(:data_management_plan, :complete),
       create(:data_management_plan, :complete)
     ]
+    @dmps.each { |dmp| dmp.authorize!(api_client: @client) }
     @other_dmp = create(:data_management_plan, :complete)
-    @headers = default_authenticated_headers(client: create(:api_client),
-                                             token: auth)
+    @headers = default_authenticated_headers(client: @client, token: auth)
   end
 
   describe :index do
     before(:each) do
       get api_v0_data_management_plans_path, headers: @headers
       expect(response.status).to eql(200)
-      @json = body_to_json['content']
+      @json = body_to_json
     end
 
     it 'returns the data management plans owned by the client' do
-      expect(@json['dmps'].length).to eql(2)
+      expect(@json['items'].length).to eql(2)
     end
 
     it 'does not return data management plans owned by another client' do
-      dmps = @json['dmps'].select do |dmp|
-        dmp['uri'].ends_with?(api_v0_data_management_plan_path(@other_dmp.id.to_s))
+      dmps = @json['items'].map { |item| item['dmp'] }.select do |dmp|
+        dmp['dmp_id']['type'] == 'DOI' && dmp['dmp_id']['identifier'] == @other_dmp.dois.first
       end
       expect(dmps.empty?).to eql(true)
     end
@@ -37,27 +39,25 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
   describe :show do
     it 'returns the requested data management plan' do
-      # TODO: This one is failing for some reason when running the full test
-      #       suite via `rspec` it passes without issue when running either the
-      #       individual file or all of the request tests
       doi = @dmps.first.identifiers.first&.value
       get "/api/v0/data_management_plans/#{doi}", headers: @headers
       expect(response.status).to eql(200)
-      @json = body_to_json['content']
-      received = @json['dmp']['links'].first['href']
-      expect(received.ends_with?("/api/v0/data_management_plans/#{doi}")).to eql(true)
+      @json = body_to_json
+      received = @json['items'].first
+      expect(received.present?).to eql(true)
+      expect(received['dmp']['dmp_id']['identifier']).to eql(doi)
     end
 
     it 'returns a not_found if the data management plan does not exist' do
       get api_v0_data_management_plan_path(9999), headers: @headers
       expect(response.status).to eql(404)
-      expect(body_to_json).to eql({})
+      expect(body_to_json['total_items']).to eql(0)
     end
 
     it 'returns a not_found if the data management plan is not owned by the client/application' do
       get api_v0_data_management_plan_path(@other_dmp), headers: @headers
       expect(response.status).to eql(404)
-      expect(body_to_json).to eql({})
+      expect(body_to_json['total_items']).to eql(0)
     end
   end
 
@@ -67,9 +67,9 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
     end
 
     it 'returns a 400 bad_request if the json input does not have a `dmp`' do
-      post api_v0_data_management_plans_path, params: { 'data_management_plan': {} }, headers: @headers
+      post api_v0_data_management_plans_path, params: { 'dmp': {} }, headers: @headers
       expect(response.status).to eql(400)
-      expect(body_to_json['errors'].first['dmp']).to eql('invalid json format')
+      expect(body_to_json['errors'].downcase).to eql('invalid json format')
     end
 
     context 'minimal JSON' do
@@ -83,7 +83,7 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
         @payload['dmp'].delete('title')
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(400)
-        expect(body_to_json['errors'].first['title']).to eql('can\'t be blank')
+        expect(body_to_json['errors'].downcase.start_with?('invalid json format')).to eql(true)
       end
 
       it 'returns a created/201 if the data management plan was created' do
@@ -94,10 +94,9 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
       it 'returns the DOI as part of the response' do
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
-        doi = body_to_json['content']['dmp']['dmp_ids'].first
-        expect(doi['category']).to eql('doi')
-        expect(doi['value'].present?).to eql(true)
-        expect(doi['provenance'].present?).to eql(true)
+        doi = body_to_json['items'].first['dmp']['dmp_id'].first
+        expect(doi['type']).to eql('doi')
+        expect(doi['identifier'].present?).to eql(true)
       end
 
       # TODO: We need to add matching logic to determine if the incoming

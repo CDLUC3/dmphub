@@ -74,13 +74,16 @@ class DataManagementPlan < ApplicationRecord
   # rubocop:enable Style/GuardClause
 
   def mint_doi(provenance:)
-    doi = DataciteService.mint_doi(
+    # retrieve the Datacite Provenance or initialize it
+    datacite = Provenance.find_or_initialize_by(name: 'datacite')
+
+    doi = ExternalApis::DataciteService.mint_doi(
       data_management_plan: self,
       provenance: provenance
     )
     identifiers << Identifier.new(
       category: 'doi',
-      provenance: 'datacite',
+      provenance: datacite,
       value: doi,
       descriptor: 'is_metadata_for'
     )

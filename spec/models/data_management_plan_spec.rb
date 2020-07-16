@@ -35,7 +35,8 @@ RSpec.describe DataManagementPlan, type: :model do
     it 'does not delete associated contributors' do
       contributor = create(:contributor, provenance: @provenance)
       @model.contributors_data_management_plans << build(:contributors_data_management_plan,
-                                                         contributor: contributor, role: 'principal_investigator',
+                                                         contributor: contributor,
+                                                         role: 'https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Investigation',
                                                          provenance: @provenance)
       @model.save
       @model.destroy
@@ -43,7 +44,7 @@ RSpec.describe DataManagementPlan, type: :model do
     end
     it 'deletes associated person_data_management_plans' do
       cdmp = build(:contributors_data_management_plan, contributor: create(:contributor),
-                                                       role: 'principal_investigator',
+                                                       role: 'https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Investigation',
                                                        provenance: @provenance)
       @model.contributors_data_management_plans << cdmp
       @model.save

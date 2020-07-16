@@ -13,9 +13,8 @@ json.ethical_issues_report data_management_plan.ethical_issues_report
 
 if data_management_plan.identifiers.any?
   json.dmp_id do
-    # TODO: We should use a presenter to determine which Id to use (e.g. DOI first)
-    json.partial! 'api/v0/rda_common_standard/identifiers_show',
-                  identifier: data_management_plan.identifiers.first
+    identifier = Api::V0::IdentifierPresenter.dmp_id(identifiers: data_management_plan.identifiers)
+    json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: identifier
   end
 end
 

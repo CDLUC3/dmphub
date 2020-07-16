@@ -2,32 +2,17 @@
 {
   "complete": {
     "title": "The prevalence of contagious infections in Adama city",
-    "description": "Contagious infections are among the top health threats worldwide. The main attributing factors are said to be linked to poor sanitation and low income. Despite their emerging and re-emerging nature, little are addressed here in Adama in particular and in Ethiopia in general. The objective of the present study is to investigate the current status of contagious diseases and predict the future prospect on health and economic well-being of the City's citizens. Primary data will be collected from 20 health centre in Adama city and subjected to qualitative and quantitative data analysis. The result of the research will be used as inputs in health policy of the city municipality.",
-    "start": "2019-09-15 20:13:20 UTC",
-    "end": "2020-09-14 20:13:20 UTC",
-    "funding": [{
-      "name": "Death Star",
-      "funder_id": {
-        "type": "CROSSREF",
-        "identifier": "http://dx.doi.org/10.13039/100000001"
-      }
-      "grantId": {
-        "type": "URL",
-        "identifier": "http://awards.example.org/123"
-      },
-      "funding_status": "applied"
-    }]
+    "start": "2019-09-15T20:13:20Z",
+    "end": "2020-09-14T20:13:20Z",
+    "funding": ["$$_fundings.json_$$"]
   },
   "minimal": {
     "title": "The prevalence of contagious infections in Adama city",
     "start": "2019-09-15 20:13:20 UTC",
-    "end": "2020-09-14 20:13:20 UTC",
-    "funding": [{
-      "name": "Death Star"
-    }]
+    "end": "2020-09-14T20:13:20Z"
   },
   "invalid": {
     "title": "The prevalence of contagious infections in Adama city",
-    "start": "2019-09-15 20:13:20 UTC"
+    "start": "2019-09-15T20:13:20Z"
   }
 }

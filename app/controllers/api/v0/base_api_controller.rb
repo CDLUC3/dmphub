@@ -89,6 +89,8 @@ module Api
         return false unless request.present? && request.body.present?
 
         begin
+          @provenance = Provenance.by_api_client(api_client: client).first
+
           body = request.body.read
           @json = JSON.parse(body).with_indifferent_access
         rescue JSON::ParserError => e

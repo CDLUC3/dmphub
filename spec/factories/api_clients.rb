@@ -13,6 +13,7 @@ FactoryBot.define do
 
     after :create do |api_client, _evaluator|
       api_client.permissions << create(:api_client_permission, api_client: api_client)
+      create(:provenance, name: api_client.name)
     end
 
     trait :complete do

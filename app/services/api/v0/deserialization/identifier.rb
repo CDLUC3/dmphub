@@ -12,7 +12,7 @@ module Api
           #      "identifier": "https://ror.org/43y4g4"
           #    }
           def deserialize(provenance:, identifiable:, json: {})
-            return nil unless identifiable.present? && valid?(json: json)
+            return nil unless valid?(json: json)
 
             identifier = find_existing(provenance: provenance,
                                        identifiable: identifiable,

@@ -1,0 +1,19 @@
+/* Represents a Contact */
+{
+  "complete": {
+    "name": "Test Contact",
+    "mbox": "test.contact@example.edu",
+    "affiliation": "$$_affiliations.json_$$",
+    "contact_id": {
+      "type": "ORCID",
+      "identifier": "https://orcid.org/0000-0001-0000-0002"
+    }
+  },
+  "minimal": {
+    "name": "Test Contact",
+    "mbox": "test.contact@example.edu"
+  },
+  "invalid": {
+    "name": "Test Contact"
+  }
+}

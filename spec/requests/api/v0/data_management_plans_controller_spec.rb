@@ -6,15 +6,17 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   include DataciteMocks
 
   before(:each) do
+    create(:provenance, name: 'datacite')
     @client = create(:api_client)
+    @provenance = Provenance.by_api_client(api_client: @client).first
     create(:api_client_permission, api_client: @client, permission: 'data_management_plan_creation')
     auth = mock_access_token(client: @client)
     @dmps = [
-      create(:data_management_plan, :complete),
-      create(:data_management_plan, :complete)
+      create(:data_management_plan, :complete, provenance_id: @provenance.id),
+      create(:data_management_plan, :complete, provenance_id: @provenance.id)
     ]
     @dmps.each { |dmp| dmp.authorize!(api_client: @client) }
-    @other_dmp = create(:data_management_plan, :complete)
+    @other_dmp = create(:data_management_plan, :complete, provenance_id: @provenance.id)
     @headers = default_authenticated_headers(client: @client, token: auth)
   end
 
@@ -62,10 +64,6 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   end
 
   describe :create do
-    before(:each) do
-      @file_path = Rails.root.join('spec', 'support', 'mocks')
-    end
-
     it 'returns a 400 bad_request if the json input does not have a `dmp`' do
       post api_v0_data_management_plans_path, params: { 'dmp': {} }, headers: @headers
       expect(response.status).to eql(400)
@@ -75,15 +73,14 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
     context 'minimal JSON' do
       before(:each) do
         stub_minting_success!
-        json = File.read("#{@file_path}/rda_madmp_common_standard_minimal.json")
-        @payload = JSON.parse(json)
+        @payload = open_json_mock(file_name: 'data_management_plans.json', part: 'minimal')
       end
 
       it 'returns a 400 bad_request if the json input does not represent a valid Data Management Plan' do
         @payload['dmp'].delete('title')
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(400)
-        expect(body_to_json['errors'].downcase.start_with?('invalid json format')).to eql(true)
+        expect(body_to_json['errors'].first.start_with?('Invalid JSON format')).to eql(true)
       end
 
       it 'returns a created/201 if the data management plan was created' do
@@ -94,27 +91,32 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
       it 'returns the DOI as part of the response' do
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
-        doi = body_to_json['items'].first['dmp']['dmp_id'].first
-        expect(doi['type']).to eql('doi')
+        doi = body_to_json['items'].first['dmp']['dmp_id']
+        expect(doi['type']).to eql('DOI')
         expect(doi['identifier'].present?).to eql(true)
       end
 
-      # TODO: We need to add matching logic to determine if the incoming
-      #       DMP already exists
-      it 'returns a bad_request if the data management plan already exists' do
-        dmp = DataManagementPlan.from_json(json: @payload['dmp'], provenance: Faker::Lorem.word)
-        dmp.save
+      it 'returns a 400 bad_request if the data management plan already exists' do
+        @payload['dmp']['title'] = @dmps.first.title
+        @payload['dmp']['dmp_id']['type'] = @dmps.first.identifiers.first.category.upcase
+        @payload['dmp']['dmp_id']['identifier'] = @dmps.first.identifiers.first.value
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(400)
-        expect(body_to_json['errors'].first['dmp']).to eql('already exists')
+        expect(body_to_json['errors'].first.include?('already exist')).to eql(true)
       end
     end
 
     context 'complete JSON' do
       before(:each) do
         stub_minting_success!
-        json = File.read("#{@file_path}/complete_common_standard.json")
-        @payload = JSON.parse(json)
+        @payload = open_json_mock(file_name: 'data_management_plans.json', part: 'complete')
+      end
+
+      it 'returns a 400 bad_request if the json input does not represent a valid Data Management Plan' do
+        @payload['dmp'].delete('title')
+        post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
+        expect(response.status).to eql(400)
+        expect(body_to_json['errors'].first.start_with?('Invalid JSON format')).to eql(true)
       end
 
       it 'returns a created/201 if the data management plan was created' do
@@ -125,20 +127,18 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
       it 'returns the DOI as part of the response' do
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
-        doi = body_to_json['content']['dmp']['dmp_ids'].first
-        expect(doi['category']).to eql('doi')
-        expect(doi['value'].present?).to eql(true)
-        expect(doi['provenance'].present?).to eql(true)
+        doi = body_to_json['items'].first['dmp']['dmp_id']
+        expect(doi['type']).to eql('DOI')
+        expect(doi['identifier'].present?).to eql(true)
       end
 
-      # TODO: We need to add matching logic to determine if the incoming
-      #       DMP already exists
-      it 'returns a bad_request if the data management plan already exists' do
-        dmp = DataManagementPlan.from_json(json: @payload['dmp'], provenance: Faker::Lorem.word)
-        dmp.save
+      it 'returns a 400 bad_request if the data management plan already exists' do
+        @payload['dmp']['title'] = @dmps.first.title
+        @payload['dmp']['dmp_id']['type'] = @dmps.first.identifiers.first.category.upcase
+        @payload['dmp']['dmp_id']['identifier'] = @dmps.first.identifiers.first.value
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(400)
-        expect(body_to_json['errors'].first['dmp']).to eql('already exists')
+        expect(body_to_json['errors'].first.include?('already exist')).to eql(true)
       end
     end
   end

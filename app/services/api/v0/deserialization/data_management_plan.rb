@@ -42,16 +42,12 @@ module Api
             # First attempt to look the DMP up by its identifier
             dmp = find_by_identifier(provenance: provenance, json: json)
 
-p "FOUND BY ID: #{dmp.present?}"
-
             # Get the Contact
             contact = Api::V0::Deserialization::Contributor.deserialize(provenance: provenance, json: json,
                                                                         is_contact: true)
 
             # Find of Initialize the DMP by the title and Contact if it was not found by ID
             dmp = find_by_contact_and_title(provenance: provenance, contact: contact, json: json) unless dmp.present?
-
-p "FOUND BY CONTACT+TITLE: #{dmp.present?}"
 
             # Update the contents of the DMP
             dmp.primary_contact = contact
@@ -64,10 +60,6 @@ p "FOUND BY CONTACT+TITLE: #{dmp.present?}"
             dmp = deserialize_projects(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
-
-p "INITIALIZED: #{dmp.present} - #{dmp.valid?} - #{dmp.errors.full_messages.inspect}"
-
-            dmp.save
             dmp
           end
 
@@ -83,12 +75,12 @@ p "INITIALIZED: #{dmp.present} - #{dmp.valid?} - #{dmp.errors.full_messages.insp
 
           # Locate the DMP by its identifier
           def find_by_identifier(provenance:, json: {})
-            id = json.fetch(:dmp_id, {})
-            return nil unless id[:identifier].present?
+            id_json = json.fetch(:dmp_id, {})
+            return nil unless id_json[:identifier].present?
 
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
-                                                                  json: json)
+                                                                  json: id_json)
             id.present? ? id.identifiable : nil
           end
 
@@ -130,7 +122,7 @@ p "INITIALIZED: #{dmp.present} - #{dmp.valid?} - #{dmp.errors.full_messages.insp
             project = Api::V0::Deserialization::Project.deserialize(
               provenance: provenance, dmp: dmp, json: json
             )
-            dmp.project = project if project.present?
+            dmp.project = project.present? ? project : default_project(provenance: provenance, dmp: dmp)
             dmp
           end
 
@@ -149,11 +141,31 @@ p "INITIALIZED: #{dmp.present} - #{dmp.valid?} - #{dmp.errors.full_messages.insp
           def deserialize_datasets(provenance:, dmp:, json: {})
             json.fetch(:dataset, []).each do |dataset_json|
               dataset = Api::V0::Deserialization::Dataset.deserialize(
-                provenance: provenance, json: dataset_json
+                provenance: provenance, dmp: dmp, json: dataset_json
               )
               dmp.datasets << dataset if dataset.present?
             end
+            dmp.datasets << default_dataset(provenance: provenance, dmp: dmp) unless dmp.datasets.any?
             dmp
+          end
+
+          # Generate a default project
+          def default_project(provenance:, dmp:)
+            return nil unless provenance.present? && dmp.present?
+
+            ::Project.new(
+              provenance: provenance,
+              title: "Project: #{dmp.title}",
+              start_on: Time.now,
+              end_on: (Time.now + 2.years)
+            )
+          end
+
+          # Generate a default dataset
+          def default_dataset(provenance:, dmp:)
+            return nil unless provenance.present? && dmp.present?
+
+            ::Dataset.new(title: "Dataset: #{dmp.title}", provenance: provenance)
           end
         end
       end

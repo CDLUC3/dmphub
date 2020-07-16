@@ -25,70 +25,36 @@ module Api
         else
           render_error(errors: [], status: :not_found)
         end
-
-        #render 'show'
       end
 
       # POST /data_management_plans
-      # rubocop:disable Metrics/MethodLength
+      # rubocop:disable Metrics/PerceivedComplexity
       def create
         # Only proceed if the Application has permission
         if permitted?
-          provenance = Provenance.by_api_client(api_client: client)
           @dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
-            provenance: provenance, json: dmp_params.to_h
+            provenance: @provenance, json: dmp_params.to_h
           )
 
-p @dmp.inspect
-
           if @dmp.present?
-
-          else
-            msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
-            render_error errors: "Invalid JSON format - #{msg}", status: :bad_request
-          end
-
-=begin
-          # TODO: Determine how to handle multiple projects
-          project = Project.from_json!(provenance:  client.name, json: dmp_params[:project].first)
-          errs = model_errors(model: project)
-          render_error errors: errs, status: :unprocessable_entity if errs.any?
-
-          @dmp = DataManagementPlan.from_json!(json: dmp_params, provenance:  client.name)
-          if @dmp.present?
-            # rubocop: disable Metrics/BlockNesting
-            if @dmp.project.save
-              # Mint the DOI if we did not recieve a DOI in the input
-              @dmp.mint_doi(provenance:  client.name) if @dmp.present? && @dmp.new_record?
-
-              if @dmp.save
-                setup_authorizations(dmp: @dmp)
-                head :created, location: landing_page_url(id: @dmp.dois.first&.value)
-              else
-                # rollback(dmp: @dmp)
-                errs = @dmp.project.errors
-                @dmp.project.destroy
-                Rails.logger.warn "Error saving DMP during api/v0/data_management_plans#create: #{errs}"
-                render_error errors: errs, status: :unprocessable_entity
-              end
+            if @dmp.new_record?
+              process_dmp
             else
-              errs = @dmp.project.errors
-              Rails.logger.warn "Error saving Project during api/v0/data_management_plans#create: #{errs}"
-              render_error errors: "Unable to register your DMP: #{errs}", status: :unprocessable_entity
+              render_error errors: ['DMP already exists try sending an update instead'], status: :bad_request
             end
-            # rubocop: enable Metrics/BlockNesting
+          elsif @provenance.present?
+            msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
+            render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           else
-            render_error errors: 'Invalid json format', status: :bad_request
+            render_error errors: ['Unauthorized'], status: :unauthorized
           end
-=end
-
         else
           render_error errors: 'Unauthorized', status: :unauthorized
         end
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       end
-      # rubocop:enable Metrics/MethodLength
+      # rubocop:enable Metrics/PerceivedComplexity
 
       private
 
@@ -116,6 +82,17 @@ p @dmp.inspect
 
       def authorized?
         @dmp.present? && @client.present? && @dmp.authorized?(api_client: @client)
+      end
+
+      # Determine what to render
+      def process_dmp
+        if @dmp.save
+          @dmp.mint_doi(provenance: @provenance) unless @dmp.dois.any?
+          @dmp = @dmp.reload
+          render 'show', status: :created
+        else
+          render_error errors: @dmp.errors.full_messages, status: :bad_request
+        end
       end
     end
   end

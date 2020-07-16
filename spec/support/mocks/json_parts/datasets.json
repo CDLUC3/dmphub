@@ -13,58 +13,12 @@
     "dataset_id": {
       "type": "URL",
       "identifier": "https://example.org/datasets/1"
-    }],
-    "keyword": ["contagion","infection","Adama"],
-    "security_and_privacy": [{
-      "title": "Researcher anonymity",
-      "description": "The name of the individuals who will be assisting in the data collection will be retained confidential until the research is published and removed soon afterwards. Sensitive data such as personal details will be confidential while all the other data will be permanently available in the NADRE repository."
     },
-    {
-      "title": "Data sharing",
-      "description": "Potential users need to have NADRE account to get open access to the data which they can use and share to third body under the Creative Commons attribution license. The data availability will not be restricted once deposited in the repository while still we pursue for persistent identifier of our data for unlimited accessibility."
-    }],
-    "technical_resource": [{
-      "title": "Electron microscope"
-      "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem."
-    }],
-    "metadata": [{
-      "metadata_standard_id": {
-        "type": "URL",
-        "identifier": "http://example.org/dataset/123456789"
-      },
-      "description": "Final copy of the spreadsheet",
-      "language": "eng"
-    }],
-    "distribution": [{
-      "title": "Dolores deleniti deserunt rerum.",
-      "description": "Vel et eaque. Inventore quis rem. Aut soluta non.",
-      "format": "enim",
-      "byte_size": 60266422.08,
-      "access_url": "http://breitenbergwisoky.biz/oscar",
-      "download_url": "http://mcdermott.name/zane.swift",
-      "data_access": "shared",
-      "available_until": "2019-10-10 20:49:02 UTC",
-      "license": [{
-        "license_ref": "http://lang.biz/britney",
-        "start_date": "2019-10-10 20:49:02 UTC"
-      }],
-      "host": {
-        "title": "Est molestiae delectus aut.",
-        "description": "Qui perspiciatis sit. Repellendus soluta nam. Dolor reprehenderit dolorem.",
-        "host_id": [{
-          "type": "URL",
-          "identifier": "http://example.org/dataset/123456789"
-        }],
-        "supports_versioning": "yes",
-        "backup_type": "beatae",
-        "backup_frequency": "et",
-        "storage_type": "est",
-        "availability": "earum",
-        "geo_location": "Lothal",
-        "certified_with": ["etum","blah"],
-        "pid_system": ["ark"]
-      }
-    }]
+    "keyword": ["contagion","infection","Adama"],
+    "security_and_privacy": ["$$_security_privacy_statements.json_$$"],
+    "technical_resource": ["$$_technical_ressources.json_$$"],
+    "metadata": ["$$_metadata.json_$$"],
+    "distribution": ["$$_distributions.json_$$"]
   },
   "minimal": {
     "title": "List of infections.",
@@ -73,7 +27,7 @@
     "dataset_id": {
       "type": "URL",
       "identifier": "https://example.org/datasets/1"
-    }]
+    }
   },
   "invalid": {
     "description": "The extensive list of contagious infection cases as a spreadsheet.",

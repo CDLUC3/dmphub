@@ -1,0 +1,15 @@
+/* Represents an Affiliation */
+{
+  "complete": {
+    "name": "University of Somewhere Else",
+    "abbreviation": "USE",
+    "affiliation_id": {
+      "type": "ROR",
+      "identifier": "https://ror.org/000www000"
+    }
+  },
+  "minimal": {
+    "name": "University of Somewhere Else"
+  },
+  "invalid": {}
+}

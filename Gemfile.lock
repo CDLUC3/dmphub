@@ -447,7 +447,6 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
-    sqlite3 (1.4.2)
     sshkit (1.21.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
@@ -532,7 +531,6 @@ DEPENDENCIES
   shoulda
   spring
   spring-watcher-listen (~> 2.0.0)
-  sqlite3 (~> 1.4)
   stopwords
   text
   turbolinks (~> 5)

@@ -10,7 +10,10 @@ set :application, 'DMPHub_Stage_x2'
 # server "example.com", user: "deploy", roles: %w{app db web}, my_property: :my_value
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
-server 'uc3-dmphub01x2-stg.cdlib.org', user: 'dmp', roles: %w[web app db]
+
+server 'hub-stg2', user: 'dmp', roles: %w[web app db]
+# server 'uc3-dmphub01x2-stg.cdlib.org', user: 'dmp', roles: %w[web app db]
+
 set :rails_env, 'stage'
 
 # role-based syntax
@@ -46,6 +49,12 @@ set :rails_env, 'stage'
 #    forward_agent: false,
 #    auth_methods: %w(password)
 #  }
+
+# set :ssh_options, {
+#   user: 'briley',
+#   keys: %w(/Users/briley/.ssh/id_rsa),
+# }
+
 #
 # The server-based syntax can be used to override options:
 # ------------------------------------

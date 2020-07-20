@@ -32,7 +32,7 @@ module Api
               funding = Api::V0::Deserialization::Funding.deserialize(
                 provenance: provenance, project: project, json: funding_json
               )
-              dmp.fundings << funding if funding.present?
+              project.fundings << funding if funding.present?
             end
             project
           end

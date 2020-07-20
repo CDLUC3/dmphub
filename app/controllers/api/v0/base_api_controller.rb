@@ -12,7 +12,6 @@ module Api
 
       # Verify the JWT
       before_action :authorize_request, except: %i[heartbeat]
-      before_action :check_agent, except: %i[heartbeat]
 
       # Prep default instance variables for views
       before_action :set_default_response_format
@@ -23,6 +22,7 @@ module Api
       before_action :parse_request, only: %i[create update]
 
       attr_reader :client
+      attr_reader :provenance
 
       def heartbeat
         render 'api/v0/heartbeat', status: :ok
@@ -53,16 +53,17 @@ module Api
           headers: request.headers
         )
         @client = auth_svc.call
+        @provenance = Provenance.by_api_client(api_client: client).first if @client.present?
         log_access if @client.present?
-        return true if @client.present?
+        return true if @client.present? && check_agent
 
         render_error(errors: auth_svc.errors, status: :unauthorized)
       end
 
       # Make sure that the user agent matches the caller application/client
       def check_agent
-        expecting = "#{client.name} (#{client.client_id})"
-        request.headers.fetch('HTTP_USER_AGENT', '').downcase == expecting.downcase
+        expecting = "#{client.name.gsub(/\s/, '')}(#{client.client_id})".downcase
+        request.headers.fetch('HTTP_USER_AGENT', '').downcase.gsub(/\s/, '') == expecting
       end
 
       # Force all responses to be in JSON format
@@ -89,8 +90,6 @@ module Api
         return false unless request.present? && request.body.present?
 
         begin
-          @provenance = Provenance.by_api_client(api_client: client).first
-
           body = request.body.read
           @json = JSON.parse(body).with_indifferent_access
         rescue JSON::ParserError => e
@@ -145,8 +144,9 @@ module Api
       end
 
       def contributor_permitted_params
-        %i[name mbox roles] +
-          [affiliation: affiliation_permitted_params,
+        %i[name mbox] +
+          [role: [],
+           affiliation: affiliation_permitted_params,
            contributor_id: identifier_permitted_params,
            contact_id: identifier_permitted_params]
       end

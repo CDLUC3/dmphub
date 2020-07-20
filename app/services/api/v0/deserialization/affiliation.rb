@@ -51,6 +51,7 @@ module Api
           end
 
           # Search for an Org locally and then externally if not found
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def find_by_name(provenance:, json: {})
             return nil unless json.present? && json[:name].present?
 
@@ -59,13 +60,18 @@ module Api
             return affiliation if affiliation.present?
 
             # External ROR search
-            affiliation = ExternalApis::RorService.search(term: json[:name])
-            return affiliation if affiliation.present?
+            unless json[:affiliation_id][:type].downcase == 'ror'
+              affiliation = ExternalApis::RorService.search(term: json[:name])
+              affiliation.provenance = provenance if affiliation.present?
+              affiliation.identifiers.each { |id| id.provenance = provenance } if affiliation.present?
+              return affiliation if affiliation.present?
+            end
 
             # If no good result was found just use the specified name
             ::Affiliation.new(provenance: provenance, name: json[:name],
                               alternate_names: [], types: [], attrs: {})
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Marshal the Identifier and attach it to the Affiliation
           def attach_identifier(provenance:, affiliation:, json: {})

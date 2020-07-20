@@ -4,11 +4,19 @@
 class HomeController < ApplicationController
   before_action :authenticate_user!, only: %i[signup dashboard]
 
+  before_action :pagination_params, only: %i[filter search dashboard]
+
   # GET /
-  def index; end
+  def index
+    dmps = DataManagementPlan.all.order(updated_at: :desc).limit(50)
+    @data_management_plans = paginate_response(results: dmps)
+  end
 
   # POST /search
-  def search; end
+  def search
+    dmps = DataManagementPlan.search(term: search_params[:search_words])
+    @data_management_plans = paginate_response(results: dmps)
+  end
 
   # POST /filter
   def filter
@@ -37,7 +45,6 @@ class HomeController < ApplicationController
     params.require(:search).permit(:search_words)
   end
 
-  # rubocop:disable Metrics/CyclomaticComplexity
   def apply_filters
     return all_dmps unless params[:organization_id].present? || params[:funder_id].present?
 
@@ -56,7 +63,6 @@ class HomeController < ApplicationController
     DataManagementPlan.find_by_organization(organization_id: params[:organization_id])
                       .find_by_funder(organization_id: params[:funder_id])
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
 
   def all_dmps
     join_hash = {

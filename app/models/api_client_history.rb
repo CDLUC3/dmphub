@@ -15,5 +15,5 @@ class ApiClientHistory < ApplicationRecord
 
   validates :description, presence: true
 
-  enum type: %i[add edit archive embargo]
+  enum change_type: %i[add edit archive embargo]
 end

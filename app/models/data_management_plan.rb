@@ -15,7 +15,7 @@ class DataManagementPlan < ApplicationRecord
   has_many :datasets, dependent: :destroy
   has_many :history, class_name: 'ApiClientHistory', dependent: :destroy
 
-  accepts_nested_attributes_for :costs, :datasets,
+  accepts_nested_attributes_for :costs, :datasets, :project,
                                 :contributors_data_management_plans
 
   # Validations
@@ -27,6 +27,20 @@ class DataManagementPlan < ApplicationRecord
   # Scopes
   scope :by_client, lambda { |client_id:|
     where(api_client_id: client_id)
+  }
+
+  scope :search, lambda { |term:|
+    clause = <<-SQL
+      data_management_plans.title LIKE ?
+        OR projects.title LIKE ?
+        OR data_management_plans.description LIKE ?
+        OR identifiers.value = ?
+        OR contributors.name LIKE ?
+        OR contributors.email = ?
+    SQL
+    left_outer_joins(:project, :identifiers, contributors_data_management_plans: :contributor)
+      .where(clause, "%#{term}%", "%#{term}%", "%#{term}%", term, "%#{term}%", term)
+      .order(updated_at: :desc)
   }
 
   # Class Methods

@@ -43,8 +43,9 @@ module Api
             dmp = find_by_identifier(provenance: provenance, json: json)
 
             # Get the Contact
-            contact = Api::V0::Deserialization::Contributor.deserialize(provenance: provenance, json: json,
-                                                                        is_contact: true)
+            contact = Api::V0::Deserialization::Contributor.deserialize(
+              provenance: provenance, json: json[:contact], is_contact: true
+            )
 
             # Find of Initialize the DMP by the title and Contact if it was not found by ID
             dmp = find_by_contact_and_title(provenance: provenance, contact: contact, json: json) unless dmp.present?
@@ -92,7 +93,6 @@ module Api
 
             # If no good result was found just initialize a new one
             dmp = ::DataManagementPlan.new(provenance: provenance, title: json[:title])
-            dmp.primary_contact = contact
             attach_identifier(provenance: provenance, dmp: dmp, json: json)
           end
 
@@ -120,7 +120,7 @@ module Api
             #   dmp.projects << project if project.present?
             # end
             project = Api::V0::Deserialization::Project.deserialize(
-              provenance: provenance, dmp: dmp, json: json
+              provenance: provenance, dmp: dmp, json: json[:project].first
             )
             dmp.project = project.present? ? project : default_project(provenance: provenance, dmp: dmp)
             dmp
@@ -132,7 +132,18 @@ module Api
               contributor = Api::V0::Deserialization::Contributor.deserialize(
                 provenance: provenance, json: contributor_json
               )
-              dmp.contributors << contributor if contributor.present?
+
+              json.fetch(:role, []).map do |role|
+                url = role.starts_with?('http') ? role : Api::V0::ConversionService.to_credit_taxonomy(role: role)
+                next unless url.present?
+
+                cdmp = ContributorDataManagementPlan.find_or_initialize_by(
+                  data_management_plan: dmp, contributor: contributor, role: role
+                )
+                next unless cdmp.present?
+
+                dmp.contributors_data_management_plans << cdmp
+              end
             end
             dmp
           end

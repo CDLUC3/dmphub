@@ -9,16 +9,20 @@
 
   <% data_management_plans.each do |dmp| %>
     <div class="table-column">
-      <%= link_to dmp.dois.first, landing_page_path_with_doi(dmp: dmp) %>
+      <% if dmp.dois.any? || dmp.arks.any? %>
+        <%= link_to dmp.dois.last, landing_page_path_with_doi(dmp: dmp), landing_page_path_with_doi(dmp: dmp) %>
+      <% else %>
+        <%= link_to data_management_plan_path(dmp), data_management_plan_path(dmp) %>
+      <% end %>
     </div>
     <div class="table-column">
       <%= dmp.title.length > 49 ? "#{dmp.title[0..50]} ..." : dmp.title %>
     </div>
     <div class="table-column">
-      <%= dmp.project.awards.collect { |a| a.funded? }.first.to_s.camelize %>
+      <%= dmp.project.fundings.collect { |a| a.funded? }.first.to_s.camelize %>
     </div>
     <div class="table-column">
-      <%= dmp.primary_contact.person.name %>
+      <%= dmp.primary_contact.name %>
     </div>
     <div class="table-column">
       <%= safe_date(date: dmp.updated_at) %>

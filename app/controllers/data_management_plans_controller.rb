@@ -10,6 +10,7 @@ class DataManagementPlansController < ApplicationController
     render status: 404 if doi.nil?
 
     @dmp = DataManagementPlan.find(doi.identifiable_id)
+    render 'show'
   end
 
   # GET /data_management_plans/:id/edit

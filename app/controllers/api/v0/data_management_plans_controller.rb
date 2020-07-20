@@ -20,8 +20,11 @@ module Api
       # GET /data_management_plans/:id
       def show
         @dmp = DataManagementPlan.find_by_doi(params[:id]).first
+        @dmp = DataManagementPlan.where(id: params[:id]).first unless @dmp.present?
+
         if authorized?
-          @source = "GET #{api_v0_data_management_plan_url(@dmp.dois.first.value)}"
+          id = @dmp.dois.any? ? @dmp.dois.last : @dmp.id
+          @source = "GET #{api_v0_data_management_plan_url(id)}"
         else
           render_error(errors: [], status: :not_found)
         end
@@ -33,16 +36,18 @@ module Api
         # Only proceed if the Application has permission
         if permitted?
           @dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
-            provenance: @provenance, json: dmp_params.to_h
+            provenance: provenance, json: dmp_params.to_h.with_indifferent_access
           )
 
           if @dmp.present?
             if @dmp.new_record?
               process_dmp
             else
-              render_error errors: ['DMP already exists try sending an update instead'], status: :bad_request
+              doi = @dmp.dois.last || @dmp.urls.last
+              msg = "DMP already exists try sending an update instead using: {\"dmp_id\":{\"identifier\":\"#{doi.value}\"}"
+              render_error errors: [msg], status: :bad_request
             end
-          elsif @provenance.present?
+          elsif provenance.present?
             msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           else
@@ -81,13 +86,17 @@ module Api
       end
 
       def authorized?
-        @dmp.present? && @client.present? && @dmp.authorized?(api_client: @client)
+        @dmp.present? && client.present? && @dmp.authorized?(api_client: client)
       end
 
       # Determine what to render
       def process_dmp
+        action = @dmp.new_record? ? 'add' : 'edit'
         if @dmp.save
-          @dmp.mint_doi(provenance: @provenance) unless @dmp.dois.any?
+          ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
+          ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
+                                  description: "#{request.method} #{request.url}")
+          @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
           @dmp = @dmp.reload
           render 'show', status: :created
         else

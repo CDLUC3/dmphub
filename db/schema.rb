@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_07_14_201729) do
+ActiveRecord::Schema.define(version: 2020_07_16_201250) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -47,7 +47,7 @@ ActiveRecord::Schema.define(version: 2020_07_14_201729) do
   create_table "api_client_histories", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.bigint "api_client_id", null: false
     t.bigint "data_management_plan_id", null: false
-    t.integer "type"
+    t.integer "change_type"
     t.text "description"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -84,7 +84,6 @@ ActiveRecord::Schema.define(version: 2020_07_14_201729) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "affiliation_id"
-    t.text "roles"
     t.bigint "provenance_id"
     t.index ["affiliation_id"], name: "index_contributors_on_affiliation_id"
     t.index ["provenance_id"], name: "index_contributors_on_provenance_id"

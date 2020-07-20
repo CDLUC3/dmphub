@@ -8,20 +8,20 @@ class ContributorsDataManagementPlan < ApplicationRecord
 
   enum role: %i[
     primary_contact
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Conceptualization
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Data_Curation
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Formal_Analysis
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Funding_Acquisition
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Investigation
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Methodology
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Project_Administration
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Resources
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Software
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Supervision
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Validation
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Visualization
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Writing_Original_Draft
-    https://dictionary.casrai.org/Contributor_Roles/Data_Curation/Writing_Review_&_Editing
+    https://dictionary.casrai.org/Contributor_Roles/Conceptualization
+    https://dictionary.casrai.org/Contributor_Roles/Data_curation
+    https://dictionary.casrai.org/Contributor_Roles/Formal_analysis
+    https://dictionary.casrai.org/Contributor_Roles/Funding_acquisition
+    https://dictionary.casrai.org/Contributor_Roles/Investigation
+    https://dictionary.casrai.org/Contributor_Roles/Methodology
+    https://dictionary.casrai.org/Contributor_Roles/Project_administration
+    https://dictionary.casrai.org/Contributor_Roles/Resources
+    https://dictionary.casrai.org/Contributor_Roles/Software
+    https://dictionary.casrai.org/Contributor_Roles/Supervision
+    https://dictionary.casrai.org/Contributor_Roles/Validation
+    https://dictionary.casrai.org/Contributor_Roles/Visualization
+    https://dictionary.casrai.org/Contributor_Roles/Writing_original_draft
+    https://dictionary.casrai.org/Contributor_Roles/Writing_review_Editing
   ]
 
   # Associations

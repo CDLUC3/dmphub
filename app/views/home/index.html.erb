@@ -7,3 +7,7 @@
   <%= f.text_field :search_words %>
   <%= f.submit 'Go' %>
 <% end %>
+
+<%= render partial: 'data_management_plans/index',
+           locals: { data_management_plans: @data_management_plans,
+                     controller: 'home', action: 'search' } %>

@@ -31,7 +31,7 @@ module Api
 
             contributor = marshal_contributor(provenance: provenance,
                                               is_contact: is_contact, json: json)
-            return nil unless contributor.valid?
+            return nil unless contributor.present?
 
             attach_identifier(provenance: provenance, contributor: contributor, json: json)
           end
@@ -42,10 +42,9 @@ module Api
           # and roles (if this is not the Contact)
           def valid?(is_contact:, json: {})
             return false unless json.present?
-
             return false unless json[:name].present? || json[:mbox].present?
 
-            is_contact ? true : json[:roles].present?
+            is_contact ? true : json[:role].present? && json[:role].any?
           end
 
           # Find or initialize the Contributor
@@ -60,11 +59,6 @@ module Api
 
             # Attach the Affiliation unless its already defined
             contributor.affiliation = deserialize_affiliation(provenance: provenance, json: json)
-
-            # Assign the roles
-            contributor = assign_contact_roles(contributor: contributor) if is_contact
-            assign_roles(contributor: contributor, json: json) unless is_contact
-
             contributor
           end
 
@@ -116,30 +110,6 @@ module Api
             Api::V0::Deserialization::Affiliation.deserialize(
               provenance: provenance, json: json[:affiliation]
             )
-          end
-
-          # Assign the default Contact roles
-          def assign_contact_roles(contributor:)
-            return nil unless contributor.present?
-
-            role = Api::V0::ConversionService.to_credit_taxonomy(role: 'data_curation')
-            contributor.roles = [] unless contributor.roles.present?
-            contributor.roles << role unless contributor.roles.include?(role)
-            contributor
-          end
-
-          # Assign the specified roles
-          def assign_roles(contributor:, json: {})
-            return nil unless contributor.present?
-            return contributor unless json.present? && json[:roles].present?
-
-            json.fetch(:roles, []).each do |role|
-              url = role.starts_with?('http') ? role : Api::V0::ConversionService.to_credit_taxonomy(role: role)
-              next if contributor.roles.include?(url)
-
-              contributor.roles << url
-            end
-            contributor
           end
 
           # Marshal the Identifier and attach it

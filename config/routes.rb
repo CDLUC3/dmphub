@@ -28,7 +28,7 @@ Rails.application.routes.draw do
     post 'merge'
   end
 
-  resources :data_management_plans, only: %i[edit update]
+  resources :data_management_plans, only: %i[show edit update]
   resources :datasets, only: %i[index]
 
   # Handles DOI resolution to a landing page

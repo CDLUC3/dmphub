@@ -54,7 +54,6 @@ build-iPhoneSimulator/
 .byebug_history
 
 # Sensitive Configuration
-config/credentials.yml.enc
 config/database.yml
 config/master.key
 config/initializers/constants.rb

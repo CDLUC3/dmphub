@@ -76,6 +76,8 @@ GEM
       sshkit (>= 1.9.0)
     capistrano-bundler (2.0.0)
       capistrano (~> 3.1)
+    capistrano-puma (0.2.3)
+      capistrano (>= 3.0)
     capistrano-rails (1.6.1)
       capistrano (~> 3.1)
       capistrano-bundler (>= 1.1, < 3)
@@ -499,6 +501,7 @@ DEPENDENCIES
   bootsnap (>= 1.4.2)
   byebug
   capistrano (~> 3.10)
+  capistrano-puma
   capistrano-rails (~> 1.3)
   capybara (>= 2.15)
   database_cleaner

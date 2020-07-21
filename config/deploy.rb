@@ -68,7 +68,7 @@ namespace :puma do
   desc 'Stop Puma'
   task :stop do
     on roles(:app), wait: 1 do
-      execute "[ -f #{fetch(:puma_pid)} ] && kill $(cat #{fetch(:puma_pid)}) && rm #{fetch(:puma_pid)}"
+      execute "[ -f #{fetch(:puma_pid)} ] && { kill $(cat #{fetch(:puma_pid)}); rm #{fetch(:puma_pid)} }"
     end
   end
 

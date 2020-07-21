@@ -44,16 +44,19 @@ set :default_env, { path: '/dmp/local/bin:$PATH' }
 set :puma_user, 'dmp'
 set :puma_daemonize, true
 
+set :puma_pid, '/dmp/apps/dmphub/shared/tmp/pids/server.pid'
+
+after :deploy, 'puma:stop'
 after :deploy, 'puma:start'
 
 namespace :puma do
-  desc 'Check Puma status by looking for PID'
-  task :status do
-    on roles(:app), wait: 1 do
-      execute "rm -f #{release_path}/config/*.yml.sample"
-      execute "rm -f #{release_path}/config/initializers/*.rb.example"
-    end
-  end
+  # desc 'Check Puma status by looking for PID'
+  # task :status do
+  #   on roles(:app), wait: 1 do
+  #     execute "rm -f #{release_path}/config/*.yml.sample"
+  #     execute "rm -f #{release_path}/config/initializers/*.rb.example"
+  #   end
+  # end
 
   desc 'Start Puma'
   task :start do
@@ -65,14 +68,14 @@ namespace :puma do
   desc 'Stop Puma'
   task :stop do
     on roles(:app), wait: 1 do
-      execute "kill #{fetch(:puma_pid)}" if fetch(:puma_pid).present?
+      execute "[ ! -e #{fetch(:puma_pid)} ] || rm #{fetch(:puma_pid)} && kill #{fetch(:puma_pid)}"
     end
   end
 
-  desc 'Restart Puma'
-  task :restart do
-    on roles(:app), wait: 1 do
-      execute 'pumactl -P /dmp/apps/dmphub/shared/tmp/pids/puma.pid restart'
-    end
-  end
+  # desc 'Restart Puma'
+  # task :restart do
+  #   on roles(:app), wait: 1 do
+  #     execute 'pumactl -P /dmp/apps/dmphub/shared/tmp/pids/puma.pid restart'
+  #   end
+  # end
 end

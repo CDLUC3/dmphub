@@ -16,7 +16,6 @@ module Api
       respond_to :json
 
       skip_before_action :authorize_request, only: %i[authenticate]
-      skip_before_action :check_agent, only: %i[authenticate]
 
       # POST /api/v1/authenticate
       def authenticate

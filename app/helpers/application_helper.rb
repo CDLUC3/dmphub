@@ -48,9 +48,6 @@ module ApplicationHelper
   def landing_page_path_with_doi(dmp:)
     return root_path unless dmp.id.present? && dmp.dois.first.present?
 
-p "DMP: #{dmp.inspect}"
-p "PATH: #{landing_page_path(dmp)}"
-
     id_to_doi(dmp: dmp, value: landing_page_path(dmp))
   end
 

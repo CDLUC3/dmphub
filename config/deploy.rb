@@ -61,7 +61,7 @@ namespace :puma do
   desc 'Start Puma'
   task :start do
     on roles(:app), wait: 1 do
-      execute "cd #{release_path} && bundle exec puma -d -e #{fetch(:rails_env)}"
+      execute "cd #{release_path} && puma -d -e #{fetch(:rails_env)}"
     end
   end
 

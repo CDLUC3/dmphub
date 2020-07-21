@@ -43,3 +43,36 @@ set :default_env, { path: '/dmp/local/bin:$PATH' }
 # Puma Config
 set :puma_user, 'dmp'
 set :puma_daemonize, true
+
+after :deploy, 'puma:start'
+
+namespace :puma do
+  desc 'Check Puma status by looking for PID'
+  task :status do
+    on roles(:app), wait: 1 do
+      execute "rm -f #{release_path}/config/*.yml.sample"
+      execute "rm -f #{release_path}/config/initializers/*.rb.example"
+    end
+  end
+
+  desc 'Start Puma'
+  task :start do
+    on roles(:app), wait: 1 do
+      execute "cd #{release_path} && /dmp/local/bin/puma -d -e #{fetch(:rails_env)}"
+    end
+  end
+
+  desc 'Stop Puma'
+  task :stop do
+    on roles(:app), wait: 1 do
+      execute "kill #{fetch(:puma_pid)}" if fetch(:puma_pid).present?
+    end
+  end
+
+  desc 'Restart Puma'
+  task :restart do
+    on roles(:app), wait: 1 do
+      execute 'pumactl -P /dmp/apps/dmphub/shared/tmp/pids/puma.pid restart'
+    end
+  end
+end

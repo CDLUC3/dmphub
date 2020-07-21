@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Load DSL and set up stages
 require 'capistrano/setup'
 
@@ -34,9 +36,12 @@ require 'capistrano/rails/assets'
 require 'capistrano/rails/migrations'
 # require 'capistrano/passenger'
 
-require 'capistrano/puma'
-#install_plugin Capistrano::Puma
-#install_plugin Capistrano::Puma::Workers
+# TODO: Keep an eye on https://github.com/seuros/capistrano-puma/issues/289.
+#       capistrano/puma doesn't work with Ruby 2.6.3 and the ticket has been
+#       open for over a year :/
+# require 'capistrano/puma'
+# install_plugin Capistrano::Puma
+# install_plugin Capistrano::Puma::Workers
 
 # Load custom tasks from `lib/capistrano/tasks` if you have any defined
 Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }

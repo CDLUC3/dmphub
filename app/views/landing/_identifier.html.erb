@@ -1,7 +1,7 @@
 <%# locals: identifier %>
 
 <li>
-  <strong><%= humanize_underscored(name: identifier.provenance) %> - <%= humanize_underscored(name: identifier.category) %>:</strong>
+  <strong><%= humanize_underscored(name: identifier.provenance.name) %> - <%= humanize_underscored(name: identifier.category) %>:</strong>
   <% if identifier.category == 'url' %>
     <%= link_to identifier.value, identifier.value %>
   <% else %>

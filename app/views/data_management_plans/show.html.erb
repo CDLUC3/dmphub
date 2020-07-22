@@ -10,12 +10,12 @@
            locals: { dmp: @dmp } %>
 
 <div id="accordion-data-management-plan" class="c-accordion">
-  <% persons = @dmp.persons %>
-  <% if persons.any? %>
-    <%= render partial: '/landing/staff', locals: { persons: persons } %>
+  <% if @dmp.contributors_data_management_plans.any? %>
+    <%= render partial: '/landing/contributors',
+               locals: { cdmps: @dmp.contributors_data_management_plans } %>
   <% end %>
-  <% if @dmp.project.awards.any? %>
-    <%= render partial: '/landing/awards', locals: { awards: @dmp.project.awards } %>
+  <% if @dmp.project.fundings.any? %>
+    <%= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
   <% end %>
   <%= render partial: '/landing/ethics', locals: { dmp: @dmp } %>
   <%= render partial: '/landing/costs', locals: { dmp: @dmp } %>

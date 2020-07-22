@@ -7,7 +7,7 @@
     <div class="c-accordion__section">
       <ul>
         <% fundings.each do |funding| %>
-          <% grant = funding.urls.first&.value %>
+          <% grant = funding.urls.last&.value %>
           <% ror = funding.affiliation.rors.first %>
 
           <li><strong>Status:</strong> <%= humanize_underscored(name: funding.status) %></li>
@@ -15,18 +15,6 @@
 
           <% if grant.present? %>
             <li><strong>Award:</strong> <%= link_to grant, grant %></li>
-          <% end %>
-
-          <% if identifiers.any? %>
-            <li>
-              <strong>Identifiers:</strong>
-              <ul>
-                <% identifiers.each do |identifier| %>
-                  <%= render partial: '/landing/identifier',
-                             locals: { identifier: identifier } %>
-                <% end %>
-              </ul>
-            </li>
           <% end %>
         <% end %>
       </ul>

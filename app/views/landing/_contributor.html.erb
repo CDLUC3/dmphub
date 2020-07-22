@@ -8,20 +8,10 @@
   <li><%= identifier_to_link(identifier: orcid) %></li>
 <% end %>
 
-<% if contributor.affiliations.length == 1 %>
+<% if contributor.affiliation.present? %>
   <li>
     <strong>Affiliation:</strong>
     <%= render partial: '/landing/affiliation',
-               locals: { org: contributor.affiliations.last } %>
-  </li>
-
-<% elsif contributor.affiliations.any? %>
-  <li>
-    <strong>Affiliations:</strong>
-    <ul>
-      <% contributor.affiliations.each do |affiliation| %>
-        <li><%= render partial: '/landing/affiliation', locals: { affiliation: affiliation } %></li>
-      <% end %>
-    </ul>
+               locals: { affiliation: contributor.affiliation } %>
   </li>
 <% end %>

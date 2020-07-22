@@ -1,8 +1,9 @@
+<%# locals: dmp %>
 <details>
   <summary>Ethics</summary>
 
   <div class="c-accordion__section">
-    <p><strong>Ethical Issues?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></p>
+    <p><strong>Ethical Issues?</strong> <%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></p>
 
     <% if dmp.ethical_issues == true %>
       <ul>

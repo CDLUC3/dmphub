@@ -16,8 +16,8 @@
       <h5>Overview</h5>
 
       <ul>
-        <li><strong>Contains Personal Data?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dataset.personal_data) %></li>
-        <li><strong>Contains Sensitive Data?</strong> <%= ConversionService.boolean_to_yes_no_unknown(dataset.sensitive_data) %></li>
+        <li><strong>Contains Personal Data?</strong> <%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dataset.personal_data) %></li>
+        <li><strong>Contains Sensitive Data?</strong> <%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dataset.sensitive_data) %></li>
 
         <% if dataset.data_quality_assurance.present? %>
           <li><strong>Data Quality Assurance:</strong> <%= dataset.data_quality_assurance %></li>

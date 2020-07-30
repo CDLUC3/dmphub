@@ -4,7 +4,8 @@
 lock '~> 3.14.1'
 
 set :application, 'DMPHub'
-set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
+#set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
+set :repo_url, 'https://github.com/ashleygould/dmphub.git'
 
 # Default branch is :main
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

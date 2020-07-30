@@ -1,0 +1,12 @@
+<%# locals: cdmps %>
+
+<details>
+  <summary>Contributors</summary>
+
+  <div class="c-accordion__section">
+    <ul>
+      <%= render partial: '/landing/roles',
+                 locals: { contributors_data_management_plans: cdmps } %>
+    </ul>
+  </div>
+</details>

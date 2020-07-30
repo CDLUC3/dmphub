@@ -67,7 +67,8 @@ class DataManagementPlan < ApplicationRecord
   # Instance Methods
 
   def primary_contact
-    contributors_data_management_plans.where(role: 'primary_contact').first&.contributor
+    contributors_data_management_plans.select { |cdmp| cdmp.role == 'primary_contact' }
+                                      .first&.contributor
   end
 
   # rubocop:disable Style/GuardClause
@@ -89,18 +90,11 @@ class DataManagementPlan < ApplicationRecord
 
   def mint_doi(provenance:)
     # retrieve the Datacite Provenance or initialize it
-    datacite = Provenance.find_or_initialize_by(name: 'datacite')
-
-    doi = ExternalApis::DataciteService.mint_doi(
+    identifiers << ExternalApis::EzidService.mint_doi(
       data_management_plan: self,
       provenance: provenance
     )
-    identifiers << Identifier.new(
-      category: 'doi',
-      provenance: datacite,
-      value: doi,
-      descriptor: 'is_metadata_for'
-    )
+    dois.present? || arks.present?
   end
 
   private

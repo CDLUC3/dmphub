@@ -63,7 +63,8 @@ module Api
       # Make sure that the user agent matches the caller application/client
       def check_agent
         expecting = "#{client.name.gsub(/\s/, '')}(#{client.client_id})".downcase
-        request.headers.fetch('HTTP_USER_AGENT', '').downcase.gsub(/\s/, '') == expecting
+        received = request.headers.fetch('HTTP_SERVER_AGENT', request.headers.fetch('HTTP_USER_AGENT', ''))
+        received.downcase.gsub(/\s/, '') == expecting
       end
 
       # Force all responses to be in JSON format

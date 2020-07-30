@@ -42,6 +42,7 @@ module Api
           if @dmp.present?
             if @dmp.new_record?
               process_dmp
+              render 'ezid/minter.text.erb', layout: false, content_type: 'text/plain'
             else
               doi = @dmp.dois.last || @dmp.urls.last
               msg = "DMP already exists try sending an update instead using: {\"dmp_id\":{\"identifier\":\"#{doi.value}\"}"
@@ -92,11 +93,15 @@ module Api
       # Determine what to render
       def process_dmp
         action = @dmp.new_record? ? 'add' : 'edit'
-        if @dmp.save
+        @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
+
+        if @dmp.dois.empty? && @dmp.arks.empty?
+          render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
+                       status: 500
+        elsif @dmp.save
           ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
           ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
                                   description: "#{request.method} #{request.url}")
-          @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
           @dmp = @dmp.reload
           render 'show', status: :created
         else

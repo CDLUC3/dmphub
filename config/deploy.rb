@@ -6,7 +6,7 @@ lock '~> 3.14.1'
 set :application, 'DMPHub'
 set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
 
-# Default branch is :master
+# Default branch is :main
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
@@ -29,7 +29,7 @@ append :linked_files, 'config/database.yml', 'config/master.key'
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 
 # Default value for default_env is {}
-set :default_env, { path: '/dmp/local/bin:$PATH' }
+set :default_env, { path: '$PATH' }
 
 # Default value for local_user is ENV['USER']
 # set :local_user, -> { `git config user.name`.chomp }
@@ -61,7 +61,7 @@ namespace :puma do
   desc 'Start Puma'
   task :start do
     on roles(:app), wait: 1 do
-      execute "cd #{release_path} && /dmp/local/bin/puma -d -e #{fetch(:rails_env)}"
+      execute "cd #{release_path} && puma -d -e #{fetch(:rails_env)}"
     end
   end
 

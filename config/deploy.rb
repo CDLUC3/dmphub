@@ -3,14 +3,17 @@
 # config valid for current version and patch releases of Capistrano
 lock '~> 3.14.1'
 
-set :application, 'DMPHub'
-set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
+set :rails_env, ENV['RAILS_ENV']
 
-# Default branch is :master
+# The Capistrano directory e.g. /dmp/apps/dmphub/
+set :capistrano_dir, ENV['CAPISTRANO_DIR']
+
+# GitHub repository - default branch is :main
+set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
-set :deploy_to, '/dmp/apps/dmphub'
+set :deploy_to, fetch(:capistrano_dir)
 
 # Default value for :format is :airbrussh.
 # set :format, :airbrussh
@@ -23,7 +26,7 @@ set :deploy_to, '/dmp/apps/dmphub'
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, 'config/database.yml', 'config/master.key'
+append :linked_files, 'config/master.key'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
@@ -41,27 +44,19 @@ set :default_env, { path: '/dmp/local/bin:$PATH' }
 # set :ssh_options, verify_host_key: :secure
 
 # Puma Config
-set :puma_user, 'dmp'
-set :puma_daemonize, true
+# set :puma_user, 'dmp'
+# set :puma_daemonize, true
 
-set :puma_pid, '/dmp/apps/dmphub/shared/tmp/pids/server.pid'
+set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
 
 after :deploy, 'puma:stop'
 after :deploy, 'puma:start'
 
 namespace :puma do
-  # desc 'Check Puma status by looking for PID'
-  # task :status do
-  #   on roles(:app), wait: 1 do
-  #     execute "rm -f #{release_path}/config/*.yml.sample"
-  #     execute "rm -f #{release_path}/config/initializers/*.rb.example"
-  #   end
-  # end
-
   desc 'Start Puma'
   task :start do
     on roles(:app), wait: 1 do
-      execute "cd #{release_path} && /dmp/local/bin/puma -d -e #{fetch(:rails_env)}"
+      execute "cd #{release_path} && bundle exec puma -d -e #{fetch(:rails_env)}"
     end
   end
 
@@ -71,11 +66,4 @@ namespace :puma do
       execute "[ -f #{fetch(:puma_pid)} ] && kill $(cat #{fetch(:puma_pid)}) && rm #{fetch(:puma_pid)} || echo 'Puma is not running'"
     end
   end
-
-  # desc 'Restart Puma'
-  # task :restart do
-  #   on roles(:app), wait: 1 do
-  #     execute 'pumactl -P /dmp/apps/dmphub/shared/tmp/pids/puma.pid restart'
-  #   end
-  # end
 end

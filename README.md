@@ -131,5 +131,4 @@ uc3_dmphub::dmphub::config:
     cap_environment: "uc3_dmphub02x2"
 
 agould@uc3-dmphub02x2-stg:~/puppet/uc3/modules/uc3_dmphub/manifests> pupapply.sh --exec
-
 ```

@@ -108,4 +108,6 @@ curl -v -X 'PUT' http://localhost:3000/api/v1/data_management_plans
   -H "Accept: application/json"
   -H "Authorization: Bearer [Your Authorization Token]"
 
+### Provisioning with Puppet
 
+work in progress

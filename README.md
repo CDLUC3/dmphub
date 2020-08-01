@@ -114,14 +114,13 @@ curl -v -X 'PUT' http://localhost:3000/api/v1/data_management_plans
 work in progress
 
 ```shell
-agould@uc3-dmphub02x2-stg:~/git/github/cdluc3/dmphub> git status
-On branch puppet_integration
-nothing to commit, working tree clean
-agould@uc3-dmphub02x2-stg:~/git/github/cdluc3/dmphub> git tag -am'dev release 0.0.0dev2' 0.0.0dev2
-agould@uc3-dmphub02x2-stg:~/git/github/cdluc3/dmphub> git push ashleygould --tags
+dmphub> git status
 
-agould@uc3-dmphub02x2-stg:~/puppet/uc3/data/node> vi uc3-dmphub02x2-stg.cdlib.org.yaml
-agould@uc3-dmphub02x2-stg:~/puppet/uc3/data/node> head uc3-dmphub02x2-stg.cdlib.org.yaml
+dmphub> git tag -am'dev release 0.0.0dev2' 0.0.0dev2
+dmphub> git push ashleygould --tags
+
+~/puppet/uc3/data/node> vi uc3-dmphub02x2-stg.cdlib.org.yaml
+~/puppet/uc3/data/node> head uc3-dmphub02x2-stg.cdlib.org.yaml
 ---
 
 uc3_dmphub::dmphub::config:
@@ -130,5 +129,5 @@ uc3_dmphub::dmphub::config:
     revision: "0.0.0dev1"
     cap_environment: "uc3_dmphub02x2"
 
-agould@uc3-dmphub02x2-stg:~/puppet/uc3/modules/uc3_dmphub/manifests> pupapply.sh --exec
+manifests> pupapply.sh --exec
 ```

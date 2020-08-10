@@ -11,11 +11,9 @@ json.ethical_issues_exist Api::V0::ConversionService.boolean_to_yes_no_unknown(d
 json.ethical_issues_description data_management_plan.ethical_issues_description
 json.ethical_issues_report data_management_plan.ethical_issues_report
 
-if data_management_plan.identifiers.any?
-  json.dmp_id do
-    identifier = Api::V0::IdentifierPresenter.dmp_id(identifiers: data_management_plan.identifiers)
-    json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: identifier
-  end
+dmp_id = data_management_plan.dois.last || data_management_plan.arks.last
+json.dmp_id do
+  json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: dmp_id
 end
 
 if data_management_plan.primary_contact.present?
@@ -26,11 +24,9 @@ if data_management_plan.primary_contact.present?
   end
 end
 
-if data_management_plan.contributors.any?
-  json.contributor data_management_plan.contributors_data_management_plans do |cdmp|
-    json.partial! 'api/v0/rda_common_standard/contributors_show',
-                  contributor: cdmp.contributor, rel: cdmp.role
-  end
+if data_management_plan.contributors_data_management_plans.any?
+  json.partial! 'api/v0/rda_common_standard/contributors_data_management_plans_show',
+                cdmps: data_management_plan.contributors_data_management_plans
 end
 
 if data_management_plan.costs.any?
@@ -46,4 +42,15 @@ end
 
 json.dataset data_management_plan.datasets do |dataset|
   json.partial! 'api/v0/rda_common_standard/datasets_show', dataset: dataset
+end
+
+related_ids = data_management_plan.identifiers.where.not(category: %w[doi ark])
+
+p "RELATED:"
+p related_ids.inspect
+
+if related_ids.any?
+  json.related_identifiers related_ids do |id|
+    json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: id
+  end
 end

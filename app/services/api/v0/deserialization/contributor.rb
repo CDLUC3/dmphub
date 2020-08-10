@@ -67,9 +67,9 @@ module Api
             id = json.fetch(:contributor_id, json.fetch(:contact_id, {}))
             return nil unless id[:identifier].present?
 
-            id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
-                                                                  identifiable: nil,
-                                                                  json: json)
+            id = Api::V0::Deserialization::Identifier.deserialize(
+              provenance: provenance, identifiable: nil, json: json, descriptor: 'identified_by'
+            )
             id.present? ? id.identifiable : nil
           end
 

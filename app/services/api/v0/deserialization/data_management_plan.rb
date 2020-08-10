@@ -101,8 +101,9 @@ module Api
             id = json.fetch(:dmp_id, {})
             return dmp unless id[:identifier].present?
 
+            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'identified_by'
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: dmp, json: id
+              provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor
             )
             dmp.identifiers << identifier if identifier.present? && identifier.new_record?
             dmp
@@ -133,12 +134,13 @@ module Api
                 provenance: provenance, json: contributor_json
               )
 
-              json.fetch(:role, []).map do |role|
+              contributor_json.fetch(:role, []).map do |role|
                 url = role.starts_with?('http') ? role : Api::V0::ConversionService.to_credit_taxonomy(role: role)
                 next unless url.present?
 
-                cdmp = ContributorDataManagementPlan.find_or_initialize_by(
-                  data_management_plan: dmp, contributor: contributor, role: role
+                cdmp = ContributorsDataManagementPlan.find_or_initialize_by(
+                  data_management_plan: dmp, contributor: contributor,
+                  provenance: provenance, role: role
                 )
                 next unless cdmp.present?
 

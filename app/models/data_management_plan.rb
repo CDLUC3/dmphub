@@ -90,10 +90,11 @@ class DataManagementPlan < ApplicationRecord
 
   def mint_doi(provenance:)
     # retrieve the Datacite Provenance or initialize it
-    identifiers << ExternalApis::EzidService.mint_doi(
+    ids = ExternalApis::EzidService.mint_doi(
       data_management_plan: self,
       provenance: provenance
     )
+    identifiers << ids.flatten.compact
     dois.present? || arks.present?
   end
 

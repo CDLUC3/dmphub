@@ -11,9 +11,11 @@ class DatacitePresenter
   end
 
   # Cleans out / escapes any characters that EZID's ANVL format does not like
+  # see https://ezid.cdlib.org/doc/apidoc.html#request-response-bodies
   def scrub(text)
-    # CGI.escape(text)
-    text.gsub(/[\r\n]/, ' ').gsub('%', '%25')
+    return '' unless text.present?
+
+    text.to_s.gsub(/[\r\n]/, ' ').gsub('%', '%25')
   end
 
   # rubocop:disable Metrics/CyclomaticComplexity

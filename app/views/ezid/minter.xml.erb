@@ -1,5 +1,8 @@
 <% presenter = DatacitePresenter.new(data_management_plan) %>
 
+_target: '<%= data_management_plan_url(data_management_plan) %>',
+_profile: 'datacite',
+_status: 'public',
 datacite: <?xml version="1.0" encoding="UTF-8"?>
   <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
       <identifier identifierType="DOI">(:tba)</identifier>
@@ -54,7 +57,11 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
                     <funderIdentifier funderIdentifierType="ROR"><%= funding.affiliation.rors.last.value %></funderIdentifier>
                   <% end %>
                   <% if funding.funded? %>
-                    <awardNumber><%= funding.urls.last.value %></awardNumber>
+                    <% if funding.urls.any? %>
+                      <awardURI><%= funding.urls.last.value %></awardURI>
+                    <% else %>
+                      <awardNumber><%= funding.identifiers.last.value %></awardNumber>
+                    <% end %>
                     <awardTitle><%= presenter.scrub(data_management_plan.title) %></awardTitle>
                   <% end %>
               </fundingReference>

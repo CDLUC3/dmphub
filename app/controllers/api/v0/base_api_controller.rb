@@ -36,8 +36,8 @@ module Api
         model.errors.any? ? model.errors.collect { |e, m| "#{e} - #{m}" }.join(', ') : []
       end
 
-      def render_error(errors:, status:)
-        @payload = { errors: errors }
+      def render_error(errors:, status:, items: [])
+        @payload = { errors: errors, items: items }
         render '/api/v0/error', status: status
       end
 

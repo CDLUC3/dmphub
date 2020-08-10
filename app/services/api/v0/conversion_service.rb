@@ -129,7 +129,7 @@ module Api
           when 'CRediT'
             'credit'
           else
-            rda_category.downcase
+            rda_category.upcase
           end
         end
 

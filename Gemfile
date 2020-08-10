@@ -3,6 +3,10 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
+# source 'https://rubygems.pkg.github.com/cdluc3' do
+#   gem 'uc3-ssm', '0.1.1'
+# end
+
 ruby '2.6.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'

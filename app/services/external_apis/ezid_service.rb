@@ -49,7 +49,7 @@ module ExternalApis
 
         resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
                          additional_headers: hdrs, data: data,
-                         basic_auth: creds) # , debug: true)
+                         basic_auth: creds, debug: true) # , debug: true)
 
         unless resp.present? && resp.code == 201
           handle_http_failure(method: 'EZID mint_doi', http_response: resp)
@@ -82,6 +82,7 @@ module ExternalApis
           template: '/ezid/minter',
           locals: {
             prefix: shoulder,
+            target: dmp.urls.first&.value&.gsub('api/v1/', ''),
             data_management_plan: dmp,
             provenance: provenance
           }

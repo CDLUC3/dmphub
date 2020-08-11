@@ -3,6 +3,7 @@
 module Api
   module V0
     # Controller providing DMP functionality
+    # rubocop:disable Metrics/ClassLength
     class DataManagementPlansController < BaseApiController
       protect_from_forgery with: :null_session, only: [:create]
 
@@ -63,9 +64,6 @@ module Api
         end
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
-      # rescue StandardError => e
-      #   Rails.logger.error e.message
-      #   render_error errors: 'Unable to process your request at this time.', status: 500 and return
       end
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
@@ -98,29 +96,23 @@ module Api
       end
 
       # Determine what to render
-      # rubocop:disable Metrics/PerceivedComplexity
       def process_dmp
         action = @dmp.new_record? ? 'add' : 'edit'
+        @dmp = safe_save
+        render_error errors: @dmp.errors.full_messages, status: :bad_request unless @dmp.valid?
+
         @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
 
-        if @dmp.dois.empty? && @dmp.arks.empty?
-          render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
-                       status: 500
-        else
-          @dmp = safe_save
-          if @dmp.valid?
-            @dmp = safe_save
-            ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
-            ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
-                                    description: "#{request.method} #{request.url}")
-            @dmp = @dmp.reload
-            render 'show', status: :created
-          else
-            render_error errors: @dmp.errors.full_messages, status: :bad_request and return
-          end
-        end
+        ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
+        ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
+                                description: "#{request.method} #{request.url}")
+        @dmp = @dmp.reload
+
+        render 'show', status: :created unless @dmp.dois.empty? && @dmp.arks.empty?
+
+        render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
+                     status: 500
       end
-      # rubocop:enable Metrics/PerceivedComplexity
 
       # prevent scenarios where we have two contributors with the same affiliation
       # from trying to create the record twice
@@ -132,6 +124,14 @@ module Api
         end
         @dmp.contributors_data_management_plans = safe.compact.uniq
         @dmp
+      end
+
+      def safe_save_identifier(identifier:)
+        return nil unless identifier.present?
+        return identifier.save if identifier.valid?
+
+        Identifier.where(category: identifier.category, value: identifier.value,
+                         identifiable: identifier.identifiable)
       end
 
       def safe_save_project(project:)
@@ -148,7 +148,13 @@ module Api
         return nil unless affiliation.present?
 
         affil = Affiliation.find_or_create_by(name: affiliation.name)
-        affil.update(saveable_attributes(attrs: affiliation.attributes)) if affil.new_record?
+        if affil.new_record?
+          affil.update(saveable_attributes(attrs: affiliation.attributes))
+          affiliation.identifiers.each do |id|
+            id.identifiable = affil.reload
+            safe_save_identifier(identifier: id)
+          end
+        end
         affil
       end
 
@@ -158,8 +164,16 @@ module Api
         contrib = cdmp.contributor
         contrib.affiliation = safe_save_affiliation(affiliation: contrib.affiliation)
         cdmp.contributor = Contributor.find_or_create_by(email: contrib.email)
-        cdmp.contributor.update(saveable_attributes(attrs: contrib.attributes)) if cdmp.contributor.new_record?
-        cdmp.save
+
+        if cdmp.contributor.new_record?
+          cdmp.contributor.update(saveable_attributes(attrs: contrib.attributes))
+          contrib.identifiers.each do |id|
+            id.identifiable = cdmp.contributor.reload
+            safe_save_identifier(identifier: id)
+          end
+          cdmp.save
+        end
+
         cdmp
       end
 
@@ -168,5 +182,6 @@ module Api
         attrs
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

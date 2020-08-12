@@ -1,6 +1,6 @@
 set :application, 'DMPHub_Stage_x2'
 server 'localhost', user: 'dmp', roles: %w[web app db]
-set :rails_env, 'stage'
+set :rails_env, 'production'
 set :branch, ENV['BRANCH'] || 'main'
 set :repo_url, 'https://github.com/cdluc3/dmphub.git'
 

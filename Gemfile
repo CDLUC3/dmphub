@@ -30,9 +30,6 @@ source 'https://rubygems.pkg.github.com/cdluc3' do
   gem 'uc3-ssm', '~> 0.1.6'
 end
 
-# Official AWS Ruby gem for Amazon Simple Systems Manager (SSM) (Amazon SSM).
-# gem 'aws-sdk-ssm'
-
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false
 # Devise is a flexible authentication solution for Rails based on Warden.

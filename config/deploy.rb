@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'uc3-ssm'
+
 # config valid for current version and patch releases of Capistrano
 lock '~> 3.14.1'
 
@@ -48,8 +50,23 @@ set :default_env, { path: '$PATH' }
 
 set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
 
+before :deploy, 'aws_ssm:env_setup'
+
 after :deploy, 'puma:stop'
 after :deploy, 'puma:start'
+
+namespace :aws_ssm do
+  desc 'Setup ENV Variables'
+  task :env_setup do
+    on roles(:app), wait: 1 do
+      ssm = Uc3SsmGenerator::ConfigResolver.new
+      master_key = ssm.parameter_for_key('master_key')
+      f = File.open('config/master.key', 'w')
+      f.puts master_key
+      f.close
+    end
+  end
+end
 
 namespace :puma do
   desc 'Start Puma'

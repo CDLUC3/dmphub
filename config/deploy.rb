@@ -59,7 +59,7 @@ namespace :aws_ssm do
   desc 'Setup ENV Variables'
   task :env_setup do
     on roles(:app), wait: 1 do
-      ssm = Uc3SsmGenerator::ConfigResolver.new
+      ssm = Uc3Ssm::ConfigResolver.new
       master_key = ssm.parameter_for_key('master_key')
       f = File.open('config/master.key', 'w')
       f.puts master_key

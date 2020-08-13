@@ -3,10 +3,6 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-# source 'https://rubygems.pkg.github.com/cdluc3' do
-#   gem 'uc3-ssm', '0.1.1'
-# end
-
 ruby '2.6.3'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
@@ -28,6 +24,14 @@ gem 'jbuilder', '~> 2.7'
 
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
+
+# UC3 SSM credential manager gem: https://github.com/CDLUC3/uc3-ssm
+source 'https://rubygems.pkg.github.com/cdluc3' do
+  gem 'uc3-ssm', '~> 0.1.6'
+end
+
+# Official AWS Ruby gem for Amazon Simple Systems Manager (SSM) (Amazon SSM).
+# gem 'aws-sdk-ssm'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

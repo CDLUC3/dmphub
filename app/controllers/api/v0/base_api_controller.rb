@@ -36,8 +36,8 @@ module Api
         model.errors.any? ? model.errors.collect { |e, m| "#{e} - #{m}" }.join(', ') : []
       end
 
-      def render_error(errors:, status:)
-        @payload = { errors: errors }
+      def render_error(errors:, status:, items: [])
+        @payload = { errors: errors, items: items }
         render '/api/v0/error', status: status
       end
 
@@ -63,7 +63,8 @@ module Api
       # Make sure that the user agent matches the caller application/client
       def check_agent
         expecting = "#{client.name.gsub(/\s/, '')}(#{client.client_id})".downcase
-        request.headers.fetch('HTTP_USER_AGENT', '').downcase.gsub(/\s/, '') == expecting
+        received = request.headers.fetch('HTTP_SERVER_AGENT', request.headers.fetch('HTTP_USER_AGENT', ''))
+        received.downcase.gsub(/\s/, '') == expecting
       end
 
       # Force all responses to be in JSON format

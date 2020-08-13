@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-set :application, 'DMPHub_Stage_x2'
+set :application, 'DMPHub - Stage'
 
 # server-based syntax
 # ======================
@@ -11,8 +11,7 @@ set :application, 'DMPHub_Stage_x2'
 # server "example.com", user: "deploy", roles: %w{app web}, other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
-server 'hub-stg2', user: 'dmp', roles: %w[web app db]
-# server 'uc3-dmphub01x2-stg.cdlib.org', user: 'dmp', roles: %w[web app db]
+server ENV['HOST_NAME'], user: 'dmp', roles: %w[web app db]
 
 set :rails_env, 'stage'
 

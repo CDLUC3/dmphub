@@ -60,7 +60,7 @@ module Api
             return affiliation if affiliation.present?
 
             # External ROR search
-            unless json[:affiliation_id][:type].downcase == 'ror'
+            unless json.fetch(:affiliation_id, {})[:type]&.downcase == 'ror'
               affiliation = ExternalApis::RorService.search(term: json[:name])
               affiliation.provenance = provenance if affiliation.present?
               affiliation.identifiers.each { |id| id.provenance = provenance } if affiliation.present?

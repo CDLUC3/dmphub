@@ -6,6 +6,8 @@ module ExternalApis
   class ExternalApiError < StandardError; end
   # Abstract Service
   class BaseService
+    include HTTParty
+
     class << self
       # The following should be defined in each inheriting service's initializer.
       # For example:
@@ -109,7 +111,7 @@ module ExternalApis
         resp
       end
 
-      # Makes a GET request to the specified uri with the additional headers.
+      # Makes a POST request to the specified uri with the additional headers.
       # Additional headers are combined with the base headers defined above.
       def http_post(uri:, additional_headers: {}, data: {}, basic_auth: nil, debug: false)
         return nil unless uri.present?
@@ -119,11 +121,30 @@ module ExternalApis
         opts[:basic_auth] = basic_auth if basic_auth.present?
         HTTParty.post(uri, opts)
       rescue URI::InvalidURIError => e
-        handle_uri_failure(method: "BaseService.http_get #{e.message}",
+        handle_uri_failure(method: "BaseService.http_post #{e.message}",
                            uri: uri)
         nil
       rescue HTTParty::Error => e
-        handle_http_failure(method: "BaseService.http_get #{e.message}",
+        handle_http_failure(method: "BaseService.http_post #{e.message}",
+                            http_response: resp)
+        resp
+      end
+
+      # Makes a PUT request to the specified uri with the additional headers.
+      # Additional headers are combined with the base headers defined above.
+      def http_put(uri:, additional_headers: {}, data: {}, basic_auth: nil, debug: false)
+        return nil unless uri.present?
+
+        opts = options(additional_headers: additional_headers, debug: debug)
+        opts[:body] = data
+        opts[:basic_auth] = basic_auth if basic_auth.present?
+        HTTParty.put(uri, opts)
+      rescue URI::InvalidURIError => e
+        handle_uri_failure(method: "BaseService.http_put #{e.message}",
+                           uri: uri)
+        nil
+      rescue HTTParty::Error => e
+        handle_http_failure(method: "BaseService.http_put #{e.message}",
                             http_response: resp)
         resp
       end

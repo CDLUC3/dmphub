@@ -1,5 +1,6 @@
 AllCops:
   Exclude:
+    - 'app/views/*.html.erb'
     - 'bin/**/*'
     - 'db/**/*'
     - 'vendor/**/*'

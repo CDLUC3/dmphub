@@ -2,9 +2,14 @@
 
 <li>
   <strong><%= humanize_underscored(name: identifier.provenance.name) %> - <%= humanize_underscored(name: identifier.category) %>:</strong>
-  <% if identifier.category == 'url' %>
-    <%= link_to identifier.value, identifier.value %>
-  <% else %>
+  <% if %w[doi].include?(identifier.category) %>
     <%= identifier.value %>
+  <% else %>
+    <% descriptor = identifier.descriptor&.split('_')&.map { |w| w.capitalize }&.join(' ') %>
+    <% if identifier.value.downcase.start_with?('http') %>
+      <%= descriptor %> - <%= link_to identifier.value, identifier.value %>
+    <% else %>
+      <%= descriptor %> - <%= identifier.value %>
+    <% end %>
   <% end %>
 </li>

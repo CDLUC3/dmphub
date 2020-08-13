@@ -10,6 +10,9 @@ class DataManagementPlansController < ApplicationController
     render status: 404 if doi.nil?
 
     @dmp = DataManagementPlan.find(doi.identifiable_id)
+
+    @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
+
     render 'show'
   end
 

@@ -31,7 +31,7 @@ module Api
       end
 
       # POST /data_management_plans
-      # rubocop:disable Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
       def create
         # Only proceed if the Application has permission
         if permitted?
@@ -41,25 +41,33 @@ module Api
 
           if @dmp.present?
             if @dmp.new_record?
+              # rubocop:disable Metrics/BlockNesting
+              render_error errors: ["Invalid JSON format - #{@dmp.errors}"], status: :bad_request unless @dmp.valid?
+              # rubocop:enable Metrics/BlockNesting
+
               process_dmp
             else
               doi = @dmp.dois.last || @dmp.urls.last
-              msg = "DMP already exists try sending an update instead using: {\"dmp_id\":{\"identifier\":\"#{doi.value}\"}"
-              render_error errors: [msg], status: :bad_request
+              msg = 'DMP already exists try sending an update to the attached :dmp_id instead'
+              render_error errors: [msg], status: :method_not_allowed, items: [doi]
             end
           elsif provenance.present?
             msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           else
-            render_error errors: ['Unauthorized'], status: :unauthorized
+            msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :mbox }'
+            render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           end
         else
           render_error errors: 'Unauthorized', status: :unauthorized
         end
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
+      # rescue StandardError => e
+      #   Rails.logger.error e.message
+      #   render_error errors: 'Unable to process your request at this time.', status: 500 and return
       end
-      # rubocop:enable Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
       private
 
@@ -90,18 +98,74 @@ module Api
       end
 
       # Determine what to render
+      # rubocop:disable Metrics/PerceivedComplexity
       def process_dmp
         action = @dmp.new_record? ? 'add' : 'edit'
-        if @dmp.save
-          ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
-          ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
-                                  description: "#{request.method} #{request.url}")
-          @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
-          @dmp = @dmp.reload
-          render 'show', status: :created
+        @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
+
+        if @dmp.dois.empty? && @dmp.arks.empty?
+          render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
+                       status: 500
         else
-          render_error errors: @dmp.errors.full_messages, status: :bad_request
+          @dmp = safe_save
+          if @dmp.valid?
+            @dmp = safe_save
+            ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
+            ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
+                                    description: "#{request.method} #{request.url}")
+            @dmp = @dmp.reload
+            render 'show', status: :created
+          else
+            render_error errors: @dmp.errors.full_messages, status: :bad_request and return
+          end
         end
+      end
+      # rubocop:enable Metrics/PerceivedComplexity
+
+      # prevent scenarios where we have two contributors with the same affiliation
+      # from trying to create the record twice
+      def safe_save
+        @dmp.project = safe_save_project(project: @dmp.project)
+        safe = []
+        @dmp.contributors_data_management_plans.each do |cdmp|
+          safe << safe_save_contributor(cdmp: cdmp)
+        end
+        @dmp.contributors_data_management_plans = safe.compact.uniq
+        @dmp
+      end
+
+      def safe_save_project(project:)
+        return nil unless project.present?
+
+        project.fundings.each do |f|
+          f.affiliation = safe_save_affiliation(affiliation: f.affiliation)
+        end
+        project.save
+        project
+      end
+
+      def safe_save_affiliation(affiliation:)
+        return nil unless affiliation.present?
+
+        affil = Affiliation.find_or_create_by(name: affiliation.name)
+        affil.update(saveable_attributes(attrs: affiliation.attributes)) if affil.new_record?
+        affil
+      end
+
+      def safe_save_contributor(cdmp:)
+        return nil unless cdmp.present? && cdmp.contributor.present?
+
+        contrib = cdmp.contributor
+        contrib.affiliation = safe_save_affiliation(affiliation: contrib.affiliation)
+        cdmp.contributor = Contributor.find_or_create_by(email: contrib.email)
+        cdmp.contributor.update(saveable_attributes(attrs: contrib.attributes)) if cdmp.contributor.new_record?
+        cdmp.save
+        cdmp
+      end
+
+      def saveable_attributes(attrs:)
+        %w[id created_at updated_at].each { |key| attrs.delete(key) }
+        attrs
       end
     end
   end

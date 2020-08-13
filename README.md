@@ -107,5 +107,40 @@ curl -v -X 'PUT' http://localhost:3000/api/v1/data_management_plans
   -H "Content-Type: application/x-www-form-urlencoded;charset=UTF-8"
   -H "Accept: application/json"
   -H "Authorization: Bearer [Your Authorization Token]"
+```
 
+### Provisioning with Puppet
+
+Increment the git tag on the project repo and push the new tag
+to the remote:
+
+```shell
+dmphub> git status
+
+dmphub> git tag -am'dev release 0.0.1' 0.0.1
+dmphub> git push origin --tags
+```
+
+Edit puppet hiera data:
+
+```shell
+~/puppet/uc3/data/fqsn> vi uc3-dmp-hub-prd.yaml
+~/puppet/uc3/data/fqsn> git diff .
+diff --git a/data/fqsn/uc3-dmp-hub-prd.yaml b/data/fqsn/uc3-dmp-hub-prd.yaml
+index c6032c1..c08592f 100644
+--- a/data/fqsn/uc3-dmp-hub-prd.yaml
++++ b/data/fqsn/uc3-dmp-hub-prd.yaml
+@@ -5,6 +5,6 @@ uc3_dmphub::dmphub::config:
+     app_name: "dmphub"
+     ensure: "running"
+     git_repo: "https://github.com/cdluc3/dmphub.git"
+-    revision: "0.0.0dev11"
++    revision: "0.0.1"
+     cap_environment: "%{lookup('fqsn')}"
+     rails_env: 'production'
+~/puppet/uc3/data/fqsn> git commit -am'increment revision of dmphub in prod'
+```
+
+Depending on your access rights in puppet, either push your commit to IAS
+puppet master, or request uc3ops folks to do it for you:
 

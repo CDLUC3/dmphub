@@ -8,8 +8,7 @@ set :rails_env, ENV['RAILS_ENV']
 # The Capistrano directory e.g. /dmp/apps/dmphub/
 set :capistrano_dir, ENV['CAPISTRANO_DIR']
 
-# GitHub repository - default branch is :main
-set :repo_url, 'https://github.com/CDLUC3/dmphub.git'
+# Default branch is :main
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
 
 # Default deploy_to directory is /var/www/my_app_name
@@ -32,7 +31,7 @@ append :linked_files, 'config/master.key'
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 
 # Default value for default_env is {}
-set :default_env, { path: '/dmp/local/bin:$PATH' }
+set :default_env, { path: '$PATH' }
 
 # Default value for local_user is ENV['USER']
 # set :local_user, -> { `git config user.name`.chomp }

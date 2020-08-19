@@ -45,7 +45,7 @@ set :default_env, { path: '$PATH' }
 # set :ssh_options, verify_host_key: :secure
 
 namespace :deploy do
-  before :deploy, 'aws_ssm:env_setup'
+  before :compile_assets, 'aws_ssm:env_setup'
 end
 
 after :deploy, 'puma:restart'

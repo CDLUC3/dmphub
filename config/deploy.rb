@@ -44,14 +44,8 @@ set :default_env, { path: '$PATH' }
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
 
-# Puma Config
-# set :puma_user, 'dmp'
-# set :puma_daemonize, true
-
-set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
-
-namespace :bundler do
-  before :install, 'aws_ssm:env_setup'
+namespace :deploy do
+  before :deploy, 'aws_ssm:env_setup'
 end
 
 after :deploy, 'puma:restart'

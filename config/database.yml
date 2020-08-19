@@ -1,0 +1,31 @@
+# SQLite. Versions 3.8.0 and up are supported.
+#   gem install sqlite3
+#
+#   Ensure the SQLite 3 gem is defined in your Gemfile
+#   gem 'sqlite3'
+#
+default: &default
+  adapter:  mysql2
+  host:     <%= Rails.application.credentials.database[:host] %>
+  database: dmphub
+  username: <%= Rails.application.credentials.database[:username] %>
+  password: <%= Rails.application.credentials.database[:password] %>
+  encoding: utf8mb4
+  pool: <%= Rails.application.credentials.database[:pool] %>
+  timeout: 5000
+
+development:
+  <<: *default
+
+# Warning: The database defined as "test" will be erased and
+# re-generated from your development database when you run "rake".
+# Do not set this db to the same as development or production.
+test:
+  <<: *default
+  database: dmphub_test
+
+stage:
+  <<: *default
+
+production:
+  <<: *default

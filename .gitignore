@@ -55,10 +55,8 @@ build-iPhoneSimulator/
 .byebug_history
 
 # Sensitive Configuration
-config/database.yml
 config/master.key
-config/initializers/constants.rb
-config/initializers/devise.rb
+config/credentials/*.key
 
 # Logs
 log/
@@ -75,9 +73,3 @@ yarn-debug.log*
 .yarn-integrity
 
 ruby/
-
-/config/master.key
-
-/config/credentials/stage.key
-
-/config/credentials/production.key

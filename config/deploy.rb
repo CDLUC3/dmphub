@@ -52,8 +52,7 @@ set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
 
 before :deploy, 'aws_ssm:env_setup'
 
-after :deploy, 'puma:stop'
-after :deploy, 'puma:start'
+after :deploy, 'puma:restart'
 
 namespace :aws_ssm do
   desc 'Setup ENV Variables'
@@ -69,17 +68,10 @@ namespace :aws_ssm do
 end
 
 namespace :puma do
-  desc 'Start Puma'
-  task :start do
+  desc 'Restart Puma'
+  task :restart do
     on roles(:app), wait: 1 do
-      execute "cd #{release_path} && bundle exec puma -d -e #{fetch(:rails_env)}"
-    end
-  end
-
-  desc 'Stop Puma'
-  task :stop do
-    on roles(:app), wait: 1 do
-      execute "[ -f #{fetch(:puma_pid)} ] && kill $(cat #{fetch(:puma_pid)}) && rm #{fetch(:puma_pid)} || echo 'Puma is not running'"
+      execute "cd #{release_path} && /usr/bin/systemctl restart puma"
     end
   end
 end

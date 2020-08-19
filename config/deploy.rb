@@ -60,7 +60,7 @@ namespace :aws_ssm do
     on roles(:app), wait: 1 do
       ssm = Uc3Ssm::ConfigResolver.new
       master_key = ssm.parameter_for_key('master_key')
-      f = File.open('config/master.key', 'w')
+      f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close
     end

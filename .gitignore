@@ -74,6 +74,8 @@ node_modules/
 yarn-debug.log*
 .yarn-integrity
 
+ruby/
+
 /config/master.key
 
 /config/credentials/stage.key

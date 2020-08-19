@@ -50,7 +50,7 @@ set :default_env, { path: '$PATH' }
 
 set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
 
-after 'git:create_release', 'aws_ssm:env_setup'
+after :git, 'aws_ssm:env_setup'
 
 after :deploy, 'puma:restart'
 

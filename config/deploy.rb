@@ -50,7 +50,9 @@ set :default_env, { path: '$PATH' }
 
 set :puma_pid, "#{fetch(:capistrano_dir)}/shared/tmp/pids/server.pid"
 
-before :deploy, 'aws_ssm:env_setup'
+namespace :deploy do
+  before :updated, 'aws_ssm:env_setup'
+end
 
 after :deploy, 'puma:restart'
 

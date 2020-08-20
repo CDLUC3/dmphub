@@ -45,12 +45,8 @@ set :default_env, { path: '$PATH' }
 # set :ssh_options, verify_host_key: :secure
 
 namespace :deploy do
-  before :compile_assets, 'aws_ssm:env_setup'
-end
+  before :compile_assets, :env_setup
 
-after :deploy, 'puma:restart'
-
-namespace :aws_ssm do
   desc 'Setup ENV Variables'
   task :env_setup do
     on roles(:app), wait: 1 do
@@ -59,15 +55,6 @@ namespace :aws_ssm do
       f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close
-    end
-  end
-end
-
-namespace :puma do
-  desc 'Restart Puma'
-  task :restart do
-    on roles(:app), wait: 1 do
-      execute "cd #{release_path} && /usr/bin/systemctl restart puma"
     end
   end
 end

@@ -29,6 +29,8 @@ gem 'jbuilder', '~> 2.7'
 source 'https://rubygems.pkg.github.com/cdluc3' do
   gem 'uc3-ssm', '~> 0.1.6'
 end
+# TODO: Move to this after changes are merged into uc3-ssm
+# gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: 'main'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

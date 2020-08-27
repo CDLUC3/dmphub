@@ -15,6 +15,11 @@ require("../utils/debouncer")
 require("../utils/forms")
 require("../utils/typeahead")
 
+require("../utils/dmphubUi/accordion")
+require("../utils/dmphubUi/ethics")
+require("../utils/dmphubUi/other")
+require("../utils/dmphubUi/progress")
+
 require("../views/data_management_plans/new_edit")
 require("../views/shared/form")
 

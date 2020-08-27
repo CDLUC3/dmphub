@@ -1,0 +1,26 @@
+// ***** Orcid Component ***** //
+
+.c-orcid {
+  display: inline-block;
+  position: relative;
+  padding-inline-start: 1.6em;
+
+  &::before {
+    content: url('orcid.svg');
+    position: absolute;
+    width: 1.1em;
+    inset-block: 0;
+    inset-inline-start: 0;
+    margin-inline-end: 1em;
+  }
+}
+
+.c-orcid.required {
+
+  &::after {
+    content: '*';
+    display: inline-block;
+    color: $color-red;
+    margin-inline-start: $space1;
+  }
+}

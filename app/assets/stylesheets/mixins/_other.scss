@@ -1,0 +1,18 @@
+// ***** Other Staff Component ***** //
+
+.c-other__fieldgroup {
+  display: grid;
+  grid-gap: $space3 $space1;
+  grid-template-columns: auto 1fr;
+  margin-block-end: $space3;
+  justify-items: start;
+
+  &:not(:first-child) {
+    border-top: 1px dotted $color-gray;
+    padding-block-start: $space3;
+  }
+}
+
+.c-other__fieldgroup label {
+  justify-self: end;
+}

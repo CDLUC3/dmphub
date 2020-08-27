@@ -1,0 +1,158 @@
+
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ */
+
+@import 'mixins/main.scss';
+
+/* Overrides to compiled CSS */
+
+/* Header Navigation */
+/* -------------------------- */
+/*
+header {
+  padding-bottom: 5px;
+}
+header nav {
+  position: relative;
+  float: right;
+  top: -15px;
+}
+*/
+header nav a {
+  margin-left: 15px;
+  margin-right: 5px;
+}
+
+/* Spinner */
+/* -------------------------- */
+/*
+main .spinner {
+  text-align: center;
+}
+main .spinner img {
+  position: relative;
+  z-index: 999;
+  width: 75px;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+*/
+
+/* Tables */
+/* -------------------------- */
+.grid-table {
+  display: grid;
+  grid-template-rows: 10% auto;
+  grid-column-gap: 10px;
+  grid-row-gap: 15px;
+  margin-top: 15px;
+}
+.data-management-plans-table {
+  grid-template-columns: 20% auto 10% 20% 10%;
+}
+.organizations-table {
+  grid-template-columns: auto 10% 10% auto;
+}
+.table-header {
+  font-weight: bold;
+  background-color: #f2f2f2;
+  border: 1px solid #d9d9d9;
+  place-self: stretch;
+  padding: auto 8px;
+  text-align: center;
+}
+.table-column {
+  border-bottom: 1px dotted #d9d9d9;;
+}
+
+/*
+.error {
+  border-color: red;
+}
+
+.field_with_errors {
+  display: inline;
+}
+.field_with_errors input,
+.field_with_errors textarea,
+.field_with_errors select {
+  border-color: red;
+}
+.form-success {
+  color: green;
+}
+.form-error {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}
+*/
+
+main {
+  margin-bottom: 25px;
+}
+
+/*
+.t-step {
+  min-height: 0vh;
+}
+.c-header h1 {
+  position: relative;
+  left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.c-accordion__section ul {
+  margin-bottom: 10px;
+}
+
+.typeahead {
+  min-width: 800px;
+}
+ul.suggestions {
+  position: relative;
+  display: block;
+  top: -15;
+  left: 0;
+  z-index: 9;
+  background-color: #f2f2f2;
+  border: 1px solid #d9d9d9;
+  color: #000;
+  list-style: none;
+}
+li.current-suggestion {
+  background-color: #0e5682;
+  color: #FFF;
+}
+
+form label {
+  clear: both;
+}
+*/
+
+footer nav {
+  margin-bottom: 10px;
+}
+footer nav a {
+  margin-right: 15px;
+}

@@ -1,0 +1,14 @@
+// ***** Label Element ***** //
+
+label {
+  @include u-form-label;
+}
+
+label.required {
+
+  &::before {
+    content: '*';
+    color: $color-red;
+    margin-inline-end: $space1;
+  }
+}

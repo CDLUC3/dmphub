@@ -1,0 +1,62 @@
+// ***** Step Template ***** //
+
+.t-step {
+  display: grid;
+  grid-gap: $space2;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+.t-step__fields {
+  display: grid;
+  grid-gap: $space3 $space1;
+  grid-template-columns: auto auto 1fr;
+  justify-items: start;
+}
+
+.t-step__fields > * {
+  grid-column: 2 / 4;
+}
+
+.t-step__fields label {
+  grid-column: 1;
+  justify-self: end;
+
+  &:not(.textarea) {
+    align-self: center;
+  }
+}
+
+.t-step__fields [type='checkbox'] {
+  grid-column: 2;
+
+  + label {
+    grid-column: 3;
+    justify-self: start;
+  }
+}
+
+.t-step__fields textarea,
+.t-step__fields .c-fieldgroup {
+  justify-self: stretch;
+}
+
+.t-step__fields h3 {
+  grid-column: 1 / 4;
+  margin: 0;
+}
+
+.t-step.highlight-grid {
+
+  > * {
+    border: 3px solid $color-gray;
+  }
+
+  main > * {
+    border: 3px solid $color-green;
+  }
+
+  main h2 {
+    color: initial;
+  }
+}

@@ -1,0 +1,11 @@
+// ***** Header Component ***** //
+
+.c-header {
+  margin-block-start: $space2;
+  padding-block-end: $space2;
+  border-bottom: 2px solid $color-blue;
+
+  h1 {
+    @include u-hide;
+  }
+}

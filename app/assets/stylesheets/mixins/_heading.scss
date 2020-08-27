@@ -1,0 +1,14 @@
+// ***** Heading Elements ***** //
+
+// <h1> is not styled because it's reserved for use in .c-header and hidden
+
+h2 {
+  color: $color-blue;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}

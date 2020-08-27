@@ -1,0 +1,25 @@
+// ***** Button Elements ***** //
+
+%button-transparent {
+  padding-inline: 1.4rem 0;
+  border-style: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: left center;
+  color: $color-blue;
+  cursor: pointer;
+}
+
+.e-button1 {
+  cursor: pointer;
+}
+
+.e-button2 {
+  @extend %button-transparent;
+  background-image: url('plus-circle-light.svg');
+}
+
+.e-button3 {
+  @extend %button-transparent;
+  background-image: url('minus-circle-light.svg');
+}

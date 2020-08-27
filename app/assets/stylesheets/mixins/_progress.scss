@@ -1,0 +1,56 @@
+// ***** Progress Component ***** //
+
+.c-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-block-start: $space3;
+}
+
+.c-progress ol {
+  @include u-reset-list-styles;
+  display: flex;
+  margin-inline: $space2;
+}
+
+.c-progress li {
+  display: block;
+  width: 7rem;
+  padding: $space2 $space3;
+  border-right: 1px solid $color-white;
+  background-color: $color-blue;
+  color: $color-white;
+  text-align: center;
+  clip-path: polygon(0 0, 6rem 0, 100% 50%, 6rem 100%, 0 100%, 1rem 50%);
+
+  @supports (clip-path: polygon(0 0)) {
+    border-right-style: none;
+  }
+
+  &:first-child {
+
+    @supports (clip-path: polygon(0 0)) {
+      text-align: start;
+    }
+    clip-path: polygon(0 0, 6rem 0, 100% 50%, 6rem 100%, 0 100%);
+  }
+
+  &:last-child {
+
+    @supports (clip-path: polygon(0 0)) {
+      text-align: end;
+    }
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 1rem 50%);
+  }
+}
+
+// Class set within main.js:
+
+.c-progress .completed {
+  padding: $space2 $space3;
+  background-color: $color-green;
+
+  span {
+    @include u-hide;
+  }
+}

@@ -1,0 +1,12 @@
+// ***** Footer Component ***** //
+
+.c-footer {
+  margin-block-end: $space2;
+  padding-block-start: $space2;
+  border-top: 2px solid $color-blue;
+
+  p {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+}

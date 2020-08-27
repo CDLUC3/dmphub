@@ -13,14 +13,13 @@
 
     <div class="t-step">
       <%= render partial: 'layouts/header' %>
+
+      <main>
+        <%= yield %>
+      </main>
+
+      <%= render partial: 'layouts/footer' %>
     </div>
-
-    <main>
-      <span class="spinner"><%= image_tag 'spinner.jpg' %></span>
-      <%= yield %>
-    </main>
-
-    <%= render partial: 'layouts/footer' %>
 
   </body>
 </html>

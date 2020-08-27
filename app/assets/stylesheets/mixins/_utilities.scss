@@ -1,0 +1,36 @@
+// ***** Utilities ***** //
+
+// Element Highlighting for Testing
+
+// Example: outline: $test1;
+
+$test1: rgb(255, 0, 0) solid 1px; // red
+$test2: rgb(0, 0, 255) solid 1px; // blue
+$test3: rgb(0, 255, 0) solid 1px; // green
+
+// Hide something visually, but not for screen readers:
+
+@mixin u-hide {
+  position: absolute;
+  inset-inline-start: -9999px;
+}
+
+// Form labels:
+
+@mixin u-form-label {
+  font-weight: 600;
+}
+
+// Lists without space or bullets:
+
+@mixin u-reset-list-styles {
+  list-style-type: none;
+  line-height: $line-height0;
+  margin-block: 0;
+  padding-inline: 0;
+
+  li {
+    margin-block: 0;
+    padding-inline-start: 0;
+  }
+}

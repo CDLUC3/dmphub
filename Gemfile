@@ -25,12 +25,8 @@ gem 'jbuilder', '~> 2.7'
 # Use Active Storage variant
 # gem 'image_processing', '~> 1.2'
 
-# UC3 SSM credential manager gem: https://github.com/CDLUC3/uc3-ssm
-source 'https://rubygems.pkg.github.com/cdluc3' do
-  gem 'uc3-ssm', '~> 0.1.6'
-end
 # TODO: Move to this after changes are merged into uc3-ssm
-# gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: 'main'
+gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: 'main'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

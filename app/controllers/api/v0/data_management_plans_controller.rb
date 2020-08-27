@@ -108,10 +108,12 @@ module Api
                                 description: "#{request.method} #{request.url}")
         @dmp = @dmp.reload
 
-        render 'show', status: :created unless @dmp.dois.empty? && @dmp.arks.empty?
-
-        render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
-                     status: 500
+        if @dmp.dois.any? || @dmp.arks.any?
+          render 'show', status: :created
+        else
+          render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
+                       status: 500
+        end
       end
 
       # prevent scenarios where we have two contributors with the same affiliation
@@ -123,6 +125,7 @@ module Api
           safe << safe_save_contributor(cdmp: cdmp)
         end
         @dmp.contributors_data_management_plans = safe.compact.uniq
+        @dmp.save
         @dmp
       end
 

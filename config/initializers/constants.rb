@@ -21,6 +21,8 @@ module Dmphub
     config.x.ezid.mint_path = 'login'
     config.x.ezid.mint_path = 'id'
     config.x.ezid.delete_path = 'dois/'
+    config.x.ezid.doi_prefix = 'https://doi.org/'
+    config.x.ezid.ark_prefix = 'https://ezid.cdlib.org/id/ark:'
     config.x.ezid.active = true
 
     # ----------------- #

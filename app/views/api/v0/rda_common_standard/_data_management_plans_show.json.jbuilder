@@ -46,9 +46,6 @@ end
 
 related_ids = data_management_plan.identifiers.where.not(category: %w[doi ark])
 
-p "RELATED:"
-p related_ids.inspect
-
 if related_ids.any?
   json.related_identifiers related_ids do |id|
     json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: id

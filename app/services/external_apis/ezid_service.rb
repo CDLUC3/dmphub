@@ -35,6 +35,14 @@ module ExternalApis
         Rails.application.credentials.ezid.fetch(:shoulder, '')
       end
 
+      def doi_prefix
+        Rails.configuration.x.ezid&.doi_prefix
+      end
+
+      def ark_prefix
+        Rails.configuration.x.ezid&.ark_prefix
+      end
+
       def creds
         {
           username: Rails.application.credentials.ezid[:username],
@@ -49,7 +57,7 @@ module ExternalApis
 
         resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
                          additional_headers: hdrs, data: data,
-                         basic_auth: creds, debug: true) # , debug: true)
+                         basic_auth: creds) # , debug: true)
 
         unless resp.present? && resp.code == 201
           handle_http_failure(method: 'EZID mint_doi', http_response: resp)
@@ -98,7 +106,9 @@ module ExternalApis
           parts = id.split(':')
           return nil unless parts.length > 1
 
-          Identifier.new(category: parts.first, value: id,
+          val = parts.first == 'ark' ? "#{ark_prefix}#{parts.last}" : "#{doi_prefix}#{parts.last}"
+
+          Identifier.new(category: parts.first, value: val,
                          provenance: provenance, descriptor: 'identified_by')
         end
       end

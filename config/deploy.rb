@@ -52,6 +52,7 @@ namespace :deploy do
     on roles(:app), wait: 1 do
       ssm = Uc3Ssm::ConfigResolver.new
       master_key = ssm.parameter_for_key('master_key')
+      # TODO: Switch this to ENV['MASTER_KEY']
       f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close

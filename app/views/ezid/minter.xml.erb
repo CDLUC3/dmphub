@@ -56,7 +56,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
                   <% end %>
                   <% if funding.funded? %>
                     <% if funding.urls.any? %>
-                      <awardNumber><%= funding.urls.last.value %></awardNumber>
+                      <awardURI><%= funding.urls.last.value %></awardURI>
                     <% else %>
                       <awardNumber><%= funding.identifiers.last.value %></awardNumber>
                     <% end %>

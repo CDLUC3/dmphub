@@ -56,7 +56,8 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
                   <% end %>
                   <% if funding.funded? %>
                     <% if funding.urls.any? %>
-                      <awardURI><%= funding.urls.last.value %></awardURI>
+                      <% nbr = funding.urls.last.value.gsub('https://www.nsf.gov/awardsearch/showAward?AWD_ID=', '') %>
+                      <awardNumber awardURI="<%= funding.urls.last.value %>"><%= nbr %></awardNumber>
                     <% else %>
                       <awardNumber><%= funding.identifiers.last.value %></awardNumber>
                     <% end %>

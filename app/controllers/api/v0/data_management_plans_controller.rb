@@ -166,7 +166,8 @@ module Api
 
         contrib = cdmp.contributor
         contrib.affiliation = safe_save_affiliation(affiliation: contrib.affiliation)
-        cdmp.contributor = Contributor.find_or_create_by(email: contrib.email)
+        cdmp.contributor = Contributor.find_or_create_by(email: contrib.email) unless contrib.email.nil?
+        cdmp.contributor = Contributor.find_or_create_by(name: contrib.name) if contrib.email.nil?
 
         if cdmp.contributor.new_record?
           cdmp.contributor.update(saveable_attributes(attrs: contrib.attributes))

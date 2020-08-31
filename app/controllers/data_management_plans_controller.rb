@@ -9,21 +9,19 @@ class DataManagementPlansController < ApplicationController
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
 
-p "DOI: #{doi}"
-p "#{doi.class.name} <- #{doi.present?}"
-
     if doi.present?
       @dmp = DataManagementPlan.find(doi.identifiable_id)
-
-p "IDENTIFIABLE: #{doi.identifiable_id}"
-
-p @dmp.inspect
-
       @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
       render 'show'
     else
-p "FOO"
-      redirect_to root_path, alert: 'No data management plan found for that DOI'
+      @dmp = DataManagementPlan.find(parms[:id])
+
+      if @dmp.present?
+        @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
+        render 'show'
+      else
+        redirect_to root_path, alert: 'No data management plan found for that DOI'
+      end
     end
   end
 

@@ -55,6 +55,8 @@ module ExternalApis
         data = json_from_template(provenance: provenance, dmp: data_management_plan)
         hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
 
+p data.inspect
+
         resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
                          additional_headers: hdrs, data: data,
                          basic_auth: creds) # , debug: true)

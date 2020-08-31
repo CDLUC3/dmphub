@@ -52,6 +52,11 @@ class DatacitePresenter
     funding.urls.last.value.gsub(mapping[funding.affiliation.rors.last], '')
   end
 
+  def landing_page
+    url = Rails.application.routes.url_helpers.data_management_plan_url(@dmp)
+    url.gsub('dmphub1', 'dmphub').gsub('dmphub2', 'dmphub')
+  end
+
   private
 
   def find_creators

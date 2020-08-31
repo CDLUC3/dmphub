@@ -15,6 +15,15 @@
       <%= render partial: 'layouts/header' %>
 
       <main>
+        <div class="notifications">
+          <% if flash[:alert].present? %>
+            <span class="notification-alert"><%= flash[:alert] %></span>
+          <% end %>
+          <% if flash[:notice].present? %>
+            <span class="notification-notice"><%= flash[:alert] %></span>
+          <% end %>
+        </div>
+
         <%= yield %>
       </main>
 

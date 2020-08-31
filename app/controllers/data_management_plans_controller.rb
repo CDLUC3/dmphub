@@ -6,14 +6,25 @@ class DataManagementPlansController < ApplicationController
 
   # GET /dmps/:doi
   def show
-    doi = Identifier.where(value: params[:id], category: 'doi', identifiable_type: 'DataManagementPlan').first
-    render status: 404 if doi.nil?
+    val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
+    doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
 
-    @dmp = DataManagementPlan.find(doi.identifiable_id)
+p "DOI: #{doi}"
+p "#{doi.class.name} <- #{doi.present?}"
 
-    @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
+    if doi.present?
+      @dmp = DataManagementPlan.find(doi.identifiable_id)
 
-    render 'show'
+p "IDENTIFIABLE: #{doi.identifiable_id}"
+
+p @dmp.inspect
+
+      @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
+      render 'show'
+    else
+p "FOO"
+      redirect_to root_path, alert: 'No data management plan found for that DOI'
+    end
   end
 
   # GET /data_management_plans/:id/edit

@@ -58,6 +58,10 @@ module ApplicationHelper
   end
 
   def id_to_doi(dmp:, value:)
-    value.gsub(dmp.id.to_s, dmp.dois.first&.value)
+    doi = dmp.dois.first&.value
+    return value unless doi.present?
+
+    prefix = Rails.configuration.x.ezid[:doi_prefix]
+    value.gsub(dmp.id.to_s, doi.gsub(prefix, 'doi:'))
   end
 end

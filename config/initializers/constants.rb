@@ -13,9 +13,9 @@ module Dmphub
     # -------------- #
     config.x.cache.org_selection_expiration = 1.day
 
-    # -------------------- #
+    # ------------- #
     # EZID SETTINGS #
-    # -------------------- #
+    # ------------- #
     config.x.ezid.landing_page_url = 'https://ezid.cdlib.org/id/'
     config.x.ezid.api_base_url = 'https://ezid.cdlib.org/'
     config.x.ezid.mint_path = 'login'
@@ -26,8 +26,16 @@ module Dmphub
     config.x.ezid.active = true
 
     # ----------------- #
-    # ORCID SETTINGS #
+    # FUNDER AWARD URLS #
     # ----------------- #
+    # Format should be `{ '[ROR]': 'URL' }`
+    config.x.funders.award_urls = {
+      'https://ror.org/021nxhr62': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
+    }
+
+    # -------------- #
+    # ORCID SETTINGS #
+    # -------------- #
     config.x.orcid.uri = 'https://sandbox.orcid.org/'
     config.x.orcid.auth_uri = 'https://sandbox.orcid.org/oauth/authorize'
     config.x.orcid.token_uri = 'https://api.sandbox.orcid.org/oauth/token'

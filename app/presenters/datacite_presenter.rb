@@ -45,6 +45,13 @@ class DatacitePresenter
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 
+  def award_number(funding:)
+    return '' unless funding.funded? && funding.affiliation&.rors&.any?
+
+    mapping = Rails.application.configuration.x.funders[:award_urls]
+    funding.urls.last.value.gsub(mapping[funding.affiliation.rors.last], '')
+  end
+
   private
 
   def find_creators

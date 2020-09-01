@@ -14,7 +14,7 @@ class DataManagementPlansController < ApplicationController
       @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
       render 'show'
     else
-      @dmp = DataManagementPlan.find(parms[:id])
+      @dmp = DataManagementPlan.find(params[:id])
 
       if @dmp.present?
         @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')

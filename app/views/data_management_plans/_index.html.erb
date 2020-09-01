@@ -16,7 +16,7 @@
       <%= dmp.title.length > 49 ? "#{dmp.title[0..50]} ..." : dmp.title %>
     </div>
     <div class="table-column">
-      <%= dmp.project.fundings.collect { |a| a.funded? }.first.to_s.camelize %>
+      <%= dmp.project.fundings.collect { |a| a.funded? }.last.to_s.camelize %>
     </div>
     <div class="table-column">
       <%= dmp.primary_contact.name %>

@@ -47,6 +47,15 @@ module Api
               # rubocop:enable Metrics/BlockNesting
 
               process_dmp
+
+              # rubocop:disable Metrics/BlockNesting
+              if @dmp.dois.any? || @dmp.arks.any?
+                render 'show', status: :created
+              else
+                render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],
+                             status: 500
+              end
+              # rubocop:enable Metrics/BlockNesting
             else
               doi = @dmp.dois.last || @dmp.urls.last
               msg = 'DMP already exists try sending an update to the attached :dmp_id instead'
@@ -64,6 +73,8 @@ module Api
         end
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
+      rescue StandardError => e
+        render_error errors: [e.message], status: :bad_request
       end
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
@@ -98,40 +109,39 @@ module Api
       # Determine what to render
       def process_dmp
         action = @dmp.new_record? ? 'add' : 'edit'
-        @dmp = safe_save
-        render_error errors: @dmp.errors.full_messages, status: :bad_request unless @dmp.valid?
 
-        @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
+        ActiveRecord::Base.transaction do
+          @dmp = safe_save
+          @dmp = @dmp.reload
+          raise StandardError, @dmp.errors.full_messages unless @dmp.valid?
 
-        ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
-        ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
-                                description: "#{request.method} #{request.url}")
-        @dmp = @dmp.reload
+          @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
 
-        if @dmp.dois.any? || @dmp.arks.any?
-          render 'show', status: :created
-        else
-          render_error errors: 'Unable to acquire a DOI at this time. Please try your request later.',
-                       status: 500
+          ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
+          ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,
+                                  description: "#{request.method} #{request.url}")
         end
+
+        @dmp.reload
       end
 
       # prevent scenarios where we have two contributors with the same affiliation
       # from trying to create the record twice
       def safe_save
         @dmp.project = safe_save_project(project: @dmp.project)
-        safe = []
-        @dmp.contributors_data_management_plans.each do |cdmp|
-          safe << safe_save_contributor(cdmp: cdmp)
+        @dmp.contributors_data_management_plans = @dmp.contributors_data_management_plans.map do |cdmp|
+          safe_save_contributor_data_management_plan(cdmp: cdmp)
         end
-        @dmp.contributors_data_management_plans = safe.compact.uniq
         @dmp.save
-        @dmp
+        @dmp.reload
       end
 
       def safe_save_identifier(identifier:)
         return nil unless identifier.present?
-        return identifier.save if identifier.valid?
+
+        identifier.transaction do
+          return identifier.save if identifier.valid?
+        end
 
         Identifier.where(category: identifier.category, value: identifier.value,
                          identifiable: identifier.identifiable)
@@ -143,42 +153,59 @@ module Api
         project.fundings.each do |f|
           f.affiliation = safe_save_affiliation(affiliation: f.affiliation)
         end
-        project.save
+
+        project.transaction do
+          project.save
+        end
+
         project
       end
 
       def safe_save_affiliation(affiliation:)
         return nil unless affiliation.present?
 
-        affil = Affiliation.find_or_create_by(name: affiliation.name)
-        if affil.new_record?
-          affil.update(saveable_attributes(attrs: affiliation.attributes))
-          affiliation.identifiers.each do |id|
-            id.identifiable = affil.reload
-            safe_save_identifier(identifier: id)
+        Affiliation.transaction do
+          affil = Affiliation.find_or_create_by(name: affiliation.name)
+          if affil.new_record?
+            affil.update(saveable_attributes(attrs: affiliation.attributes))
+            affiliation.identifiers.each do |id|
+              id.identifiable = affil.reload
+              safe_save_identifier(identifier: id)
+            end
           end
+          affil
         end
-        affil
       end
 
-      def safe_save_contributor(cdmp:)
+      def safe_save_contributor_data_management_plan(cdmp:)
         return nil unless cdmp.present? && cdmp.contributor.present?
 
-        contrib = cdmp.contributor
-        contrib.affiliation = safe_save_affiliation(affiliation: contrib.affiliation)
-        cdmp.contributor = Contributor.find_or_create_by(email: contrib.email) unless contrib.email.nil?
-        cdmp.contributor = Contributor.find_or_create_by(name: contrib.name) if contrib.email.nil?
+        cdmp.transaction do
+          cdmp.contributor = safe_save_contributor(contributor: cdmp.contributor)
+        end
+        cdmp
+      end
 
-        if cdmp.contributor.new_record?
-          cdmp.contributor.update(saveable_attributes(attrs: contrib.attributes))
-          contrib.identifiers.each do |id|
-            id.identifiable = cdmp.contributor.reload
-            safe_save_identifier(identifier: id)
+      def safe_save_contributor(contributor:)
+        return nil unless contributor.present?
+
+        Contributor.transaction do
+          contributor.affiliation = safe_save_affiliation(affiliation: contributor.affiliation)
+
+          contrib = Contributor.find_or_create_by(email: contributor.email) if contributor.email.present?
+          contrib = Contributor.find_or_create_by(name: contributor.name) unless contributor.email.present?
+          contrib.provenance = contributor.provenance
+
+          if contrib.new_record?
+            contrib.update(saveable_attributes(attrs: contributor.attributes))
+            contributor.identifiers.each do |id|
+              id.identifiable = contrib.reload
+              safe_save_identifier(identifier: id)
+            end
           end
-          cdmp.save
+          contrib.reload
         end
 
-        cdmp
       end
 
       def saveable_attributes(attrs:)

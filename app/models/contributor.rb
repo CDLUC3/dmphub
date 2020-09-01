@@ -16,7 +16,7 @@ class Contributor < ApplicationRecord
 
   # Validations
   validates :name, presence: true
-  validates :email, uniqueness: { case_sensitive: false, allow_nil: true }
+  validates :email, uniqueness: { case_sensitive: false, allow_nil: true, allow_blank: true }
 
   # Instance Methods
   def name_last_first

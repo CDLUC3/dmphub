@@ -6,9 +6,9 @@
   font-family: 'Source Sans Pro';
   font-weight: 200 900;
   src:
-    url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-Regular.ttf.woff') format('woff');
-  font-display: swap;
+    // url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-Regular.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-Regular.ttf')) format('truetype');
 }
 
 // Semi Bold:
@@ -17,8 +17,9 @@
   font-family: 'Source Sans Pro';
   font-weight: 600;
   src:
-    url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-Semibold.ttf.woff') format('woff');
+    // url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-Semibold.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-SemiBold.ttf')) format('truetype');
   font-display: swap;
 }
 
@@ -28,8 +29,9 @@
   font-family: 'Source Sans Pro';
   font-weight: 700;
   src:
-    url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-Bold.ttf.woff') format('woff');
+    // url('../fonts/SourceSansVariable-Roman.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-Bold.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-Bold.ttf')) format('truetype');
   font-display: swap;
 }
 
@@ -40,8 +42,9 @@
   font-style: italic;
   font-weight: 200 900;
   src:
-    url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-It.ttf.woff') format('woff');
+    // url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-It.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-Italic.ttf')) format('truetype');
   font-display: swap;
 }
 
@@ -52,8 +55,9 @@
   font-style: italic;
   font-weight: 600;
   src:
-    url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-SemiboldIt.ttf.woff') format('woff');
+    // url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-SemiboldIt.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-SemiBoldItalic.ttf')) format('truetype');
   font-display: swap;
 }
 
@@ -64,7 +68,8 @@
   font-style: italic;
   font-weight: 700;
   src:
-    url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
-    url('../fonts/SourceSansPro-BoldIt.ttf.woff') format('woff');
+    // url('../fonts/SourceSansVariable-Italic.ttf.woff2') format('woff2-variations'),
+    // url('../fonts/SourceSansPro-BoldIt.ttf.woff') format('woff');
+    url(asset-path('SourceSansPro-BoldItalic.ttf')) format('truetype');
   font-display: swap;
 }

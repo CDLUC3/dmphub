@@ -40,6 +40,7 @@ class DataManagementPlan < ApplicationRecord
     SQL
     left_outer_joins(:project, :identifiers, contributors_data_management_plans: :contributor)
       .where(clause, "%#{term}%", "%#{term}%", "%#{term}%", term, "%#{term}%", term)
+      .distinct
       .order(updated_at: :desc)
   }
 

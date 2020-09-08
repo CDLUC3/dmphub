@@ -7,9 +7,15 @@ class AdminController < ApplicationController
 
   # GET /admin
   def dashboard
-    orgs = Organization.all&.order(:name)
-    @full_list = orgs.map { |o| [o.name, o.id] }
-    @organizations = paginate_response(results: orgs)&.order(:name)
+    @data_management_plans = data_management_plan_lookup
+  end
+
+  # POST /search
+  def search
+    terms = search_params[:search_words] || ''
+    dmps = data_management_plan_lookup
+    dmps = dmps.search(term: terms) if terms.present?
+    @data_management_plans = paginate_response(results: dmps)
   end
 
   private
@@ -18,5 +24,13 @@ class AdminController < ApplicationController
 
   def super_admin?
     current_user.super_user?
+  end
+
+  def data_management_plan_lookup
+    ids = Contributor.includes(:contributors_data_mangement_plans)
+                     .joins(:contributors_data_mangement_plans)
+                     .where(email: current_user.email)
+                     .pluck(contributors_data_mangement_plans: :data_management_plan_id)
+    DataManagementPlan.where(id: ids)
   end
 end

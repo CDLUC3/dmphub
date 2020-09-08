@@ -1,4 +1,4 @@
-import initSectionHandlers from '../../utils/add_section';
+import initSectionHandlers from '../../utils/addSection';
 
 const toggleEthicalDetails = ((selector, context) => {
   if ($(selector).is(':checked')) {

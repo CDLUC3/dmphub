@@ -265,10 +265,11 @@ Devise.setup do |config|
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
   # Omniauth Providers
-  config.omniauth :orcid, Rails.application.credentials.orcid[:client_id],
-                          Rails.application.credentials.orcid[:client_secret],
-                          member: true,
-                          sandbox: Rails.application.credentials.orcid[:sandbox]
+  config.omniauth :orcid,
+                  Rails.application.credentials.orcid[:client_id],
+                  Rails.application.credentials.orcid[:client_secret],
+                  member: Rails.application.credentials.orcid[:member],
+                  sandbox: Rails.application.credentials.orcid[:sandbox]
 
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or

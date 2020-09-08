@@ -1,18 +1,44 @@
 <h1>Sign up</h1>
 
-<p>Thank you for logging in with your ORCID. Please tell us a bit more about yourself</p>
-<p><em>This information will be used to help prepopulate fields when you create a new data management plan. We will not share your information with third parties.</em></p>
+<p>It looks like this is your first time logging into the DMPHub.</p>
+<% if @contributor.present? %>
+  <p>The system has found some existing data management plans that you have contributed to in the past. Please review the information ORCID has provided (or that we found from those prior contributions) below and click 'Save' to finish creating your account.</p>
+<% else %>
+  <p>Please review the information ORCID has provided below and click 'Save' to finish creating your account.</p>
+<% end %>
 
-<%= form_with model: @user, url: user_registration_path do |f| %>
-  <%= f.label :first_name %>
-  <%= f.text_field :first_name %>
-  <%= f.label :last_name %>
-  <%= f.text_field :last_name %>
-  <%= f.label :email %>
-  <%= f.email_field :email %>
-  <%= f.label :organization %>
-  <%= f.text_field :organization %>
-  ORCID: <%= @user.orcid %>
-  <%= f.hidden_field :orcid %>
-  <%= f.submit 'Save' %>
+<%= form_with model: @user, url: user_registration_path, id: 'sign-up-form' do |f| %>
+  <div class="c-fieldgroup">
+    <div class="c-orcid"><%= @user.orcid %></div>
+    <%= f.hidden_field :orcid %>
+  </div>
+
+  <div class="c-fieldgroup">
+    <%= f.label :first_name %>
+    <%= f.text_field :first_name %>
+    <%= f.label :last_name, class: 'required' %>
+    <%= f.text_field :last_name %>
+  </div>
+
+  <div class="c-fieldgroup">
+    <%= f.label :email, class: 'required' %>
+    <%= f.email_field :email %>
+  </div>
+
+  <div id="sign-up-affiliation-controls" class="c-fieldgroup">
+    <%= render partial: "shared/typeahead",
+               locals: {
+                 label: 'Affiliation',
+                 typeahead_id: 'user_affiliation_name',
+                 typeahead_name: 'user[affiliation][name]]',
+                 hidden_id: 'user_affiliation_id',
+                 hidden_name: 'user[affiliation][id]',
+                 href: affiliations_search_path(type: 'combined', funder_only: false)
+               } %>
+  </div>
+
+  <div class="c-fieldgroup">
+    <p><em>This information will be used to help prepopulate fields when you create a new data management plan. We will not share your information with third parties.</em></p>
+    <%= f.submit 'Save', class: 'button-transparent' %>
+  </div>
 <% end %>

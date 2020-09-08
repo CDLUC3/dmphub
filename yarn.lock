@@ -3999,6 +3999,11 @@ jquery-autocomplete@^1.2.8:
   resolved "https://registry.yarnpkg.com/jquery-autocomplete/-/jquery-autocomplete-1.2.8.tgz#9927c5d752cf73fc5b6c707431197e16997cc653"
   integrity sha512-dbpkpEglcOnNH6NJPe8NUm4cTBsuyf33xk2Rr69o1ki93XxnKph3HNjEOff/oo+SLKMJQyxO7pQ6ACL2ZrA4JQ==
 
+jquery-ui@^1.12.1:
+  version "1.12.1"
+  resolved "https://registry.yarnpkg.com/jquery-ui/-/jquery-ui-1.12.1.tgz#bcb4045c8dd0539c134bc1488cdd3e768a7a9e51"
+  integrity sha1-vLQEXI3QU5wTS8FIjN0+dop6nlE=
+
 jquery@^3.4.1:
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"

@@ -24,9 +24,12 @@ Rails.application.routes.draw do
   resources :projects, only: %w[new create edit update] do
     resources :awards
   end
+
+  # Affiliation routes
   resources :affiliations, only: %w[update] do
     post 'merge'
   end
+  get 'affiliations/search', to: 'affiliations#search'
 
   resources :data_management_plans, only: %i[show edit update]
   resources :datasets, only: %i[index]

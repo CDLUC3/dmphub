@@ -1,12 +1,11 @@
 <h1>Administration</h1>
 
-<h2>Organizations</h2>
+<h2>Data Management Plans</h2>
 
-<% if @organizations.present? %>
-  <%= render partial: '/organizations/index',
-             locals: {
-              organizations: @organizations, full_list: @full_list,
-              controller: 'admin', action: 'dashboard' } %>
+<% if @data_management_plans.present? %>
+  <%= render partial: 'data_management_plans/index',
+             locals: { data_management_plans: @data_management_plans,
+                       controller: 'admin', action: 'search' } %>
 <% else %>
-  <p>There are no organizations at this time.</p>
+  <p>There are no data management plans available for your organization at this time.</p>
 <% end %>

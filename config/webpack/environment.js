@@ -5,8 +5,11 @@ environment.plugins.prepend('Provide',
   new webpack.ProvidePlugin({
     $: 'jquery/src/jquery',
     jQuery: 'jquery/src/jquery',
-    autoComplete: '@tarekraafat/autocomplete.js/dist/js/autoComplete.min.js',
   })
 );
+
+environment.config.set('resolve.alias', {
+  'jquery-ui': 'jquery-ui/ui/widgets/',
+});
 
 module.exports = environment

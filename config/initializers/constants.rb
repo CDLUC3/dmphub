@@ -11,7 +11,7 @@ module Dmphub
     # -------------- #
     # CACHE SETTINGS #
     # -------------- #
-    config.x.cache.org_selection_expiration = 1.day
+    config.x.cache.affiliation_selection_expiration = 1.day
 
     # ------------- #
     # EZID SETTINGS #

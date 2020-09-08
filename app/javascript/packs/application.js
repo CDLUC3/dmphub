@@ -10,7 +10,7 @@ require("channels")
 require("jquery")
 require("jquery-autocomplete")
 
-require("../utils/add_section")
+require("../utils/addSection")
 require("../utils/debouncer")
 require("../utils/forms")
 require("../utils/typeahead")
@@ -20,8 +20,9 @@ require("../utils/dmphubUi/ethics")
 require("../utils/dmphubUi/other")
 require("../utils/dmphubUi/progress")
 
-require("../views/data_management_plans/new_edit")
+require("../views/data_management_plans/newEdit")
 require("../views/shared/form")
+require("../views/users/signUp")
 
 // Uncomment to copy all static images under ../images to the output folder and reference
 // them with the image_pack_tag helper in views (e.g <%= image_pack_tag 'rails.png' %>)

@@ -2,7 +2,6 @@
 
 # Respresents a user of the API
 class User < ApplicationRecord
-
   extend Devise::Models
 
   # Include default devise modules. Others available are:
@@ -20,7 +19,7 @@ class User < ApplicationRecord
   # has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
   #                          foreign_key: :resource_owner_id, dependent: :delete_all
 
-  belongs_to :affiliation, optional: true
+  belongs_to :affiliation
 
   # Validations
   validates :accept_terms, acceptance: true

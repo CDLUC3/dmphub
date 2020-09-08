@@ -9,5 +9,9 @@ class ApplicationService
       default = Rails.application.class.name.split('::').first
       Rails.configuration.x.application.fetch(:name, default).downcase
     end
+
+    def generate_uuid
+      SecureRandom.base64(12)
+    end
   end
 end

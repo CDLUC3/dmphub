@@ -54,37 +54,27 @@ module ExternalApis
       #
       # @return an Array of Hashes:
       # {
-      #   ror: 'https://ror.org/12345',
-      #   url: 'example.edu',
-      #   name: 'Sample University',
+      #   id: 'https://ror.org/12345',
+      #   name: 'Sample University (sample.edu)',
+      #   sort_name: 'Sample University',
+      #   score: 0
       #   weight: 0
       # }
       # The ROR limit appears to be 40 results (even with paging :/)
-      # rubocop:disable Metrics/CyclomaticComplexity
       def search(term:, filters: [])
-        return nil unless active && term.present? && ping
+        return [] unless active && term.present? && ping
 
-        results = process_pages(
+        process_pages(
           term: term,
           json: query_ror(term: term, filters: filters),
           filters: filters
         )
 
-        # TODO: Consider extracting the bit below (and corresponding functions)
-        #       when we build out the curation UI. We will want them to be able
-        #       to select from a list
-
-        # We only want exact matches on the name here!
-        array = results.select { |rec| rec[:name]&.downcase == term.downcase }
-        return nil if array.empty?
-
-        array.empty? ? nil : deserialize_organization(item: array.first)
       # If a JSON parse error occurs then return results of a local table search
       rescue JSON::ParserError => e
         log_error(method: 'ROR search', error: e)
         []
       end
-      # rubocop:enable Metrics/CyclomaticComplexity
 
       private
 
@@ -151,26 +141,41 @@ module ExternalApis
           next unless item['id'].present? && item['name'].present?
 
           results << {
-            ror: item['id'],
-            name: item['name'],
+            ror: item['id'].gsub(/^#{landing_page_url}/, ''),
+            name: org_name(item: item),
+            sort_name: item['name'],
             url: item.fetch('links', []).first,
-            domain: org_website(item: item),
-            country: org_country(item: item),
-            abbreviation: item.fetch('acronyms', []).first,
-            types: item.fetch('types', []),
-            aliases: item.fetch('aliases', []),
-            acronyms: item.fetch('acronyms', []),
-            labels: item.fetch('labels', [{}]).map { |lbl| lbl[:label] }.compact
+            language: org_language(item: item),
+            fundref: fundref_id(item: item),
+            abbreviation: item.fetch('acronyms', []).first
           }
         end
         results
       end
 
-      # Extracts the country
-      def org_country(item:)
-        return '' unless item.present? && item['country'].present?
+      # Org names are not unique, so include the Org URL if available or
+      # the country. For example:
+      #    'Example College (example.edu)'
+      #    'Example College (Brazil)'
+      def org_name(item:)
+        return '' unless item.present? && item['name'].present?
 
-        item.fetch('country', {}).fetch('country_name', '')
+        country = item.fetch('country', {}).fetch('country_name', '')
+        website = org_website(item: item)
+        # If no website or country then just return the name
+        return item['name'] unless website.present? || country.present?
+
+        # Otherwise return the contextualized name
+        "#{item['name']} (#{website || country})"
+      end
+
+      # Extracts the org's ISO639 if available
+      def org_language(item:)
+        dflt = I18n.default_locale || 'en'
+        return dflt unless item.present?
+
+        labels = item.fetch('labels', [{ 'iso639': dflt }])
+        labels.first&.fetch('iso639', I18n.default_locale) || dflt
       end
 
       # Extracts the website domain from the item
@@ -184,52 +189,18 @@ module ExternalApis
         website.gsub('www.', '')
       end
 
-      # Extract all of the alternate names from the ROR results
-      def gather_names(item:)
-        names = []
-        return names unless item.present? && item.is_a?(Hash)
+      # Extracts the FundRef Id if available
+      def fundref_id(item:)
+        return '' unless item.present? && item['external_ids'].present?
+        return '' unless item['external_ids'].fetch('FundRef', {}).any?
 
-        names << item[:domain] if item[:domain].present?
-        names << item[:aliases] if item[:aliases].present?
-        names << item[:acronyms] if item[:acronyms].present?
-        item.fetch(:labels, []).map { |hash| names << hash[:label] }
-        names.flatten.compact.uniq
+        # If a preferred Id was specified then use it
+        ret = item['external_ids'].fetch('FundRef', {}).fetch('preferred', '')
+        return ret if ret.present?
+
+        # Otherwise take the first one listed
+        item['external_ids'].fetch('FundRef', {}).fetch('all', []).first
       end
-
-      # Convert the hash content to an Identifier
-      def deserialize_identifier(category:, value:)
-        return nil unless category.present? && value.present?
-
-        Identifier.find_or_initialize_by(provenance: provenance(name: 'ror'),
-                                         value: value,
-                                         identifiable_type: 'Affiliation',
-                                         category: category.to_sym)
-      end
-
-      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-      def deserialize_organization(item:)
-        return nil unless item.present? && item[:name].present?
-
-        ror = deserialize_identifier(category: 'ror', value: item[:ror]) if item[:ror].present?
-        url = deserialize_identifier(category: 'url', value: item[:url]) if item[:url].present?
-        # If any of the identifiers already exists juts return the Organization
-        return ror.identifiable if ror.present? && !ror.new_record?
-        return url.identifiable if url.present? && !url.new_record?
-
-        org = Affiliation.find_or_initialize_by(provenance: provenance(name: 'ror'),
-                                                name: item[:name])
-        org.alternate_names = gather_names(item: item)
-        org.types = item[:types]
-        org.attrs = {
-          domain: item.fetch(:domain, ''),
-          country: item.fetch(:country, ''),
-          abbreviation: item.fetch(:abbreviation, '')
-        }
-        org.identifiers << ror if ror.present?
-        org.identifiers << url if url.present?
-        org
-      end
-      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     end
   end
   # rubocop:enable Metrics/ClassLength

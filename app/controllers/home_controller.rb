@@ -15,14 +15,8 @@ class HomeController < ApplicationController
   # POST /search
   def search
     terms = search_params[:search_words] || ''
-
-p "SEARCHING FOR '#{terms}'"
-
     dmps = DataManagementPlan.search(term: terms) if terms.present?
     dmps = DataManagementPlan.all.order(updated_at: :desc) unless terms.present?
-
-p dmps.inspect
-
     @data_management_plans = paginate_response(results: dmps)
   end
 

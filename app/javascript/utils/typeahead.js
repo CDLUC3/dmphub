@@ -105,9 +105,10 @@ const navigateSuggestions = (context, keyCode, listItem = null) => {
 /* Make the ajax call to retrieve the search results */
 const typeahead = (element) => {
   const context = establishContext(element.parent('.js-typeahead'));
-
+  let urlBase = `${$(context.textField).attr('data-source')}`;
+  urlBase += (urlBase.indexOf('?') > 0 ? '&' : '?');
   $.ajax({
-    url: `${$(context.textField).attr('data-source')}?q=${$(context.textField).val()}`,
+    url: `${urlBase}q=${$(context.textField).val()}`,
   }).done((data) => {
     context.suggestions.html(arrayToOptions(data));
     context.suggestions.show();

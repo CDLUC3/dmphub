@@ -19,6 +19,13 @@ class Affiliation < ApplicationRecord
   before_validation :ensure_defaults
 
   # Scopes
+  scope :search, lambda { |term:|
+    left_outer_joins(:identifiers)
+      .where('name LIKE ? OR alternate_names LIKE ?', "%#{term}%", "%#{term}%")
+      .distinct
+      .order(:name)
+  }
+
   class << self
     def funders
       joins(:identifiers).includes(:identifiers)

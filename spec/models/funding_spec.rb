@@ -12,6 +12,7 @@ RSpec.describe Funding, type: :model do
     it { is_expected.to belong_to(:affiliation) }
     it { is_expected.to have_many(:identifiers) }
     it { is_expected.to have_many(:authorizations) }
+    it { is_expected.to have_and_belong_to_many(:funded_affiliations) }
   end
 
   it 'factory can produce a valid model' do
@@ -31,6 +32,13 @@ RSpec.describe Funding, type: :model do
       model = create(:funding, :complete, affiliation: affiliation)
       model.destroy
       expect(Affiliation.last).to eql(affiliation)
+    end
+    it 'does not delete the funded_affiliation' do
+      affiliation = create(:affiliation)
+      funded_affiliation = create(:affiliation)
+      model = create(:funding, :complete, affiliation: affiliation, funded_affiliations: [funded_affiliation])
+      model.destroy
+      expect(Affiliation.last).to eql(funded_affiliation)
     end
     it 'deletes associated identifiers' do
       model = create(:funding, :complete)

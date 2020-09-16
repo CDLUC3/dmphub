@@ -16,6 +16,7 @@ RSpec.describe Affiliation, type: :model do
     it { is_expected.to have_many(:authorizations) }
     it { is_expected.to have_many(:alterations) }
     it { is_expected.to have_many(:identifiers) }
+    it { is_expected.to have_and_belong_to_many(:fundings) }
   end
 
   describe 'cascading deletes' do

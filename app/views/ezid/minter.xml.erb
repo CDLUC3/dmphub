@@ -23,10 +23,36 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
     <publisher xml:lang="en">DMPHub</publisher>
     <publicationYear><%= Time.now.year %></publicationYear>
     <contributors>
+      <% host_inst = Rails.application.credentials.ezid.fetch(:hosting_institution, ApplicationService.application_name) %>
+      <% host_ror = Rails.application.credentials.ezid.fetch(:hosting_institution_identifier) %>
+      <% if host_inst.present? %>
+        <contributor contributorType="HostingInstitution">
+          <contributorName nameType="Organizational"><%= host_inst %></contributorName>
+          <% if host_ror.present? %>
+            <nameIdentifier schemeURI="https://ror.org" nameIdentifierScheme="ROR"><%= host_ror %></nameIdentifier>
+          <% end %>
+        </contributor>
+      <% end %>
+      <% if data_management_plan.project.fundings.any? %>
+        <% data_management_plan.project.fundings.each do |funding| %>
+          <% next unless funding.funded_affiliations.any? %>
+
+          <% funding.funded_affiliations.each do |funded_affiliation| %>
+            <contributor contributorType="Producer">
+              <contributorName nameType="Organizational"><%= funded_affiliation.name %></contributorName>
+              <% if funded_affiliation.rors.any? %>
+                <nameIdentifier schemeUri="https://ror.org" nameIdentifierScheme="ROR">
+                  <%= funded_affiliation.rors.last.value %>
+                </nameIdentifier>
+              <% end %>
+            </contributor>
+          <% end %>
+        <% end %>
+      <% end %>
       <% presenter.contributors.each do |cdmp| %>
         <% contributor = cdmp.contributor %>
         <contributor contributorType="<%= presenter.role_for(cdmp) %>">
-          <contributorName><%= contributor.name_last_first %></contributorName>
+          <contributorName nameType="Personal"><%= contributor.name_last_first %></contributorName>
           <% if contributor.orcids.any? %>
             <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID"><%= contributor.orcids.last.value %></nameIdentifier>
           <% end %>

@@ -12,7 +12,9 @@ class Funding < ApplicationRecord
   belongs_to :project, optional: true
   belongs_to :affiliation
 
-  accepts_nested_attributes_for :identifiers, :affiliation
+  has_and_belongs_to_many :funded_affiliations, class_name: 'Affiliation', join_table: 'fundings_affiliations'
+
+  accepts_nested_attributes_for :identifiers, :affiliation, :funded_affiliations
 
   # validates :affiliation, :status, presence: true
 

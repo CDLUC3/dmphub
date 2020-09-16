@@ -13,6 +13,8 @@ class Affiliation < ApplicationRecord
   # Associations
   has_many :contributors
 
+  has_and_belongs_to_many :fundings, class_name: 'Funding', join_table: 'fundings_affiliations'
+
   # Validations
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 

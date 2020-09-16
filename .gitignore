@@ -76,3 +76,5 @@ ruby/
 
 # Mac OSX files
 .DS_Store
+
+/config/credentials/development.key

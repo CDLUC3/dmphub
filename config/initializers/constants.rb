@@ -23,6 +23,9 @@ module Dmphub
     config.x.ezid.delete_path = 'dois/'
     config.x.ezid.doi_prefix = 'https://doi.org/'
     config.x.ezid.ark_prefix = 'https://ezid.cdlib.org/id/ark:'
+    config.x.ezid.hosting_institution = 'California Digital Library (CDL)'
+    config.x.ezid.hosting_institution_scheme = 'ROR'
+    config.x.ezid.hosting_institution_identifier = 'https://ror.org/03yrm5c26'
     config.x.ezid.active = true
 
     # ----------------- #
@@ -30,7 +33,7 @@ module Dmphub
     # ----------------- #
     # Format should be `{ '[ROR]': 'URL' }`
     config.x.funders.award_urls = {
-      'https://ror.org/021nxhr62': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
+      'https://api.crossref.org/funders/100000001': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
     }
 
     # -------------- #

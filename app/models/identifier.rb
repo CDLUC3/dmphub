@@ -6,7 +6,8 @@ class Identifier < ApplicationRecord
 
   enum category: %i[ark doi credit duns fundref handle isni orcid openid program
                     ror sub_program url]
-  enum descriptor: %i[described_by funded_by identified_by is_metadata_for]
+  enum descriptor: %i[described_by funded_by identified_by is_metadata_for
+                      is_supplement_to is_referenced_by]
 
   # Associations
   belongs_to :identifiable, polymorphic: true

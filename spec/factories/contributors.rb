@@ -2,12 +2,9 @@
 
 FactoryBot.define do
   factory :contributor do
+    provenance
     name  { Faker::Music::PearlJam.musician }
     email { Faker::Internet.unique.email }
-
-    before :create do |contributor|
-      contributor.provenance = build(:provenance) unless contributor.provenance.present?
-    end
 
     trait :complete do
       transient do
@@ -20,6 +17,7 @@ FactoryBot.define do
           contributor.identifiers << create(:identifier, category: 'credit', identifiable: contributor,
                                                          descriptor: 'identified_by', provenance: contributor.provenance)
         end
+        contributor.affiliation = create(:affiliation, :complete) unless contributor.affiliation.present?
       end
 
       after :create do |contributor, evaluator|

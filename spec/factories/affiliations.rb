@@ -2,14 +2,11 @@
 
 FactoryBot.define do
   factory :affiliation do
+    provenance
     name            { Faker::Company.unique.name }
     attrs           { {} }
     alternate_names { [] }
     types           { [] }
-
-    before :create do |affiliation|
-      affiliation.provenance = build(:provenance) unless affiliation.provenance.present?
-    end
 
     trait :complete do
       transient do

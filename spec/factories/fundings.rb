@@ -11,6 +11,7 @@ FactoryBot.define do
     trait :complete do
       transient do
         identifier_count { 1 }
+        funded_affiliation_count { 1 }
       end
 
       before :create do |funding, _evaluator|
@@ -18,9 +19,18 @@ FactoryBot.define do
       end
 
       after :create do |funding, evaluator|
+        # Ensure affiliation has a Fundref ID
+        unless funding.fundrefs.any?
+          funding.affiliation.identifiers << create(:identifier, category: 'fundref', identifiable: funding.affiliation,
+                                                                 descriptor: 'identified_by', provenance: funding.provenance)
+        end
+
         evaluator.identifier_count.times do
           funding.identifiers << create(:identifier, category: 'url', identifiable: funding, descriptor: 'funded_by',
                                                      provenance: funding.provenance)
+        end
+        evaluator.funded_affiliation_count.times do
+          funding.funded_affiliations << create(:affiliation, :complete)
         end
       end
     end

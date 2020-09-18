@@ -1,0 +1,12 @@
+<%# locals: creator %>
+<creator>
+  <creatorName nameType="Personal"><%= creator.name_last_first %></creatorName>
+  <% if creator.orcids.any? %>
+    <nameIdentifier nameIdentifierScheme="ORCID"><%= creator.orcids.last.value %></nameIdentifier>
+  <% end %>
+  <% if creator.affiliation.present? && creator.affiliation.rors.any? %>
+    <affiliation affiliationIdentifier="<%= creator.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR">
+      <%= creator.affiliation.name %>
+    </affiliation>
+  <% end %>
+</creator>

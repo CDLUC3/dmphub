@@ -4,94 +4,53 @@ _target: <%= presenter.landing_page %>
 datacite: <?xml version="1.0" encoding="UTF-8"?>
   <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
     <identifier identifierType="DOI">(:tba)</identifier>
+
     <creators>
       <% presenter.creators.each do |creator| %>
-        <creator>
-          <creatorName nameType="Personal"><%= creator.name_last_first %></creatorName>
-          <% if creator.orcids.any? %>
-            <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID"><%= creator.orcids.last.value %></nameIdentifier>
-          <% end %>
-          <% if creator.affiliation.present? && creator.affiliation.rors.any? %>
-            <affiliation affiliationIdentifier="<%= creator.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR"><%= creator.affiliation.name %></affiliation>
-          <% end %>
-        </creator>
+        <%= render partial: 'ezid/creator', locals: { creator: creator } %>
       <% end %>
     </creators>
+
     <titles>
       <title xml:lang="en-US"><%= presenter.scrub(data_management_plan.title) %></title>
     </titles>
+
     <publisher xml:lang="en">DMPHub</publisher>
     <publicationYear><%= Time.now.year %></publicationYear>
-    <contributors>
-      <% host_inst = Rails.application.credentials.ezid.fetch(:hosting_institution, ApplicationService.application_name) %>
-      <% host_ror = Rails.application.credentials.ezid.fetch(:hosting_institution_identifier) %>
-      <% if host_inst.present? %>
-        <contributor contributorType="HostingInstitution">
-          <contributorName nameType="Organizational"><%= host_inst %></contributorName>
-          <% if host_ror.present? %>
-            <nameIdentifier schemeURI="https://ror.org" nameIdentifierScheme="ROR"><%= host_ror %></nameIdentifier>
-          <% end %>
-        </contributor>
-      <% end %>
-      <% if data_management_plan.project.fundings.any? %>
-        <% data_management_plan.project.fundings.each do |funding| %>
-          <% next unless funding.funded_affiliations.any? %>
 
-          <% funding.funded_affiliations.each do |funded_affiliation| %>
-            <contributor contributorType="Producer">
-              <contributorName nameType="Organizational"><%= funded_affiliation.name %></contributorName>
-              <% if funded_affiliation.rors.any? %>
-                <nameIdentifier schemeUri="https://ror.org" nameIdentifierScheme="ROR">
-                  <%= funded_affiliation.rors.last.value %>
-                </nameIdentifier>
-              <% end %>
-            </contributor>
-          <% end %>
+    <contributors>
+      <%= render partial: 'ezid/contributor',
+                 locals: { contributor: presenter.hosting_institution, type: 'HostingInstitution' } %>
+
+      <% if presenter.producers.any? %>
+        <% presenter.producers.each do |producer| %>
+          <%= render partial: 'ezid/contributor',
+                     locals: { contributor: producer, type: 'Producer' } %>
         <% end %>
       <% end %>
+
       <% presenter.contributors.each do |cdmp| %>
         <% contributor = cdmp.contributor %>
-        <contributor contributorType="<%= presenter.role_for(cdmp) %>">
-          <contributorName nameType="Personal"><%= contributor.name_last_first %></contributorName>
-          <% if contributor.orcids.any? %>
-            <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID"><%= contributor.orcids.last.value %></nameIdentifier>
-          <% end %>
-          <% if contributor.affiliation.present? && contributor.affiliation.rors.any? %>
-            <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR"><%= contributor.affiliation.name %></affiliation>
-          <% end %>
-        </contributor>
+        <%= render partial: 'ezid/contributor',
+                   locals: { contributor: cdmp.contributor, type: presenter.role_for(cdmp) } %>
       <% end %>
     </contributors>
+
     <language>en-US</language>
+
     <resourceType resourceTypeGeneral="Text">Data Management Plan</resourceType>
+
     <descriptions>
       <description xml:lang="en-US" descriptionType="Abstract">
         <%= presenter.scrub(data_management_plan.description) %>
       </description>
     </descriptions>
+
     <% if data_management_plan.project.fundings.any? %>
       <fundingReferences>
         <% data_management_plan.project.fundings.each do |funding| %>
-          <fundingReference>
-            <funderName><%= funding.affiliation.name %></funderName>
-            <% if funding.affiliation.fundrefs.any? %>
-              <funderIdentifier funderIdentifierType="Crossref Funder ID"><%= funding.affiliation.fundrefs.last.value %></funderIdentifier>
-            <% end %>
-            <% if funding.affiliation.rors.any? %>
-              <funderIdentifier funderIdentifierType="ROR"><%= funding.affiliation.rors.last.value %></funderIdentifier>
-            <% end %>
-            <% if funding.funded? %>
-              <% if funding.urls.any? %>
-                <%# TODO: switch this out for the presenter approach %>
-                <% nbr = funding.urls.last.value.gsub('https://www.nsf.gov/awardsearch/showAward?AWD_ID=', '') %>
-                <%# nbr = presenter.award_number(funding: funding) %>
-                <awardNumber awardURI="<%= funding.urls.last.value %>"><%= nbr %></awardNumber>
-              <% else %>
-                <awardNumber><%= funding.identifiers.last.value %></awardNumber>
-              <% end %>
-              <awardTitle><%= presenter.scrub(data_management_plan.title) %></awardTitle>
-            <% end %>
-          </fundingReference>
+          <%= render partial: 'ezid/funding_reference',
+                     locals: { presenter: presenter, funding: funding, title: data_management_plan.title } %>
         <% end %>
       </fundingReferences>
     <% end %>

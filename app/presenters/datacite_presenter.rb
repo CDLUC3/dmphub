@@ -2,12 +2,14 @@
 
 # Presenter for DataCite XML
 class DatacitePresenter
-  attr_reader :creators, :contributors
+  attr_reader :creators, :contributors, :related_identifiers, :producers
 
   def initialize(dmp)
     @dmp = dmp
     @creators = find_creators
     @contributors = find_contributors
+    @related_identifiers = find_related
+    @producers = find_producers
   end
 
   # Cleans out / escapes any characters that EZID's ANVL format does not like
@@ -18,6 +20,7 @@ class DatacitePresenter
     text.to_s.gsub(/[\r\n]/, ' ').gsub('%', '%25')
   end
 
+  # Convert the CASRAI roles to DataCite contributorType
   # rubocop:disable Metrics/CyclomaticComplexity
   def role_for(cdmp)
     case cdmp.role
@@ -45,20 +48,32 @@ class DatacitePresenter
   end
   # rubocop:enable Metrics/CyclomaticComplexity
 
+  # Retrieve the award URI without the URL portion for DataCite's <AwardNumber>
   def award_number(funding:)
-    return '' unless funding.funded? && funding.affiliation&.rors&.any?
+    return '' unless funding.funded? && funding.affiliation&.fundrefs&.any?
 
-    mapping = Rails.application.configuration.x.funders[:award_urls]
-    funding.urls.last.value.gsub(mapping[funding.affiliation.rors.last], '')
+    mapping = Rails.configuration.x.funders[:award_urls]
+    funding.urls.last.value.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
   end
 
+  # Retrieve the landing page URL for EZID's _target (where the DOI will resolve to)
   def landing_page
     url = Rails.application.routes.url_helpers.data_management_plan_url(@dmp)
     url.gsub('dmphub1', 'dmphub').gsub('dmphub2', 'dmphub')
   end
 
+  # Used to set the DataCite HostingInstitution <contributor>
+  def hosting_institution
+    {
+      name: Rails.configuration.x.ezid[:hosting_institution],
+      scheme: Rails.configuration.x.ezid[:hosting_institution_scheme],
+      identifier: Rails.configuration.x.ezid[:hosting_institution_identifier]
+    }
+  end
+
   private
 
+  # Retrieves all of the contributors who were authors of the DMP for DataCite's <creators>
   def find_creators
     ret = [@dmp.primary_contact]
     @dmp.contributors_data_management_plans.each do |cdmp|
@@ -67,8 +82,24 @@ class DatacitePresenter
     ret.flatten
   end
 
+  # Retrieves all of the contributors who are not authors of the DMP for DatCite's <contributors>
   def find_contributors
     exclusions = creators
     @dmp.contributors_data_management_plans.reject { |cdmp| exclusions.include?(cdmp.contributor) }
+  end
+
+  # Retrieves all of the funder_affiliations (or the creator's affiliation) for
+  # DataCite's Producer <contributor>
+  def find_producers
+    defaults = creators.map(&:affiliation)
+    return defaults unless @dmp.project.present? && @dmp.project.fundings.any?
+    return defaults unless @dmp.project.fundings.map(&:funded_affiliations).any?
+
+    @dmp.project.fundings.map(&:funded_affiliations).flatten.uniq
+  end
+
+  # Retrieves all of the identifiers for DataCite's <relatedIdentifiers>
+  def find_related
+    @dmp.identifiers.reject { |id| %w[identified_by funded_by].include?(id.descriptor) }
   end
 end

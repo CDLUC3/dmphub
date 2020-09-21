@@ -55,7 +55,9 @@ build-iPhoneSimulator/
 .byebug_history
 
 # Sensitive Configuration
-config/master.key
+# We allow the default config/master.key here, so do NOT use it to store your live credentials
+# use the env specific version in config/credentials/ instead!
+# config/master.key
 config/credentials/*.key
 
 # Logs

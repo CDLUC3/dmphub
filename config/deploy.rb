@@ -46,6 +46,7 @@ set :default_env, { path: '$PATH' }
 
 namespace :deploy do
   before :compile_assets, :env_setup
+  before 'check:linked_files', :copy_config
 
   desc 'Setup ENV Variables'
   task :env_setup do
@@ -56,6 +57,12 @@ namespace :deploy do
       f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close
+    end
+  end
+
+  task :copy_config do
+    on release_roles :app do
+      execute "cp -r #{deploy_path}/config/ #{shared_path}/config/"
     end
   end
 end

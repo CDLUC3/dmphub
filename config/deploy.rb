@@ -27,7 +27,7 @@ set :deploy_to, fetch(:capistrano_dir)
 # set :pty, true
 
 # Default value for :linked_files is []
-append :linked_files, 'config/master.key'
+#append :linked_files, 'config/master.key'
 
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
@@ -45,8 +45,9 @@ set :default_env, { path: '$PATH' }
 # set :ssh_options, verify_host_key: :secure
 
 namespace :deploy do
-  before :compile_assets, :env_setup
+  #before :compile_assets, :env_setup
   before 'check:linked_files', :copy_config
+  after :config_copy, :env_setup
 
   desc 'Setup ENV Variables'
   task :env_setup do
@@ -54,7 +55,7 @@ namespace :deploy do
       ssm = Uc3Ssm::ConfigResolver.new
       master_key = ssm.parameter_for_key('master_key')
       # TODO: Switch this to ENV['RAILS_MASTER_KEY']
-      f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
+      f = File.open("#{shared_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close
     end
@@ -62,7 +63,7 @@ namespace :deploy do
 
   task :copy_config do
     on release_roles :app do
-      execute "cp -r #{deploy_path}/config/ #{shared_path}/config/"
+      execute "cp -r -n #{Dir.pwd}/config/ #{shared_path}/config/"
     end
   end
 end

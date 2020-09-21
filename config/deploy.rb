@@ -45,9 +45,9 @@ set :default_env, { path: '$PATH' }
 # set :ssh_options, verify_host_key: :secure
 
 namespace :deploy do
-  #before :compile_assets, :env_setup
-  before 'check:linked_files', :copy_config
-  after :config_copy, :env_setup
+  before :compile_assets, :env_setup
+  #before 'check:linked_files', :copy_config
+  #after :config_copy, :env_setup
 
   desc 'Setup ENV Variables'
   task :env_setup do
@@ -55,7 +55,7 @@ namespace :deploy do
       ssm = Uc3Ssm::ConfigResolver.new
       master_key = ssm.parameter_for_key('master_key')
       # TODO: Switch this to ENV['RAILS_MASTER_KEY']
-      f = File.open("#{shared_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
+      f = File.open("#{release_path}/config/credentials/#{fetch(:rails_env)}.key", 'w')
       f.puts master_key
       f.close
     end

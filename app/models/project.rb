@@ -18,7 +18,7 @@ class Project < ApplicationRecord
   # Validations #
   # =========== #
 
-  validates :title, :start_on, :end_on, presence: true
+  validates :title, presence: true
 
   validate :start_on_before_end_on
 

@@ -16,6 +16,7 @@ module Api
           #     "$ref": "SEE Funding.deserialize! for details"
           #   }]
           # }
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize(provenance:, dmp:, json: {})
             return nil unless provenance.present? && dmp.present? && valid?(json: json)
 
@@ -25,8 +26,8 @@ module Api
 
             # Update the contents of the DMP
             project.description = json[:description]
-            project.start_on = json[:start]
-            project.end_on = json[:end]
+            project.start_on = json[:start] if json[:start].present?
+            project.end_on = json[:end] if json[:end].present?
 
             json.fetch(:funding, []).each do |funding_json|
               funding = Api::V0::Deserialization::Funding.deserialize(
@@ -36,12 +37,13 @@ module Api
             end
             project
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           private
 
           # The JSON is valid if the Project has a title and start and end dates
           def valid?(json: {})
-            json.present? && json[:title].present? && json[:start].present? && json[:end].present?
+            json.present? && json[:title].present?
           end
 
           # Find the Project by its title and dmp

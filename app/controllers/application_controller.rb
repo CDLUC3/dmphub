@@ -24,10 +24,8 @@ class ApplicationController < ActionController::Base
   def pagination_params
     out = params.permit(:page, :per_page)
     out[:page] = 1 unless out[:page].present?
-    out[:per_page] = 5 unless out[:per_page].present?
+    out[:per_page] = 25 unless out[:per_page].present?
     out[:per_page] = 100 if out[:per_page] > 100
-
-p "STRONG PARAMS: #{out[:page]}"
 
     # also set the instance variables for access in the views
     @page = out[:page]

@@ -1,27 +1,19 @@
 // ***** Accordion Component ***** //
+const initAccordion = (selector, collapsedOnLoad = false) => {
+  const accordionEls = document.querySelectorAll(`${selector} details`);
 
-function accordion (accordionEls) {
-  accordionEls.forEach(function (el, index) {
-    if (index === 0) {
-      el.open = true
-    }
+  accordionEls.forEach((el, index) => {
+    // Open the section unless collapsedOnLoad is true and this not the first section
+    el.open = !collapsedOnLoad || (collapsedOnLoad && index === 0)
 
-    el.addEventListener('click', function () {
-      accordionEls.forEach(function (el) {
+    el.addEventListener('click', () => {
+      accordionEls.forEach((el) => {
         if (el !== this) {
           el.open = false
         }
-      }, this)
-    })
-  })
-}
+      }, this);
+    });
+  });
+};
 
-if (document.querySelector('.c-accordion')) {
-  var fundingAccordionEls = document.querySelectorAll('#accordion-funding details')
-  var datasetsAccordtionEls = document.querySelectorAll('#accordion-datasets details')
-  var distributionAccordionEls = document.querySelectorAll('#accordion-distribution details')
-
-  accordion(fundingAccordionEls)
-  accordion(datasetsAccordtionEls)
-  accordion(distributionAccordionEls)
-}
+export default initAccordion;

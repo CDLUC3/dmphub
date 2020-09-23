@@ -23,6 +23,7 @@ require("../utils/spinner");
 require("../utils/table");
 
 require("../views/data_management_plans/newEdit");
+require("../views/data_management_plans/show");
 require("../views/shared/form");
 require("../views/users/signUp");
 

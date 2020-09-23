@@ -1,17 +1,30 @@
-<%# locals: contributor %>
+<%# locals: contributor_hash %>
 
-<% orcid = contributor.orcids.first %>
+<% p contributor_hash.inspect %>
 
-<li><strong>Name:</strong> <%= contributor.name %></li>
+<% orcid = contributor_hash[:contributor].orcids.first %>
 
-<% if orcid.present? %>
-  <li><%= identifier_to_link(identifier: orcid) %></li>
-<% end %>
+<li>
+  <strong>Name:</strong> <%= contributor_hash[:contributor].name %>
 
-<% if contributor.affiliation.present? %>
-  <li>
-    <strong>Affiliation:</strong>
-    <%= render partial: '/landing/affiliation',
-               locals: { affiliation: contributor.affiliation } %>
-  </li>
-<% end %>
+  <ul>
+    <% if orcid.present? %>
+      <li><%= identifier_to_link(identifier: orcid) %></li>
+    <% end %>
+    
+    <% if contributor_hash[:roles].any? %>
+      <li>
+        <strong>Roles:</strong>
+        <%= contributor_hash[:roles].uniq.sort { |a, b| a<=>b }.map { |r| role_to_link(role: r) }.join(', ').html_safe %>
+      </li>
+    <% end %>
+
+    <% if contributor_hash[:contributor].affiliation.present? %>
+      <li>
+        <strong>Affiliation:</strong>
+        <%= render partial: '/landing/affiliation',
+                   locals: { affiliation: contributor_hash[:contributor].affiliation } %>
+      </li>
+    <% end %>
+  </ul>
+</li>

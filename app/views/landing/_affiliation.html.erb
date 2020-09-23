@@ -2,4 +2,4 @@
 
 <% ror = affiliation.rors.first %>
 
-<%= ror.present? ? link_to(affiliation.name, ror.value) : affiliation.name %>
+<%= ror.present? ? link_to(affiliation.name, ror.value, target: '_blank') : affiliation.name %>

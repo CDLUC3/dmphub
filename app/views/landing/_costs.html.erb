@@ -1,10 +1,10 @@
 <%# locals: dmp %>
 
-<% if dmp.costs.any? %>
-  <details>
-    <summary>Costs</summary>
+<details>
+  <summary>Costs</summary>
 
-    <div class="c-accordion__section">
+  <div class="c-accordion__section">
+    <% if dmp.costs.any? %>
       <ul>
         <% dmp.costs.each do |cost| %>
           <li><strong>Title:</strong> <%= cost.title %></li>
@@ -16,6 +16,8 @@
           <li><strong>Amount:</strong> <%= number_to_currency(cost.value, locale: cost.currency) %></li>
         <% end %>
       </ul>
-    </div>
-  </details>
-<% end %>
+    <% else %>
+      <p>No costs have been identified.</p>
+    <% end %>
+  </div>
+</details>

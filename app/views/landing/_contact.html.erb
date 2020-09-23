@@ -2,5 +2,6 @@
 
 <h3>Primary Contact</h3>
 <ul>
-  <%= render partial: '/landing/contributor', locals: { contributor: dmp.primary_contact } %>
+  <%= render partial: '/landing/contributor',
+             locals: { contributor_hash: { contributor: dmp.primary_contact, roles: [] } } %>
 </ul>

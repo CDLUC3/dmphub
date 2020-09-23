@@ -1,8 +1,11 @@
 <%# locals: project, dmp %>
 
+<h3>Abstract</h3>
+<p>
 <% if dmp.description.present? || project.description.present? %>
-  <h3>Abstract</h3>
-  <p>
-    <%= dmp.description&.html_safe || project.description.html_safe %>
-  </p>
+  <%= dmp.description&.html_safe || project.description.html_safe %>
+<% else %>
+  No abstract was provided.<br>
+  Please refer to the 'Is Metadata For' identifier above for more information about this DMP.
 <% end %>
+</p>

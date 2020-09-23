@@ -3,16 +3,15 @@
       render partial: '/data_management_plans/index',
       locals: {
         data_management_plans: @data_management_plans,
-        controller: 'home',
-        action: 'dashboard',
         sort_col: @sort_col,
-        sort_dir: @sort_dir
+        sort_dir: @sort_dir,
+        search_words: @search_words
       }
   ) %>
   $('.data-management-plans-table').replaceWith("<%= payload %>");
 
 <% else %>
   $('.data-management-plans-table').replaceWith(
-    "<p>There were no DMPs that matched your search term.</p>"
+    "<p>Something went wrong. Try refreshing the page. :/</p>"
   );
 <% end %>

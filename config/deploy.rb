@@ -26,9 +26,6 @@ set :deploy_to, fetch(:capistrano_dir)
 # Default value for :pty is false
 # set :pty, true
 
-# Default value for :linked_files is []
-# append :linked_files, 'config/master.key'
-
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 
@@ -46,7 +43,6 @@ set :default_env, { path: '$PATH' }
 
 namespace :deploy do
   before :compile_assets, :env_setup
-  # before 'check:linked_files', :copy_config
 
   desc 'Setup ENV Variables'
   task :env_setup do
@@ -59,10 +55,4 @@ namespace :deploy do
       f.close
     end
   end
-
-  # task :copy_config do
-  #   on release_roles :app do
-  #     execute "cp -r -n #{Dir.pwd}/config/ #{shared_path}/config/"
-  #   end
-  # end
 end

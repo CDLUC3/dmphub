@@ -14,12 +14,15 @@ Rails.application.routes.draw do
     # get '/users/sign_out', to: 'devise/sessions#destroy'
   end
 
+  get '/login', to: 'home#login', as: 'login'
   get '/dashboard', to: 'home#dashboard'
   get '/admin', to: 'admin#dashboard'
+  get '/faq', to: 'home#faq'
 
+  # Home page table controls
   post '/search', to: 'home#search'
-  post '/filter', to: 'home#filter'
-  get '/login', to: 'home#login', as: 'login'
+  get '/page', to: 'home#page'
+  get '/sort', to: 'home#sort'
 
   resources :projects, only: %w[new create edit update] do
     resources :awards

@@ -1,0 +1,26 @@
+/* Tables */
+/* -------------------------- */
+.grid-table {
+  display: grid;
+  grid-template-rows: 10% auto;
+  grid-column-gap: 10px;
+  grid-row-gap: 15px;
+  margin-top: 15px;
+}
+.data-management-plans-table {
+  grid-template-columns: 17% auto 25% 10%;
+}
+.organizations-table {
+  grid-template-columns: auto 10% 10% auto;
+}
+.table-header {
+  font-weight: bold;
+  background-color: #f2f2f2;
+  border: 1px solid #d9d9d9;
+  place-self: stretch;
+  padding: auto 8px;
+  text-align: center;
+}
+.table-column {
+  border-bottom: 1px dotted #d9d9d9;;
+}

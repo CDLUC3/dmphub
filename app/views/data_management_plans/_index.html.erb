@@ -1,25 +1,41 @@
-<%# locals: data_management_plans, controller, action %>
+<%# locals: data_management_plans, sort_col, sort_dir, search_words %>
 
 <div  class="data-management-plans-table grid-table">
-  <div class="table-header col-medium">DOI</div>
-  <div class="table-header col-large">Title</div>
-  <div class="table-header col-small">Funded?</div>
-  <div class="table-header col-medium">Contact</div>
-  <div class="table-header col-small">Updated</div>
+  <div class="table-header col-small">DOI</div>
+  <div class="table-header col-large sortable">
+       Title <%= sort_link(column: 'title', current_sort_col: sort_col,
+                           current_dir: sort_dir, search: search_words) %>
+  </div>
+  <div class="table-header col-medium tooltip sortable">
+    Funder
+    <%= sort_link(column: 'funder', current_sort_col: sort_col,
+                        current_dir: sort_dir, search: search_words) %>
+    <span class="tooltiptext">The DMP's most recent funder.</span>
+  </div>
+  <div class="table-header col-small tooltip sortable">
+    <%= sort_link(column: 'updated_at', current_sort_col: sort_col,
+                        current_dir: sort_dir, search: search_words) %>
+    Updated <span class="tooltiptext">The date the DMP's DOI metadata was last updated.</span>
+  </div>
 
   <% data_management_plans.each do |dmp| %>
     <div class="table-column">
       <% path = dmp.dois.any? || dmp.arks.any? ? landing_page_path_with_doi(dmp: dmp) : data_management_plan_path(dmp) %>
-      <%= link_to path, path %>
+      <%= link_to path.gsub('/dmps/', ''), path %>
+    </div>
+    <div class="table-column tooltip">
+      <%= dmp.title.length > 65 ? "#{dmp.title[0..65]} ..." : dmp.title %>
+      <% if dmp.title.length > 65 || dmp.description.present? %>
+        <span class="tooltiptext-wide">
+          <strong><%= dmp.title %></strong>
+          <% if dmp.description.present? %>
+            <br><br>Abstract:<br><%= dmp.description&.html_safe %>
+          <% end %>
+        </span>
+      <% end %>
     </div>
     <div class="table-column">
-      <%= dmp.title.length > 49 ? "#{dmp.title[0..50]} ..." : dmp.title %>
-    </div>
-    <div class="table-column">
-      <%= dmp.project.fundings.collect { |a| a.funded? }.last.to_s.camelize %>
-    </div>
-    <div class="table-column">
-      <%= dmp.primary_contact.name %>
+      <%= dmp.project.fundings.last&.affiliation&.name %>
     </div>
     <div class="table-column">
       <%= safe_date(date: dmp.updated_at) %>
@@ -34,6 +50,8 @@
   <div class="table-nav">
     <%= paginate data_management_plans,
                  remote: true,
-                 params: { controller: controller, action: action } %>
+                 params: { controller: 'home', action: 'page',
+                           search_words: search_words,
+                           sort_col: sort_col, sort_dir: sort_dir } %>
   </div>
 </div>

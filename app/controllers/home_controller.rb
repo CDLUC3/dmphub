@@ -4,27 +4,37 @@
 class HomeController < ApplicationController
   before_action :authenticate_user!, only: %i[signup dashboard]
 
-  before_action :pagination_params, only: %i[filter search dashboard]
+  before_action :pagination_params, only: %i[index search page sort dashboard]
+  before_action :sort_params, only: %i[index search page sort dashboard]
 
   # GET /
   def index
-    dmps = DataManagementPlan.all.order(updated_at: :desc).limit(50)
-    @data_management_plans = paginate_response(results: dmps)
+    @data_management_plans = paginate_response(results: search_filter_and_sort)
   end
 
   # POST /search
   def search
-    terms = search_params[:search_words] || ''
-    dmps = DataManagementPlan.search(term: terms) if terms.present?
-    dmps = DataManagementPlan.all.order(updated_at: :desc) unless terms.present?
-    @data_management_plans = paginate_response(results: dmps)
+    # Force back to page 1
+    @page = 1
+    @data_management_plans = paginate_response(results: search_filter_and_sort)
   end
 
-  # POST /filter
-  def filter
+  # GET /sort (triggered by remote links)
+  def sort
+    # Force back to page 1
     @page = 1
-    @other_plans = paginate_response(results: apply_filters)&.order(:title)
+    @data_management_plans = paginate_response(results: search_filter_and_sort)
+    render layout: false
   end
+
+  # GET /page (triggered by remote links)
+  def page
+    @data_management_plans = paginate_response(results: search_filter_and_sort)
+    render layout: false
+  end
+
+  # GET /faq
+  def faq; end
 
   # GET /dashboard
   def dashboard
@@ -44,31 +54,72 @@ class HomeController < ApplicationController
   private
 
   def search_params
-    params.require(:search).permit(:search_words)
+    params.permit(:search_words)
   end
 
-  def apply_filters
-    return all_dmps unless params[:organization_id].present? || params[:funder_id].present?
+  def filter_params
+    params.permit(:organization_id, :funder_id)
+  end
 
-    if params[:organization_id].present? && !params[:funder_id].present?
+  def search_filter_and_sort
+    results = filter_params.present? ? apply_filters(results: results) : base_query.all
+    results = apply_search(results: results) if search_params.present?
+    results.order(order_clause)
+  end
+
+  def base_query
+    DataManagementPlan.includes(:identifiers, project: { fundings: :affiliation })
+                      .joins(:identifiers)
+                      .left_outer_joins(project: { fundings: :affiliation })
+                      .distinct
+  end
+
+  # Generate the ORDER BY clause
+  def order_clause
+    col = case sort_params[:sort_col]
+          when 'title'
+            'data_management_plans.title'
+          when 'funder'
+            'affiliations_fundings.name'
+          else
+            'data_management_plans.updated_at'
+          end
+    { "#{col}": :"#{sort_params[:sort_dir]}" }
+  end
+
+  # Apply any filtering criteria
+  def apply_filters(results:)
+    return results unless filter_params.present?
+
+    if filter_params[:organization_id].present? && !filter_params[:funder_id].present?
       return DataManagementPlan.find_by_organization(
-        organization_id: params[:organization_id]
+        organization_id: filter_params[:organization_id]
       )
     end
 
-    if params[:funder_id].present? && !params[:organization_id].present?
+    if filter_params[:funder_id].present? && !filter_params[:organization_id].present?
       return DataManagementPlan.find_by_funder(
-        organization_id: params[:funder_id]
+        organization_id: filter_params[:funder_id]
       )
     end
 
-    DataManagementPlan.find_by_organization(organization_id: params[:organization_id])
-                      .find_by_funder(organization_id: params[:funder_id])
+    DataManagementPlan.find_by_organization(organization_id: filter_params[:organization_id])
+                      .find_by_funder(organization_id: filter_params[:funder_id])
+  end
+
+  # Apply any search criteria
+  def apply_search(results:)
+    return results unless search_params.present?
+
+    terms = search_params[:search_words] || ''
+    return results unless terms.present?
+
+    results.search(term: terms)
   end
 
   def all_dmps
     join_hash = {
-      project: { awards: :identifiers },
+      project: { awards: %i[identifiers affiliation] },
       person_data_management_plans: :person
     }
     DataManagementPlan.includes(:identifiers, join_hash).all

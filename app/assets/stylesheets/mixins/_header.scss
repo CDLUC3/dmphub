@@ -8,4 +8,9 @@
   h1 {
     @include u-hide;
   }
+
+  nav a:not(:first-child) {
+    margin-left: 15px;
+    margin-right: 5px;
+  }
 }

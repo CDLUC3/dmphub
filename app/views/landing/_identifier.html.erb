@@ -6,10 +6,6 @@
     <%= identifier.value %>
   <% else %>
     <% descriptor = identifier.descriptor&.split('_')&.map { |w| w.capitalize }&.join(' ') %>
-    <% if identifier.value.downcase.start_with?('http') %>
-      <%= descriptor %> - <%= link_to identifier.value, identifier.value %>
-    <% else %>
-      <%= descriptor %> - <%= identifier.value %>
-    <% end %>
+    <%= descriptor %> - <%= identifier_to_link(identifier: identifier) %>
   <% end %>
 </li>

@@ -1,12 +1,30 @@
-<%# locals: cdmps %>
+<%# locals: primary_contact, cdmps %>
 
 <details>
   <summary>Contributors</summary>
 
+  <%
+  contributors = {}
+  cdmps.each do |cdmp|
+    next if cdmp.contributor == primary_contact
+
+    unless contributors[:"#{cdmp.id}"].present?
+      contributors[:"#{cdmp.id}"] = { contributor: cdmp.contributor, roles: [] }
+    end
+    contributors[:"#{cdmp.id}"][:roles] << cdmp.role unless cdmp.role == 'primary_contact'
+  end
+  %>
+
   <div class="c-accordion__section">
-    <ul>
-      <%= render partial: '/landing/roles',
-                 locals: { contributors_data_management_plans: cdmps } %>
-    </ul>
+    <% if contributors.keys.any? %>
+      <ul>
+        <% contributors.each do |k, v| %>
+          <%= render partial: '/landing/contributor',
+                     locals: { contributor_hash: v } %>
+        <% end %>
+      </ul>
+    <% else %>
+      <p>No contributors have been identified.</p>
+    <% end %>
   </div>
 </details>

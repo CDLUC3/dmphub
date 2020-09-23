@@ -34,6 +34,9 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'devise'
 # Bit fields for ActiveRecord
 gem 'flag_shih_tzu'
+# A Sass-powered version of FontAwesome for your Ruby projects and plays nicely
+# with Ruby on Rails, Compass, Sprockets, etc.
+gem 'font-awesome-sass', '~> 5.13.0'
 # Makes http fun again! Ain't no party like a httparty, because a httparty don't stop.
 gem 'httparty'
 # A ruby implementation of the RFC 7519 OAuth JSON Web Token (JWT) standard.

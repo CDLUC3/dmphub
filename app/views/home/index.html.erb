@@ -10,4 +10,5 @@
 
 <%= render partial: 'data_management_plans/index',
            locals: { data_management_plans: @data_management_plans,
-                     controller: 'home', action: 'search' } %>
+                     sort_col: @sort_col, sort_dir: @sort_dir,
+                     search_words: @search_words } %>

@@ -1,0 +1,20 @@
+/* Spinner */
+/* -------------------------- */
+main .spinner {
+  text-align: center;
+}
+main .spinner img {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  z-index: 999;
+  width: 50px;
+  animation: spin 1s ease-in-out infinite;
+  -webkit-animation: spin 1s ease-in-out infinite;
+}
+@keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  to { -webkit-transform: rotate(360deg); }
+}

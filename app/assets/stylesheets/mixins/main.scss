@@ -14,6 +14,7 @@
 // ***** Global ***** //
 
 @import 'fonts';
+@import 'fontawesome';
 @import 'hidden';
 @import 'lineheight';
 
@@ -25,6 +26,7 @@
 @import 'input';
 @import 'label';
 @import 'link';
+@import 'table';
 @import 'textarea';
 
 // ***** Components ***** //
@@ -35,11 +37,21 @@
 @import 'header';
 @import 'intro';
 @import 'logo';
+@import 'notification';
 @import 'orcid';
 @import 'other';
 @import 'progress';
 @import 'required';
+@import 'spinner';
+@import 'typeahead';
+@import 'tooltip';
 
 // ***** Templates ***** //
 
 @import 'step';
+
+/* Main Element */
+/* -------------------------- */
+main {
+  margin-bottom: 25px;
+}

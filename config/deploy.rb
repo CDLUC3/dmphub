@@ -26,8 +26,6 @@ set :deploy_to, fetch(:capistrano_dir)
 # Default value for :pty is false
 # set :pty, true
 
-# Default value for :linked_files is []
-
 # Default value for linked_dirs is []
 append :linked_dirs, 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 
@@ -57,5 +55,4 @@ namespace :deploy do
       f.close
     end
   end
-
 end

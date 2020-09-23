@@ -1,0 +1,31 @@
+/* Notifications */
+/* -------------------------- */
+.notification-alert {
+  color: $color-red;
+}
+.notification-notice {
+  color: $color-blue;
+}
+
+.error {
+  border-color: red;
+}
+
+.field_with_errors {
+  display: inline;
+}
+.field_with_errors input,
+.field_with_errors textarea,
+.field_with_errors select {
+  border-color: red;
+}
+.form-success {
+  color: green;
+}
+.form-error {
+  color: red;
+}
+
+.hidden {
+  display: none;
+}

@@ -221,13 +221,3 @@ describe 'EZID XML' do
     end
   end
 end
-
-# Example structure of expected JSON output:
-# {
-#   "name"=>"Botsford-Waters",
-#   "abbreviation"=>"BW",
-#   "identifiers"=>[{
-#     "type"=>"grid",
-#     "identifier"=>"grid.39084673245986"
-#   }]
-# }

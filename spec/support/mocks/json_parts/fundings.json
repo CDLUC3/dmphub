@@ -10,7 +10,20 @@
       "type": "URL",
       "identifier": "http://example.org/awards/1"
     },
-    "funding_status": "applied"
+    "funding_status": "applied",
+    "extension": {
+      "dmphub": {
+        "funded_affiliations": [
+          {
+            "name": "University of Somewhere",
+            "affiliation_id": {
+              "type": "ROR",
+              "identifier": "https://ror.org/1234567890"
+            }
+          }
+        ]
+      }
+    }
   },
   "minimal": {
     "funder_id": {

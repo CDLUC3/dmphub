@@ -51,7 +51,6 @@ module Api
           end
 
           # Search for an Org locally and then externally if not found
-          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def find_by_name(provenance:, json: {})
             return nil unless json.present? && json[:name].present?
 
@@ -61,9 +60,13 @@ module Api
 
             # External ROR search
             unless json.fetch(:affiliation_id, {})[:type]&.downcase == 'ror'
-              affiliation = ExternalApis::RorService.search(term: json[:name])
-              affiliation.provenance = provenance if affiliation.present?
-              affiliation.identifiers.each { |id| id.provenance = provenance } if affiliation.present?
+              results = ExternalApis::RorService.search(term: json[:name])
+
+              affiliation = select_ror_candidate(provenance: provenance,
+                                                 results: results, json: json)
+
+p affiliation.inspect
+
               return affiliation if affiliation.present?
             end
 
@@ -71,7 +74,6 @@ module Api
             ::Affiliation.new(provenance: provenance, name: json[:name],
                               alternate_names: [], types: [], attrs: {})
           end
-          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Marshal the Identifier and attach it to the Affiliation
           def attach_identifier(provenance:, affiliation:, json: {})
@@ -84,6 +86,44 @@ module Api
             affiliation.identifiers << identifier if identifier.present? && identifier.new_record?
             affiliation
           end
+
+          def select_ror_candidate(provenance:, results: [], json:)
+            identifier = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
+            return nil unless provenance.present? && results.present? && results.any?
+
+            results = results.select do |result|
+              (result[:ror] == identifier[:identifier] && identifier[:type].downcase == 'ROR') ||
+                (result[:sort_name].downcase == json[:name].downcase)
+            end
+            return nil unless results.any?
+
+p results.first.inspect
+
+            ror_candidate_to_affiliation(provenance: provenance, result: results.first)
+          end
+
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+          def ror_candidate_to_affiliation(provenance:, result:)
+            return nil unless provenance.present? && result.present?
+
+            affiliation = ::Affiliation.new(name: result[:sort_name])
+            if result[:ror].present?
+              ror = Api::V0::Deserialization::Identifier.deserialize(
+                provenance: provenance, identifiable: affiliation,
+                json: { type: 'ror', identifier: result[:ror] }
+              )
+              affiliation.identifiers << ror if ror.present? && ror.new_record?
+            end
+            if result[:fundref].present?
+              ror = Api::V0::Deserialization::Identifier.deserialize(
+                provenance: provenance, identifiable: affiliation,
+                json: { type: 'fundref', identifier: result[:fundref] }
+              )
+              affiliation.identifiers << ror if ror.present? && ror.new_record?
+            end
+            affiliation
+          end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         end
       end
     end

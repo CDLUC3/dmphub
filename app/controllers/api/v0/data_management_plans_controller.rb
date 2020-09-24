@@ -74,11 +74,6 @@ module Api
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       rescue StandardError => e
-
-p "HEREEEEEEEEEEEE!"
-p e.message
-p e.backtrace
-
         render_error errors: [e.message], status: :bad_request
       end
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -120,7 +115,7 @@ p e.backtrace
           @dmp = @dmp.reload
           raise StandardError, @dmp.errors.full_messages unless @dmp.valid?
 
-          @dmp.mint_doi(provenance: provenance) unless @dmp.dois.any?
+          @dmp.mint_doi(provenance: provenance) unless @dmp.doi.present?
 
           ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
           ApiClientHistory.create(api_client: client, data_management_plan: @dmp, change_type: action,

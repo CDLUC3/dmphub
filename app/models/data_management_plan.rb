@@ -89,6 +89,10 @@ class DataManagementPlan < ApplicationRecord
   end
   # rubocop:enable Style/GuardClause
 
+  def doi
+    dois.select { |d| d.descriptor == 'is_identified_by' && %w[ark doi].include?(d.category) }.last
+  end
+
   def mint_doi(provenance:)
     # retrieve the Datacite Provenance or initialize it
     ids = ExternalApis::EzidService.mint_doi(

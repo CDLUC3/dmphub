@@ -56,19 +56,19 @@ module ApplicationHelper
   end
 
   def landing_page_path_with_doi(dmp:)
-    return root_path unless dmp.id.present? && dmp.dois.first.present?
+    return root_path unless dmp.id.present? && dmp.doi.present?
 
     id_to_doi(dmp: dmp, value: landing_page_path(dmp))
   end
 
   def landing_page_url_with_doi(dmp:)
-    return root_url unless dmp.id.present? && dmp.dois.first.present?
+    return root_url unless dmp.id.present? && dmp.doi.present?
 
     id_to_doi(dmp: dmp, value: landing_page_url(dmp))
   end
 
   def id_to_doi(dmp:, value:)
-    doi = dmp.dois.first&.value
+    doi = dmp.doi&.value
     return value unless doi.present?
 
     prefix = Rails.configuration.x.ezid[:doi_prefix]

@@ -20,7 +20,7 @@
 
   <% data_management_plans.each do |dmp| %>
     <div class="table-column">
-      <% path = dmp.dois.any? || dmp.arks.any? ? landing_page_path_with_doi(dmp: dmp) : data_management_plan_path(dmp) %>
+      <% path = dmp.doi.present? ? landing_page_path_with_doi(dmp: dmp) : data_management_plan_path(dmp) %>
       <%= link_to path.gsub('/dmps/', ''), path %>
     </div>
     <div class="table-column tooltip">

@@ -119,7 +119,7 @@ module Api
           when 'credit'
             'CRediT'
           else
-            category.upcase
+            category&.upcase
           end
         end
 

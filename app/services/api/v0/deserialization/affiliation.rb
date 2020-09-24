@@ -64,9 +64,6 @@ module Api
 
               affiliation = select_ror_candidate(provenance: provenance,
                                                  results: results, json: json)
-
-p affiliation.inspect
-
               return affiliation if affiliation.present?
             end
 
@@ -87,6 +84,7 @@ p affiliation.inspect
             affiliation
           end
 
+          # rubocop:disable Metrics/CyclomaticComplexity
           def select_ror_candidate(provenance:, results: [], json:)
             identifier = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
             return nil unless provenance.present? && results.present? && results.any?
@@ -97,10 +95,9 @@ p affiliation.inspect
             end
             return nil unless results.any?
 
-p results.first.inspect
-
             ror_candidate_to_affiliation(provenance: provenance, result: results.first)
           end
+          # rubocop:enable Metrics/CyclomaticComplexity
 
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def ror_candidate_to_affiliation(provenance:, result:)

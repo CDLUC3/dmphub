@@ -71,6 +71,32 @@ class DatacitePresenter
     }
   end
 
+  # Converts the Identifier's category into a DataCite relatedIdentifierType
+  def related_identifier_type(identifier:)
+    case identifier.category
+    when 'arxiv'
+      'arXiv'
+    when %w[bibcode w3id]
+      identifier.category.to_s
+    when %w[handle]
+      identifier.category.to_s.capitalize
+    when %w[doi ean13 eissn igsn isbn issn istc lissn lsid pmid purl upc url urn]
+      identifier.category.to_s.upcase
+    else
+      identifier.category.to_s.start_with?('http') ? 'URL' : 'Handle'
+    end
+  end
+
+  # Converts the Identifier's descriptor to a DataCite relationType
+  def relation_type(identifier:)
+    return 'isReferencedBy' unless identifier.present? && identifier.descriptor.present?
+    # Due to a conflict between ActiveRecord's 'references' method we store that
+    # descriptor as 'does_reference'
+    return 'References' if identifier.descriptor == 'does_reference'
+
+    identifier.descriptor.to_s.split('_').map(&:capitalize).join
+  end
+
   private
 
   # Retrieves all of the contributors who were authors of the DMP for DataCite's <creators>
@@ -100,6 +126,7 @@ class DatacitePresenter
 
   # Retrieves all of the identifiers for DataCite's <relatedIdentifiers>
   def find_related
-    @dmp.identifiers.reject { |id| %w[identified_by funded_by].include?(id.descriptor) }
+    # Skip any descriptors that are used internally to relate an Identifier to its Identifiable
+    @dmp.identifiers.reject { |id| %w[is_identified_by is_funded_by].include?(id.descriptor) }
   end
 end

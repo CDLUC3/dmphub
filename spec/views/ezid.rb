@@ -7,11 +7,12 @@ describe 'EZID XML' do
     @dmp = create(:data_management_plan, :complete, contributors_count: 2)
     # Ensure all of the fundings have been granted and they have a Fundref!
     @dmp.project.fundings.each do |funding|
-      funding.affiliation.identifiers << build(:identifier, category: 'fundref', descriptor: 'identified_by',
+      funding.affiliation.identifiers << build(:identifier, category: 'fundref', descriptor: 'is_identified_by',
                                                             provenance: @dmp.provenance,
                                                             value: 'https://api.crossref.org/funders/100000001')
       funding.status = 'granted'
     end
+    @dmp.identifiers << build(:identifier, category: 'url', descriptor: 'is_cited_by', provenance: @dmp.provenance)
     @presenter = DatacitePresenter.new(@dmp)
     render template: 'ezid/minter', locals: { data_management_plan: @dmp }
 
@@ -123,10 +124,9 @@ describe 'EZID XML' do
         contributors = @xml.css('contributors contributor')
         @contributor = contributors.reject { |c| %w[HostingInstitution Producer].include?(c.attr('contributorType')) }.first
 
-        p "INTERMITTENT FAILURE:" if @contributor.nil?
+        p 'INTERMITTENT FAILURE:' if @contributor.nil?
         p @presenter.creators.inspect if @contributor.nil?
         p @presenter.contributors.inspect if @contributor.nil?
-
       end
       it 'has a <contributorName> element' do
         subject = @contributor.css('contributorName')
@@ -193,6 +193,30 @@ describe 'EZID XML' do
       it 'has a <awardTitle> element' do
         subject = @xml.css('fundingReferences fundingReference').first.css('awardTitle')
         expect(subject.children.first.text.strip).to eql(@dmp.title)
+      end
+    end
+
+    it 'has a <relatedIdentifiers><relatedIdentifier> element' do
+      expect(@xml.css('relatedIdentifiers relatedIdentifier').length.positive?).to eql(true)
+      subject = @xml.css('relatedIdentifiers relatedIdentifier').first
+      expect(subject.present?)
+    end
+
+    context '<relatedIdentifiers>' do
+      before(:each) do
+        @expected = @presenter.related_identifiers.first
+      end
+      it 'has a relationType attribute' do
+        subject = @xml.css('relatedIdentifiers relatedIdentifier').first
+        expect(subject.attr('relationType')).to eql(@presenter.relation_type(identifier: @expected))
+      end
+      it 'has a relatedIdentifierType attribute' do
+        subject = @xml.css('relatedIdentifiers relatedIdentifier').first
+        expect(subject.attr('relatedIdentifierType')).to eql(@presenter.related_identifier_type(identifier: @expected))
+      end
+      it 'has the identifier value' do
+        subject = @xml.css('relatedIdentifiers relatedIdentifier').first
+        expect(subject.children.first.text.strip).to eql(@expected.value)
       end
     end
   end

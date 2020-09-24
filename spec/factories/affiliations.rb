@@ -16,7 +16,7 @@ FactoryBot.define do
       after :create do |affiliation, evaluator|
         evaluator.identifier_count.times do
           affiliation.identifiers << create(:identifier, category: 'ror', identifiable: affiliation,
-                                                         descriptor: 'identified_by', provenance: affiliation.provenance)
+                                                         descriptor: 'is_identified_by', provenance: affiliation.provenance)
         end
       end
     end

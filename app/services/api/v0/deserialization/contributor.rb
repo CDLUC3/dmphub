@@ -68,7 +68,7 @@ module Api
             return nil unless id[:identifier].present?
 
             id = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: nil, json: json, descriptor: 'identified_by'
+              provenance: provenance, identifiable: nil, json: json, descriptor: 'is_identified_by'
             )
             id.present? ? id.identifiable : nil
           end

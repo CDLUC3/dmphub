@@ -63,7 +63,7 @@ module Api
 
             grant = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: funding, json: json[:grant_id],
-              descriptor: 'funded_by'
+              descriptor: 'is_funded_by'
             )
             return funding unless grant.present?
 

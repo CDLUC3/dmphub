@@ -101,7 +101,7 @@ module Api
             id = json.fetch(:dmp_id, {})
             return dmp unless id[:identifier].present?
 
-            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'identified_by'
+            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'is_identified_by'
             identifier = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor
             )

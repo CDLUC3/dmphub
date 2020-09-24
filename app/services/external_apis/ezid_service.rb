@@ -108,7 +108,7 @@ module ExternalApis
           val = parts.first == 'ark' ? "#{ark_prefix}#{parts.last}" : "#{doi_prefix}#{parts.last}"
 
           Identifier.new(category: parts.first, value: val,
-                         provenance: provenance, descriptor: 'identified_by')
+                         provenance: provenance, descriptor: 'is_identified_by')
         end
       end
     end

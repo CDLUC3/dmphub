@@ -4,10 +4,33 @@
 class Identifier < ApplicationRecord
   include Alterable
 
-  enum category: %i[ark doi credit duns fundref handle isni orcid openid program
-                    ror sub_program url]
-  enum descriptor: %i[described_by funded_by identified_by is_metadata_for
-                      is_supplement_to is_referenced_by]
+  # Based on the DataCite 4.3 schema relatedIdentifierType
+  enum category: %i[ark arxiv bibcode credit doi duns ean13 eissn fundref handle
+                    igsn isbn isni issn istc lissn lsid openid orcid pmid program
+                    purl ror sub_program url urn w3id]
+
+  # Based on the DataCite 4.3 schema relationType plus the following for internal use:
+  #   is_identified_by   ->  links a model to its external identifier (e.g. ROR, ORCID, etc.)
+  #   is_funded_by       ->  The grant associated with a funding
+  #
+  # Note that the 'references' value is changed to 'does_reference' in this list
+  # because 'references' conflicts with an ActiveRecord method
+  enum descriptor: %i[is_funded_by is_identified_by
+                      cites is_cited_by
+                      compiles is_compiled_by
+                      continues is_continued_by
+                      describes is_described_by
+                      documents is_documented_by
+                      has_metadata is_metadata_for
+                      has_version is_version_of is_new_version_of is_previous_version_of
+                      has_part is_part_of
+                      is_derived_from is_identical_to is_original_form_of
+                      is_source_of is_supplemented_by is_supplement_to
+                      is_variant_form_of
+                      obsoletes is_obsoleted_by
+                      does_reference is_referenced_by
+                      requires is_required_by
+                      reviews is_reviewed_by]
 
   # Associations
   belongs_to :identifiable, polymorphic: true

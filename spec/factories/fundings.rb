@@ -22,11 +22,11 @@ FactoryBot.define do
         # Ensure affiliation has a Fundref ID
         unless funding.fundrefs.any?
           funding.affiliation.identifiers << create(:identifier, category: 'fundref', identifiable: funding.affiliation,
-                                                                 descriptor: 'identified_by', provenance: funding.provenance)
+                                                                 descriptor: 'is_identified_by', provenance: funding.provenance)
         end
 
         evaluator.identifier_count.times do
-          funding.identifiers << create(:identifier, category: 'url', identifiable: funding, descriptor: 'funded_by',
+          funding.identifiers << create(:identifier, category: 'url', identifiable: funding, descriptor: 'is_funded_by',
                                                      provenance: funding.provenance)
         end
         evaluator.funded_affiliation_count.times do

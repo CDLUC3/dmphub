@@ -54,4 +54,15 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
         <% end %>
       </fundingReferences>
     <% end %>
+
+    <% if presenter.related_identifiers.any? %>
+      <relatedIdentifiers>
+        <% presenter.related_identifiers.each do |identifier| %>
+          <relatedIdentifier relationType="<%= presenter.relation_type(identifier: identifier) %>"
+                             relatedIdentifierType="<%= presenter.related_identifier_type(identifier: identifier) %>">
+            <%= identifier.value %>
+          </relatedIdentifier>
+        <% end %>
+      </relatedIdentifiers>
+    <% end %>
   </resource>

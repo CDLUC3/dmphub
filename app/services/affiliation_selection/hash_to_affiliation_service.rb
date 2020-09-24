@@ -62,7 +62,7 @@ module AffiliationSelection
         affiliation.identifiers << Identifier.new(
           category: 'ror',
           value: hash[:id],
-          descriptor: 'identified_by',
+          descriptor: 'is_identified_by',
           provenance: provenance
         )
         affiliation

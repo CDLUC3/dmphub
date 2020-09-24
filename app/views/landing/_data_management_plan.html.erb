@@ -1,7 +1,14 @@
 <%# locals: dmp, project %>
 
-<% doi = @dmp.dois.first %>
-<% identifiers = @dmp.identifiers.select { |id| id.category != 'doi' } %>
+<%
+doi = @dmp.dois.first
+identifiers = @dmp.identifiers.select do |id|
+  id.descriptor == 'is_identified_by' && id.category != 'doi'
+end
+related_identifiers = @dmp.identifiers.reject do |id|
+  %w[is_identified_by is_funded_by].include?(id.descriptor)
+end
+%>
 
 <h3>Data Management Plan</h3>
 
@@ -18,6 +25,17 @@
       <strong>Identifiers:</strong>
       <ul>
         <% identifiers.each do |identifier| %>
+          <%= render partial: '/landing/identifier',
+                     locals: { identifier: identifier } %>
+        <% end %>
+      </ul>
+    </li>
+  <% end %>
+  <% if related_identifiers.any? %>
+    <li>
+      <strong>Related Identifiers:</strong>
+      <ul>
+        <% related_identifiers.each do |identifier| %>
           <%= render partial: '/landing/identifier',
                      locals: { identifier: identifier } %>
         <% end %>

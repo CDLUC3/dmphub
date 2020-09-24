@@ -4,6 +4,7 @@ module Api
   module V0
     module Deserialization
       # Converts the JSON into a DMP
+      # rubocop:disable Metrics/ClassLength
       class DataManagementPlan
         class << self
           # Convert the incoming JSON into a Plan
@@ -33,7 +34,18 @@ module Api
           #       }],
           #       "dataset": [{
           #         "$ref": "SEE Dataset.deserialize! for details"
-          #       }]
+          #       }],
+          #       "extension": {
+          #         "dmphub": {
+          #           "related_identifiers": [
+          #             {
+          #               "datacite_relation_type": "is_cited_by",
+          #               "datacite_related_identifier_type": "doi",
+          #               "value": "doi:10.123/12345"
+          #             }
+          #           ]
+          #         }
+          #       }
           #     }
           #   }
           def deserialize(provenance:, json: {})
@@ -61,6 +73,8 @@ module Api
             dmp = deserialize_projects(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
+            dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp,
+                                                  json: json.fetch(:extension, {}).fetch(:dmphub, {}))
             dmp
           end
 
@@ -101,7 +115,7 @@ module Api
             id = json.fetch(:dmp_id, {})
             return dmp unless id[:identifier].present?
 
-            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'identified_by'
+            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'is_identified_by'
             identifier = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor
             )
@@ -150,6 +164,19 @@ module Api
             dmp
           end
 
+          def deserialize_related_identifiers(provenance:, dmp:, json:)
+            return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
+
+            json[:related_identifiers].each do |related|
+              identifier = ::Identifier.find_or_initialize_by(
+                provenance: provenance, category: related[:datacite_related_identifier_type],
+                descriptor: related[:datacite_relation_type], identifiable: dmp, value: related[:value]
+              )
+              dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
+            end
+            dmp
+          end
+
           # Deserialize the Dataset information and attach to DMP
           def deserialize_datasets(provenance:, dmp:, json: {})
             json.fetch(:dataset, []).each do |dataset_json|
@@ -181,6 +208,7 @@ module Api
             ::Dataset.new(title: "Dataset: #{dmp.title}", provenance: provenance)
           end
         end
+        # rubocop:enable Metrics/ClassLength
       end
     end
   end

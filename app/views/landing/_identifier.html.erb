@@ -1,11 +1,7 @@
 <%# locals: identifier %>
 
 <li>
-  <strong><%= humanize_underscored(name: identifier.provenance.name) %> - <%= humanize_underscored(name: identifier.category) %>:</strong>
-  <% if %w[doi].include?(identifier.category) %>
-    <%= identifier.value %>
-  <% else %>
-    <% descriptor = identifier.descriptor&.split('_')&.map { |w| w.capitalize }&.join(' ') %>
-    <%= descriptor %> - <%= identifier_to_link(identifier: identifier) %>
-  <% end %>
+  <strong><%= humanize_underscored(name: identifier.category).upcase %>:</strong>
+  <% descriptor = identifier.descriptor&.split('_')&.map { |w| w.capitalize }&.join(' ') %>
+  <%= descriptor %> - <%= identifier_to_link(identifier: identifier) %>
 </li>

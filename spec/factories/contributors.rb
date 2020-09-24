@@ -15,7 +15,7 @@ FactoryBot.define do
       before :create do |contributor, evaluator|
         evaluator.role_count.times do
           contributor.identifiers << create(:identifier, category: 'credit', identifiable: contributor,
-                                                         descriptor: 'identified_by', provenance: contributor.provenance)
+                                                         descriptor: 'is_identified_by', provenance: contributor.provenance)
         end
         contributor.affiliation = create(:affiliation, :complete) unless contributor.affiliation.present?
       end
@@ -23,7 +23,7 @@ FactoryBot.define do
       after :create do |contributor, evaluator|
         evaluator.identifier_count.times do
           contributor.identifiers << create(:identifier, category: 'orcid', identifiable: contributor,
-                                                         descriptor: 'identified_by', provenance: contributor.provenance)
+                                                         descriptor: 'is_identified_by', provenance: contributor.provenance)
         end
         contributor.save
       end

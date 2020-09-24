@@ -61,7 +61,7 @@ module Users
       Identifier.create(
         identifiable: contributor,
         category: 'orcid',
-        descriptor: 'identified_by',
+        descriptor: 'is_identified_by',
         provenance: provenance
       )
     end

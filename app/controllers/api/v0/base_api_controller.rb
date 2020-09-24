@@ -137,7 +137,8 @@ module Api
            contributor: contributor_permitted_params,
            cost: cost_permitted_params,
            project: project_permitted_params,
-           dataset: dataset_permitted_params]
+           dataset: dataset_permitted_params,
+           extension: data_management_plan_extension_params]
       end
 
       def identifier_permitted_params
@@ -169,7 +170,12 @@ module Api
       def funding_permitted_params
         %i[name funding_status] +
           [funder_id: identifier_permitted_params,
-           grant_id: identifier_permitted_params]
+           grant_id: identifier_permitted_params,
+           extension: funding_extension_params]
+      end
+
+      def funding_extension_params
+        [dmphub: [funded_affiliations: affiliation_permitted_params]]
       end
 
       def dataset_permitted_params
@@ -208,6 +214,14 @@ module Api
         %i[title description supports_versioning backup_type backup_frequency
            storage_type availability geo_location certified_with pid_system] +
           [url: identifier_permitted_params]
+      end
+
+      def data_management_plan_extension_params
+        [dmphub: [related_identifiers: related_identifier_params]]
+      end
+
+      def related_identifier_params
+        %i[datacite_relation_type datacite_related_identifier_type value]
       end
     end
     # rubocop:enable Metrics/ClassLength

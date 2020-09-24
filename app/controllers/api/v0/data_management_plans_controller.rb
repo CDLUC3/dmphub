@@ -74,6 +74,11 @@ module Api
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       rescue StandardError => e
+
+p "HEREEEEEEEEEEEE!"
+p e.message
+p e.backtrace
+
         render_error errors: [e.message], status: :bad_request
       end
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity

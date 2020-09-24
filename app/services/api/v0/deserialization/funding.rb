@@ -17,7 +17,20 @@ module Api
           #        "type": "URL",
           #        "identifier": "http://example-funder.org/awards/12345"
           #      },
-          #      "funding_status": "granted"
+          #      "funding_status": "granted",
+          #      "extension": {
+          #        "dmphub": {
+          #          "funded_affiliations": [
+          #            {
+          #              "name": "University of Somewhere",
+          #              "affiliation_id": {
+          #                "type": "ROR",
+          #                "identifier": "https://ror.org/43y4g4"
+          #              }
+          #            }
+          #          ]
+          #        }
+          #      }
           #    }
           def deserialize(provenance:, project:, json: {})
             return nil unless provenance.present? && project.present? && valid?(json: json)
@@ -29,8 +42,11 @@ module Api
             )
             return nil unless affiliation.present?
 
-            find_funding(provenance: provenance, project: project,
-                         affiliation: affiliation, json: json)
+            funding = find_funding(provenance: provenance, project: project,
+                                   affiliation: affiliation, json: json)
+
+            deserialize_funded_affiliations(provenance: provenance, funding: funding,
+                                            json: json.fetch(:extension, {}).fetch(:dmphub, {}))
           end
 
           private
@@ -63,11 +79,27 @@ module Api
 
             grant = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: funding, json: json[:grant_id],
-              descriptor: 'funded_by'
+              descriptor: 'is_funded_by'
             )
             return funding unless grant.present?
 
             funding.identifiers << grant unless funding.identifiers&.include?(grant)
+            funding
+          end
+
+          # Convert the funded_affiliations
+          def deserialize_funded_affiliations(provenance:, funding:, json:)
+            return funding unless funding.present? && json.fetch(:funding_affiliations, []).any?
+
+            json[:funding_affiliations].each do |affiliation|
+              funded = Api::V0::Deserialization::Affiliation.deserialize(
+                provenance: provenance,
+                json: { name: affiliation[:name], affiliation_id: affiliation.fetch(:affiliation_id, {}) }
+              )
+              next unless funded.present?
+
+              funding.funded_affiliations << funded unless funding.funded_affiliations.include?(funded)
+            end
             funding
           end
         end

@@ -51,6 +51,12 @@ class DatacitePresenter
   # Retrieve the award URI without the URL portion for DataCite's <AwardNumber>
   def award_number(funding:)
     return '' unless funding.funded? && funding.affiliation&.fundrefs&.any?
+    return '' unless funding.urls.last.present?
+
+p funding.inspect
+p funding.identifiers.last.value
+p funding.affiliation.fundrefs.last.value
+p Rails.configuration.x.funders[:award_urls].inspect
 
     mapping = Rails.configuration.x.funders[:award_urls]
     funding.urls.last.value.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')

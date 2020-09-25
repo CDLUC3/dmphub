@@ -53,12 +53,8 @@ class DatacitePresenter
     return '' unless funding.funded? && funding.affiliation&.fundrefs&.any?
     return '' unless funding.urls.last.present?
 
-p funding.inspect
-p funding.identifiers.last.value
-p funding.affiliation.fundrefs.last.value
-p Rails.configuration.x.funders[:award_urls].inspect
-
     mapping = Rails.configuration.x.funders[:award_urls]
+    return funding.urls.last.value unless mapping.present?
     funding.urls.last.value.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
   end
 

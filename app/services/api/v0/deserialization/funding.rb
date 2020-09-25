@@ -65,6 +65,8 @@ module Api
 
             funding = ::Funding.find_or_initialize_by(project: project,
                                                       affiliation: affiliation)
+            return nil unless funding.present?
+
             funding.provenance = provenance unless funding.provenance.present?
             funding.status = json[:funding_status]
             return funding unless json[:grant_id].present?

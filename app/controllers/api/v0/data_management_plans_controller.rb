@@ -120,6 +120,8 @@ p e.backtrace
           @dmp = @dmp.reload
           raise StandardError, @dmp.errors.full_messages unless @dmp.valid?
 
+p "EXISTING DOI: #{@dmp.doi.present?} :: #{@dmp.doi&.value}"
+
           @dmp.mint_doi(provenance: provenance) unless @dmp.doi.present?
 
           ApiClientAuthorization.create(authorizable: @dmp, api_client: client)
@@ -210,7 +212,6 @@ p e.backtrace
           end
           contrib.reload
         end
-
       end
 
       def saveable_attributes(attrs:)

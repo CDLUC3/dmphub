@@ -100,7 +100,10 @@ class DataManagementPlan < ApplicationRecord
       provenance: provenance
     )
     identifiers << ids.flatten.compact
-    dois.present? || arks.present?
+
+p "MINTED: #{ids.inspect}"
+
+    doi.present? || arks.any?
   end
 
   private

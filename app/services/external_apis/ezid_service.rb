@@ -58,7 +58,14 @@ module ExternalApis
                          additional_headers: hdrs, data: data,
                          basic_auth: creds) # , debug: true)
 
+p "EZID Response"
+p resp.body
+
         unless resp.present? && resp.code == 201
+
+p "EZID ERROR"
+p resp.code
+
           handle_http_failure(method: 'EZID mint_doi', http_response: resp)
           return []
         end

@@ -56,7 +56,7 @@ module ExternalApis
 
 p "DATA!!!!!!!!!!!!!!!!!!!!!!!!!"
 p data.inspect
-rails.logger.info data.inspect
+Rails.logger.info data.inspect
 
 
         hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }

@@ -53,6 +53,12 @@ module ExternalApis
       # Create a new DOI
       def mint_doi(data_management_plan:, provenance:)
         data = json_from_template(provenance: provenance, dmp: data_management_plan)
+
+p "DATA!!!!!!!!!!!!!!!!!!!!!!!!!"
+p data.inspect
+rails.logger.info data.inspect
+
+
         hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
         resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
                          additional_headers: hdrs, data: data,

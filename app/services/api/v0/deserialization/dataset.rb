@@ -9,12 +9,31 @@ module Api
           # Convert incoming JSON into a Dataset
           #    {
           #      "title": "Cerebral cortex imaging series",
+          #      "type": "Dataset",
           #      "personal_data": "unknown",
           #      "sensitive_data": "unknown",
+          #      "data_quality_assurance": "Our data will be of very high quality!",
           #      "dataset_id": {
           #        "type": "doi",
           #        "identifier": "https://doix.org/10.1234.123abc/y3"
-          #      }
+          #      },
+          #      "description": "A collection of MRI scans of cerebral cortex for all candidates",
+          #      "distribution": [{
+          #        "$ref": "SEE Distribution.deserialize! for details"
+          #      }],
+          #      "issued": "2020-09-13T08:48:12",
+          #      "keyword": ["brain", "cerebral", "squishy"],
+          #      "language": "eng",
+          #      "metadata": [{
+          #        "$ref": "SEE Metadatum.deserialize! for details"
+          #      }],
+          #      "preservation_statement": "We will preserve the data long term.",
+          #      "security_and_privacy": [{
+          #        "$ref": "SEE SecurityPrivacyStatement.deserialize! for details"
+          #      }],
+          #      "technical_resource": [{
+          #        "$ref": "SEE TechnicalResource.deserialize! for details"
+          #      }]
           #    }
           def deserialize(provenance:, dmp:, json: {})
             return nil unless provenance.present? && dmp.present? && valid?(json: json)
@@ -26,6 +45,17 @@ module Api
             dataset = find_by_title(provenance: provenance, json: json) unless dataset.present?
             return nil unless dataset.present? && dataset.valid?
 
+            dataset.personal_data = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:personal_data])
+            dataset.sensitive_data = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:sensitive_data])
+            dataset.description = json[:description]
+            dataset.issued = json[:issued]
+            dataset.preservation_statement = json[:preservation_statement]
+
+            dataset = deserialize_keywords(provenance: provenance, dataset: dataset, json: json)
+            dataset = deserialize_metadata(provenance: provenance, dataset: dataset, json: json)
+            dataset = deserialize_security_privacy_statements(provenance: provenance, dataset: dataset, json: json)
+            dataset = deserialize_technical_resources(provenance: provenance, dataset: dataset, json: json)
+
             attach_identifier(provenance: provenance, dataset: dataset, json: json)
           end
 
@@ -33,7 +63,7 @@ module Api
 
           # The JSON is valid if the Dataset has a title
           def valid?(json: {})
-            json.present? && json[:title].present?
+            json.present? && json[:title].present? && json[:dataset_id].present?
           end
 
           # Locate the Dataset by its Identifier
@@ -43,7 +73,7 @@ module Api
 
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
-                                                                  json: json)
+                                                                  json: json[:dataset_id])
             id.present? ? id.identifiable : nil
           end
 
@@ -70,6 +100,57 @@ module Api
               provenance: provenance, identifiable: dataset, json: id
             )
             dataset.identifiers << identifier if identifier.present? && identifier.new_record?
+            dataset
+          end
+
+          # Deserialize any Keywords
+          def deserialize_keywords(provenance:, dataset:, json:)
+            return dataset unless provenance.present? && dataset.present? && json.present?
+
+            dataset.keywords = json.fetch(:keyword, []).map { |k| ::Keyword.find_or_initialize_by(value: k) }
+          end
+
+          # Deserialize any Metadata
+          def deserialize_metadata(provenance:, dataset:, json:)
+            json.fetch(:metadata, []).each do |metadatum_json|
+              metadata = Api::V0::Deserialization::Metadatum.deserialize(
+                provenance: provenance, dataset: dataset, json: metadatum_json
+              )
+              dataset.metadata << metadata if metadata.present?
+            end
+            dataset
+          end
+
+          # Deserialize any Security and Privacy Statements
+          def deserialize_security_privacy_statements(provenance:, dataset:, json:)
+            json.fetch(:security_and_privacy, []).each do |s_and_p_json|
+              s_and_p = Api::V0::Deserialization::SecurityPrivacyStatement.deserialize(
+                provenance: provenance, dataset: dataset, json: s_and_p_json
+              )
+              dataset.security_privacy_statements << s_and_p if s_and_p.present?
+            end
+            dataset
+          end
+
+          # Deserialize any Technical Resources
+          def deserialize_technical_resources(provenance:, dataset:, json:)
+            json.fetch(:technical_resource, []).each do |tech_resource_json|
+              tech_resource = Api::V0::Deserialization::TechnicalResource.deserialize(
+                provenance: provenance, dataset: dataset, json: tech_resource_json
+              )
+              dataset.technical_resources << tech_resource if tech_resource.present?
+            end
+            dataset
+          end
+
+          # Deserialize any Distributions
+          def deserialize_distributions(provenance:, dataset:, json:)
+            json.fetch(:distribution, []).each do |distribution_json|
+              distribution = Api::V0::Deserialization::Distribution.deserialize(
+                provenance: provenance, dataset: dataset, json: distribution_json
+              )
+              dataset.distributions << distribution if distribution.present?
+            end
             dataset
           end
         end

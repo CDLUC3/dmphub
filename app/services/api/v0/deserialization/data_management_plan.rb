@@ -28,6 +28,9 @@ module Api
           #       "contributor": [{
           #         "$ref": "SEE Contributor.deserialize! for details"
           #       }],
+          #       "cost": [{
+          #         "$ref": "SEE Cost.deserialize! for details"
+          #       }],
           #       "project": [{
           #         "$ref": "SEE Project.deserialize! for details"
           #         }]
@@ -72,6 +75,7 @@ module Api
 
             dmp = deserialize_projects(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
+            dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp,
                                                   json: json.fetch(:extension, {}).fetch(:dmphub, {}))
@@ -164,15 +168,13 @@ module Api
             dmp
           end
 
-          def deserialize_related_identifiers(provenance:, dmp:, json:)
-            return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
-
-            json[:related_identifiers].each do |related|
-              identifier = ::Identifier.find_or_initialize_by(
-                provenance: provenance, category: related[:datacite_related_identifier_type],
-                descriptor: related[:datacite_relation_type], identifiable: dmp, value: related[:value]
+          # Deserialize the Cost information and attach to DMP
+          def deserialize_costs(provenance:, dmp:, json: {})
+            json.fetch(:cost, []).each do |cost_json|
+              cost = Api::V0::Deserialization::Cost.deserialize(
+                provenance: provenance, dmp: dmp, json: cost_json
               )
-              dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
+              dmp.costs << cost if cost.present?
             end
             dmp
           end
@@ -186,6 +188,20 @@ module Api
               dmp.datasets << dataset if dataset.present?
             end
             dmp.datasets << default_dataset(provenance: provenance, dmp: dmp) unless dmp.datasets.any?
+            dmp
+          end
+
+          # Deserialize any relatedIdentifiers that were passed in
+          def deserialize_related_identifiers(provenance:, dmp:, json:)
+            return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
+
+            json[:related_identifiers].each do |related|
+              identifier = ::Identifier.find_or_initialize_by(
+                provenance: provenance, category: related[:datacite_related_identifier_type],
+                descriptor: related[:datacite_relation_type], identifiable: dmp, value: related[:value]
+              )
+              dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
+            end
             dmp
           end
 

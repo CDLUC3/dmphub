@@ -74,11 +74,6 @@ module Api
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       rescue StandardError => e
-
-p "DANG IT!!!!!!"
-p e.message
-p e.backtrace
-
         render_error errors: [e.message], status: :bad_request
       end
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
@@ -119,8 +114,6 @@ p e.backtrace
           @dmp = safe_save
           @dmp = @dmp.reload
           raise StandardError, @dmp.errors.full_messages unless @dmp.valid?
-
-p "EXISTING DOI: #{@dmp.doi.present?} :: #{@dmp.doi&.value}"
 
           @dmp.mint_doi(provenance: provenance) unless @dmp.doi.present?
 

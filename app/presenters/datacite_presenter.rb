@@ -85,7 +85,7 @@ class DatacitePresenter
     when %w[doi ean13 eissn igsn isbn issn istc lissn lsid pmid purl upc url urn]
       identifier.category.to_s.upcase
     else
-      identifier.category.to_s.start_with?('http') ? 'URL' : 'Handle'
+      identifier.value.to_s.start_with?('http') ? 'URL' : 'Handle'
     end
   end
 
@@ -121,7 +121,7 @@ class DatacitePresenter
   def find_producers
     defaults = creators.map(&:affiliation)
     return defaults unless @dmp.project.present? && @dmp.project.fundings.any?
-    return defaults unless @dmp.project.fundings.map(&:funded_affiliations).any?
+    return defaults unless @dmp.project.fundings.map(&:funded_affiliations).flatten.uniq.any?
 
     @dmp.project.fundings.map(&:funded_affiliations).flatten.uniq
   end

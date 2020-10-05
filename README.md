@@ -30,9 +30,14 @@ We welcome any and all feedback. Please use Github Issues to provide suggestions
 
 ## API
 
-### Authorization
+Every application/user that wishes to use the DMPHub API must have an account registered within the system. To register an application you will need to add an entry into the following tables:
+- `api_clients` this is the primary API Client table. The name of the client should be lower case.
+- `provenances` this table is used to relate an entry in one of the DMP tables to the API Client. The `name` must match the one in the `api_clients` table.
+- `api_client_permissions` an entry for each type of permission the client is allowed to perform should be added here. See the enum on the ApiClientPermission model for a list of possible permissions.
 
-You must first register your application with the DMPHub (this is currently an entry in the database tables `api_clients`, `provenances` and `api_client_permissions`)
+At some point in the near future we will be adding an Admin login that will include a UI page that allows you to perform these actions via the website.
+
+### Authorization
 
 ```shell
 curl -v -X POST http://localhost:3000/api/v0/authenticate

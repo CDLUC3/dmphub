@@ -30,11 +30,23 @@ module Api
 
       protected
 
-      def model_errors(model:)
-        return [] unless model.present? && model.respond_to?(:errors)
+      # rubocop:disable Metrics/CyclomaticComplexity
+      def model_errors(model:, ancestry: '')
+        errs = []
+        return errs unless model.present? && model.respond_to?(:errors)
 
-        model.errors.any? ? model.errors.collect { |e, m| "#{e} - #{m}" }.join(', ') : []
+        errs = model.errors.full_messages.map { |m| "#{model.class.name} - #{m}" } if model.errors.any?
+
+        model.class.reflect_on_all_associations(:has_many).each do |association|
+          next if %w[alterations authorizations histories identifiers].include?(association.plural_name)
+
+          model.send(:"#{association.plural_name}").each do |child|
+            errs += model_errors(model: child, ancestry: "#{ancestry}-#{child.class.name}")
+          end
+        end
+        errs&.flatten
       end
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       def render_error(errors:, status:, items: [])
         @payload = { errors: errors, items: items }
@@ -102,6 +114,11 @@ module Api
       end
 
       # ==========================
+
+      def log_error(error:)
+        Rails.logger.error error.message
+        Rails.logger.error error.backtrace
+      end
 
       def log_access
         obj = client
@@ -212,8 +229,7 @@ module Api
 
       def host_permitted_params
         %i[title description supports_versioning backup_type backup_frequency
-           storage_type availability geo_location certified_with pid_system] +
-          [url: identifier_permitted_params]
+           storage_type availability geo_location certified_with pid_system url]
       end
 
       def data_management_plan_extension_params

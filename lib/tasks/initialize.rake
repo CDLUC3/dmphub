@@ -11,65 +11,79 @@ namespace :initialize do
   desc 'Create the default Super User if no users exist. (Be sure to change the password!)'
   task super_user: :environment do
     if User.all.empty?
-      User.create(first_name: 'Super', last_name: 'User', email: 'super.user@example.org', password: 'password_123', role: 'super_user')
+      User.create(first_name: 'Super', last_name: 'User', email: 'super.user@example.org',
+                  password: 'password_123', role: 'super_user')
     end
+
+    p "The default Super User was created email: `super.user@example.org`, \
+       password: `password_123`. You should log in and change both of these \
+       values before deploying the application."
   end
 
   desc 'Create a default client application for API access/testing'
   task default_client_app: :environment do
-    Doorkeeper::Application.create(name: ConversionService.local_provenance,
-                                   redirect_uri: 'urn:ietf:wg:oauth:2.0:oob')
+    client = ApiClient.create(name: 'dmphub', description: 'DMPHub testing account',
+                              contact_email: 'your.email@institution.org',
+                              client_id: '1234567890', client_secret: '0987654321')
+    ApiClientPermission.create(permission: 0, api_client: client)
+    ApiClientPermission.create(permission: 1, api_client: client)
+    ApiClientPermission.create(permission: 2, api_client: client)
+
+    Provenance.create(name: 'dmphub', description: 'DMPHub testing account')
+
+    p "The default API client was created. You should change the contact_email, \
+       client_id and client_secret directly in the DB for security purposes. A \
+       corresponding Provenance record was created for the DMPHub account and the
+       client was given full permissions."
+
+    p "To test the api, use: `{\"grant_type\":\"client_credentials\",\"client_id\" \
+       :\"#{client.client_id}\",\"client_secret\"}` when authenticating."
   end
 
   desc ' Create the DMPTool application'
   task dmptool_client_app: :environment do
-    dmptool = Doorkeeper::Application.create(
-      name: 'dmptool',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
-    )
-    OauthApplicationProfile.create(
-      oauth_application: dmptool,
-      data_management_plan_creation: true,
-      award_assertion: true,
-      person_assertion: true,
-      rules: {}
-    )
+    client = ApiClient.create(name: 'dmproadmap', description: 'DMPRoadmap',
+                              contact_email: 'your.email@institution.org',
+                              client_id: '8888888', client_secret: '0987654321')
+    ApiClientPermission.create(permission: 0, api_client: client)
+    ApiClientPermission.create(permission: 1, api_client: client)
+    ApiClientPermission.create(permission: 2, api_client: client)
+
+    Provenance.create(name: 'dmproadmap', description: 'DMPRoadmap')
+
+    p "The default DMPRoadmap client was created. You should change the contact_email, \
+       client_id and client_secret directly in the DB for security purposes. A \
+       corresponding Provenance record was created for the DMPRoadmap account and the
+       client was given full permissions."
+
+    p "To test the api, use: `{\"grant_type\":\"client_credentials\",\"client_id\" \
+       :\"#{client.client_id}\",\"client_secret\"}` when authenticating."
   end
 
   desc ' Create the NSF Awards API Scanner application'
   task nsf_client_app: :environment do
-    org = Organization.find_or_create_by(name: 'National Science Foundation')
-    Identifier.find_or_create_by(
-      identifiable_type: 'Organization',
-      identifiable_id: org.id,
-      category: 1,
-      provenance: ConversionService.local_provenance,
-      value: 'http://dx.doi.org/10.13039/100000104'
-    )
+    client = ApiClient.create(name: 'national_science_foundation',
+                              description: 'NSF awards scanner',
+                              contact_email: 'your.email@institution.org',
+                              client_id: '9999999', client_secret: '0987654321')
+    ApiClientPermission.create(permission: 0, api_client: client)
+    ApiClientPermission.create(permission: 1, api_client: client,
+                               rules: '{"award_assertion":"SELECT a.* FROM awards a \
+                                                           INNER JOIN organizations o ON a.organization_id = o.id \
+                                                           INNER JOIN identifiers i ON o.id = i.identifiable_id \
+                                                             AND i.identifiable_type = \'Organization\' \
+                                                           WHERE i.category = 1 \
+                                                           AND i.value = \'http://dx.doi.org/10.13039/100000104\';"}')
+    ApiClientPermission.create(permission: 2, api_client: client)
 
-    nsf = Doorkeeper::Application.find_or_create_by(
-      name: 'national_science_foundation',
-      redirect_uri: 'urn:ietf:wg:oauth:2.0:oob'
-    )
-    OauthApplicationProfile.find_or_create_by(
-      oauth_application: nsf,
-      award_assertion: true,
-      rules: '{"award_assertion":"SELECT a.* FROM awards a \
-                                  INNER JOIN organizations o ON a.organization_id = o.id \
-                                  INNER JOIN identifiers i ON o.id = i.identifiable_id \
-                                    AND i.identifiable_type = \'Organization\' \
-                                  WHERE i.category = 1 \
-                                  AND i.value = \'http://dx.doi.org/10.13039/100000104\';"}'
-    )
-  end
+    Provenance.create(name: 'national_science_foundation', description: 'NSF awards scanner')
 
-  desc 'Fill in the funder name for any awards with a funder_uri but no name'
-  task funder_names_from_fundref: :environment do
-    Award.where(funder_name: nil).pluck(:funder_uri).uniq.each do |uri|
-      name = FundrefService.find_by_uri(uri: uri)
-      next unless name.present?
+    p "The NSF awards scanner client was created. You should change the contact_email, \
+       client_id and client_secret directly in the DB for security purposes. A \
+       corresponding Provenance record was created for the NSF account and the
+       client was given full permissions."
 
-      Award.where(funder_uri: uri).update_all(funder_name: name)
-    end
+    p "To test the api, use: `{\"grant_type\":\"client_credentials\",\"client_id\" \
+       :\"#{client.client_id}\",\"client_secret\"}` when authenticating."
   end
 end

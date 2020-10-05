@@ -8,6 +8,7 @@ module Api
       protect_from_forgery with: :null_session, only: [:create]
 
       before_action :base_response_content
+      before_action :doi_param_to_dmp, only: %w[show update delete]
 
       def index
         dmp_ids = ApiClientAuthorization.by_api_client_and_type(
@@ -20,12 +21,8 @@ module Api
 
       # GET /data_management_plans/:id
       def show
-        @dmp = DataManagementPlan.find_by_doi(params[:id]).first
-        @dmp = DataManagementPlan.where(id: params[:id]).first unless @dmp.present?
-
         if authorized?
-          id = @dmp.dois.any? ? @dmp.dois.last : @dmp.id
-          @source = "GET #{api_v0_data_management_plan_url(id)}"
+          @source = "GET #{api_v0_data_management_plan_url(id: params[:id])}"
         else
           render_error(errors: [], status: :not_found)
         end
@@ -33,6 +30,7 @@ module Api
 
       # POST /data_management_plans
       # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/MethodLength
       def create
         # Only proceed if the Application has permission
         if permitted?
@@ -43,17 +41,21 @@ module Api
           if @dmp.present?
             if @dmp.new_record?
               # rubocop:disable Metrics/BlockNesting
-              render_error errors: ["Invalid JSON format - #{@dmp.errors}"], status: :bad_request unless @dmp.valid?
-              # rubocop:enable Metrics/BlockNesting
+              if @dmp.valid?
+                process_dmp
 
-              process_dmp
-
-              # rubocop:disable Metrics/BlockNesting
-              if @dmp.dois.any? || @dmp.arks.any?
-                render 'show', status: :created
+                if @dmp.dois.any? || @dmp.arks.any?
+                  render 'show', status: :created
+                else
+                  render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],
+                               status: 500
+                end
               else
-                render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],
-                             status: 500
+                errs = model_errors(model: @dmp)
+                errs += model_errors(model: @dmp.project)
+                
+p model_errors(model: @dmp)
+                render_error errors: ["Invalid JSON format - #{errs}"], status: :bad_request
               end
               # rubocop:enable Metrics/BlockNesting
             else
@@ -74,14 +76,36 @@ module Api
       rescue ActionController::ParameterMissing => e
         render_error errors: "Invalid json format (#{e.message})", status: :bad_request
       rescue StandardError => e
+        log_error(error: e)
         render_error errors: [e.message], status: :bad_request
       end
+      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
       private
 
       def dmp_params
         params.require(:dmp).permit(plan_permitted_params)
+      end
+
+      # Convert the incoming DOI/ARK/URL into a DMP
+      def doi_param_to_dmp
+        case params[:id][0..3]
+        when 'doi:'
+          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('doi:', '')}")
+                           .where(category: 'doi', descriptor: 'is_identified_by')
+                           .first&.identifiable
+        when 'ark:'
+          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('ark:', '')}")
+                           .where(category: 'ark', descriptor: 'is_identified_by')
+                           .first&.identifiable
+        when 'url:'
+          # Allows for retrieving the record by the associated object's URL
+          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('url', '')}")
+                           .where(category: 'url', descriptor: 'is_metadata_for')
+                           .first&.identifiable
+        end
+        p @dmp.inspect
       end
 
       def setup_authorizations(dmp:)
@@ -132,6 +156,7 @@ module Api
         @dmp.contributors_data_management_plans = @dmp.contributors_data_management_plans.map do |cdmp|
           safe_save_contributor_data_management_plan(cdmp: cdmp)
         end
+        @dmp.datasets = safe_save_datasets(datasets: @dmp.datasets)
         @dmp.save
         @dmp.reload
       end
@@ -159,6 +184,68 @@ module Api
         end
 
         project
+      end
+
+      def safe_save_datasets(datasets:)
+        return [] unless datasets.any?
+
+        datasets.map do |dataset|
+          dataset.metadata = dataset.metadata.map do |metadatum|
+            safe_save_metadatum(metadatum: metadatum)
+          end
+          dataset.distributions.each do |distribution|
+            distribution.licenses = distribution.licenses.map do |license|
+              safe_save_license(license: license)
+            end
+            distribution.host = safe_save_host(host: distribution.host)
+          end
+          dataset
+        end
+      end
+
+      def safe_save_host(host:)
+        return host unless host.present? && host.urls.any?
+
+        Host.transaction do
+          url = host.urls.first
+          id = Identifier.find_or_initialize_by(value: url.value, category: url.category,
+                                                descriptor: url.descriptor)
+          return id.identifiable unless id.new_record?
+
+          hst = Host.find_or_create_by(title: host.title)
+          hst.update(saveable_attributes(attrs: host.attributes)) if hst.new_record?
+
+          id.identifiable = hst
+          id.save
+          hst.reload
+        end
+      end
+
+      def safe_save_license(license:)
+        return license unless license.present? && license.license_ref.present?
+
+        License.transaction do
+          lcnse = license.find_or_create_by(license_ref: license.license_ref)
+          lcnse.update(description: license.description) if lcnse.new_record?
+          lcnse.reload
+        end
+      end
+
+      def safe_save_metadatum(metadatum:)
+        return metadatum unless metadatum.present? && metadatum.urls.any?
+
+        Metadatum.transaction do
+          url = metadatum.urls.first
+          id = Identifier.find_or_initialize_by(value: url.value, category: url.category,
+                                                descriptor: url.descriptor)
+          return id.identifiable unless id.new_record?
+
+          datum = Metadatum.find_or_create_by(description: metadatum.description,
+                                              language: metadatum.language)
+          id.identifiable = datum
+          id.save
+          datum.reload
+        end
       end
 
       def safe_save_affiliation(affiliation:)

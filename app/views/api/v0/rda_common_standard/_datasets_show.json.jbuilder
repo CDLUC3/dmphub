@@ -6,7 +6,7 @@ json.title dataset.title
 json.description dataset.description
 json.type dataset.dataset_type
 json.language dataset.language
-json.issued dataset.publication_date.to_s unless dataset.publication_date.nil?
+json.issued dataset.publication_date&.to_formatted_s(:iso8601) unless dataset.publication_date.nil?
 json.personal_data Api::V0::ConversionService.boolean_to_yes_no_unknown(dataset.personal_data)
 json.sensitive_data Api::V0::ConversionService.boolean_to_yes_no_unknown(dataset.sensitive_data)
 json.data_quality_assurance dataset.data_quality_assurance

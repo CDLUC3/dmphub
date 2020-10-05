@@ -45,6 +45,18 @@ class ApiClient < ApplicationRecord
     self.client_secret = SecureRandom.uuid
   end
 
+  def can_create_data_management_plans?
+    permissions.map(&:permission).include?('data_management_plan_creation')
+  end
+
+  def can_assert_funding?
+    permissions.map(&:permission).include?('funding_assertion')
+  end
+
+  def can_assert_contributors?
+    permissions.map(&:permission).include?('contributor_assertion')
+  end
+
   protected
 
   def name_to_downcase

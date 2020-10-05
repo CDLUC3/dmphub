@@ -4,5 +4,5 @@
 if identifier.present?
   json.type Api::V0::ConversionService.to_rda_identifier_category(category: identifier.category)
   json.identifier identifier.value
-  json.descriptor identifier.descriptor
+  json.descriptor identifier.descriptor unless %w[is_funded_by is_identified_by].include?(identifier.descriptor)
 end

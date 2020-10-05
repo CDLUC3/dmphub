@@ -67,7 +67,7 @@ module Api
 
             # If no good result was found just use the specified title
             ::Distribution.new(provenance: provenance, title: json[:title],
-                               access_url: access_url, download_url: download_url)
+                               access_url: json[:access_url], download_url: json[:download_url])
           end
 
           # Deserialize any Licenses

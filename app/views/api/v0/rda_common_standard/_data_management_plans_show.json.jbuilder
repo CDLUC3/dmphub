@@ -44,10 +44,15 @@ json.dataset data_management_plan.datasets do |dataset|
   json.partial! 'api/v0/rda_common_standard/datasets_show', dataset: dataset
 end
 
-related_ids = data_management_plan.identifiers.where.not(category: %w[doi ark])
+json.extension do
+  json.dmphub do
+    json.partial! 'api/v0/hateoas', dmp: data_management_plan, client: @client
 
-if related_ids.any?
-  json.related_identifiers related_ids do |id|
-    json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: id
+    related_ids = data_management_plan.identifiers.where.not(category: %w[doi ark])
+    if related_ids.any?
+      json.related_identifiers related_ids do |id|
+        json.partial! 'api/v0/rda_common_standard/identifiers_show', identifier: id
+      end
+    end
   end
 end

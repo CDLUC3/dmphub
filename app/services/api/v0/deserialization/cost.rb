@@ -10,11 +10,11 @@ module Api
           #     {
           #       "currency_code": "USD",
           #       "title": "Long term server storage",
-          #       "description": "The cost of storing the research outputs for preservation"
+          #       "description": "The cost of storing the research outputs for preservation",
           #       "value": 10500
           #     }
           def deserialize(provenance:, dmp:, json: {})
-            return nil unless valid?(json: json)
+            return nil unless dmp.present? && json[:title].present?
 
             cost = ::Cost.find_or_initialize_by(title: json[:title], data_management_plan: dmp)
             return nil unless cost.present? && cost.valid?

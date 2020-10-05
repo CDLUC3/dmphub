@@ -4,8 +4,8 @@
 # json.merge! model_json_base(model: project, skip_hateoas: true)
 json.title project.title
 json.description project.description
-json.start project.start_on.to_s
-json.end project.end_on.to_s
+json.start project.start_on&.to_formatted_s(:iso8601)
+json.end project.end_on&.to_formatted_s(:iso8601)
 
 if project.fundings.any?
   json.funding project.fundings do |funding|

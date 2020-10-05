@@ -8,33 +8,33 @@ module Api
         class << self
           # Convert incoming JSON into a TechnicalResource
           #    {
-          #      "name": "123/45/43/AT",
+          #      "title": "123/45/43/AT",
           #      "description": "MRI scanner"
           #    }
           def deserialize(provenance:, dataset:, json: {})
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
             # Try to find the TechnicalResource by name
-            find_by_name(provenance: provenance, dataset: dataset, json: json)
+            find_by_title(provenance: provenance, dataset: dataset, json: json)
           end
 
           private
 
           # The JSON is valid if the TechnicalResource has a name
           def valid?(json: {})
-            json.present? && json[:name].present?
+            json.present? && json[:title].present?
           end
 
           # Search for the SecurityPrivacyStatement by it title
-          def find_by_name(provenance:, dataset:, json: {})
-            return nil unless json.present? && dataset.present? && json[:name].present?
+          def find_by_title(provenance:, dataset:, json: {})
+            return nil unless json.present? && dataset.present? && json[:title].present?
 
             resource = ::TechnicalResource.where(dataset: dataset)
-                                          .where('LOWER(name) = ?', json[:name].downcase).first
+                                          .where('LOWER(title) = ?', json[:title].downcase).first
             return resource if resource.present?
 
             # If no good result was found just use the specified title
-            ::TechnicalResource.new(provenance: provenance, name: json[:name],
+            ::TechnicalResource.new(provenance: provenance, title: json[:title],
                                     description: json[:description])
           end
         end

@@ -5,7 +5,6 @@ _target: <%= presenter.landing_page %>
 datacite: <?xml version="1.0" encoding="UTF-8"?>
   <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
     <identifier identifierType="DOI">(:tba)</identifier>
-
     <creators>
       <% presenter.creators.each do |creator| %>
       <creator>
@@ -23,14 +22,11 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       </creator>
       <% end %>
     </creators>
-
     <titles>
       <title xml:lang="en-US"><%= presenter.scrub(data_management_plan.title) %></title>
     </titles>
-
     <publisher xml:lang="en-US">DMPHub</publisher>
     <publicationYear><%= Time.now.year %></publicationYear>
-
     <contributors>
       <contributor contributorType="HostingInstitution">
         <% hoster = presenter.hosting_institution %>
@@ -52,7 +48,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <contributor contributorType="<%= presenter.role_for(cdmp) %>">
         <contributorName nameType="Personal"><%= contributor.name_last_first %></contributorName>
         <% if contributor.orcids.any? %>
-        <nameIdentifier nameIdentifierScheme="ORCID"><%= contributor.orcids.last.value %></nameIdentifier>
+        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
         <% end %>
         <% if contributor.affiliation.present? && contributor.affiliation.rors.any? %>
         <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR"><%= contributor.affiliation.name %></affiliation>
@@ -60,17 +56,13 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       </contributor>
       <% end %>
     </contributors>
-
     <language>en-US</language>
-
     <resourceType resourceTypeGeneral="Text">Data Management Plan</resourceType>
-
     <descriptions>
       <description xml:lang="en-US" descriptionType="Abstract">
         <%= presenter.scrub(data_management_plan.description) %>
       </description>
     </descriptions>
-
     <% if data_management_plan.project.fundings.any? %>
     <fundingReferences>
       <% data_management_plan.project.fundings.each do |funding| %>
@@ -91,14 +83,12 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <% end %>
     </fundingReferences>
     <% end %>
-
     <% if presenter.related_identifiers.any? %>
     <relatedIdentifiers>
       <% presenter.related_identifiers.each do |identifier| %>
-        <relatedIdentifier relationType="<%= presenter.relation_type(identifier: identifier) %>"
-                           relatedIdentifierType="<%= presenter.related_identifier_type(identifier: identifier) %>">
-          <%= identifier.value %>
-        </relatedIdentifier>
+      <relatedIdentifier relationType="<%= presenter.relation_type(identifier: identifier) %>" relatedIdentifierType="<%= presenter.related_identifier_type(identifier: identifier) %>">
+        <%= identifier.value %>
+      </relatedIdentifier>
       <% end %>
     </relatedIdentifiers>
     <% end %>

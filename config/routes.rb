@@ -48,7 +48,11 @@ Rails.application.routes.draw do
       post '/authenticate', format: :json, to: 'authentication#authenticate'
       get '/heartbeat', format: :json, to: 'base_api#heartbeat'
 
-      resources :data_management_plans, except: %w[delete]
+      get '/data_management_plans/*id', to: 'data_management_plans#show',
+                                        as: 'data_management_plan',
+                                        constraints: { id: /\S+/ }
+
+      resources :data_management_plans, except: %w[show delete]
       resources :fundings, only: %w[index update]
 
       # get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }

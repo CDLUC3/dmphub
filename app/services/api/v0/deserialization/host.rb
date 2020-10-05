@@ -23,7 +23,12 @@ module Api
           def deserialize(provenance:, distribution:, json: {})
             return nil unless provenance.present? && distribution.present? && valid?(json: json)
 
-            host = ::Host.find_or_initialize_by(distribution: distribution, url: url)
+            # First attempt to look the Host up by its URL
+            host = find_by_identifier(json: json)
+
+            # Otherwise look it up by its title and distribution
+            host = ::Host.find_or_initialize_by(title: json[:title], distribution: distribution) unless host.present?
+
             host.provenance = provenance unless host.provenance.present?
             host.title = json[:title]
             host.availability = json[:availability]
@@ -34,7 +39,8 @@ module Api
             host.geo_location = json[:geo_location]
             host.pid_system = json[:pid_system]
             host.storage_type = json[:storage_type]
-            host.support_versioning = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:support_versioning])
+            host.supports_versioning = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:support_versioning])
+            host = attach_identifier(provenance: provenance, host: host, json: json)
             host
           end
 
@@ -43,6 +49,25 @@ module Api
           # The JSON is valid if the Host has a title and url
           def valid?(json: {})
             json.present? && json[:title].present? && json[:url].present?
+          end
+
+          # Locate the Host by its identifier
+          def find_by_identifier(json: {})
+            return nil unless json[:url].present?
+
+            id = ::Identifier.where(value: json[:url], category: 'url', descriptor: 'is_identified_by').first
+            id.present? ? id.identifiable : nil
+          end
+
+          # Marshal the Identifier and attach it
+          def attach_identifier(provenance:, host:, json: {})
+            return host unless json[:url].present?
+
+            identifier = ::Identifier.find_or_initialize_by(
+              provenance: provenance, category: 'url', descriptor: 'is_identified_by', value: json[:url]
+            )
+            host.identifiers << identifier if identifier.present? && identifier.new_record?
+            host
           end
         end
       end

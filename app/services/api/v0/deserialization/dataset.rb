@@ -48,13 +48,14 @@ module Api
             dataset.personal_data = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:personal_data])
             dataset.sensitive_data = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:sensitive_data])
             dataset.description = json[:description]
-            dataset.issued = json[:issued]
+            dataset.publication_date = json[:issued]
             dataset.preservation_statement = json[:preservation_statement]
 
             dataset = deserialize_keywords(provenance: provenance, dataset: dataset, json: json)
             dataset = deserialize_metadata(provenance: provenance, dataset: dataset, json: json)
             dataset = deserialize_security_privacy_statements(provenance: provenance, dataset: dataset, json: json)
             dataset = deserialize_technical_resources(provenance: provenance, dataset: dataset, json: json)
+            dataset = deserialize_distributions(provenance: provenance, dataset: dataset, json: json)
 
             attach_identifier(provenance: provenance, dataset: dataset, json: json)
           end
@@ -68,12 +69,12 @@ module Api
 
           # Locate the Dataset by its Identifier
           def find_by_identifier(provenance:, json: {})
-            id = json.fetch(:dataset_id, {})
-            return nil unless id[:identifier].present?
+            id_json = json.fetch(:dataset_id, {})
+            return nil unless id_json[:identifier].present?
 
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
-                                                                  json: json[:dataset_id])
+                                                                  json: id_json)
             id.present? ? id.identifiable : nil
           end
 
@@ -108,6 +109,7 @@ module Api
             return dataset unless provenance.present? && dataset.present? && json.present?
 
             dataset.keywords = json.fetch(:keyword, []).map { |k| ::Keyword.find_or_initialize_by(value: k) }
+            dataset
           end
 
           # Deserialize any Metadata
@@ -118,6 +120,10 @@ module Api
               )
               dataset.metadata << metadata if metadata.present?
             end
+
+p "FOO"
+p dataset.metadata.inspect
+
             dataset
           end
 

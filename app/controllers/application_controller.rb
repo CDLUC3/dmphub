@@ -49,8 +49,6 @@ class ApplicationController < ActionController::Base
   def paginate_response(results:)
     return results unless results.present?
 
-p "PAGE: #{@page}, PER: #{@per_page}"
-
     results.page(@page).per(@per_page)
   end
 end

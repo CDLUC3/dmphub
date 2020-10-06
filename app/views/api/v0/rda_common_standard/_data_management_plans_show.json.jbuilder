@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# locals: data_management_plan, client
+
 # A JSON representation of a Data Management Plan in the Common Standard format
 # json.merge! model_json_base(model: data_management_plan)
 json.title data_management_plan.title
@@ -46,7 +48,7 @@ end
 
 json.extension do
   json.dmphub do
-    json.partial! 'api/v0/hateoas', dmp: data_management_plan, client: @client
+    json.partial! 'api/v0/hateoas', dmp: data_management_plan, client: client
 
     related_ids = data_management_plan.identifiers.where.not(category: %w[doi ark])
     if related_ids.any?

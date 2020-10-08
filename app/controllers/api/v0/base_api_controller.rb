@@ -116,6 +116,8 @@ module Api
       # ==========================
 
       def log_error(error:)
+        Rails.logger.error "Incoming params: #{params.inspect}"
+        Rails.logger.error "Incoming headers: #{request.headers.inspect}"
         Rails.logger.error error.message
         Rails.logger.error error.backtrace
       end

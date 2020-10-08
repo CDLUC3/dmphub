@@ -53,8 +53,6 @@ module Api
               else
                 errs = model_errors(model: @dmp)
                 errs += model_errors(model: @dmp.project)
-                
-p model_errors(model: @dmp)
                 render_error errors: ["Invalid JSON format - #{errs}"], status: :bad_request
               end
               # rubocop:enable Metrics/BlockNesting

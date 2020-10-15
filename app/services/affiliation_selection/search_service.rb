@@ -70,7 +70,7 @@ module AffiliationSelection
         return [] unless search_term.present?
 
         Rails.cache.fetch(['affiliation_selection-local', search_term], expires_in: expiry) do
-          Affiliation.includes(identifiers: :identifier_scheme)
+          Affiliation.includes(:identifiers)
                      .search(term: name_without_alias(name: search_term)).to_a
         end
       end

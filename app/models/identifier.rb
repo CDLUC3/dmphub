@@ -7,7 +7,7 @@ class Identifier < ApplicationRecord
   # Based on the DataCite 4.3 schema relatedIdentifierType
   enum category: %i[ark arxiv bibcode credit doi duns ean13 eissn fundref handle
                     igsn isbn isni issn istc lissn lsid openid orcid pmid program
-                    purl ror sub_program url urn w3id]
+                    purl ror sub_program url urn w3id other]
 
   # Based on the DataCite 4.3 schema relationType plus the following for internal use:
   #   is_identified_by   ->  links a model to its external identifier (e.g. ROR, ORCID, etc.)

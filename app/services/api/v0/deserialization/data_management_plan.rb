@@ -89,7 +89,7 @@ module Api
             json.present? &&
               json[:title].present? &&
               json[:dmp_id].present? && json[:dmp_id][:identifier].present? &&
-              json[:contact].present? && json[:contact][:mbox].present?
+              json[:contact].present? # && json[:contact][:mbox].present?
           end
 
           # Locate the DMP by its identifier
@@ -119,7 +119,7 @@ module Api
             id = json.fetch(:dmp_id, {})
             return dmp unless id[:identifier].present?
 
-            descriptor = id[:type] == 'url' ? 'is_metadata_for' : 'is_identified_by'
+            descriptor = id[:type].downcase == 'url' ? 'is_metadata_for' : 'is_identified_by'
             identifier = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor
             )
@@ -196,9 +196,12 @@ module Api
             return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
 
             json[:related_identifiers].each do |related|
+              category = Api::V0::ConversionService.to_identifier_category(
+                rda_category: related[:datacite_related_identifier_type]
+              )
               identifier = ::Identifier.find_or_initialize_by(
-                provenance: provenance, category: related[:datacite_related_identifier_type],
-                descriptor: related[:datacite_relation_type], identifiable: dmp, value: related[:value]
+                provenance: provenance, category: category, value: related[:value],
+                descriptor: related[:datacite_relation_type], identifiable: dmp
               )
               dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
             end

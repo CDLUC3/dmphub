@@ -78,5 +78,7 @@ ruby/
 
 # Mac OSX files
 .DS_Store
-
+.zshrc
+zshenv
+.zshenv
 /config/credentials/development.key

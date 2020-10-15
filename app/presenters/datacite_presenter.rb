@@ -49,14 +49,17 @@ class DatacitePresenter
   # rubocop:enable Metrics/CyclomaticComplexity
 
   # Retrieve the award URI without the URL portion for DataCite's <AwardNumber>
+  # rubocop:disable Metrics/CyclomaticComplexity
   def award_number(funding:)
     return '' unless funding.funded? && funding.affiliation&.fundrefs&.any?
     return '' unless funding.urls.last.present?
 
     mapping = Rails.configuration.x.funders[:award_urls]
     return funding.urls.last.value unless mapping.present?
-    funding.urls.last.value.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
+
+    funding.urls.last.value&.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Retrieve the landing page URL for EZID's _target (where the DOI will resolve to)
   def landing_page
@@ -119,7 +122,7 @@ class DatacitePresenter
   # Retrieves all of the funder_affiliations (or the creator's affiliation) for
   # DataCite's Producer <contributor>
   def find_producers
-    defaults = creators.map(&:affiliation)
+    defaults = creators.map(&:affiliation).compact
     return defaults unless @dmp.project.present? && @dmp.project.fundings.any?
     return defaults unless @dmp.project.fundings.map(&:funded_affiliations).flatten.uniq.any?
 

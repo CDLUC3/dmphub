@@ -82,7 +82,7 @@ module Api
               provenance: provenance, identifiable: funding, json: json[:grant_id],
               descriptor: 'is_funded_by'
             )
-            return funding unless grant.present? && grant.identifiable.is_a?(Funding)
+            return funding unless grant.present?
 
             funding.identifiers << grant unless funding.identifiers&.include?(grant)
             funding

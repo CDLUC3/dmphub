@@ -40,7 +40,7 @@ module Api
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
                                                                   json: json[:metadata_standard_id])
-            return id.identifiable if id.present?
+            return id.identifiable if id.present? && id.identifiable.is_a?(Metadatum)
 
             ::Metadatum.new(provenance: provenance, description: json[:description],
                             language: json[:language])

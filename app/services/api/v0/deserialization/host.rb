@@ -56,7 +56,7 @@ module Api
             return nil unless json[:url].present?
 
             id = ::Identifier.where(value: json[:url], category: 'url', descriptor: 'is_identified_by').first
-            id.present? ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(Host) ? id.identifiable : nil
           end
 
           # Marshal the Identifier and attach it

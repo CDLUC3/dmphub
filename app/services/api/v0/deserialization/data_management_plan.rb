@@ -100,7 +100,7 @@ module Api
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
                                                                   json: id_json)
-            id.present? ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(DataManagementPlan) ? id.identifiable : nil
           end
 
           # Find the DMP by its title and contact
@@ -139,7 +139,7 @@ module Api
             #   dmp.projects << project if project.present?
             # end
             project = Api::V0::Deserialization::Project.deserialize(
-              provenance: provenance, dmp: dmp, json: json[:project].first
+              provenance: provenance, dmp: dmp, json: json[:project]&.first
             )
             dmp.project = project.present? ? project : default_project(provenance: provenance, dmp: dmp)
             dmp
@@ -195,7 +195,7 @@ module Api
           def deserialize_related_identifiers(provenance:, dmp:, json:)
             return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
 
-            json[:related_identifiers].each do |related|
+            json[:related_identifiers].uniq.each do |related|
               category = Api::V0::ConversionService.to_identifier_category(
                 rda_category: related[:datacite_related_identifier_type]
               )

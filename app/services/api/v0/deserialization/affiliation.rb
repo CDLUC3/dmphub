@@ -23,10 +23,8 @@ module Api
 
             # Try to find the Org by name
             affiliation = find_by_name(provenance: provenance, json: json) unless affiliation.present?
-            return nil unless affiliation.present? && affiliation.valid?
-
-            affiliation.alternate_names = affiliation.alternate_names << json[:abbreviation]
-            attach_identifier(provenance: provenance, affiliation: affiliation, json: json)
+            affiliation.provenance = provenance unless affiliation.provenance.present?
+            affiliation
           end
 
           private
@@ -47,76 +45,60 @@ module Api
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
                                                                   json: json)
-            id.present? ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(Affiliation) ? id.identifiable : nil
           end
 
           # Search for an Org locally and then externally if not found
           def find_by_name(provenance:, json: {})
             return nil unless json.present? && json[:name].present?
 
-            # Search the DB
-            affiliation = ::Affiliation.where('LOWER(name) = ?', json[:name].downcase).first
-            return affiliation if affiliation.present?
+            # Search both the local DB and the ROR API
+            results = AffiliationSelection::SearchService.search_combined(search_term: json['name'])
 
-            # External ROR search
-            unless json.fetch(:affiliation_id, {})[:type]&.downcase == 'ror'
-              results = ExternalApis::RorService.search(term: json[:name])
-
-              affiliation = select_ror_candidate(provenance: provenance,
-                                                 results: results, json: json)
-              return affiliation if affiliation.present?
-            end
+            # Grab the closest match - only caring about results that 'contain'
+            # the name with preference to those that start with the name
+            result = results.select { |r| %w[0 1].include?(r[:weight].to_s) }.first
 
             # If no good result was found just use the specified name
-            ::Affiliation.new(provenance: provenance, name: json[:name],
-                              alternate_names: [], types: [], attrs: {})
-          end
+            return ::Affiliation.find_or_initialize_by(name: json['name']) unless result.present?
 
-          # Marshal the Identifier and attach it to the Affiliation
-          def attach_identifier(provenance:, affiliation:, json: {})
-            id = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
-            return affiliation unless id[:identifier].present?
-
-            identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: affiliation, json: id
-            )
-            affiliation.identifiers << identifier if identifier.present? && identifier.new_record?
+            affiliation = AffiliationSelection::HashToAffiliationService.to_affiliation(hash: result)
+            affiliation&.alternate_names = [] unless affiliation&.alternate_names.present?
+            affiliation.alternate_names << result[:abbreviation]
+            affiliation = attach_identifiers(provenance: provenance, affiliation: affiliation, json: json, result: result)
             affiliation
           end
 
-          # rubocop:disable Metrics/CyclomaticComplexity
-          def select_ror_candidate(provenance:, results: [], json:)
-            identifier = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
-            return nil unless provenance.present? && results.present? && results.any?
-
-            results = results.select do |result|
-              (result[:ror] == identifier[:identifier] && identifier[:type].downcase == 'ROR') ||
-                (result[:sort_name].downcase == json[:name].downcase)
-            end
-            return nil unless results.any?
-
-            ror_candidate_to_affiliation(provenance: provenance, result: results.first)
-          end
-          # rubocop:enable Metrics/CyclomaticComplexity
-
+          # Marshal the Identifiers and attach it to the Affiliation
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
-          def ror_candidate_to_affiliation(provenance:, result:)
-            return nil unless provenance.present? && result.present?
+          def attach_identifiers(provenance:, affiliation:, result: {}, json: {})
+            return affiliation unless affiliation.new_record?
 
-            affiliation = ::Affiliation.new(name: result[:sort_name])
-            if result[:ror].present?
-              ror = Api::V0::Deserialization::Identifier.deserialize(
-                provenance: provenance, identifiable: affiliation,
-                json: { type: 'ror', identifier: result[:ror] }
-              )
-              affiliation.identifiers << ror if ror.present? && ror.new_record?
+            ror_prov = Provenance.where(name: 'ror').first
+
+            # First use any identifiers returned by ROR
+            if ror_prov.present? && result.present? && (result[:ror].present? || result[:fundref].present?)
+              if result[:ror].present?
+                affiliation.identifiers << ::Identifier.find_or_initialize_by(
+                  provenance: ror_prov, category: 'ror', descriptor: 'is_identified_by',
+                  value: "https://ror.org/#{result[:ror]}"
+                )
+              end
+              if result[:fundref].present?
+                affiliation.identifiers << ::Identifier.find_or_initialize_by(
+                  provenance: ror_prov, category: 'fundref', descriptor: 'is_identified_by',
+                  value: "https://api.crossref.org/funders/#{result[:fundref]}"
+                )
+              end
             end
-            if result[:fundref].present?
-              ror = Api::V0::Deserialization::Identifier.deserialize(
-                provenance: provenance, identifiable: affiliation,
-                json: { type: 'fundref', identifier: result[:fundref] }
+
+            # Otherwise take any identifiers passed in the JSON
+            id = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
+            if id.present? && id.identifier.present?
+              identifier = Api::V0::Deserialization::Identifier.deserialize(
+                provenance: provenance, identifiable: affiliation, json: id
               )
-              affiliation.identifiers << ror if ror.present? && ror.new_record?
+              affiliation.identifiers << identifier if identifier.present? && identifier.new_record?
             end
             affiliation
           end

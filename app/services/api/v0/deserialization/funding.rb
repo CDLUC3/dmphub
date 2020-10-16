@@ -37,8 +37,7 @@ module Api
 
             # Lookup the Funder
             affiliation = Api::V0::Deserialization::Affiliation.deserialize(
-              provenance: provenance,
-              json: { name: json[:name], affiliation_id: json.fetch(:funder_id, {}) }
+              provenance: provenance, json: json
             )
             return nil unless affiliation.present?
 
@@ -83,7 +82,7 @@ module Api
               provenance: provenance, identifiable: funding, json: json[:grant_id],
               descriptor: 'is_funded_by'
             )
-            return funding unless grant.present?
+            return funding unless grant.present? && grant.identifiable.is_a?(Funding)
 
             funding.identifiers << grant unless funding.identifiers&.include?(grant)
             funding
@@ -95,8 +94,7 @@ module Api
 
             json[:funding_affiliations].each do |affiliation|
               funded = Api::V0::Deserialization::Affiliation.deserialize(
-                provenance: provenance,
-                json: { name: affiliation[:name], affiliation_id: affiliation.fetch(:affiliation_id, {}) }
+                provenance: provenance, json: affiliation
               )
               next unless funded.present?
 

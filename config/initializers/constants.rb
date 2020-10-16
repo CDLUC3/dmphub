@@ -34,7 +34,12 @@ module Dmphub
     # Format should be `{ '[ROR]': 'URL' }`
     config.x.funders.award_urls = {
       'https://api.crossref.org/funders/100000001': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
-      'https://api.crossref.org/funders/100000141': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
+      'https://api.crossref.org/funders/100000141': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
+      'https://api.crossref.org/funders/100000163': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
+      'https://api.crossref.org/funders/100000153': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
+      'https://api.crossref.org/funders/100000154': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
+      'https://api.crossref.org/funders/100000156': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID=',
+      'https://api.crossref.org/funders/100007352': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
     }
 
     # -------------- #

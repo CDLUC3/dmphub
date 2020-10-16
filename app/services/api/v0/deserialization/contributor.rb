@@ -70,7 +70,7 @@ module Api
             id = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: nil, json: json, descriptor: 'is_identified_by'
             )
-            id.present? ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(Contributor) ? id.identifiable : nil
           end
 
           # Find the Contributor by its name or email or initialize one

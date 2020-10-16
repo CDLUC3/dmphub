@@ -75,7 +75,7 @@ module Api
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
                                                                   json: id_json)
-            id.present? ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(Dataset) ? id.identifiable : nil
           end
 
           # Search for the Dataset by it title
@@ -120,10 +120,6 @@ module Api
               )
               dataset.metadata << metadata if metadata.present?
             end
-
-p "FOO"
-p dataset.metadata.inspect
-
             dataset
           end
 

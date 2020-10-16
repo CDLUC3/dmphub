@@ -91,7 +91,7 @@ module AffiliationSelection
 
         array = []
         records.map do |rec|
-          item = rec.is_a?(Affiliation) ? AffiliationSelection::AffiliationToHashService.to_hash(org: rec) : rec
+          item = rec.is_a?(Affiliation) ? AffiliationSelection::AffiliationToHashService.to_hash(affiliation: rec) : rec
           array << evaluate(search_term: search_term, record: item)
         end
         sort(array: deduplicate(records: filter(array: array)))

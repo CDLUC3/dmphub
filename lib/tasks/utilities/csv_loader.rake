@@ -38,24 +38,21 @@ namespace :csv_loader do
         dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
           provenance: provenance, json: hash[:dmp]
         )
-        if dmp.present? && dmp.valid?
-          dmp = PersistenceService.process_full_data_management_plan(
-            client: client,
-            dmp: dmp,
-            history_description: 'Rake - CsvLoader Ingest',
-            mintable: true
-          )
-          counter += 1
-          p "  processed #{dmp.doi.value} - #{dmp.title}"
-        else
-          p "Some errors were encountered while processing: '#{hash[:dmp][:title]}'"
-          p 'It was missing a `title`' unless hash[:dmp][:title].present?
-          p 'It was missing a `dmp_id`' unless hash[:dmp].fetch(:dmp_id, {})[:identifier].present?
-          p 'It was missing a `contact`' unless hash[:dmp][:contact].present?
-          p "Errors: #{dmp.errors.full_messages}" if dmp.present?
-          next
-        end
+
+        dmp = PersistenceService.process_full_data_management_plan(
+          client: client,
+          dmp: dmp,
+          history_description: 'Rake - CsvLoader Ingest',
+          mintable: true
+        )
+        counter += 1
+        p "  processed #{dmp.doi.value} - #{dmp.title}"
+      rescue StandardError => e
+        p "Some errors were encountered while processing: '#{hash[:dmp][:title]}'"
+        p e.message
+        next
       end
+
       p "Complete - #{counter} DMPs loaded to the system. Make sure you delete the file!"
     rescue JSON::ParserError
       p "JSON Parse error: Unable to parse the contents of #{file}. Skipping to next file."
@@ -124,7 +121,8 @@ namespace :csv_loader do
       projects = projects.flatten.uniq
 
       csv.each do |line|
-        next unless line['project'] == 'http://lod.bco-dmo.org/id/project/560580'
+        # Debug line that's useful for isolating a single project
+        # next unless line['project'] == 'http://lod.bco-dmo.org/id/project/560580'
 
         # Retrieve the existing DMP hash or initialize one
         hash = dmps[:"#{line['project']}"] || {}
@@ -151,13 +149,15 @@ namespace :csv_loader do
     if dmps.any?
       p "Processed #{dmps.length} DMPs. Extracting viable DMPs for import into DMPHub ..."
 
-      output = []
-      dmps.each_pair do |project, dmp|
-        # next unless dmp.fetch(:dmp, {}).fetch(:contact, {}).fetch(:affiliation, {})[:name].present?
-        next unless dmp[:dmp].fetch(:dmp_id, {})[:identifier] == 'https://www.bco-dmo.org/project/560580/plan/1045'
+      # Debug line to isolate a specific Project
+      # output = []
+      # dmps.each_pair do |_project, dmp|
+        # next unless dmp[:dmp].fetch(:dmp_id, {})[:identifier] == 'https://www.bco-dmo.org/project/560580/plan/1045'
 
-        output << dmp
-      end
+        # output << dmp
+      # end
+
+      output = dmps.values
 
       # Extract the Contact
       dmps = handle_contacts(dmps: output)
@@ -196,8 +196,6 @@ namespace :csv_loader do
 
     if projects.any?
       project_hash = projects.first
-      project_hash = attach_funding(hash: project_hash, line: line)
-
     else
       project_hash = {}
       project_hash = process_column(hash: project_hash, line: line, column: 'title', attr: :title)
@@ -207,9 +205,8 @@ namespace :csv_loader do
       # Cleanse any Dates
       project_hash[:start] = process_date(date: project_hash[:start]) if project_hash[:start].present?
       project_hash[:end] = process_date(date: project_hash[:end]) if project_hash[:end].present?
-
-      project_hash = attach_funding(hash: project_hash, line: line)
     end
+    project_hash = attach_funding(hash: project_hash, line: line)
     hash[:project] = [project_hash]
     hash
   end
@@ -226,7 +223,7 @@ namespace :csv_loader do
     # Remove the funding and process it
     fundings = hash[:funding].select do |f|
       f.fetch(:grant_id, {})[:identifier] == award ||
-      !f[:grant_id].present? && f[:name] == line['funder_name']
+        !f[:grant_id].present? && f[:name] == line['funder_name']
     end
     found = fundings.any?
 
@@ -258,7 +255,6 @@ namespace :csv_loader do
   end
 
   # Attach a contributor's metadata
-  # rubocop:disable Metrics:CyclomaticComplexity, Metrics/PerceivedComplexity
   def attach_contributor(hash:, line:)
     return hash unless hash.present? && line.present? && line['contributor_name'].present?
 
@@ -269,7 +265,7 @@ namespace :csv_loader do
     # Select the contributor
     contributors = hash[:contributor].select do |c|
       (c.fetch(:contributor_id, {})[:identifier] == orcid && orcid.present?) ||
-      (c[:name] == line['contributor_name'])
+        (c[:name] == line['contributor_name'])
     end
     found = contributors.any?
 
@@ -283,7 +279,6 @@ namespace :csv_loader do
     hash[:contributor] << contributor unless found
     hash
   end
-  # rubocop:enable Metrics:CyclomaticComplexity, Metrics/PerceivedComplexity
 
   def attach_dataset(hash:, line:)
     return hash unless hash.present? && line.present? && (line['dataset_doi'].present? || line['dataset_url'].present?)
@@ -292,7 +287,7 @@ namespace :csv_loader do
     datasets = hash[:dataset].select do |d|
       d = {} unless d.present?
       (d.fetch(:dataset_id, {})[:type] == 'DOI' && d.fetch(:dataset_id, {})[:identifier] == line['dataset_doi']) ||
-      (d.fetch(:dataset_url, {})[:type] == 'URL' && d.fetch(:dataset_url, {})[:identifier] == line['dataset_url'])
+        (d.fetch(:dataset_url, {})[:type] == 'URL' && d.fetch(:dataset_url, {})[:identifier] == line['dataset_url'])
     end
     return hash if datasets.any?
 
@@ -312,10 +307,6 @@ namespace :csv_loader do
   # Create the Contact based on the available Contributors with an Affiliation
   def handle_contacts(dmps: [])
     dmps = dmps.map do |dmp|
-
-
-p dmp.inspect
-
       contributors = dmp[:dmp].fetch(:contributor, []).select do |c|
         c[:role].include?('https://dictionary.casrai.org/Contributor_Roles/Data_curation') && c[:affiliation].present?
       end

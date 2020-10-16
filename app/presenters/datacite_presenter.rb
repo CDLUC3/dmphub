@@ -102,6 +102,13 @@ class DatacitePresenter
     identifier.descriptor.to_s.split('_').map(&:capitalize).join
   end
 
+  # Strips out the URL portion of the DOI and replaces it with 'doi:'
+  def url_to_doi(value:)
+    return value unless value.present? && value.start_with?('http')
+
+    value.gsub(%r{^https?://do[a-z].org/}, 'doi:').strip
+  end
+
   private
 
   # Retrieves all of the contributors who were authors of the DMP for DataCite's <creators>

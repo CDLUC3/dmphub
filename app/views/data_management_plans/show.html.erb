@@ -1,21 +1,22 @@
 <h2><%= @dmp.title %></h2>
 
-<%= render partial: '/landing/data_management_plan',
+<%= render partial: '/landing/contributors',
+           locals: { primary_contact: @dmp.primary_contact, cdmps: @dmp.contributors_data_management_plans } %>
+
+<%#= render partial: '/landing/data_management_plan',
            locals: { dmp: @dmp, project: @dmp.project } %>
 
-<%= render partial: '/landing/abstract',
+<%#= render partial: '/landing/abstract',
            locals: { dmp: @dmp, project: @dmp.project } %>
 
-<%= render partial: '/landing/contact',
+<%#= render partial: '/landing/contact',
            locals: { dmp: @dmp } %>
 
 <div id="accordion-data-management-plan" class="c-accordion">
-  <%= render partial: '/landing/contributors',
-             locals: { primary_contact: @dmp.primary_contact, cdmps: @dmp.contributors_data_management_plans } %>
-  <%= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
-  <%= render partial: '/landing/ethics', locals: { dmp: @dmp } %>
-  <%= render partial: '/landing/costs', locals: { dmp: @dmp } %>
-  <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
+  <%#= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
+  <%#= render partial: '/landing/ethics', locals: { dmp: @dmp } %>
+  <%#= render partial: '/landing/costs', locals: { dmp: @dmp } %>
+  <%#= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
 </div>
 
 <%#= @json.inspect %>

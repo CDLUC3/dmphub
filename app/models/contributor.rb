@@ -19,10 +19,7 @@ class Contributor < ApplicationRecord
   validates :email, uniqueness: { case_sensitive: false, allow_nil: true, allow_blank: true }
 
   # Instance Methods
-  def name_last_first
-    parts = name.split(' ')
-    return parts.first unless parts.length > 1
-
-    "#{parts.last}, #{name.gsub(" #{parts.last}", '')}"
+  def name_first_last
+    name.split(' ').reverse.join(' ')
   end
 end

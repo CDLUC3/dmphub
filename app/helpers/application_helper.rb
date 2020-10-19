@@ -35,18 +35,35 @@ module ApplicationHelper
   end
 
   def identifier_to_url(identifier:)
+    return nil unless identifier.present?
     return identifier.value unless identifier.present? && !identifier.value.start_with?('http')
 
-    case identifier.category
-    when 'doi'
-      "https://dx.doi.org/#{identifier.value}"
-    when 'orcid'
-      "https://orcid.org/#{identifier.value}"
-    when 'ror'
-      "https://ror.org/#{identifier.value}"
-    else
-      "#{identifier.category}:#{identifier.value}"
-    end
+    url = case identifier.category
+          when 'doi'
+            "https://dx.doi.org/#{identifier.value}"
+          when 'orcid'
+            "https://orcid.org/#{identifier.value}"
+          when 'ror'
+            "https://ror.org/#{identifier.value}"
+          else
+            "#{identifier.category}:#{identifier.value}"
+          end
+
+    url.start_with?('http') ? link_to((text || url), url, target: '_blank') : url
+  end
+
+  def orcid_without_url(value:)
+    value.gsub(%r{^https?://orcid.org/}, '')
+  end
+
+  def role_to_link(role:)
+    return '' unless role.present?
+
+    # Swap out primary_contact with a CASRAI role
+    role = 'https://dictionary.casrai.org/Contributor_Roles/Data_curation' if role == 'primary_contact'
+
+    text = humanize_underscored(name: role.gsub('https://dictionary.casrai.org/Contributor_Roles/', ''))
+    link_to text, role, target: '_blank'
   end
 
   def humanize_underscored(name:)

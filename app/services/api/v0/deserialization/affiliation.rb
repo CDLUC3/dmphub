@@ -54,11 +54,11 @@ module Api
 
             # Search both the local DB and the ROR API
             results = AffiliationSelection::SearchService.search_combined(search_term: json['name'])
+            return results.first if results.length == 1 && results.first&.is_a?(::Affiliation)
 
             # Grab the closest match - only caring about results that 'contain'
             # the name with preference to those that start with the name
             result = results.select { |r| %w[0 1].include?(r[:weight].to_s) }.first
-
             # If no good result was found just use the specified name
             return ::Affiliation.find_or_initialize_by(name: json['name']) unless result.present?
 

@@ -150,14 +150,31 @@ namespace :csv_loader do
       p "Processed #{dmps.length} DMPs. Extracting viable DMPs for import into DMPHub ..."
 
       # Debug line to isolate a specific Project
-      # output = []
-      # dmps.each_pair do |_project, dmp|
-        # next unless dmp[:dmp].fetch(:dmp_id, {})[:identifier] == 'https://www.bco-dmo.org/project/560580/plan/1045'
+      output = []
+      dmps.each_pair do |_project, dmp|
+        # Only grabbing 14 titles
+        titles = [
+          'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
+          'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
+          'Collaborative Research: New Approaches to New Production',
+          'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
+          'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
+          'Adaptations of fish and fishing communities to rapid climate change',
+          'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
+          'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
+          'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
+          'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
+          'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
+          'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
+          'Impacts of size-selective mortality on sex-changing fishes',
+          'Collaborative Research: Ocean Acidification and Coral Reefs: Scale Dependence and Adaptive Capacity'
+        ]
+        next unless titles.include?(dmp[:dmp][:title])
 
-        # output << dmp
-      # end
+        output << dmp
+      end
 
-      output = dmps.values
+      #output = dmps.values
 
       # Extract the Contact
       dmps = handle_contacts(dmps: output)

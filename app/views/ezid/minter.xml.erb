@@ -8,7 +8,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
     <creators>
       <% presenter.creators.each do |creator| %>
       <creator>
-        <creatorName nameType="Personal"><%= creator.name_last_first %></creatorName>
+        <creatorName nameType="Personal"><%= creator.name %></creatorName>
         <% if creator.orcids.any? %>
         <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">
           <%= creator.orcids.last.value %>
@@ -46,7 +46,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <% presenter.contributors.each do |cdmp| %>
       <% contributor = cdmp.contributor %>
       <contributor contributorType="<%= presenter.role_for(cdmp) %>">
-        <contributorName nameType="Personal"><%= contributor.name_last_first %></contributorName>
+        <contributorName nameType="Personal"><%= contributor.name %></contributorName>
         <% if contributor.orcids.any? %>
         <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
         <% end %>

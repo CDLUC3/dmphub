@@ -110,7 +110,6 @@ module Api
                            .where(category: 'url', descriptor: 'is_metadata_for')
                            .first&.identifiable
         end
-        p @dmp.inspect
       end
 
       def setup_authorizations(dmp:)
@@ -134,6 +133,8 @@ module Api
       def authorized?
         @dmp.present? && client.present? && @dmp.authorized?(api_client: client)
       end
+
+    end
     # rubocop:enable Metrics/ClassLength
   end
 end

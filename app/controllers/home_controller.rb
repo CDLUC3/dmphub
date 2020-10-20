@@ -16,6 +16,7 @@ class HomeController < ApplicationController
   def search
     # Force back to page 1
     @page = 1
+    @search_words = search_params[:search_words]
     @data_management_plans = paginate_response(results: search_filter_and_sort)
   end
 
@@ -54,7 +55,7 @@ class HomeController < ApplicationController
   private
 
   def search_params
-    params.permit(:search_words)
+    params.require(:search).permit([:search_words])
   end
 
   def filter_params

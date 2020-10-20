@@ -6,7 +6,8 @@
         controller: 'home',
         action: 'dashboard',
         sort_col: @sort_col,
-        sort_dir: @sort_dir
+        sort_dir: @sort_dir,
+        search_words: @search_words
       }
   ) %>
   $('.data-management-plans-table').replaceWith("<%= payload %>");

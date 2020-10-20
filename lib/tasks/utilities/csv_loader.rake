@@ -135,10 +135,13 @@ namespace :csv_loader do
 
         dmp_hash = attach_project(hash: dmp_hash, line: line)
         dmp_hash = attach_contributor(hash: dmp_hash, line: line)
-        dmp_hash = attach_dataset(hash: dmp_hash, line: line)
+        # Commenting out because we're really loading actual Datasets not the DMP 'idea' of a dataset
+        # dmp_hash = attach_dataset(hash: dmp_hash, line: line)
 
         # Attach any related identifiers
         dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['project'])
+        dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['dataset_doi'], type: 'DOI')
+        dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['dataset_url'])
         dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['related_doi'], type: 'DOI')
 
         # Add/Overwrite the previous DMP hash
@@ -303,7 +306,7 @@ namespace :csv_loader do
     hash[:dataset] = [] unless hash[:dataset].present?
     datasets = hash[:dataset].select do |d|
       d = {} unless d.present?
-      (d.fetch(:dataset_id, {})[:type] == 'DOI' && d.fetch(:dataset_id, {})[:identifier] == line['dataset_doi']) ||
+      (d.fetch(:dataset_id, {})[:datacite_related_identifier_type] == 'DOI' && d.fetch(:dataset_id, {})[:identifier] == line['dataset_doi']) ||
         (d.fetch(:dataset_url, {})[:type] == 'URL' && d.fetch(:dataset_url, {})[:identifier] == line['dataset_url'])
     end
     return hash if datasets.any?

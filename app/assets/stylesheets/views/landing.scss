@@ -1,12 +1,17 @@
-ul.landing-contributor-list {
+ul.landing-list {
   font-size: 1.1em;
   font-weight: 400;
 
   li {
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    list-style: none;
+
+    strong {
+      font-weight: 600;
+    }
 
     span {
-      padding-left: 5px;
+      padding-left: 8px;
     }
   }
 }

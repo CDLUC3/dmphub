@@ -1,44 +1,14 @@
 <%# locals: dmp, project %>
 
-<%
-identifiers = @dmp.identifiers.select do |id|
-  id.descriptor == 'is_identified_by' && id.category != 'doi'
-end
-related_identifiers = @dmp.identifiers.reject do |id|
-  %w[is_identified_by is_funded_by].include?(id.descriptor)
-end
-%>
-
-<h3>Data Management Plan</h3>
-
-<ul>
-  <li><strong>DOI:</strong> <%= identifier_to_link(identifier: dmp.doi) %></li>
-  <li><strong>Created:</strong> <%= safe_date(date: dmp.created_at) %></li>
-  <li><strong>Modified:</strong> <%= safe_date(date: dmp.updated_at) %></li>
-  <li><strong>Language:</strong> <%= safe_language(language: dmp.language) %></li>
-  <li><strong>Project Start:</strong> <%= safe_date(date: project.start_on) %></li>
-  <li><strong>Project End:</strong> <%= safe_date(date: project.end_on) %></li>
-
-  <% if identifiers.any? %>
-    <li>
-      <strong>Identifiers:</strong>
-      <ul>
-        <% identifiers.each do |identifier| %>
-          <%= render partial: '/landing/identifier',
-                     locals: { identifier: identifier } %>
-        <% end %>
-      </ul>
-    </li>
-  <% end %>
-  <% if related_identifiers.any? %>
-    <li>
-      <strong>Related Identifiers:</strong>
-      <ul>
-        <% related_identifiers.each do |identifier| %>
-          <%= render partial: '/landing/identifier',
-                     locals: { identifier: identifier } %>
-        <% end %>
-      </ul>
-    </li>
-  <% end %>
+<ul class="landing-list">
+  <li><strong>Project ID:</strong><span><%= identifier_to_link(identifier: dmp.urls.select { |id| id.descriptor == 'is_supplement_to' } ) %></span></li>
+  <li><strong>Project Start:</strong><span><%= safe_date(date: project.start_on) %></span></li>
+  <li><strong>Project End:</strong><span><%= safe_date(date: project.end_on) %></span></li>
+  <li><strong>Created:</strong><span><%= safe_date(date: dmp.created_at) %></span></li>
+  <li><strong>Modified:</strong><span><%= safe_date(date: dmp.updated_at) %></span></li>
+  <li><strong>Ethics:</strong><span><%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></span></li>
 </ul>
+
+  <% if dmp.costs.any? %>
+    <%#= render partial: '/landing/costs', locals: { dmp: @dmp } %>
+  <% end %>

@@ -3,13 +3,14 @@
 .c-orcid {
   display: inline-block;
   position: relative;
-  padding-inline-start: 1.6em;
+  padding-inline-start: 1.2em;
 
   &::before {
     content: url('orcid.svg');
     position: absolute;
     left: 0;
-    width: 1.1em;
+    width: 1em;
+    padding-top: 2px;
     inset-block: 0;
     inset-inline-start: 0;
     margin-inline-end: 1em;

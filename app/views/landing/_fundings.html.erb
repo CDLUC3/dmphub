@@ -1,25 +1,17 @@
 <%# locals: fundings %>
 
-<details>
-  <summary>Funding</summary>
-
-  <div class="c-accordion__section">
-    <% if fundings.any? %>
-      <ul>
-        <% fundings.each do |funding| %>
-          <% grant = funding.urls.last&.value %>
-          <% ror = funding.affiliation.rors.first %>
-
-          <li><strong>Status:</strong> <%= humanize_underscored(name: funding.status) %></li>
-          <li><strong>Agency:</strong> <%= ror.present? ? link_to(funding.affiliation.name, ror.value) : funding.affiliation.name %></li>
-
-          <% if grant.present? %>
-            <li><strong>Award:</strong> <%= link_to grant, grant %></li>
-          <% end %>
-        <% end %>
-      </ul>
-    <% else %>
-      <p>No funding sources have been identified.</p>
+<% if fundings.any? %>
+  <ul class="landing-list">
+    <% fundings.each do |funding| %>
+      <%
+      grant = funding.urls.last&.value
+      ror = funding.affiliation.rors.first
+      out = [
+        (ror.present? ? link_to(funding.affiliation.name, ror.value) : funding.affiliation.name),
+        link_to(grant, grant)
+      ].compact.join(',</span><span>')
+      %>
+      <li><strong><%= humanize_underscored(name: funding.status) %></strong><span><%= out.html_safe %></span></li>
     <% end %>
-  </div>
-</details>
+  </ul>
+<% end %>

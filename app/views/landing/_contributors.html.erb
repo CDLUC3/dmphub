@@ -2,7 +2,7 @@
 
 <% contributor_hashes = LandingPresenter.contributors_with_roles(contributors_data_management_plans: cdmps) %>
 <% if contributor_hashes.any? %>
-  <ul class="landing-contributor-list">
+  <ul class="landing-list">
     <% contributor_hashes.each do |hash| %>
       <% contrib = hash[:contributor] %>
       <li>

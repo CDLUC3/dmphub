@@ -13,5 +13,19 @@ class LandingPresenter
       end
       out.sort { |a, b| a[:contributor]&.name <=> b[:contributor]&.name }
     end
+
+    def related_datasets(data_management_plan:)
+      return [] unless data_management_plan.present? && data_management_plan.identifiers.any?
+
+      # TODO: Implement something that checks/helps us distinguish a dataset from a publication!
+      data_management_plan.identifiers.select { |id| id.descriptor = 'is_referenced_by' }
+    end
+
+    def related_publications(data_management_plan:)
+      return [] unless data_management_plan.present? && data_management_plan.urls.any?
+
+      # TODO: Implement something that checks/helps us distinguish a dataset from a publication!
+      data_management_plan.identifiers.select { |id| id.descriptor = 'is_referenced_by' }
+    end
   end
 end

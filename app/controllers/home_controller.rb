@@ -64,7 +64,7 @@ class HomeController < ApplicationController
 
   def search_filter_and_sort
     results = filter_params.present? ? apply_filters(results: results) : base_query.all
-    results = apply_search(results: results) if search_params.present?
+    results = apply_search(results: results) if params[:search].present?
     results.order(order_clause)
   end
 

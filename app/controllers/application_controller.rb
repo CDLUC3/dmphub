@@ -22,9 +22,10 @@ class ApplicationController < ActionController::Base
   end
 
   def pagination_params
-    out = params.permit(:page, :per_page)
-    out[:page] = 1 unless out[:page].present?
-    out[:per_page] = 25 unless out[:per_page].present?
+    out = {
+      page: params[:page] || 1,
+      per_page: params[:per_page] || 25
+    }
     out[:per_page] = 100 if out[:per_page] > 100
 
     # also set the instance variables for access in the views
@@ -35,10 +36,11 @@ class ApplicationController < ActionController::Base
   end
 
   def sort_params
-    out = params.permit(:sort_col, :sort_dir)
-    out[:sort_col] = 'updated_at' unless out[:sort_col].present?
-    out[:sort_dir] = 'desc' unless out[:sort_dir].present?
-
+    out = {
+      sort_col: params[:sort_col] || 'updated_at',
+      sort_dir: params[:sort_dir] || 'desc'
+    }
+    
     # also set the instance variables for access in the views
     @sort_col = out[:sort_col]
     @sort_dir = out[:sort_dir]

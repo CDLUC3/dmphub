@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-Rails.application.routes.default_url_options[:host] = 'https://dmphub.org'
+Rails.application.routes.default_url_options[:host] = 'https://dmphub.cdlib.org'
 
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
@@ -25,7 +25,7 @@ Rails.application.configure do
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   # config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
-  # Since we're not using Apache/NGINX, just the ALB 
+  # Since we're not using Apache/NGINX, just the ALB
   config.serve_static_assets = true
 
   # Compress CSS using a preprocessor.

@@ -1,0 +1,1 @@
+export RAILS_MASTER_KEY=$(aws ssm get-parameter --name '/uc3/dmp/stg/hub/master_key' --region us-west-2 | awk -F"[ ',]+" '/"Value":/{print $3}' | awk 'gsub("\"", "")')

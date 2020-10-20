@@ -2,7 +2,7 @@
 
 <% contributor_hashes = LandingPresenter.contributors_with_roles(contributors_data_management_plans: cdmps) %>
 <% if contributor_hashes.any? %>
-  <ul>
+  <ul class="landing-contributor-list">
     <% contributor_hashes.each do |hash| %>
       <% contrib = hash[:contributor] %>
       <li>
@@ -17,7 +17,7 @@
           orcid.present? && orcid.start_with?('http') ? "<a href=\"orcid\" target=\"_blank\" class=\"c-orcid\">#{orcid_without_url(value: orcid)}</a>" : orcid
         ].compact
         %>
-        <%= entries.join(', &nbsp;&nbsp;').html_safe %>
+        <span><%= entries.join(',</span><span>').html_safe %></span>
       </li>
     <% end %>
   </ul>

@@ -4,13 +4,21 @@
 <%= render partial: '/landing/contributors',
            locals: { primary_contact: @dmp.primary_contact, cdmps: @dmp.contributors_data_management_plans } %>
 
+<hr>
+
 <h3>Project Details</h3>
 <%= render partial: '/landing/data_management_plan', locals: { dmp: @dmp, project: @dmp.project } %>
+
+<hr>
 
 <h3>Funding</h3>
 <%= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
 
+<hr>
+
 <h3>Citation</h3>
+
+<hr>
 
 <h3>Abstract</h3>
 <%= render partial: '/landing/abstract',
@@ -18,6 +26,8 @@
 
 <% datasets = @dmp.datasets.select { |dataset| dataset.identifiers && dataset.distributions.any? } %>
 <% if datasets.any? %>
+  <hr>
+
   <h3>Datasets</h3>
   <%= render partial: '/landing/datasets', locals: { datasets: datasets } %>
 <% end %>
@@ -25,7 +35,10 @@
 <% relateds = LandingPresenter.related_publications(data_management_plan: @dmp) %>
 
 <% if relateds.any? %>
+  <hr>
+
   <h3>Related Works</h3>
+
   <ul class="landing-list">
     <% relateds.each do |related| %>
       <li><%= identifier_to_link(identifier: related) %></a></li>

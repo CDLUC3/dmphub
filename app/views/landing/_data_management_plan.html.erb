@@ -1,12 +1,12 @@
 <%# locals: dmp, project %>
 
 <ul class="landing-list">
-  <li><strong>Project ID:</strong><span><%= identifier_to_link(identifier: dmp.urls.select { |id| id.descriptor == 'is_supplement_to' } ) %></span></li>
-  <li><strong>Project Start:</strong><span><%= safe_date(date: project.start_on) %></span></li>
-  <li><strong>Project End:</strong><span><%= safe_date(date: project.end_on) %></span></li>
-  <li><strong>Created:</strong><span><%= safe_date(date: dmp.created_at) %></span></li>
-  <li><strong>Modified:</strong><span><%= safe_date(date: dmp.updated_at) %></span></li>
-  <li><strong>Ethics:</strong><span><%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></span></li>
+  <li>Project ID:<span><%= identifier_to_link(identifier: dmp.identifiers.select { |id| id.descriptor == 'is_supplement_to' } ) %></span></li>
+  <li>Project Start:<span><%= safe_date(date: project.start_on) %></span></li>
+  <li>Project End:<span><%= safe_date(date: project.end_on) %></span></li>
+  <li>Created:<span><%= safe_date(date: dmp.created_at) %></span></li>
+  <li>Modified:<span><%= safe_date(date: dmp.updated_at) %></span></li>
+  <li>Ethics:<span><%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></span></li>
 </ul>
 
   <% if dmp.costs.any? %>

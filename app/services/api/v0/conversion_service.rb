@@ -143,6 +143,13 @@ module Api
           role.split('/').last.downcase
         end
 
+        # Retrieves the `extension: [:dmphub]` from the json
+        def fetch_extension(json:)
+          return {} unless json.present? && json[:extension].present? && json[:extension].is_a?(Array)
+
+          json[:extension].select { |ext| ext[:dmphub].present? }.first.fetch(:dmphub, {})
+        end
+
         # Converts a User to a Person
         def user_to_person(user:, role:)
           return {} unless user.present? && user.is_a?(User)

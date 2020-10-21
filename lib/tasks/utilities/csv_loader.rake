@@ -258,21 +258,23 @@ namespace :csv_loader do
   end
 
   # Attach a related_identifier
+  # rubocop:disable Metrics/CyclomaticComplexity
   def attach_related_identifier(hash:, value:, type: 'URL', descriptor: 'is_referenced_by')
     return hash unless value.present?
 
-    hash[:extension] = {} unless hash[:extension].present?
-    hash[:extension][:dmphub] = {} unless hash[:extension][:dmphub].present?
-    hash[:extension][:dmphub][:related_identifiers] = [] unless hash[:extension][:dmphub][:related_identifiers].present?
-    return hash if hash[:extension][:dmphub][:related_identifiers].select { |id| id[:value] == value }.any?
+    hash[:extension] = [{}] unless hash[:extension].present?
+    hash[:extension].first[:dmphub] = {} unless hash[:extension][:dmphub].present?
+    hash[:extension].first[:dmphub][:related_identifiers] = [] unless hash[:extension].first[:dmphub][:related_identifiers].present?
+    return hash if hash[:extension].first[:dmphub][:related_identifiers].select { |id| id[:value] == value }.any?
 
     value = value.start_with?('http') ? value : "https://doi.org/#{value}"
 
-    hash[:extension][:dmphub][:related_identifiers] << {
+    hash[:extension].first[:dmphub][:related_identifiers] << {
       datacite_related_identifier_type: type, value: value, datacite_relation_type: descriptor
     }
     hash
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Attach a contributor's metadata
   def attach_contributor(hash:, line:)

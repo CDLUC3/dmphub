@@ -94,7 +94,7 @@ module Api
 
             # Otherwise take any identifiers passed in the JSON
             id = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
-            if id.present? && id.identifier.present?
+            if id.present? && id[:identifier].present?
               identifier = Api::V0::Deserialization::Identifier.deserialize(
                 provenance: provenance, identifiable: affiliation, json: id
               )

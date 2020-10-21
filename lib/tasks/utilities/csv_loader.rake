@@ -213,7 +213,6 @@ namespace :csv_loader do
     return hash unless hash.present? && line.present? && (line['project_start'].present? || line['project_end'].present?)
 
     projects = hash.fetch(:project, [])
-
     if projects.any?
       project_hash = projects.first
     else

@@ -147,7 +147,8 @@ module Api
         def fetch_extension(json:)
           return {} unless json.present? && json[:extension].present? && json[:extension].is_a?(Array)
 
-          json[:extension].select { |ext| ext[:dmphub].present? }.first.fetch(:dmphub, {})
+          extension = json[:extension].select { |ext| ext[:dmphub].present? }
+          extension.any? ? extension.first.fetch(:dmphub, {}) : {}
         end
 
         # Converts a User to a Person

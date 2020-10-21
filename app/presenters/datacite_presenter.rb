@@ -109,6 +109,10 @@ class DatacitePresenter
     value.gsub(%r{^https?://do[a-z].org/}, 'doi:').strip
   end
 
+  def affiliation_name_without_contextual(name:)
+    name.to_s.gsub(/\(.*\)\s?$/)
+  end
+
   private
 
   # Retrieves all of the contributors who were authors of the DMP for DataCite's <creators>

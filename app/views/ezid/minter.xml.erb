@@ -16,7 +16,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
         <% end %>
         <% if creator.affiliation.present? && creator.affiliation.rors.any? %>
         <affiliation affiliationIdentifier="<%= creator.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR">
-          <%= creator.affiliation.name %>
+          <%= presenter.affiliation_name_without_contextual(name: creator.affiliation.name) %>
         </affiliation>
         <% end %>
       </creator>
@@ -28,16 +28,11 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
     <publisher xml:lang="en-US">DMPHub</publisher>
     <publicationYear><%= Time.now.year %></publicationYear>
     <contributors>
-      <contributor contributorType="HostingInstitution">
-        <% hoster = presenter.hosting_institution %>
-        <contributorName nameType="Organizational"><%= hoster.fetch(:name, ApplicationService.application_name) %></contributorName>
-        <% if hoster[:identifier].present? && hoster[:scheme].present? %>
-        <nameIdentifier nameIdentifierScheme="<%= hoster[:scheme] %>"><%= hoster[:identifier] %></nameIdentifier>
-        <% end %>
-      </contributor>
       <% presenter.producers.each do |producer| %>
       <contributor contributorType="Producer">
-        <contributorName nameType="Organizational"><%= producer.name %></contributorName>
+        <contributorName nameType="Organizational">
+          <%= presenter.affiliation_name_without_contextual(name: producer.name) %>
+        </contributorName>
         <% if producer.rors.any? %>
         <nameIdentifier nameIdentifierScheme="ROR"><%= producer.rors.last.value %></nameIdentifier>
         <% end %>
@@ -48,10 +43,12 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <contributor contributorType="<%= presenter.role_for(cdmp) %>">
         <contributorName nameType="Personal"><%= contributor.name %></contributorName>
         <% if contributor.orcids.any? %>
-        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
+        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/" nameType="Personal"><%= contributor.orcids.last.value %></nameIdentifier>
         <% end %>
         <% if contributor.affiliation.present? && contributor.affiliation.rors.any? %>
-        <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR"><%= contributor.affiliation.name %></affiliation>
+        <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR">
+          <%= presenter.affiliation_name_without_contextual(name: contributor.affiliation.name) %>
+        </affiliation>
         <% end %>
       </contributor>
       <% end %>

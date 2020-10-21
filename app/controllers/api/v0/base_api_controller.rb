@@ -30,24 +30,6 @@ module Api
 
       protected
 
-      # rubocop:disable Metrics/CyclomaticComplexity
-      def model_errors(model:, ancestry: '')
-        errs = []
-        return errs unless model.present? && model.respond_to?(:errors)
-
-        errs = model.errors.full_messages.map { |m| "#{model.class.name} - #{m}" } if model.errors.any?
-
-        model.class.reflect_on_all_associations(:has_many).each do |association|
-          next if %w[alterations authorizations histories identifiers].include?(association.plural_name)
-
-          model.send(:"#{association.plural_name}").each do |child|
-            errs += model_errors(model: child, ancestry: "#{ancestry}-#{child.class.name}")
-          end
-        end
-        errs&.flatten
-      end
-      # rubocop:enable Metrics/CyclomaticComplexity
-
       def render_error(errors:, status:, items: [])
         @payload = { errors: errors, items: items }
         render '/api/v0/error', status: status
@@ -117,9 +99,9 @@ module Api
 
       def log_error(error:)
         Rails.logger.error "Incoming params: #{params.inspect}"
-        Rails.logger.error "Incoming headers: #{request.headers.inspect}"
+        # Rails.logger.error "Incoming headers: #{request.headers.inspect}"
         Rails.logger.error error.message
-        Rails.logger.error error.backtrace
+        Rails.logger.error error.backtrace[0..5]
       end
 
       def log_access

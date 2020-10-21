@@ -41,26 +41,18 @@ module Api
           if @dmp.present?
             if @dmp.new_record?
               # rubocop:disable Metrics/BlockNesting
-              if @dmp.valid?
-                process_dmp
+              @dmp = PersistenceService.process_full_data_management_plan(
+                client: client,
+                dmp: @dmp,
+                history_description: "#{request.method} #{request.url}",
+                mintable: true
+              )
 
-                @dmp = PersistenceService.process_full_data_management_plan(
-                  client: client,
-                  dmp: @dmp,
-                  history_description: "#{request.method} #{request.url}",
-                  mintable: true
-                )
-
-                if @dmp.dois.any? || @dmp.arks.any?
-                  render 'show', status: :created
-                else
-                  render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],
-                               status: 500
-                end
+              if @dmp.dois.any? || @dmp.arks.any?
+                render 'show', status: :created
               else
-                errs = model_errors(model: @dmp)
-                errs += model_errors(model: @dmp.project)
-                render_error errors: ["Invalid JSON format - #{errs}"], status: :bad_request
+                render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],
+                             status: 500
               end
               # rubocop:enable Metrics/BlockNesting
             else
@@ -69,10 +61,14 @@ module Api
               render_error errors: [msg], status: :method_not_allowed, items: [doi]
             end
           elsif provenance.present?
-            msg = 'You must include at least a :title, :contact (with :mbox) and :dmp_id (with :identifier)'
+            log_error(error: 'Create failed - invalid JSON received and DMP could not be deserialized.')
+            # TODO: We may want to comment this out for Prod
+            log_error(error: dmp_params.to_h)
+            msg = 'You must include at least a :title, :contact (with :name) and :dmp_id (with :identifier)'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           else
-            msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :mbox }'
+            log_error(error: "Create failed - provenance is missing! CLIENT: '#{client&.name}'")
+            msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :name }'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           end
         else

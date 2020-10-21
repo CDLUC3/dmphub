@@ -77,8 +77,10 @@ module Api
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
-            dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp,
-                                                  json: json.fetch(:extension, {}).fetch(:dmphub, {}))
+            if json[:extension].present? && json[:extension][:dmphub].present?
+              dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp,
+                                                    json: json.fetch(:extension, {}).fetch(:dmphub, {}))
+            end
             dmp
           end
 

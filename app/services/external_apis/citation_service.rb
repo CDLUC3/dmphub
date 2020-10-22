@@ -33,7 +33,7 @@ module ExternalApis
 
         Rails.logger.warn err_msg
         Rails.logger.warn resp.body.inspect
-        msg
+        err_msg
       # If a JSON parse error occurs then return results of a local table search
       rescue JSON::ParserError => e
         log_error(method: 'CitationService fetch', error: e)

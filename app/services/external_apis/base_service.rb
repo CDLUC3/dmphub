@@ -99,8 +99,6 @@ module ExternalApis
       def http_get(uri:, additional_headers: {}, debug: false)
         return nil unless uri.present?
 
-p uri.inspect
-
         HTTParty.get(uri, options(additional_headers: additional_headers,
                                   debug: debug))
       rescue URI::InvalidURIError => e

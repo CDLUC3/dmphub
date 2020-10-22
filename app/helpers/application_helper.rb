@@ -96,6 +96,6 @@ module ApplicationHelper
     # Author name. (yyy, mm, dd). Title of DMP (Version XX). DMPHub. DOI
     return '' unless dmp.present? && dmp.primary_contact.present? && dmp.dois.any?
 
-    "#{dmp.primary_contact.name}. (#{dmp.created_at.strftime('%y, %m, %d')}). \"#{dmp.title}\". DMPHub. #{identifier_to_link(identifier: dmp.dois.last)}"
+    "#{dmp.primary_contact.name}. (#{dmp.created_at.strftime('%Y, %m, %d')}). \"#{dmp.title}\" [Data Management Plan]. DMPHub. #{identifier_to_link(identifier: dmp.dois.last)}"
   end
 end

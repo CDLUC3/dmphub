@@ -21,18 +21,14 @@ module ExternalApis
         doi = "#{api_base_url}#{doi.gsub(/^doi:/, '')}" unless doi.start_with?('http')
         err_msg = "Unable to generate a citation for #{doi}"
 
-        # TODO: Move thiss into action cable instead. the Rails cache doesn't seem to be working
-        citation = Rails.cache.fetch(["citation-#{doi}"], expires_in: 1.week) do
-          resp = http_get(uri: doi.to_s) # , debug: true)
+        resp = http_get(uri: doi.to_s) # , debug: true)
 
-          unless resp.present? && resp.code == 200
-            handle_http_failure(method: 'CitationService fetch', http_response: resp)
-            return err_msg
-          end
-
-          citation = process_json(doi: doi, json: JSON.parse(resp.body))
+        unless resp.present? && resp.code == 200
+          handle_http_failure(method: 'CitationService fetch', http_response: resp)
+          return err_msg
         end
 
+        citation = process_json(doi: doi, json: JSON.parse(resp.body))
         return citation unless citation == doi
 
         Rails.logger.warn err_msg

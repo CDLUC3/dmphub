@@ -26,10 +26,10 @@ module Api
           def deserialize(provenance:, dataset:, json: {})
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
-            # Try to find the Dataset by the identifier
+            # Try to find the Distribution by the identifier
             distribution = find_by_urls(json: json)
 
-            # Try to find the Dataset by title
+            # Try to find the Distribution by title
             distribution = find_by_title(provenance: provenance, json: json) unless distribution.present?
             return nil unless distribution.present? && distribution.valid?
 
@@ -56,6 +56,7 @@ module Api
 
             ::Distribution.where(access_url: json[:access_url])
                           .or(::Distribution.where(download_url: json[:download_url]))
+                          .first
           end
 
           # Search for the Distribution by it title

@@ -43,7 +43,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <contributor contributorType="<%= presenter.role_for(cdmp) %>">
         <contributorName nameType="Personal"><%= contributor.name %></contributorName>
         <% if contributor.orcids.any? %>
-        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/" nameType="Personal"><%= contributor.orcids.last.value %></nameIdentifier>
+        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
         <% end %>
         <% if contributor.affiliation.present? && contributor.affiliation.rors.any? %>
         <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR">

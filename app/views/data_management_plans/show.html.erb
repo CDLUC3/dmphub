@@ -24,8 +24,7 @@
 <%= render partial: '/landing/abstract',
            locals: { dmp: @dmp, project: @dmp.project } %>
 
-<% datasets = @dmp.datasets.select { |dataset| dataset.identifiers && dataset.distributions.any? } %>
-<% if datasets.any? %>
+<% if @dmp.datasets.any? %>
   <hr>
 
   <h3>Datasets</h3>

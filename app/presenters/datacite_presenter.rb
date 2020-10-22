@@ -110,7 +110,7 @@ class DatacitePresenter
   end
 
   def affiliation_name_without_contextual(name:)
-    name.to_s.gsub(/\(.*\)\s?$/)
+    name.to_s.gsub(/\(.*\)\s?$/, '')
   end
 
   private

@@ -5,7 +5,7 @@ module ApplicationHelper
   def safe_date(date:)
     return 'Unknown' unless date.is_a?(Time)
 
-    date.strftime('%b. %d, %Y')
+    date.strftime('%B %d, %Y')
   end
 
   def safe_language(language:)
@@ -90,5 +90,12 @@ module ApplicationHelper
 
     prefix = Rails.configuration.x.ezid[:doi_prefix]
     value.gsub(dmp.id.to_s, doi.gsub(prefix, 'doi:'))
+  end
+
+  def citation(dmp:)
+    # Author name. (yyy, mm, dd). Title of DMP (Version XX). DMPHub. DOI
+    return '' unless dmp.present? && dmp.primary_contact.present? && dmp.dois.any?
+
+    "#{dmp.primary_contact.name}. (#{dmp.created_at.strftime('%y, %m, %d')}). \"#{dmp.title}\". DMPHub. #{identifier_to_link(identifier: dmp.dois.last)}"
   end
 end

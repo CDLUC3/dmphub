@@ -4,7 +4,7 @@
   <h4><%= dataset.title %></h4>
   <p><%= dataset.description %></p>
   <ul class="landing-list">
-    <li><strong>Format:</strong><span><%= dataset.dataset_type %></span></li>
+    <li><strong>Format:</strong><span><%= humanize_underscored(name: dataset.dataset_type) %></span></li>
     <li><strong>Anticipated volume:</strong><span>unknown</span></li>
     <li><strong>Release timeline:</strong><span>unknown</span></li>
     <li><strong>Intended repository:</strong><span>unknown</span></li>

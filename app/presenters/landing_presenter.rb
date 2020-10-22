@@ -25,7 +25,7 @@ class LandingPresenter
       return [] unless data_management_plan.present? && data_management_plan.urls.any?
 
       # TODO: Implement something that checks/helps us distinguish a dataset from a publication!
-      data_management_plan.identifiers.select { |id| id.descriptor = 'is_referenced_by' }
+      data_management_plan.identifiers.select { |id| id.category != 'ark' }
     end
   end
 end

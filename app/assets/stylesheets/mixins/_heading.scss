@@ -2,7 +2,14 @@
 
 // <h1> is not styled because it's reserved for use in .c-header and hidden
 
+h1 {
+  color: $color-blue;
+  font-size: 2em;
+  font-weight: 400;
+}
+
 h2 {
+  margin-top: 10px;
   color: $color-orange;
   font-size: 2em;
   font-weight: 400;
@@ -11,5 +18,11 @@ h2 {
 h3 {
   color: $color-blue;
   font-size: 1.3rem;
+  font-weight: 400;
+}
+
+h4 {
+  color: $color-orange;
+  font-size: 1.3em;
   font-weight: 400;
 }

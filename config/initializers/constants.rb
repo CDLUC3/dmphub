@@ -28,6 +28,12 @@ module Dmphub
     config.x.ezid.hosting_institution_identifier = 'https://ror.org/03yrm5c26'
     config.x.ezid.active = true
 
+    # ------------------------------------ #
+    # DATACITE CONTENT NEGOTIATION SERVICE #
+    # ------------------------------------ #
+    config.x.citation.api_base_url = 'http://dx.doi.org'
+    config.x.citation.active = true
+
     # ----------------- #
     # FUNDER AWARD URLS #
     # ----------------- #

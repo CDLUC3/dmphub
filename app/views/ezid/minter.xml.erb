@@ -64,7 +64,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
     <fundingReferences>
       <% data_management_plan.project.fundings.each do |funding| %>
       <fundingReference>
-        <funderName><%= funding.affiliation.name %></funderName>
+        <funderName><%= presenter.affiliation_name_without_contextual(name: funding.affiliation.name) %></funderName>
         <% if funding.affiliation.fundrefs.any? %>
         <funderIdentifier funderIdentifierType="Crossref Funder ID"><%= funding.affiliation.fundrefs.last.value %></funderIdentifier>
         <% end %>

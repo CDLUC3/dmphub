@@ -135,11 +135,8 @@ namespace :csv_loader do
 
         dmp_hash = attach_project(hash: dmp_hash, line: line)
         dmp_hash = attach_contributor(hash: dmp_hash, line: line)
-        # Commenting out because we're really loading actual Datasets not the DMP 'idea' of a dataset
-        # dmp_hash = attach_dataset(hash: dmp_hash, line: line)
 
         # Attach any related identifiers
-        dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['project'])
         dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['dataset_doi'], type: 'DOI')
         dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['dataset_url'])
         dmp_hash = attach_related_identifier(hash: dmp_hash, value: line['related_doi'], type: 'DOI')
@@ -153,31 +150,31 @@ namespace :csv_loader do
       p "Processed #{dmps.length} DMPs. Extracting viable DMPs for import into DMPHub ..."
 
       # Debug line to isolate a specific Project
-      # output = []
-      # dmps.each_pair do |_project, dmp|
-        # # Only grabbing 14 titles
-        # titles = [
-          # 'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
-          # 'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
-          # 'Collaborative Research: New Approaches to New Production',
-          # 'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
-          # 'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
-          # 'Adaptations of fish and fishing communities to rapid climate change',
-          # 'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
-          # 'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
-          # 'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
-          # 'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
-          # 'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
-          # 'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
-          # 'Impacts of size-selective mortality on sex-changing fishes',
-          # 'Collaborative Research: Ocean Acidification and Coral Reefs: Scale Dependence and Adaptive Capacity'
-        # ]
-        # next unless titles.include?(dmp[:dmp][:title])
+      output = []
+      dmps.each_pair do |_project, dmp|
+        # Only grabbing 14 titles
+        titles = [
+          'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
+          'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
+          'Collaborative Research: New Approaches to New Production',
+          'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
+          'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
+          'Adaptations of fish and fishing communities to rapid climate change',
+          'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
+          'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
+          'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
+          'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
+          'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
+          'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
+          'Impacts of size-selective mortality on sex-changing fishes',
+          'Collaborative Research: Ocean Acidification and Coral Reefs: Scale Dependence and Adaptive Capacity'
+        ]
+        next unless titles.include?(dmp[:dmp][:title])
 
-        # output << dmp
-      # end
+        output << dmp
+      end
 
-      output = dmps.values
+      # output = dmps.values
 
       # Extract the Contact
       dmps = handle_contacts(dmps: output)
@@ -224,6 +221,9 @@ namespace :csv_loader do
       # Cleanse any Dates
       project_hash[:start] = process_date(date: project_hash[:start]) if project_hash[:start].present?
       project_hash[:end] = process_date(date: project_hash[:end]) if project_hash[:end].present?
+
+      id_hash = { type: 'URL', identifier: line['project'] }
+      project_hash[:extension] = [{ dmphub: { project_id: id_hash } }]
     end
     project_hash = attach_funding(hash: project_hash, line: line)
     hash[:project] = [project_hash]
@@ -262,7 +262,7 @@ namespace :csv_loader do
     return hash unless value.present?
 
     hash[:extension] = [{}] unless hash[:extension].present?
-    hash[:extension].first[:dmphub] = {} unless hash[:extension][:dmphub].present?
+    hash[:extension].first[:dmphub] = {} unless hash[:extension].first[:dmphub].present?
     hash[:extension].first[:dmphub][:related_identifiers] = [] unless hash[:extension].first[:dmphub][:related_identifiers].present?
     return hash if hash[:extension].first[:dmphub][:related_identifiers].select { |id| id[:value] == value }.any?
 

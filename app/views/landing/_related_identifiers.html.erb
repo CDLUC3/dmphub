@@ -1,0 +1,11 @@
+<%# locals: related_identifiers %>
+
+<ul class="landing-list" id="related-identifiers">
+  <% related_identifiers.each do |related| %>
+    <% if related.descriptor == 'is_metadata_for' %>
+      <li><strong>DMP Document</strong>:<span><%= identifier_to_link(identifier: related) %></span></li>
+    <% else %>
+      <li><%= ExternalApis::CitationService.fetch(doi: related.value).html_safe %></li>
+    <% end %>
+  <% end %>
+</ul>

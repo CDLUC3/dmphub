@@ -1,3 +1,4 @@
+<h1>Data Management Plan For:</h1>
 <h2><%= @dmp.title %></h2>
 
 <h3>Contributors</h3>
@@ -17,6 +18,7 @@
 <hr>
 
 <h3>Citation</h3>
+<p><%= citation(dmp: @dmp).html_safe %></p>
 
 <hr>
 
@@ -28,7 +30,7 @@
   <hr>
 
   <h3>Datasets</h3>
-  <%= render partial: '/landing/datasets', locals: { datasets: datasets } %>
+  <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
 <% end %>
 
 <% relateds = LandingPresenter.related_publications(data_management_plan: @dmp) %>
@@ -37,10 +39,5 @@
   <hr>
 
   <h3>Related Works</h3>
-
-  <ul class="landing-list">
-    <% relateds.each do |related| %>
-      <li><%= identifier_to_link(identifier: related) %></a></li>
-    <% end %>
-  </ul>
+  <%= render partial: '/landing/related_identifiers', locals: { related_identifiers: relateds } %>
 <% end %>

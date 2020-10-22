@@ -224,7 +224,7 @@ module Api
           def default_dataset(provenance:, dmp:)
             return nil unless provenance.present? && dmp.present?
 
-            ::Dataset.new(title: "Dataset: #{dmp.title}", provenance: provenance)
+            ::Dataset.new(title: "Dataset for: #{dmp.title}", dataset_type: 'dataset', provenance: provenance)
           end
         end
         # rubocop:enable Metrics/ClassLength

@@ -6,7 +6,7 @@
     <% contributor_hashes.each do |hash| %>
       <% contrib = hash[:contributor] %>
       <li>
-        <strong><%= contrib.name %></strong>:&nbsp;
+        <strong><%= contrib.name %></strong>:
         <%
         affil = contrib.affiliation
         ror = identifier_to_url(identifier: affil&.rors&.last)

@@ -1,7 +1,8 @@
 ul.landing-list {
-  font-size: 1.1em;
+  font-size: 1.1rem;
   font-weight: 400;
   padding-left: 0;
+  margin-bottom: 10px;
 
   li {
     margin-bottom: 0;
@@ -15,4 +16,8 @@ ul.landing-list {
       padding-left: 8px;
     }
   }
+}
+
+#related-identifiers li {
+  margin-bottom: 15px;
 }

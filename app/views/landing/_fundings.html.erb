@@ -6,12 +6,12 @@
       <%
       grant = funding.urls.last&.value
       ror = funding.affiliation.rors.first
-      out = [
-        (ror.present? ? link_to(funding.affiliation.name, ror.value) : funding.affiliation.name),
-        link_to(grant, grant)
-      ].compact.join(',</span><span>')
       %>
-      <li><strong><%= humanize_underscored(name: funding.status) %></strong><span><%= out.html_safe %></span></li>
+      <ul class="landing-list">
+        <li><strong>Status</strong>:<span><%= humanize_underscored(name: funding.status) %></span></li>
+        <li><strong>Funder</strong>:<span><%= (ror.present? ? link_to(funding.affiliation.name, ror.value) : funding.affiliation.name) %></span></li>
+        <li><strong>Grant URL</strong>:<span><%= link_to(grant, grant)%></span></li>
+      </ul>
     <% end %>
   </ul>
 <% end %>

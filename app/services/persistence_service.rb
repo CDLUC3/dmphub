@@ -182,6 +182,10 @@ class PersistenceService
     def safe_save_project(project:)
       return nil unless project.present?
 
+      project.identifiers.each do |id|
+        safe_save_identifier(identifier: id)
+      end
+
       project.fundings.each do |f|
         f.affiliation = safe_save_affiliation(affiliation: f.affiliation)
       end
@@ -190,7 +194,7 @@ class PersistenceService
         project.save
       end
 
-      project
+      project.reload
     end
 
     def safe_save_datasets(datasets:)

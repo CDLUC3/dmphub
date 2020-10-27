@@ -18,6 +18,6 @@ ul.landing-list {
   }
 }
 
-#related-identifiers li {
+ul[data-channel="related_works"] li {
   margin-bottom: 15px;
 }

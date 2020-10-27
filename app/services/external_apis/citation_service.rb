@@ -19,7 +19,7 @@ module ExternalApis
         return doi unless doi.present?
 
         doi = "#{api_base_url}#{doi.gsub(/^doi:/, '')}" unless doi.start_with?('http')
-        err_msg = "Unable to generate a citation for #{doi}"
+        err_msg = "Unable to generate a citation for <a href=\"#{doi}\" target=\"_blank\">#{doi}</a>"
 
         resp = http_get(uri: doi.to_s) # , debug: true)
 

@@ -1,5 +1,6 @@
-<h1>Data Management Plan:</h1>
+<h1>Data Management Plan</h1>
 <h2><%= @dmp.title %></h2>
+<input type="hidden" id="related_works_channel" value="<%= @channel_name %>"/>
 
 <h3>Contributors</h3>
 <%= render partial: '/landing/contributors',
@@ -29,7 +30,7 @@
 <% if @dmp.datasets.any? %>
   <hr>
 
-  <h3>Datasets</h3>
+  <h3>Anticipated Outputs</h3>
   <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
 <% end %>
 
@@ -38,6 +39,6 @@
 <% if relateds.any? %>
   <hr>
 
-  <h3>Related Works</h3>
+  <h3>Published Works</h3>
   <%= render partial: '/landing/related_identifiers', locals: { related_identifiers: relateds } %>
 <% end %>

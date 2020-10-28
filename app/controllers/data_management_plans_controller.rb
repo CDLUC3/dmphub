@@ -9,8 +9,6 @@ class DataManagementPlansController < ApplicationController
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
 
-FindCitationsJob.perform_later
-
     if doi.present?
       @dmp = DataManagementPlan.find(doi.identifiable_id)
       @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')

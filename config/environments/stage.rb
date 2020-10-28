@@ -25,7 +25,7 @@ Rails.application.configure do
   # Disable serving static files from the `/public` folder by default since
   # Apache or NGINX already handles this.
   # config.public_file_server.enabled = ENV['RAILS_SERVE_STATIC_FILES'].present?
-  # Since we're not using Apache/NGINX, just the ALB 
+  # Since we're not using Apache/NGINX, just the ALB
   config.serve_static_assets = true
 
   # Compress CSS using a preprocessor.
@@ -63,8 +63,8 @@ Rails.application.configure do
   # config.cache_store = :mem_cache_store
 
   # Use a real queuing backend for Active Job (and separate queues per environment).
-  # config.active_job.queue_adapter     = :resque
-  # config.active_job.queue_name_prefix = "dmphub_production"
+  config.active_job.queue_adapter     = :resque
+  config.active_job.queue_name_prefix = 'dmphub_stage'
 
   config.action_mailer.perform_caching = false
 

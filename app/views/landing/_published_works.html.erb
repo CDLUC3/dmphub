@@ -2,18 +2,18 @@
 
 <% if publications.any? %>
   <h4>Articles</h4>
-  <ul class="landing-list">
+  <ul class="landing-list published-works">
     <% publications.each do |publication| %>
-      <li><%= publication %></li>
+      <li><%= publication.citation.citation_text.html_safe %></li>
     <% end %>
   </ul>
 <% end %>
 
 <% if datasets.any? %>
   <h4>Datasets</h4>
-  <ul class="landing-list">
+  <ul class="landing-list published-works">
     <% datasets.each do |dataset| %>
-      <li><%= dataset %></li>
+      <li><%= dataset.citation.citation_text.html_safe %></li>
     <% end %>
   </ul>
 <% end %>

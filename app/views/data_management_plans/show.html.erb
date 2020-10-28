@@ -38,8 +38,6 @@
 <% if relateds.any? %>
   <hr>
 
-<%= relateds.map(&:citation).inspect %>
-
   <h3>Published Works</h3>
   <%= render partial: '/landing/published_works',
              locals: {

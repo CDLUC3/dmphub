@@ -8,4 +8,5 @@ run Rails.application
 
 # Enqueue the CitationService job that runs tomorrow at noon. The job itself
 # will re-enqueue itself to run daily from that point forward
-FindCitationsJob.set(wait_until: Date.tomorrow.noon).perform_later
+Rails.logger.info "Scheduling FindCitationsJob to run on #{Date.noon}"
+FindCitationsJob.set(wait_until: Date.noon).perform_later

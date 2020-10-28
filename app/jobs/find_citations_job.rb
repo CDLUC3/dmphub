@@ -6,7 +6,8 @@
 class FindCitationsJob < ApplicationJob
   queue_as :default
 
-  after_perform { self.class.set(wait: 1.minute).perform_later }
+  # Make sure this job runs everyday at 6pm Pacific
+  after_perform { self.class.set(wait: 1.day).perform_later }
 
   def perform
     cut_off_date = Time.now - 31.days

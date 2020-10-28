@@ -34,6 +34,7 @@ class Identifier < ApplicationRecord
 
   # Associations
   belongs_to :identifiable, polymorphic: true
+  has_one :citation, required: false, dependent: :destroy
 
   # Validations
   validates :category, :value, :provenance, presence: true

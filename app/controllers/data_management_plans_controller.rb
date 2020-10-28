@@ -2,8 +2,6 @@
 
 # Data Management Plan Controller
 class DataManagementPlansController < ApplicationController
-  include Channelable
-
   before_action :authenticate_user!, except: %i[show]
 
   # GET /dmps/:doi
@@ -11,14 +9,11 @@ class DataManagementPlansController < ApplicationController
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
 
+FindCitationsJob.perform_later
+
     if doi.present?
       @dmp = DataManagementPlan.find(doi.identifiable_id)
       @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
-
-      # Kick off the related_works job so that it can stream ressults to the client
-      @channel_name = doi_to_channel_name(channel_prefix: 'related_works', doi: doi.value)
-      FindRelatedWorksJob.perform_later(channel: @channel_name, dmp: @dmp)
-      
       render 'show'
     else
       @dmp = DataManagementPlan.find(params[:id])

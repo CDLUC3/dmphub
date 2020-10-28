@@ -5,6 +5,7 @@ require 'httparty'
 module ExternalApis
   class ExternalApiError < StandardError; end
   # Abstract Service
+  # rubocop:disable Metrics/ClassLength
   class BaseService
     include HTTParty
 
@@ -160,4 +161,5 @@ module ExternalApis
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

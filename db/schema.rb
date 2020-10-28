@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_09_16_184842) do
+ActiveRecord::Schema.define(version: 2020_10_27_205352) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -76,6 +76,21 @@ ActiveRecord::Schema.define(version: 2020_09_16_184842) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["name"], name: "index_api_clients_on_name"
+  end
+
+  create_table "citations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "identifier_id", null: false
+    t.bigint "provenance_id", null: false
+    t.integer "object_type", default: 0, null: false
+    t.text "citation_text"
+    t.json "original_json"
+    t.datetime "retrieved_on", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["identifier_id"], name: "index_citations_on_identifier_id"
+    t.index ["object_type"], name: "index_citations_on_object_type"
+    t.index ["provenance_id"], name: "index_citations_on_provenance_id"
+    t.index ["retrieved_on"], name: "index_citations_on_retrieved_on"
   end
 
   create_table "contributors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
@@ -256,8 +271,8 @@ ActiveRecord::Schema.define(version: 2020_09_16_184842) do
 
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
-    t.datetime "start_on", null: false
-    t.datetime "end_on", null: false
+    t.datetime "start_on"
+    t.datetime "end_on"
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

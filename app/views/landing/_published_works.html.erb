@@ -1,0 +1,19 @@
+<%# locals: publications, datasets %>
+
+<% if publications.any? %>
+  <h4>Articles</h4>
+  <ul class="landing-list">
+    <% publications.each do |publication| %>
+      <li><%= publication %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<% if datasets.any? %>
+  <h4>Datasets</h4>
+  <ul class="landing-list">
+    <% datasets.each do |dataset| %>
+      <li><%= dataset %></li>
+    <% end %>
+  </ul>
+<% end %>

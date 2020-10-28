@@ -31,8 +31,14 @@ module Dmphub
     # ------------------------------------ #
     # DATACITE CONTENT NEGOTIATION SERVICE #
     # ------------------------------------ #
-    config.x.citation.api_base_url = 'http://dx.doi.org'
-    config.x.citation.active = true
+    config.x.datacite_citation.api_base_url = 'http://dx.doi.org'
+    config.x.datacite_citation.active = true
+
+    # ------------------------------------ #
+    # CROSSREF CONTENT NEGOTIATION SERVICE #
+    # ------------------------------------ #
+    config.x.crossref_citation.api_base_url = 'https://doi.org'
+    config.x.crossref_citation.active = true
 
     # ----------------- #
     # FUNDER AWARD URLS #

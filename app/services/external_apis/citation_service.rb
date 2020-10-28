@@ -7,40 +7,41 @@ module ExternalApis
   class CitationService < BaseService
     class << self
       def api_base_url
-        Rails.configuration.x.citation&.api_base_url || super
+        Rails.configuration.x.datacite_citation&.api_base_url || Rails.configuration.x.crossref_citation&.api_base_url || super
       end
 
       def active
-        Rails.configuration.x.citation&.active || super
+        Rails.configuration.x.datacite_citation&.active || Rails.configuration.x.crossref_citation&.active || super
       end
 
       # Create a new DOI
-      def fetch(doi:)
-        return doi unless doi.present?
+      def fetch(id:)
+        return nil unless active && id.present? && id.is_a?(Identifier)
 
-        doi = "#{api_base_url}#{doi.gsub(/^doi:/, '')}" unless doi.start_with?('http')
-        err_msg = "Unable to generate a citation for <a href=\"#{doi}\" target=\"_blank\">#{doi}</a>"
-
-        resp = http_get(uri: doi.to_s) # , debug: true)
+        resp = http_get(uri: id.value) # , debug: true)
 
         unless resp.present? && resp.code == 200
           handle_http_failure(method: 'CitationService fetch', http_response: resp)
-          return err_msg
+          persist_citation(id: id, citation: failure_message(doi: id.value), json: {})
+          return nil
         end
 
-        citation = process_json(doi: doi, json: JSON.parse(resp.body))
-        return citation unless citation == doi
-
-        Rails.logger.warn err_msg
-        Rails.logger.warn resp.body.inspect
-        err_msg
+        json = JSON.parse(resp.body)
+        citation = process_json(doi: id.value, json: json)
+        persist_citation(id: id, json: json, citation: citation)
       # If a JSON parse error occurs then return results of a local table search
       rescue JSON::ParserError => e
-        log_error(method: 'CitationService fetch', error: e)
-        err_msg
+        log_error(method: 'CitationService fetch JSON parse error', error: e)
+        persist_citation(id: id, citation: failure_message(doi: id.value), json: { 'source': 'datacite' })
       end
 
       private
+
+      def failure_message(doi:)
+        return '' unless doi.present?
+
+        "Unable to find a citation for <a href=\"#{doi}\" target=\"_blank\">#{doi}</a>"
+      end
 
       # Convert the EZID response into identifiers
       # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -56,6 +57,23 @@ module ExternalApis
         link = "<a href=\"#{doi}\" target=\"_blank\">#{doi}</a>"
 
         "#{authors} (#{date['date-parts'].first.first}). \"#{json['title']}\" [#{json['type'].capitalize}]. In #{json['publisher']}. #{link}"
+      end
+      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+      # Drop the existing citation and add the new one
+      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      def persist_citation(id:, citation:, json:)
+        return nil unless id.present? && citation.present? && json.present?
+
+        provenance = Provenance.where(name: json['source'].present? ? json['source'].downcase : 'datacite').first
+
+        id.citation.destroy if id.citation.present?
+        json_type = json['type']&.gsub('-', '_')&.downcase
+        object_type = Citation.object_types.include?(json_type) ? json_type : 'dataset'
+
+        Citation.create(identifier: id, object_type: object_type,
+                        retrieved_on: Time.now, citation_text: citation,
+                        original_json: json, provenance: provenance)
       end
       # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     end

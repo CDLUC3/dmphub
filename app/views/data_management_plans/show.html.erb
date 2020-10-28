@@ -1,6 +1,5 @@
-<h1>Data Management Plan</h1>
+<h1>A data management plan for this project was submitted to the National Science Foundation with the information below.</h1>
 <h2><%= @dmp.title %></h2>
-<input type="hidden" id="related_works_channel" value="<%= @channel_name %>"/>
 
 <h3>Contributors</h3>
 <%= render partial: '/landing/contributors',
@@ -39,6 +38,12 @@
 <% if relateds.any? %>
   <hr>
 
+<%= relateds.map(&:citation).inspect %>
+
   <h3>Published Works</h3>
-  <%= render partial: '/landing/related_identifiers', locals: { related_identifiers: relateds } %>
+  <%= render partial: '/landing/published_works',
+             locals: {
+               publications: relateds.select { |r| r.citation.present? && r.citation.article_journal? },
+               datasets: relateds.select { |r| r.citation.present? && r.citation.dataset? }
+             } %>
 <% end %>

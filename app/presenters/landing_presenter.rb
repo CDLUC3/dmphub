@@ -3,6 +3,16 @@
 # Presenter logic for the DMP landing pages
 class LandingPresenter
   class << self
+    # Detects the primary funder name
+    def primary_funder(data_management_plan:)
+      return 'DMPHub' unless data_management_plan.present? && data_management_plan.project.present?
+
+      funders = data_management_plan.project.fundings.map(&:affiliation)
+      return 'DMPHub' unless funders.any?
+
+      funders.last.name
+    end
+
     # Converts the ContributorDataManagementPlan array into an array of Contributors with Roles
     def contributors_with_roles(contributors_data_management_plans: [])
       return [] unless contributors_data_management_plans.any?

@@ -6,6 +6,7 @@ namespace :initialize do
   task all: :environment do
     Rake::Task['initialize:super_user'].execute
     Rake::Task['initialize:default_client_app'].execute
+    Rake::Task['datacite_crossref_provenance'].execute
   end
 
   desc 'Create the default Super User if no users exist. (Be sure to change the password!)'
@@ -85,5 +86,11 @@ namespace :initialize do
 
     p "To test the api, use: `{\"grant_type\":\"client_credentials\",\"client_id\" \
        :\"#{client.client_id}\",\"client_secret\"}` when authenticating."
+  end
+
+  desc 'Create the stub DataCite and Crossref Prvoenance records for the CitationService'
+  task datacite_crossref_provenance: :environment do
+    Provenance.create(name: 'datacite', description: 'DataCite')
+    Provenance.create(name: 'crossref', description: 'Crossref')
   end
 end

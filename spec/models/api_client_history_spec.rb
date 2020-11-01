@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe ApiClientHistory, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:description) }
-    it { is_expected.to define_enum_for(:type).with_values(%w[add edit archive embargo]) }
+    it { is_expected.to define_enum_for(:change_type).with_values(%w[add edit archive embargo]) }
   end
 
   context 'associations' do

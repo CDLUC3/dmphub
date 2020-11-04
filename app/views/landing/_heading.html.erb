@@ -1,0 +1,25 @@
+<%# locals: dmp %>
+
+<% primary_funder = LandingPresenter.primary_funder(data_management_plan: dmp) %>
+
+<div class="t-step__landing">
+  <div>
+    <h1>A data management plan for this project was submitted to the <%= primary_funder %> with the information below.</h1>
+  </div>
+
+  <div class="logo-box t-step__logo">
+    <div><%= image_tag('stack_of_papers_72x41.png', alt: 'DMPHub Logo') %></div>
+
+    <%
+    base_message = 'This page represents key information from a data management plan'
+    narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
+    %>
+    <% if narrative_url.present? %>
+      <div><%= base_message %> available <%= link_to 'here', narrative_url.value, target: "_blank" %>.</div>
+    <% else %>
+      <div><%= base_message %>.</div>
+    <% end %>
+  </div>
+</div>
+
+<h2><%= @dmp.title %></h2>

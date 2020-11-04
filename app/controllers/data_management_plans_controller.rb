@@ -6,6 +6,9 @@ class DataManagementPlansController < ApplicationController
 
   # GET /dmps/:doi
   def show
+
+p "MEDIA: #{request.media_type}, "
+
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
 

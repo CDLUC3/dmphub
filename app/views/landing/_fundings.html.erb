@@ -5,11 +5,11 @@
     <% fundings.each do |funding| %>
       <%
       grant = funding.urls.last&.value
-      ror = funding.affiliation.rors.first
+      fundref = funding.affiliation.fundrefs.last
       %>
       <ul class="landing-list">
         <li><strong>Status</strong>:<span><%= humanize_underscored(name: funding.status) %></span></li>
-        <li><strong>Funder</strong>:<span><%= (ror.present? ? link_to(funding.affiliation.name, ror.value) : funding.affiliation.name) %></span></li>
+        <li><strong>Funder</strong>:<span><%= (fundref.present? ? link_to(funding.affiliation.name, fundref.value) : funding.affiliation.name) %></span></li>
         <li><strong>Grant URL</strong>:<span><%= link_to(grant, grant)%></span></li>
       </ul>
     <% end %>

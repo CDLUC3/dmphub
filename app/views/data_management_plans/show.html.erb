@@ -1,22 +1,4 @@
-<% primary_funder = LandingPresenter.primary_funder(data_management_plan: @dmp) %>
-
-<div class="t-step">
-  <div class="t-step__fields">
-    <h1>A data management plan for this project was submitted to the <%= primary_funder %> with the information below.</h1>
-    <h2><%= @dmp.title %></h2>
-  </div>
-
-  <div class="t-step__fields">
-    <%= image_tag('DMPTool_logo_blue_shades_v1b3b_no_tag.svg', alt: 'DMP Logo') %>
-
-    <% base_message = 'This page represents key information from a data management plan' %>
-    <% if @dmp.project.identifiers.last.present? %>
-      <p><%= base_message %> available <%= link_to 'here', @dmp.project.identifiers.last.value %>.</p>
-    <% else %>
-      <p><%= base_message %>.</p>
-    <% end %>
-  </div>
-</div>
+<%= render partial: '/landing/heading', locals: { dmp: @dmp } %>
 
 <% if @dmp.contributors_data_management_plans.any? %>
   <h3>Contributors to this project</h3>
@@ -28,10 +10,7 @@
 <%= render partial: '/landing/data_management_plan', locals: { dmp: @dmp, project: @dmp.project } %>
 
 <h3>Citation</h3>
-
-<p><strong>When citing this DMP use:</strong><br><%= citation(dmp: @dmp).html_safe %></p>
-
-<p><strong>When connecting to this DMP to related project outputs (such as datasets) use the ID:</strong><br><%= link_to @dmp.doi&.value %></p>
+<%= render partial: '/landing/citation', locals: { dmp: @dmp } %>
 
 <% if @dmp.project.fundings.any? %>
   <h3>Funding status and sources for this project</h3>

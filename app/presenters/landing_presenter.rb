@@ -3,6 +3,11 @@
 # Presenter logic for the DMP landing pages
 class LandingPresenter
   class << self
+    # Fetch the identifier for the DMP's narrative
+    def narrative_url(data_management_plan:)
+      data_management_plan.identifiers.where(descriptor: 'is_metadata_for').last
+    end
+
     # Detects the primary funder name
     def primary_funder(data_management_plan:)
       return 'DMPHub' unless data_management_plan.present? && data_management_plan.project.present?

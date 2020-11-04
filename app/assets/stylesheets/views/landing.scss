@@ -1,3 +1,25 @@
+/* Controls the positioning of the top intro text and the blurb with logo */
+.t-step__landing {
+  display: grid;
+  grid-gap: $space3 $space1;
+  grid-template-columns: auto 25%;
+  grid-template-rows: auto 1fr;
+  justify-items: start;
+}
+
+.t-step__logo {
+  display: grid;
+  grid-gap: $space3 $space1;
+  grid-template-columns: 30% auto;
+  grid-template-rows: auto;
+  justify-items: start;
+  align-items: center;
+
+  font-size: 17.6px;
+  padding: 5px;
+}
+
+/* Controls all of the lists on the landing page */
 ul.landing-list {
   font-size: 1.1rem;
   font-weight: 400;

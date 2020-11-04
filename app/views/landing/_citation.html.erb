@@ -1,8 +1,10 @@
 <%# locals: dmp %>
 
-<p><strong>When citing this DMP use:</strong><br><%= citation(dmp: dmp).html_safe %></p>
+<ul class="landing-list published-works">
+  <li><strong>When citing this DMP use:</strong><br><%= citation(dmp: dmp).html_safe %></li>
 
-<p>
-  <strong>When connecting to this DMP to related project outputs (such as datasets) use the ID:</strong><br>
-  <%= link_to dmp.doi&.value %>
-</p>
+  <li>
+    <strong>When connecting to this DMP to related project outputs (such as datasets) use the ID:</strong><br>
+    <%= link_to dmp.doi&.value %>
+  </li>
+</ul>

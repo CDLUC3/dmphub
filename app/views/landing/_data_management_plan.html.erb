@@ -1,7 +1,7 @@
 <%# locals: dmp, project %>
 
 <ul class="landing-list">
-  <li><strong>Project Start</strong>;<span><%= safe_date(date: project.start_on) %></span></li>
+  <li><strong>Project Start</strong>:<span><%= safe_date(date: project.start_on) %></span></li>
   <li><strong>Project End</strong>:<span><%= safe_date(date: project.end_on) %></span></li>
   <li><strong>Created</strong>:<span><%= safe_date(date: dmp.created_at) %></span></li>
   <li><strong>Modified</strong>:<span><%= safe_date(date: dmp.updated_at) %></span></li>

@@ -35,6 +35,8 @@ namespace :csv_loader do
         hash = hash.with_indifferent_access
         next unless hash[:dmp].present?
 
+        # next unless hash[:dmp][:title].start_with?('Physiological and genetic responses of the deep-water coral')
+
         dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
           provenance: provenance, json: hash[:dmp]
         )
@@ -83,7 +85,7 @@ namespace :csv_loader do
   #   `title`              -> This can be either the title of the DMP or the project
   #   `contributor_name`   -> At least one contributor MUST be specified
   #   `affiliation`        -> The contributor's affiliation name (the system will acquire the ROR id)
-  #   `role`               -> The contributor's role (from https://dictionary.casrai.org/Contributor_Roles/
+  #   `role`               -> The contributor's role (from http://credit.niso.org/contributor-roles/
   #                                                     or http://ocean-data.org/schema/)
   #
   # The other optional fields are:
@@ -150,31 +152,31 @@ namespace :csv_loader do
       p "Processed #{dmps.length} DMPs. Extracting viable DMPs for import into DMPHub ..."
 
       # Debug line to isolate a specific Project
-      output = []
-      dmps.each_pair do |_project, dmp|
-        # Only grabbing 14 titles
-        titles = [
-          'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
-          'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
-          'Collaborative Research: New Approaches to New Production',
-          'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
-          'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
-          'Adaptations of fish and fishing communities to rapid climate change',
-          'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
-          'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
-          'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
-          'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
-          'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
-          'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
-          'Impacts of size-selective mortality on sex-changing fishes',
-          'Collaborative Research: Ocean Acidification and Coral Reefs: Scale Dependence and Adaptive Capacity'
-        ]
-        next unless titles.include?(dmp[:dmp][:title])
+      # output = []
+      # dmps.each_pair do |_project, dmp|
+      #   # Only grabbing 14 titles
+      #   titles = [
+      #     'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
+      #     'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
+      #     'Collaborative Research: New Approaches to New Production',
+      #     'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
+      #     'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
+      #     'Adaptations of fish and fishing communities to rapid climate change',
+      #     'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
+      #     'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
+      #     'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
+      #     'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
+      #     'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
+      #     'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
+      #     'Impacts of size-selective mortality on sex-changing fishes',
+      #     'Collaborative Research: Ocean Acidification and Coral Reefs: Scale Dependence and Adaptive Capacity'
+      #   ]
+      #   next unless titles.include?(dmp[:dmp][:title])
+      #
+      #   output << dmp
+      # end
 
-        output << dmp
-      end
-
-      # output = dmps.values
+      output = dmps.values
 
       # Extract the Contact
       dmps = handle_contacts(dmps: output)
@@ -329,11 +331,11 @@ namespace :csv_loader do
   def handle_contacts(dmps: [])
     dmps = dmps.map do |dmp|
       contributors = dmp[:dmp].fetch(:contributor, []).select do |c|
-        c[:role].include?('https://dictionary.casrai.org/Contributor_Roles/Data_curation') && c[:affiliation].present?
+        c[:role].include?('http://credit.niso.org/contributor-roles/data-curation') && c[:affiliation].present?
       end
       if contributors.empty?
         contributors = dmp[:dmp].fetch(:contributor, []).select do |c|
-          c[:role].include?('https://dictionary.casrai.org/Contributor_Roles/Investigation') && c[:affiliation].present?
+          c[:role].include?('http://credit.niso.org/contributor-roles/investigation') && c[:affiliation].present?
         end
       end
       if contributors.any?
@@ -376,7 +378,7 @@ namespace :csv_loader do
 
   # Convert the Role to CASRAI
   def process_role(line:)
-    default = 'https://dictionary.casrai.org/Contributor_Roles/Investigation'
+    default = 'http://credit.niso.org/contributor-roles/investigation'
     return default unless line['role'].present?
 
     case line['role']
@@ -384,10 +386,10 @@ namespace :csv_loader do
             http://ocean-data.org/schema/Co-PrincipalInvestigatorRole]
       return default
     when 'http://ocean-data.org/schema/ContactRole'
-      return 'https://dictionary.casrai.org/Contributor_Roles/Data_curation'
+      return 'http://credit.niso.org/contributor-roles/data-curation'
     end
 
-    line['role'].start_with?('https://dictionary.casrai.org/Contributor_Roles/') ? line['role'] : default
+    line['role'].start_with?('http://credit.niso.org/contributor-roles/') ? line['role'] : default
   end
 
   # Safely convert a date

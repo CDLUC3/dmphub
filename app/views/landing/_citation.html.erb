@@ -5,6 +5,6 @@
 
   <li>
     <strong>When connecting to this DMP to related project outputs (such as datasets) use the ID:</strong><br>
-    <%= link_to dmp.doi&.value %>
+    <%= identifier_to_link(identifier: dmp.doi) %>
   </li>
 </ul>

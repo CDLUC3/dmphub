@@ -24,23 +24,23 @@ class DatacitePresenter
   # rubocop:disable Metrics/CyclomaticComplexity
   def role_for(cdmp)
     case cdmp.role
-    when 'https://dictionary.casrai.org/Contributor_Roles/Data_curation'
+    when 'http://credit.niso.org/contributor-roles/data-curation'
       'DataCurator'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Formal_analysis'
+    when 'http://credit.niso.org/contributor-roles/formal-analysis'
       'Researcher'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Investigation'
+    when 'http://credit.niso.org/contributor-roles/investigation'
       'ProjectLeader'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Methodology'
+    when 'http://credit.niso.org/contributor-roles/methodology'
       'DataManager'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Project_administration'
+    when 'http://credit.niso.org/contributor-roles/project-administration'
       'ProjectManager'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Software'
+    when 'http://credit.niso.org/contributor-roles/software'
       'Producer'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Supervision'
+    when 'http://credit.niso.org/contributor-roles/supervision'
       'Supervisor'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Validation'
+    when 'http://credit.niso.org/contributor-roles/validation'
       'Researcher'
-    when 'https://dictionary.casrai.org/Contributor_Roles/Writing_review_Editing'
+    when 'http://credit.niso.org/contributor-roles/writing-review-editing'
       'Editor'
     else
       'ProjectMember'
@@ -119,7 +119,7 @@ class DatacitePresenter
   def find_creators
     ret = [@dmp.primary_contact]
     @dmp.contributors_data_management_plans.each do |cdmp|
-      ret << cdmp.contributor if cdmp.role == 'https://dictionary.casrai.org/Contributor_Roles/Writing_original_draft'
+      ret << cdmp.contributor if cdmp.role == 'http://credit.niso.org/contributor-roles/writing_original_draft'
     end
     ret.flatten
   end

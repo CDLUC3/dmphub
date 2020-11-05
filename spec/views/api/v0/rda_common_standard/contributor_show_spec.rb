@@ -76,6 +76,6 @@ end
 #   },
 #   "roles":[{
 #     "type":"HTTP-CASRAI",
-#     "identifier": "https://dictionary.casrai.org/Contributor_Roles/Investigation"
+#     "identifier": "http://credit.niso.org/contributor-roles/investigation"
 #   }]
 # }

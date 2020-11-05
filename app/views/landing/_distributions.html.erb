@@ -14,8 +14,8 @@
           <li><strong>Byte Size:</strong> <%= distribution.byte_size %></li>
           <li><strong>Data Access:</strong> <%= distribution.data_access %></li>
           <li><strong>Available Until:</strong> <%= safe_date(date: distribution.available_until) %></li>
-          <li><strong>Access URL:</strong> <%= link_to distribution.access_url, distribution.access_url %></li>
-          <li><strong>Download URL:</strong> <%= link_to distribution.download_url, distribution.download_url %></li>
+          <li><strong>Access URL:</strong> <%= identifier_to_link(identifier: distribution.access_url) %></li>
+          <li><strong>Download URL:</strong> <%= identifier_to_link(identifier: distribution.download_url) %></li>
         </ul>
 
         <%= render partial: 'landing/host', locals: { host: distribution.host } %>

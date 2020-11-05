@@ -4,8 +4,8 @@
     "name": "Test Curator and PM",
     "mbox": "test.curator@example.edu",
     "role": [
-      "https://dictionary.casrai.org/Contributor_Roles/Data_Curation",
-      "https://dictionary.casrai.org/Contributor_Roles/Project_Administration"
+      "http://credit.niso.org/contributor-roles/data-curation",
+      "http://credit.niso.org/contributor-roles/project-administration"
     ],
     "affiliation": "$$_affiliations.json_$$",
     "contributor_id": {
@@ -15,7 +15,7 @@
   },
   "minimal": {
     "name": "Test Curator",
-    "role": ["https://dictionary.casrai.org/Contributor_Roles/Data_Curation"]
+    "role": ["http://credit.niso.org/contributor-roles/data-curation"]
   },
   "invalid": {
     "name": "Test Contributor"

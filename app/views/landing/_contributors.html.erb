@@ -9,8 +9,8 @@
         <strong><%= contrib.name %></strong>:
         <%
         affil = contrib.affiliation
-        ror = identifier_to_url(identifier: affil&.rors&.last)
-        orcid = identifier_to_url(identifier: contrib.orcids.last)
+        ror = identifier_to_link(identifier: affil&.rors&.last, text: affil&.name)
+        orcid = identifier_to_link(identifier: contrib.orcids.last)
         entries = [
           hash[:roles].map { |role| role_to_link(role: role) }.compact.uniq.sort { |a, b| a <=> b }.join(', '),
           ror.present? && ror.start_with?('http') ? "<a href=\"ror\" target=\"_blank\">#{affil&.name}</a>" : ror,

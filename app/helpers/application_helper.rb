@@ -21,35 +21,30 @@ module ApplicationHelper
     end
   end
 
-  def identifier_to_link(identifier:)
+  def identifier_to_link(identifier:, text: '')
     return 'Unknown' unless identifier.present?
 
-    case identifier.category
-    when 'orcid'
-      link_to identifier_to_url(identifier: identifier), identifier_to_url(identifier: identifier),
-              class: 'c-orcid', target: '_blank'
-    else
-      link_to identifier_to_url(identifier: identifier), identifier_to_url(identifier: identifier),
-              target: '_blank'
-    end
+    url = identifier_to_url(identifier: identifier)
+    return url unless url.start_with?('http')
+    return link_to text.blank? ? url : text, url, class: 'c-orcid', target: '_blank' if identifier.category == 'orcid'
+
+    link_to text.blank? ? url : text, url, target: '_blank'
   end
 
   def identifier_to_url(identifier:)
     return nil unless identifier.present?
     return identifier.value unless identifier.present? && !identifier.value.start_with?('http')
 
-    url = case identifier.category
-          when 'doi'
-            "https://dx.doi.org/#{identifier.value}"
-          when 'orcid'
-            "https://orcid.org/#{identifier.value}"
-          when 'ror'
-            "https://ror.org/#{identifier.value}"
-          else
-            "#{identifier.category}:#{identifier.value}"
-          end
-
-    url.start_with?('http') ? link_to((text || url), url, target: '_blank') : url
+    case identifier.category
+    when 'doi'
+      "https://dx.doi.org/#{identifier.value}"
+    when 'orcid'
+      "https://orcid.org/#{identifier.value}"
+    when 'ror'
+      "https://ror.org/#{identifier.value}"
+    else
+      "#{identifier.category}:#{identifier.value}"
+    end
   end
 
   def orcid_without_url(value:)
@@ -60,9 +55,9 @@ module ApplicationHelper
     return '' unless role.present?
 
     # Swap out primary_contact with a CASRAI role
-    role = 'https://dictionary.casrai.org/Contributor_Roles/Data_curation' if role == 'primary_contact'
+    role = 'http://credit.niso.org/contributor-roles/data-curation' if role == 'primary_contact'
 
-    text = humanize_underscored(name: role.gsub('https://dictionary.casrai.org/Contributor_Roles/', ''))
+    text = humanize_underscored(name: role.gsub('http://credit.niso.org/contributor-roles/', ''))
     link_to text, role, target: '_blank'
   end
 

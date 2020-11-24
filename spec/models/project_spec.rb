@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Project, type: :model do
   context 'validations' do
     it { is_expected.to validate_presence_of(:title) }
-  
+
     it 'validates start_on comes before end_on' do
       project = build(:project, :complete, start_on: (Time.now + 2.days), end_on: Time.now)
       expect(project.valid?).to eql(false)

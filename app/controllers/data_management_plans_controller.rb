@@ -6,8 +6,7 @@ class DataManagementPlansController < ApplicationController
 
   # GET /dmps/:doi
   def show
-
-p "MEDIA: #{request.media_type}, "
+    p "MEDIA: #{request.media_type}, "
 
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
@@ -75,11 +74,11 @@ p "MEDIA: #{request.media_type}, "
   end
 
   def person_data_management_plan_params
-    [:role, person_attributes: person_params]
+    [:role, { person_attributes: person_params }]
   end
 
   def person_params
-    [:name, :email, identifiers_attributes: identifier_params]
+    [:name, :email, { identifiers_attributes: identifier_params }]
   end
 
   def identifier_params

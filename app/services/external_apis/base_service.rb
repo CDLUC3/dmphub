@@ -4,6 +4,7 @@ require 'httparty'
 
 module ExternalApis
   class ExternalApiError < StandardError; end
+
   # Abstract Service
   # rubocop:disable Metrics/ClassLength
   class BaseService
@@ -156,7 +157,7 @@ module ExternalApis
           headers: headers.merge(additional_headers),
           follow_redirects: true
         }
-        hash[:debug_output] = STDOUT if debug
+        hash[:debug_output] = @stdout if debug
         hash
       end
     end

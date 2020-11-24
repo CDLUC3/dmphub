@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Presenter for DataCite XML
+# rubocop:disable Metrics/ClassLength
 class DatacitePresenter
   attr_reader :creators, :contributors, :related_identifiers, :producers
 
@@ -146,3 +147,4 @@ class DatacitePresenter
     @dmp.identifiers.reject { |id| %w[is_identified_by is_funded_by].include?(id.descriptor) }
   end
 end
+# rubocop:enable Metrics/ClassLength

@@ -3,8 +3,8 @@
 module Api
   module V0
     # Helper to convert common JSON elements
+    # rubocop:disable Metrics/ClassLength
     class ConversionService
-
       CERTIFICATIONS = %w[din31644 dini-zertifikat dsa iso16363 iso16919 trac wds coretrustseal].freeze
 
       CURRENCY_CODES = %w[aed afn all amd ang aoa ars aud awg azn
@@ -187,5 +187,6 @@ module Api
         end
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

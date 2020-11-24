@@ -40,8 +40,7 @@ module Api
             host.pid_system = json[:pid_system]
             host.storage_type = json[:storage_type]
             host.supports_versioning = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:support_versioning])
-            host = attach_identifier(provenance: provenance, host: host, json: json)
-            host
+            attach_identifier(provenance: provenance, host: host, json: json)
           end
 
           private

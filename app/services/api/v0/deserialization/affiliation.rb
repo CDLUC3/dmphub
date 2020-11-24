@@ -49,12 +49,13 @@ module Api
           end
 
           # Search for an Org locally and then externally if not found
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def find_by_name(provenance:, json: {})
             return nil unless json.present? && json[:name].present?
 
             # Search both the local DB and the ROR API
             results = AffiliationSelection::SearchService.search_combined(search_term: json['name'])
-            return results.first if results.length == 1 && results.first&.is_a?(::Affiliation)
+            return results.first if results.length == 1 && results.first.is_a?(::Affiliation)
 
             # Grab the closest match - only caring about results that 'contain'
             # the name with preference to those that start with the name
@@ -65,9 +66,9 @@ module Api
             affiliation = AffiliationSelection::HashToAffiliationService.to_affiliation(hash: result)
             affiliation&.alternate_names = [] unless affiliation&.alternate_names.present?
             affiliation.alternate_names << result[:abbreviation]
-            affiliation = attach_identifiers(provenance: provenance, affiliation: affiliation, json: json, result: result)
-            affiliation
+            attach_identifiers(provenance: provenance, affiliation: affiliation, json: json, result: result)
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Marshal the Identifiers and attach it to the Affiliation
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

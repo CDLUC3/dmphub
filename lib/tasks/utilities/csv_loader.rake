@@ -3,7 +3,6 @@
 require 'httparty'
 
 namespace :csv_loader do
-
   desc 'Converts the CSV files to JSON and imports them into the DMPHub'
   task process: :environment do
     Dir.entries("#{Rails.root}/tmp/import/").each do |file|
@@ -159,13 +158,13 @@ namespace :csv_loader do
       #     'Gene content, gene expression, and physiology in mesopelagic ammonia-oxidizing archaea',
       #     'The ProteOMZ Expedition: Investigating Life Without Oxygen in the Pacific Ocean',
       #     'Collaborative Research: New Approaches to New Production',
-      #     'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the surrounding deep sea',
+      #     'Collaborative research: Quantifying the biological, chemical, and physical linkages between chemosynthetic communities and the ...',
       #     'Convergence: RAISE: Linking the adaptive dynamics of plankton with emergent global ocean biogeochemistry',
       #     'Adaptations of fish and fishing communities to rapid climate change',
-      #     'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and non-upwelling periods in a Coastal Setting',
+      #     'Collaborative Research: Use of Triple Oxygen Isotopes and O2/Ar to constrain Net/Gross Oxygen Production during upwelling and ...',
       #     'Quantifying the potential for biogeochemical feedbacks to create \'refugia\' from ocean acidification on tropical coral reefs',
-      #     'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial modulation of algal phase shifts',
-      #     'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the Biological Carbon Pump',
+      #     'Collaborative Research: Dissolved organic matter feedbacks in coral reef resilience: The genomic & geochemical basis for microbial ...',
+      #     'Collaborative Research: Diatoms, Food Webs and Carbon Export - Leveraging NASA EXPORTS to Test the Role of Diatom Physiology in the ...',
       #     'Turbulence-spurred settlement: Deciphering a newly recognized class of larval response',
       #     'Collaborative Research: Field test of larval behavior on transport and connectivity in an upwelling regime',
       #     'Impacts of size-selective mortality on sex-changing fishes',
@@ -208,6 +207,7 @@ namespace :csv_loader do
   end
 
   # Attach the project metadata
+  # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
   def attach_project(hash:, line:)
     return hash unless hash.present? && line.present? && (line['project_start'].present? || line['project_end'].present?)
 
@@ -231,8 +231,10 @@ namespace :csv_loader do
     hash[:project] = [project_hash]
     hash
   end
+  # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
   # Attach the funding metadata
+  # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
   def attach_funding(hash:, line:)
     return hash unless hash.present? && line.present?
     return hash unless line['funder_name'].present? || line['award_url'].present? || line['award_number'].present?
@@ -257,6 +259,7 @@ namespace :csv_loader do
     hash[:funding] << funding_hash unless found
     hash
   end
+  # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
   # Attach a related_identifier
   # rubocop:disable Metrics/CyclomaticComplexity
@@ -278,6 +281,7 @@ namespace :csv_loader do
   # rubocop:enable Metrics/CyclomaticComplexity
 
   # Attach a contributor's metadata
+  # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
   def attach_contributor(hash:, line:)
     return hash unless hash.present? && line.present? && line['contributor_name'].present?
 
@@ -302,7 +306,9 @@ namespace :csv_loader do
     hash[:contributor] << contributor unless found
     hash
   end
+  # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity, Metrics/AbcSize
 
+  # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
   def attach_dataset(hash:, line:)
     return hash unless hash.present? && line.present? && (line['dataset_doi'].present? || line['dataset_url'].present?)
 
@@ -318,18 +324,20 @@ namespace :csv_loader do
       title: "Dataset: #{line.fetch('dataset_doi', line['dataset_url']&.split('/')&.last)}",
       type: 'dataset'
     }
-    if line['dataset_doi'].present?
-      dataset_hash[:dataset_id] = { type: 'DOI', identifier: process_doi(doi: line['dataset_doi']) }
-    else
-      dataset_hash[:dataset_id] = { type: 'URL', identifier: line['dataset_url'] }
-    end
+    dataset_hash[:dataset_id] = if line['dataset_doi'].present?
+                                  { type: 'DOI', identifier: process_doi(doi: line['dataset_doi']) }
+                                else
+                                  { type: 'URL', identifier: line['dataset_url'] }
+                                end
     hash[:dataset] << dataset_hash unless hash[:dataset].include?(dataset_hash)
     hash
   end
+  # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
   # Create the Contact based on the available Contributors with an Affiliation
+  # rubocop:disable Metrics/CyclomaticComplexity
   def handle_contacts(dmps: [])
-    dmps = dmps.map do |dmp|
+    dmps.map do |dmp|
       contributors = dmp[:dmp].fetch(:contributor, []).select do |c|
         c[:role].include?('http://credit.niso.org/contributor-roles/data-curation') && c[:affiliation].present?
       end
@@ -349,8 +357,8 @@ namespace :csv_loader do
       end
       dmp
     end
-    dmps
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   # Retrieve the Award identifier
   def process_award(line:)
@@ -364,7 +372,7 @@ namespace :csv_loader do
                    'Division of Integrative Organismal Systems', 'Office of Polar Programs']
 
     return line.fetch('award_url', line['award_number']) unless nsf_funders.include?(line['funder_name'])
-    return line['award_number'].gsub(/[A-Z]+\-/, nsf_base_url) if line['award_number'].present?
+    return line['award_number'].gsub(/[A-Z]+-/, nsf_base_url) if line['award_number'].present?
 
     line['award_url']
   end

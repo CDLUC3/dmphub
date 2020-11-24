@@ -77,9 +77,8 @@ module Api
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
-            dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp,
-                                                  json: Api::V0::ConversionService.fetch_extension(json: json))
-            dmp
+            deserialize_related_identifiers(provenance: provenance, dmp: dmp,
+                                            json: Api::V0::ConversionService.fetch_extension(json: json))
           end
 
           private

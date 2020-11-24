@@ -21,8 +21,7 @@ module Api
       # Parse the incoming JSON
       before_action :parse_request, only: %i[create update]
 
-      attr_reader :client
-      attr_reader :provenance
+      attr_reader :client, :provenance
 
       def heartbeat
         render 'api/v0/heartbeat', status: :ok

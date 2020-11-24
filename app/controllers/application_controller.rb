@@ -2,7 +2,6 @@
 
 # Base Application Controller
 class ApplicationController < ActionController::Base
-
   private
 
   def after_sign_in_path_for(_resource)
@@ -40,7 +39,7 @@ class ApplicationController < ActionController::Base
       sort_col: params[:sort_col] || 'updated_at',
       sort_dir: params[:sort_dir] || 'desc'
     }
-    
+
     # also set the instance variables for access in the views
     @sort_col = out[:sort_col]
     @sort_dir = out[:sort_dir]

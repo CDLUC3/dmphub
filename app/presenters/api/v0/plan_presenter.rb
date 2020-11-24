@@ -4,9 +4,7 @@ module Api
   module V0
     # Presenter to help with Project and Plan
     class PlanPresenter
-      attr_reader :data_contact
-      attr_reader :contributors
-      attr_reader :costs
+      attr_reader :data_contact, :contributors, :costs
 
       def initialize(plan:)
         @contributors = []

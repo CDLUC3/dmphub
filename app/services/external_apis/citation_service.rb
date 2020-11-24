@@ -15,7 +15,7 @@ module ExternalApis
       end
 
       # Create a new DOI
-      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:disable Metrics/CyclomaticComplexity
       def fetch(id:)
         return nil unless active && id.present? && id.is_a?(Identifier)
 
@@ -37,7 +37,7 @@ module ExternalApis
         log_error(method: 'CitationService fetch JSON parse error', error: e)
         persist_citation(id: id, citation: failure_message(doi: id.value), json: { 'source': 'datacite' })
       end
-      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+      # rubocop:enable Metrics/CyclomaticComplexity
 
       private
 

@@ -25,7 +25,7 @@ end
 def splice_json(string:, part: 'complete')
   return {} unless string.present?
 
-  file_token = /\"\$\$_[a-z.]+_\$\$\"/
+  file_token = /"\$\$_[a-z.]+_\$\$"/
   return string unless string =~ file_token
 
   string.gsub(file_token) do |file_name|

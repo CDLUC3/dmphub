@@ -19,13 +19,13 @@ class DatasetsController < ApplicationController
                                     identifiers_attributes: %i[category value],
                                     distribution_attributes: [
                                       :title, :description, :format, :byte_size,
-                                      license_attributes: %i[license_ref start_date],
-                                      host_attributes: [
-                                        :title, :description, :supports_versioning,
-                                        :backup_type, :backup_frequency, :storage_type,
-                                        :availability, :geo_location,
-                                        identifiers_attributes: %i[category value]
-                                      ]
+                                      { license_attributes: %i[license_ref start_date],
+                                        host_attributes: [
+                                          :title, :description, :supports_versioning,
+                                          :backup_type, :backup_frequency, :storage_type,
+                                          :availability, :geo_location,
+                                          { identifiers_attributes: %i[category value] }
+                                        ] }
                                     ])
   end
 

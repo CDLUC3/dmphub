@@ -15,7 +15,7 @@ This repository covers work on a machine actionable DMP hub, from work funded by
 We welcome any and all feedback. Please use Github Issues to provide suggestions or to report a bug, and a PR if if you wish to contribute.
 
 ## Requirements
-- ruby 2.6.3
+- ruby 2.6.6
 
 ## Installation
 

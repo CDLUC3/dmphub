@@ -3,7 +3,6 @@
 module Api
   module V0
     # Controller providing DMP functionality
-    # rubocop:disable Metrics/ClassLength
     class DataManagementPlansController < BaseApiController
       protect_from_forgery with: :null_session, only: [:create]
 
@@ -129,8 +128,6 @@ module Api
       def authorized?
         @dmp.present? && client.present? && @dmp.authorized?(api_client: client)
       end
-
     end
-    # rubocop:enable Metrics/ClassLength
   end
 end

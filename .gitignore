@@ -82,3 +82,5 @@ ruby/
 zshenv
 .zshenv
 /config/credentials/development.key
+
+/config/credentials/stage.key

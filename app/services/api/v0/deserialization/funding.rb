@@ -18,19 +18,19 @@ module Api
           #        "identifier": "http://example-funder.org/awards/12345"
           #      },
           #      "funding_status": "granted",
-          #      "extension": {
-          #        "dmphub": {
-          #          "funded_affiliations": [
-          #            {
-          #              "name": "University of Somewhere",
-          #              "affiliation_id": {
-          #                "type": "ROR",
-          #                "identifier": "https://ror.org/43y4g4"
-          #              }
-          #            }
-          #          ]
+          #      "dmproadmap_funding_opportunity_id": {
+          #        "type": "other",
+          #        "identifier": "NSF-12345"
+          #      },
+          #      "dmproadmap_funded_affiliations": [
+          #        {
+          #          "name": "University of Somewhere",
+          #          "affiliation_id": {
+          #            "type": "ROR",
+          #            "identifier": "https://ror.org/43y4g4"
+          #          }
           #        }
-          #      }
+          #      ]
           #    }
           def deserialize(provenance:, project:, json: {})
             return nil unless provenance.present? && project.present? && valid?(json: json)
@@ -44,8 +44,9 @@ module Api
             funding = find_funding(provenance: provenance, project: project,
                                    affiliation: affiliation, json: json)
 
-            deserialize_funded_affiliations(provenance: provenance, funding: funding,
-                                            json: json.fetch(:extension, {}).fetch(:dmphub, {}))
+            funding = attach_funding_opportunity_id(provenance: provenance, funding: funding, json: json)
+
+            deserialize_funded_affiliations(provenance: provenance, funding: funding, json: json)
           end
 
           private
@@ -88,11 +89,25 @@ module Api
             funding
           end
 
+          # Marshal the Fundidng Opportunity Identifier and attach it
+          def attach_funding_opportunity_id(provenance:, funding:, json:)
+            return funding unless json.present? && json[:dmproadmap_funding_opportunity_id].present?
+
+            opportunity = Api::V0::Deserialization::Identifier.deserialize(
+              provenance: provenance, identifiable: funding, descriptor: 'is_required_by',
+              json: json[:dmproadmap_funding_opportunity_id]
+            )
+            return funding unless opportunity.present?
+
+            funding.identifiers << opportunity unless funding.identifiers&.include?(opportunity)
+            funding
+          end
+
           # Convert the funded_affiliations
           def deserialize_funded_affiliations(provenance:, funding:, json:)
-            return funding unless funding.present? && json.fetch(:funding_affiliations, []).any?
+            return funding unless funding.present? && json.fetch(:dmproadmap_funded_affiliations, []).any?
 
-            json[:funding_affiliations].each do |affiliation|
+            json[:dmproadmap_funded_affiliations].each do |affiliation|
               funded = Api::V0::Deserialization::Affiliation.deserialize(
                 provenance: provenance, json: affiliation
               )

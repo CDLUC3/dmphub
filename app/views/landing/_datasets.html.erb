@@ -2,12 +2,18 @@
 
 <% datasets.each do |dataset| %>
   <h4><%= dataset.title %></h4>
-  <p><%= dataset.description %></p>
+  <p><%= dataset.description.html_safe %></p>
+
+  <%
+  size = dataset.distributions.collect(&:byte_size).sort { |a, b| a <=> b }.last
+  hosts = dataset.distributions.collect(&:host).sort { |a, b| a.title <=> b.title }
+  %>
+
   <ul class="landing-list">
     <li><strong>Format:</strong><span><%= humanize_underscored(name: dataset.dataset_type) %></span></li>
-    <li><strong>Anticipated volume:</strong><span>unknown</span></li>
-    <li><strong>Release timeline:</strong><span>unknown</span></li>
-    <li><strong>Intended repository:</strong><span>unknown</span></li>
-    <li><strong>License for reuse:</strong><span>unknown</span></li>
+    <li><strong>Anticipated volume:</strong><span><%= LandingPresenter.byte_size(size: size) %></span></li>
+    <li><strong>Release timeline:</strong><span><%= safe_date(date: dataset.publication_date) %></span></li>
+    <li><strong>Intended repository:</strong><span><%= hosts.map { |host| host_to_link(host: host) }.join('</span>, <span>').html_safe %></span></li>
+    <li><strong>License for reuse:</strong><span>unspecified</span></li>
   </ul>
 <% end %>

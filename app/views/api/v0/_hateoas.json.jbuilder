@@ -2,6 +2,8 @@
 
 # locals: dmp, client
 doi = Api::V0::IdentifierPresenter.doi_without_host(doi: dmp.doi&.value)
+doi = dmp.id unless doi.present?
+
 links = [
   { get: api_v0_data_management_plan_url(id: doi) }
 ]

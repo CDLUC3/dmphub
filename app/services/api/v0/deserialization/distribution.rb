@@ -89,6 +89,9 @@ module Api
             host = Api::V0::Deserialization::Host.deserialize(
               provenance: provenance, distribution: distribution, json: json.fetch(:host, {})
             )
+
+p host.identifiers.inspect
+
             distribution.host = host if host.present?
 
             distribution

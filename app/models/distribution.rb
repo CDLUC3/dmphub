@@ -5,11 +5,11 @@ class Distribution < ApplicationRecord
   include Alterable
   include Authorizable
 
-  enum data_access: %i[closed open shared]
+  enum data_access: %i[open embargoed restricted closed]
 
   # Associations
   belongs_to :dataset, optional: true
-  has_one :host, dependent: :destroy
+  has_one :host
   has_many :licenses, dependent: :destroy
 
   # Validations

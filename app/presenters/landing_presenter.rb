@@ -44,5 +44,17 @@ class LandingPresenter
       # TODO: Implement something that checks/helps us distinguish a dataset from a publication!
       data_management_plan.identifiers.reject { |id| id.category == 'ark' }
     end
+
+    def byte_size(size:)
+      return 'unspecified' unless size.present? && size.is_a?(Numeric) && size.positive?
+
+      hash = { size: size / 1.petabytes, units: 'PB' } if size >= 1.petabytes
+      hash = { size: size / 1.terabytes, units: 'TB' } if size >= 1.terabytes && !hash.present?
+      hash = { size: size / 1.gigabytes, units: 'GB' } if size >= 1.gigabytes && !hash.present?
+      hash = { size: size / 1.megabytes, units: 'MB' } if size >= 1.megabytes && !hash.present?
+      hash = { size: size, units: 'bytes' } unless hash.present?
+
+      "#{hash[:size]} #{hash[:units]}"
+    end
   end
 end

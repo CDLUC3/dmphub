@@ -38,17 +38,12 @@ module Api
           #       "dataset": [{
           #         "$ref": "SEE Dataset.deserialize! for details"
           #       }],
-          #       "extension": {
-          #         "dmphub": {
-          #           "related_identifiers": [
-          #             {
-          #               "datacite_relation_type": "is_cited_by",
-          #               "datacite_related_identifier_type": "doi",
-          #               "value": "doi:10.123/12345"
-          #             }
-          #           ]
+          #       "dmphub_related_identifiers": [
+          #         {
+          #           "relation_type": "is_referenced_by",
+          #           "value": "http://doi.org/10.123/12345.aBc"
           #         }
-          #       }
+          #       ]
           #     }
           #   }
           def deserialize(provenance:, json: {})
@@ -77,8 +72,7 @@ module Api
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
-            deserialize_related_identifiers(provenance: provenance, dmp: dmp,
-                                            json: Api::V0::ConversionService.fetch_extension(json: json))
+            deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
           end
 
           private
@@ -192,16 +186,15 @@ module Api
 
           # Deserialize any relatedIdentifiers that were passed in
           def deserialize_related_identifiers(provenance:, dmp:, json:)
-            return dmp unless provenance.present? && json.fetch(:related_identifiers, []).any?
+            return dmp unless provenance.present? && json.fetch(:dmproadmap_related_identifiers, []).any?
 
-            json[:related_identifiers].uniq.each do |related|
-              category = Api::V0::ConversionService.to_identifier_category(
-                rda_category: related[:datacite_related_identifier_type]
+            json[:dmproadmap_related_identifiers].each do |related|
+              related[:type] = Api::V0::ConversionService.identifier_category_from_value(value: related[:identifier])
+
+              identifier = Api::V0::Deserialization::Identifier.deserialize(
+                provenance: provenance, identifiable: dmp, descriptor: related[:relation_type], json: related
               )
-              identifier = ::Identifier.find_or_initialize_by(
-                provenance: provenance, category: category, value: related[:value],
-                descriptor: related[:datacite_relation_type], identifiable: dmp
-              )
+              next unless identifier.present?
               dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
             end
             dmp

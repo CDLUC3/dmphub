@@ -50,6 +50,7 @@ module Api
             dataset.description = json[:description]
             dataset.publication_date = json[:issued]
             dataset.preservation_statement = json[:preservation_statement]
+            dataset.data_quality_assurance = json[:data_quality_assurance]
 
             dataset = deserialize_keywords(provenance: provenance, dataset: dataset, json: json)
             dataset = deserialize_metadata(provenance: provenance, dataset: dataset, json: json)

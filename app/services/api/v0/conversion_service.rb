@@ -125,12 +125,30 @@ module Api
 
         # Translates identifier categories to RDA Common Standard
         def to_identifier_category(rda_category:)
+          return "other" unless rda_category.present?
+
           case rda_category
           when 'CRediT'
             'credit'
           else
             rda_category.downcase
           end
+        end
+
+        # Attempts to detrmine the identifier category based on the content of the value
+        def identifier_category_from_value(value:)
+          return nil unless value.present?
+
+          value = value.to_s.downcase
+
+          # TODO: We need some better regex matchers here
+          return "ror" if value.start_with?("ror:") || value.include?("ror.org/")
+          return "orcid" if value.start_with?("orcid:") || value.include?("orcid.org/")
+          return "doi" if value.start_with?("doi:") || value.include?("doi.org/")
+          return "ark" if value.include?("ark:")
+          return "url" if value.start_with?("http")
+
+          'other'
         end
 
         # Convert from a role to the CRediT URL
@@ -141,14 +159,6 @@ module Api
         # Convert from a CRediT URL to a role
         def from_credit_taxonomy(role:)
           role.split('/').last.downcase
-        end
-
-        # Retrieves the `extension: [:dmphub]` from the json
-        def fetch_extension(json:)
-          return {} unless json.present? && json[:extension].present? && json[:extension].is_a?(Array)
-
-          extension = json[:extension].select { |ext| ext[:dmphub].present? }
-          extension.any? ? extension.first.fetch(:dmphub, {}) : {}
         end
 
         # Converts a User to a Person

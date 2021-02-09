@@ -39,7 +39,8 @@ module Api
           end
 
           def type_to_category(json: {})
-            return nil unless json.present? && json[:type].present?
+            return nil unless json.present?
+            return identifier_category_from_value(value: identifier) unless json[:type].present?
 
             category = Api::V0::ConversionService.to_identifier_category(
               rda_category: json[:type]

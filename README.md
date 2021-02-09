@@ -148,8 +148,8 @@ If successful it will return a list of your Data Management Plans and their prim
 The DMP is returned as [JSON in the RDA Common Standard format](https://github.com/CDLUC3/dmphub/blob/master/spec/support/mocks/complete_common_standard.json). Note that the example below contains a complete metadata record. The DMP you are retrieving may not contain all elements from the common standard. In situations where no data is available for a particular field, then it is omitted from the JSON. For example if your DMP's dataset has no distribution information, then the distribution portion of the record will not appear in the JSON response.
 
 
-See above for the appropriate HTTP headers to send along with your request
-`curl -v http://localhost:3000/api/v1/data_management_plans/10.0000/AB12CD34`
+See above for the appropriate HTTP headers to send along with your request (be sure to include the `doi:` prefix)
+`curl -v http://localhost:3000/api/v1/data_management_plans/doi:10.0000/AB12CD34`
 
 This will return a 404 not found if the DMP does not exist or if you are unauthorized to retrieve it.
 ```javascript

@@ -130,7 +130,7 @@ module Api
       # PERMIITTED PARAMS HEPERS
       # =========================
       def plan_permitted_params
-        %i[created title description language ethical_issues_exist
+        %i[created modified title description language ethical_issues_exist
            ethical_issues_description ethical_issues_report] +
           [dmp_id: identifier_permitted_params,
            contact: contributor_permitted_params,
@@ -138,7 +138,10 @@ module Api
            cost: cost_permitted_params,
            project: project_permitted_params,
            dataset: dataset_permitted_params,
-           extension: data_management_plan_extension_params]
+           dmproadmap_template: %i[id title],
+           dmproadmap_latest_version: %i[uri],
+           dmphub_related_identifiers: %i[relation_type identifier],
+           extensions: %i[uri name]]
       end
 
       def identifier_permitted_params
@@ -171,11 +174,8 @@ module Api
         %i[name funding_status] +
           [funder_id: identifier_permitted_params,
            grant_id: identifier_permitted_params,
-           extension: funding_extension_params]
-      end
-
-      def funding_extension_params
-        [dmphub: [funded_affiliations: affiliation_permitted_params]]
+           dmproadmap_funding_opportunity_id: identifier_permitted_params,
+           dmproadmap_funded_affiliations: [affiliation_permitted_params]]
       end
 
       def dataset_permitted_params
@@ -193,7 +193,7 @@ module Api
       end
 
       def security_and_privacy_statement_permitted_params
-        %i[title description]
+        [:title, description: []]
       end
 
       def technical_resource_permitted_params
@@ -212,11 +212,8 @@ module Api
 
       def host_permitted_params
         %i[title description supports_versioning backup_type backup_frequency
-           storage_type availability geo_location certified_with pid_system url]
-      end
-
-      def data_management_plan_extension_params
-        [dmphub: [related_identifiers: related_identifier_params]]
+           storage_type availability geo_location certified_with pid_system url] +
+          [dmproadmap_host_id: identifier_permitted_params]
       end
 
       def related_identifier_params

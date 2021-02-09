@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_10_27_205352) do
+ActiveRecord::Schema.define(version: 2021_02_09_230301) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -185,7 +185,9 @@ ActiveRecord::Schema.define(version: 2020_10_27_205352) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "provenance_id"
+    t.bigint "host_id"
     t.index ["dataset_id"], name: "index_distributions_on_dataset_id"
+    t.index ["host_id"], name: "index_distributions_on_host_id"
     t.index ["provenance_id"], name: "index_distributions_on_provenance_id"
   end
 

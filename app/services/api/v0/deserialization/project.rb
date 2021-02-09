@@ -14,14 +14,6 @@ module Api
           #   "end": "2023-03-31 12:33:44 UTC",
           #   "funding": [{
           #     "$ref": "SEE Funding.deserialize! for details"
-          #   }],
-          #   "extension": [{
-          #     "dmphub": {
-          #       "project_id": {
-          #         "type": "URL",
-          #         "identifier": "https://some.school.edu/project/123"
-          #       }
-          #     }
           #   }]
           # }
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -43,9 +35,7 @@ module Api
               )
               project.fundings << funding if funding.present?
             end
-
-            attach_identifier(provenance: provenance, project: project,
-                              json: Api::V0::ConversionService.fetch_extension(json: json))
+            project
           end
           # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
@@ -65,18 +55,6 @@ module Api
 
             # If no good result was found just initialize a new one
             ::Project.new(provenance: provenance, title: json[:title])
-          end
-
-          # Marshal the Identifier and attach it
-          def attach_identifier(provenance:, project:, json: {})
-            id = json.fetch(:project_id, {})
-            return project unless id[:identifier].present?
-
-            identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: project, json: id
-            )
-            project.identifiers << identifier if identifier.present? && identifier.new_record?
-            project
           end
         end
       end

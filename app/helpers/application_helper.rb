@@ -61,6 +61,18 @@ module ApplicationHelper
     link_to text, role, target: '_blank'
   end
 
+  def host_to_link(host:)
+    return '' unless host.present?
+
+    # Look for a non-re3data url first
+    link = host.urls.reject { |url| url.value.include?('re3data.org/api') }.first
+    link = host.urls.first unless link.present?
+
+    return link_to(host.title, link.value, target: '_blank', title: host.description) if link.present?
+
+    "<host title=\"#{host.description}\">#{host.title}</host>"
+  end
+
   def humanize_underscored(name:)
     return nil unless name.present?
 

@@ -7,7 +7,7 @@ class Host < ApplicationRecord
   include Identifiable
 
   # Associations
-  belongs_to :distribution, optional: true
+  has_many :distributions #, optional: true
 
   # Validations
   validates :title, presence: true

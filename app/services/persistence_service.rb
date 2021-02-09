@@ -218,16 +218,16 @@ class PersistenceService
       return host unless host.present? && host.urls.any?
 
       Host.transaction do
-        url = host.urls.first
-        id = Identifier.find_or_initialize_by(value: url.value, category: url.category,
-                                              descriptor: url.descriptor)
-        return id.identifiable unless id.new_record?
-
         hst = Host.find_or_create_by(title: host.title)
-        hst.update(saveable_attributes(attrs: host.attributes)) if hst.new_record?
 
-        id.identifiable = hst
-        id.save
+        if hst.new_record?
+          hst.update(saveable_attributes(attrs: host.attributes))
+          hst = hst.reload
+          host.identifiers.each do |id|
+            id.identifiable = hst.reload
+            safe_save_identifier(identifier: id)
+          end
+        end
         hst.reload
       end
     end

@@ -188,7 +188,9 @@ class PersistenceService
 
       project.fundings.each do |f|
         f.affiliation = safe_save_affiliation(affiliation: f.affiliation)
-        f.funded_affiliations.each { |affil| safe_save_affiliation(affiliation: affil) }
+        f.funded_affiliations = f.funded_affiliations.map do |affil|
+          safe_save_affiliation(affiliation: affil)
+        end
       end
 
       project.transaction do

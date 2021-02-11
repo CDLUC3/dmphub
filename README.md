@@ -1,5 +1,6 @@
 # DMPHub
 
+
 This repository covers work on a machine actionable DMP hub, from work funded by an NSF EAGER grant (https://www.nsf.gov/awardsearch/showAward?AWD_ID=1745675&HistoricalAwards=false). This 'Hub' application provides the following services:
 
 1) Allows DMPs to be 'registered' via an API call (in the illustration below this is repredented by a system based off of the [DMPRoadmap](https://github.com/DMPRoadmap/roadmap) codebase). For an example of how the DMPRoadmap codebase interacts with the Hub, please refer to the `app/services/external_apis/dmphub.rb` service.

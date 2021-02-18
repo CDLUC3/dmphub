@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title>DMPHub</title>
     <%= csrf_meta_tags %>
@@ -27,7 +27,7 @@
 
         <%= yield %>
 
-        <span class="spinner"><%= image_tag 'spinner.jpg' %></span>
+        <span class="spinner"><%= image_tag 'spinner.jpg', alt: "Please wait spinner" %></span>
       </main>
 
       <%= render partial: 'layouts/footer' %>

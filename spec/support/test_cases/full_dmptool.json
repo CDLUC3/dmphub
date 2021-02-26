@@ -1,0 +1,154 @@
+{
+  "dmp": {
+    "extensions": [
+      { "uri": "https://github.com/DMPRoadmap/api-json-schema", "name": "dmproadmap" }
+    ],
+    "title": "My Test Plan",
+    "description": "This is my DMP metadata",
+    "language": "eng",
+    "created": "2021-02-02T16:55:45Z",
+    "modified": "2021-02-23T21:45:36Z",
+    "ethical_issues_exist": "unknown",
+    "dmp_id": { "type": "doi", "identifier": "https://doi.org/10.9999/ZZtop4ever" },
+    "contact": {
+      "name": "Twisted Sister",
+      "mbox": "twisted@example.org",
+      "affiliation": {
+        "name": "Twist BioScience (twistbioscience.com)",
+        "affiliation_id": { "type": "ror", "identifier": "https://ror.org/02trmev56" }
+      },
+      "contact_id": { "type": "orcid", "identifier": "https://orcid.org/0000-0000-0000-000X" }
+    },
+    "contributor": [
+      {
+        "name": "Twisted Sister",
+        "mbox": "twisted@example.org",
+        "role": ["http://credit.niso.org/contributor-roles/data-curation"],
+        "affiliation": {
+          "name": "Twist BioScience (twistbioscience.com)",
+          "affiliation_id": { "type": "ror", "identifier": "https://ror.org/02trmev56" }
+        },
+        "contributor_id": { "type": "orcid", "identifier": "https://orcid.org/0000-0000-0000-000X" }
+      },
+      {
+        "name": "Molly Hatchet",
+        "mbox": "molly@example.org",
+        "role": [
+          "http://credit.niso.org/contributor-roles/investigation",
+          "http://credit.niso.org/contributor-roles/project-administration"
+        ],
+        "affiliation": {
+          "name": "Molly Brown House Museum (MBHM)",
+          "abbreviation": "MBHM",
+          "affiliation_id": { "type": "ror", "identifier": "https://ror.org/00bw19968" }
+        },
+        "contributor_id": { "type": "orcid", "identifier": "https://orcid.org/0000-0001-0001-000X" }
+      }
+    ],
+    "project": [
+      {
+        "title": "My Test Plan",
+        "description": "This is my DMP metadata",
+        "start": "2021-09-03T00:00:00Z",
+        "end": "2023-10-06T00:00:00Z",
+        "funding": [
+          {
+            "name": "New Music USA",
+            "funder_id": { "type": "fundref", "identifier": "https://doi.org/10.13039/100005379" },
+            "grant_id": { "type": "url", "identifier": "https://example.org/grants/12345" },
+            "funding_status": "granted",
+            "dmproadmap_funding_opportunity_id": { "type": "other", "identifier": "stratacaster" },
+            "dmproadmap_funded_affiliations": [
+              {
+                "name": "Molly Brown House Museum (MBHM)",
+                "abbreviation": "MBHM",
+                "affiliation_id": { "type": "ror", "identifier": "https://ror.org/00bw19968" }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "dataset": [
+      {
+        "type": "service",
+        "title": "Interesting recordings of the band jamming.",
+        "description": "\u003cp\u003eSome wicked new beats.\u003c/p\u003e",
+        "personal_data": "unknown",
+        "sensitive_data": "yes",
+        "issued": "2023-03-17T00:00:00Z",
+        "preservation_statement": "We plan on storing this stuff for all future generations!",
+        "security_and_privacy": [
+          {
+            "title": "Ethics \u0026 privacy",
+            "description": ["\u003cstrong\u003eQuestion: \u003c/strong\u003e \u003cp\u003eWhy?\u003c/p\u003e\u003cbr\u003e\u003cstrong\u003eAnswer: \u003c/strong\u003e \u003cp\u003eBecause I said so!\u003c/p\u003e"]
+          }
+        ],
+        "data_quality_assurance": "It's all good!",
+        "dataset_id": { "type": "other", "identifier": "15" },
+        "distribution": [
+          {
+            "title": "Anticipated distribution for Interesting recordings of crickets",
+            "data_access": "open",
+            "host": {
+              "title": "DRYAD",
+              "description": "Dryad is an international repository of data ...",
+              "url": "https://datadryad.org/stash",
+              "dmproadmap_host_id": {
+                "type": "url", "identifier": "https://www.re3data.org/api/v1/repository/r3d100000044"
+              }
+            }
+          },
+          {
+            "title": "Anticipated distribution for Interesting recordings of crickets",
+            "data_access": "open",
+            "host": {
+              "title": "Internet Archive",
+              "description": "The Internet Archive includes texts, audio, moving images, etc.",
+              "url": "https://archive.org/",
+              "dmproadmap_host_id": {
+                "type": "url", "identifier": "https://www.re3data.org/api/v1/repository/r3d100011015"
+              }
+            },
+            "license": [
+              {
+                "license_ref": "http://spdx.org/licenses/EPL-2.0.json",
+                "start_date": "2021-04-16T00:00:00Z"
+              }
+            ]
+          }
+        ],
+        "metadata": [],
+        "technical_resource": []
+      },
+      {
+        "type": "image",
+        "title": "Sample photos for the album cover",
+        "description": "\u003cp\u003eVarious photos of the band in silly poses.\u003c/p\u003e",
+        "personal_data": "yes",
+        "sensitive_data": "unknown",
+        "issued": "2023-02-03T00:00:00Z",
+        "preservation_statement": "We are going to make this stuff available online",
+        "security_and_privacy": [
+          {
+            "title": "Ethics \u0026 privacy",
+            "description": ["foo", "and or bar"]
+          }
+        ],
+        "data_quality_assurance": "We will store but not sure where yet.",
+        "dataset_id": { "type": "other", "identifier": "16" },
+        "distribution": [],
+        "metadata": [],
+        "technical_resource": []
+      }
+    ],
+    "dmproadmap_template": { "id": 427, "title": "NIH-GDS: Genomic Data Sharing" },
+    "dmproadmap_related_identifiers": [
+      { "relation_type": "IsReferencedBy", "related_identifier_type": "URL", "value": "https://dmptool.org" }
+    ],
+    "dmproadmap_links": [
+      { "download": "http://localhost:3000/plans/51155/export.pdf?export%5Bform%5D=true" }
+    ]
+  }
+}
+

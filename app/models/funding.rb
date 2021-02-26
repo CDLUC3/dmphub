@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: fundings
+#
+#  id             :bigint           not null, primary key
+#  project_id     :bigint
+#  status         :integer          default("planned"), not null
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  affiliation_id :bigint
+#  provenance_id  :bigint
+#
 # A data management plan
 class Funding < ApplicationRecord
   include Alterable

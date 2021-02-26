@@ -1,5 +1,19 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: identifiers
+#
+#  id                :bigint           not null, primary key
+#  value             :string(255)      not null
+#  category          :integer          default("ark"), not null
+#  identifiable_id   :bigint
+#  identifiable_type :string(255)
+#  created_at        :datetime         not null
+#  updated_at        :datetime         not null
+#  descriptor        :integer          default("is_funded_by")
+#  provenance_id     :bigint
+#
 require 'rails_helper'
 
 RSpec.describe Identifier, type: :model do

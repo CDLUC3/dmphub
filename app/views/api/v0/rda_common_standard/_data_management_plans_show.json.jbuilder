@@ -5,8 +5,8 @@
 # A JSON representation of a Data Management Plan in the Common Standard format
 # json.merge! model_json_base(model: data_management_plan)
 json.title data_management_plan.title
-json.created data_management_plan.created_at.utc.to_s
-json.modified data_management_plan.updated_at.utc.to_s
+json.created data_management_plan.created_at&.utc&.to_formatted_s(:iso8601)
+json.modified data_management_plan.updated_at&.utc&.to_formatted_s(:iso8601)
 json.description data_management_plan.description
 json.language data_management_plan.language
 json.ethical_issues_exist Api::V0::ConversionService.boolean_to_yes_no_unknown(data_management_plan.ethical_issues)

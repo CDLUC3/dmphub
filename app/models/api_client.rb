@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: api_clients
+#
+#  id            :bigint           not null, primary key
+#  name          :string(255)      not null
+#  description   :string(255)
+#  homepage      :string(255)
+#  contact_name  :string(255)
+#  contact_email :string(255)      not null
+#  client_id     :string(255)      not null
+#  client_secret :string(255)      not null
+#  last_access   :date
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
 # A Client of the DMPHub API
 class ApiClient < ApplicationRecord
   # If the Client_id or client_secret are nil generate them

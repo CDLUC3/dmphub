@@ -23,6 +23,9 @@ class PersistenceService
                                 change_type: action, description: history_description)
       end
       dmp.reload
+    rescue StandardError => e
+      p "PersistenceService.process_full_data_management_plan - #{e.message}"
+      raise e
     end
 
     private
@@ -208,9 +211,6 @@ class PersistenceService
           safe_save_metadatum(metadatum: metadatum)
         end
         dataset.distributions.each do |distribution|
-          distribution.licenses = distribution.licenses.map do |license|
-            safe_save_license(license: license)
-          end
           distribution.host = safe_save_host(host: distribution.host)
         end
         dataset
@@ -232,16 +232,6 @@ class PersistenceService
           end
         end
         hst.reload
-      end
-    end
-
-    def safe_save_license(license:)
-      return license unless license.present? && license.license_ref.present?
-
-      License.transaction do
-        lcnse = license.find_or_create_by(license_ref: license.license_ref)
-        lcnse.update(description: license.description) if lcnse.new_record?
-        lcnse.reload
       end
     end
 

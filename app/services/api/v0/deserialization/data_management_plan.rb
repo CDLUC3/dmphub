@@ -38,9 +38,10 @@ module Api
           #       "dataset": [{
           #         "$ref": "SEE Dataset.deserialize! for details"
           #       }],
-          #       "dmphub_related_identifiers": [
+          #       "dmproadmap_related_identifiers": [
           #         {
           #           "relation_type": "is_referenced_by",
+          #           "related_identifier_type": "DOI",
           #           "value": "http://doi.org/10.123/12345.aBc"
           #         }
           #       ]

@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: data_management_plans
+#
+#  id                         :bigint           not null, primary key
+#  title                      :string(255)      not null
+#  language                   :string(255)      not null
+#  ethical_issues             :boolean
+#  description                :text(4294967295)
+#  ethical_issues_description :text(4294967295)
+#  ethical_issues_report      :text(4294967295)
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  project_id                 :bigint
+#  provenance_id              :bigint
+#
 FactoryBot.define do
   factory :data_management_plan do
     title                       { Faker::Movies::StarWars.wookiee_sentence }

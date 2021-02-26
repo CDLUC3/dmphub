@@ -29,17 +29,20 @@ module Api
             # Try to find the Distribution by the identifier
             distribution = find_by_urls(json: json)
 
+            host = Api::V0::Deserialization::Host.deserialize(
+              provenance: provenance, json: json.fetch(:host, {})
+            )
             # Try to find the Distribution by title
-            distribution = find_by_title(provenance: provenance, json: json) unless distribution.present?
+            distribution = find_by_title(provenance: provenance, host: host, json: json) unless distribution.present?
             return nil unless distribution.present? && distribution.valid?
 
+            distribution.host = host
             distribution.available_until = json[:available_until]
             distribution.byte_size = json[:byte_size].to_i
             distribution.data_access = json[:data_access]
             distribution.description = json[:description]
             distribution.format = json[:format]
 
-            distribution = deserialize_hosts(provenance: provenance, distribution: distribution, json: json)
             deserialize_licenses(provenance: provenance, distribution: distribution, json: json)
           end
 
@@ -60,10 +63,11 @@ module Api
           end
 
           # Search for the Distribution by it title
-          def find_by_title(provenance:, json: {})
+          def find_by_title(provenance:, host:, json: {})
             return nil unless json.present? && json[:title].present?
 
-            distribution = ::Distribution.where('LOWER(title) = ?', json[:title].downcase).first
+            distribution = ::Distribution.where(host: host)
+                                         .where('LOWER(title) = ?', json[:title].downcase).first
             return distribution if distribution.present?
 
             # If no good result was found just use the specified title
@@ -77,20 +81,12 @@ module Api
               license = Api::V0::Deserialization::License.deserialize(
                 provenance: provenance, distribution: distribution, json: license_json
               )
+
+pp ::License.all.map { |l| "LICENSE DIST ID: #{l.distribution_id}" }
+p "DISTRIBUTION - WHY SAVE!? #{distribution.id}"
+
               distribution.licenses << license if license.present?
             end
-            distribution
-          end
-
-          # Deserialize any Hosts
-          def deserialize_hosts(provenance:, distribution:, json:)
-            return distribution unless json[:host].present?
-
-            host = Api::V0::Deserialization::Host.deserialize(
-              provenance: provenance, distribution: distribution, json: json.fetch(:host, {})
-            )
-            distribution.host = host if host.present?
-
             distribution
           end
         end

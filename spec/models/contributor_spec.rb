@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: contributors
+#
+#  id             :bigint           not null, primary key
+#  name           :string(255)      not null
+#  email          :string(255)
+#  created_at     :datetime         not null
+#  updated_at     :datetime         not null
+#  affiliation_id :bigint
+#  provenance_id  :bigint
+#
 require 'rails_helper'
 
 RSpec.describe Contributor, type: :model do

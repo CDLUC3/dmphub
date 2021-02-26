@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: affiliations
+#
+#  id              :bigint           not null, primary key
+#  name            :string(255)      not null
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  alternate_names :text(65535)
+#  attrs           :json             not null
+#  types           :text(65535)
+#  provenance_id   :bigint
+#
 require 'rails_helper'
 
 RSpec.describe Affiliation, type: :model do

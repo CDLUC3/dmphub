@@ -1,5 +1,18 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: projects
+#
+#  id            :bigint           not null, primary key
+#  title         :string(255)      not null
+#  start_on      :datetime
+#  end_on        :datetime
+#  description   :text(4294967295)
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#  provenance_id :bigint
+#
 require 'rails_helper'
 
 RSpec.describe Project, type: :model do

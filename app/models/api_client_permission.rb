@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: api_client_permissions
+#
+#  id            :bigint           not null, primary key
+#  api_client_id :bigint           not null
+#  permission    :integer          not null
+#  rules         :text(65535)
+#  created_at    :datetime         not null
+#  updated_at    :datetime         not null
+#
 # Permissions for an ApiClient
 class ApiClientPermission < ApplicationRecord
   # Associations

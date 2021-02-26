@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: data_management_plans
+#
+#  id                         :bigint           not null, primary key
+#  title                      :string(255)      not null
+#  language                   :string(255)      not null
+#  ethical_issues             :boolean
+#  description                :text(4294967295)
+#  ethical_issues_description :text(4294967295)
+#  ethical_issues_report      :text(4294967295)
+#  created_at                 :datetime         not null
+#  updated_at                 :datetime         not null
+#  project_id                 :bigint
+#  provenance_id              :bigint
+#
 # A data management plan
 class DataManagementPlan < ApplicationRecord
   include Alterable
@@ -94,11 +110,23 @@ class DataManagementPlan < ApplicationRecord
   end
 
   def mint_doi(provenance:)
-    # retrieve the Datacite Provenance or initialize it
-    ids = ExternalApis::EzidService.mint_doi(
-      data_management_plan: self,
-      provenance: provenance
-    )
+    # When running in Dev mode just generate a random DOI value
+    if Rails.env.development?
+      ids = [
+        Identifier.new(
+          value: mock_doi,
+          descriptor: 'is_identified_by',
+          category: 'doi',
+          provenance: provenance
+        )
+      ]
+    else
+      # retrieve the Datacite Provenance or initialize it
+      ids = ExternalApis::EzidService.mint_doi(
+        data_management_plan: self,
+        provenance: provenance
+      )
+    end
     identifiers << ids.flatten.compact
     doi.present? || arks.any?
   end
@@ -108,5 +136,12 @@ class DataManagementPlan < ApplicationRecord
   # Create a default stub dataset unless one exists
   def ensure_dataset
     datasets << Dataset.new(title: title, provenance: provenance) unless datasets.any?
+  end
+
+  # Generate a mock/fake DOI
+  def mock_doi
+    mocked = 'https://doi.org/'
+    mocked += "#{Faker::Number.number(digits: 2)}.#{Faker::Number.number(digits: 4)}"
+    mocked += "/#{Faker::Alphanumeric.alphanumeric(number: 6)}"
   end
 end

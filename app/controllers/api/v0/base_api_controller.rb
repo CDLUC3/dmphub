@@ -131,17 +131,20 @@ module Api
       # =========================
       def plan_permitted_params
         %i[created modified title description language ethical_issues_exist
-           ethical_issues_description ethical_issues_report] +
+           ethical_issues_description ethical_issues_report schema] +
           [dmp_id: identifier_permitted_params,
            contact: contributor_permitted_params,
            contributor: contributor_permitted_params,
            cost: cost_permitted_params,
            project: project_permitted_params,
            dataset: dataset_permitted_params,
+           extensions: %i[uri name],
+
+           # Extensions to the RDA common metadata standard for DMPs:
            dmproadmap_template: %i[id title],
            dmproadmap_latest_version: %i[uri],
-           dmphub_related_identifiers: %i[relation_type identifier],
-           extensions: %i[uri name]]
+           dmproadmap_links: %i[download],
+           dmproadmap_related_identifiers: %i[relation_type related_identifier_type value]]
       end
 
       def identifier_permitted_params

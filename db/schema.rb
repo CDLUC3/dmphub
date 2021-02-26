@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_09_230301) do
+ActiveRecord::Schema.define(version: 2021_02_26_211157) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -212,7 +212,6 @@ ActiveRecord::Schema.define(version: 2021_02_09_230301) do
   end
 
   create_table "hosts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
-    t.bigint "distribution_id"
     t.string "title", null: false
     t.text "description", size: :long
     t.boolean "supports_versioning"
@@ -226,7 +225,6 @@ ActiveRecord::Schema.define(version: 2021_02_09_230301) do
     t.text "certified_with"
     t.text "pid_system"
     t.bigint "provenance_id"
-    t.index ["distribution_id"], name: "index_hosts_on_distribution_id"
     t.index ["provenance_id"], name: "index_hosts_on_provenance_id"
   end
 

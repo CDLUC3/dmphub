@@ -24,8 +24,8 @@ module Api
           #        "identifier": "https://www.re3data.org/api/v1/repository/r3d100000044"
           #      }
           #    }
-          def deserialize(provenance:, distribution:, json: {})
-            return nil unless provenance.present? && distribution.present? && valid?(json: json)
+          def deserialize(provenance:, json: {})
+            return nil unless provenance.present? && valid?(json: json)
 
             # First attempt to look the Host up by its URL
             host = find_by_identifier(provenance: provenance, json: json)

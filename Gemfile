@@ -51,7 +51,7 @@ gem 'linkeddata'
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
 gem 'mysql2' # , '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
-gem 'omniauth'
+gem "omniauth", "~> 1.9"
 # ORCID OAuth 2.0 Strategy for the OmniAuth Ruby authentication framework.
 gem 'omniauth-orcid'
 # This plugin adds helpers for the reCAPTCHA API.
@@ -71,6 +71,8 @@ gem 'capistrano', '~> 3.10', require: false
 gem 'capistrano-rails', '~> 1.3', require: false
 
 group :development, :test do
+  # Add a comment summarizing the current schema to the top or bottom of each of your models and factories
+  gem 'annotate'
   # Call 'byebug' anywhere in the code to stop execution and get a
   # debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]

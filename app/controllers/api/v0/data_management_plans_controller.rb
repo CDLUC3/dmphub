@@ -47,6 +47,8 @@ module Api
                 mintable: true
               )
 
+p "LICENSE COUNTER NOW: #{License.all.length}"
+
               if @dmp.dois.any? || @dmp.arks.any?
                 render 'show', status: :created
               else
@@ -55,6 +57,9 @@ module Api
               end
               # rubocop:enable Metrics/BlockNesting
             else
+
+p "FOOOOOOOOOOOOOOOOOO"
+
               doi = @dmp.dois.last || @dmp.urls.last
               msg = 'DMP already exists try sending an update to the attached :dmp_id instead'
               render_error errors: [msg], status: :method_not_allowed, items: [doi]

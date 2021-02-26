@@ -1,5 +1,24 @@
 # frozen_string_literal: true
 
+# == Schema Information
+#
+# Table name: distributions
+#
+#  id              :bigint           not null, primary key
+#  dataset_id      :bigint
+#  title           :string(255)      not null
+#  description     :text(4294967295)
+#  format          :string(255)
+#  byte_size       :float(24)
+#  access_url      :string(255)
+#  download_url    :string(255)
+#  data_access     :integer
+#  available_until :datetime
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  provenance_id   :bigint
+#  host_id         :bigint
+#
 FactoryBot.define do
   factory :distribution do
     title                 { Faker::Lorem.sentence }

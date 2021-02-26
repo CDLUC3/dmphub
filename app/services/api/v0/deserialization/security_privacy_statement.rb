@@ -33,10 +33,6 @@ module Api
                                                   .where('LOWER(title) = ?', json[:title].downcase).first
             return statement if statement.present?
 
-
-p "SECURITY AND PRIVACY!!!!!!!!!!!!!!!!"
-p json[:description]
-
             # If no good result was found just use the specified title
             ::SecurityPrivacyStatement.new(provenance: provenance, title: json[:title],
                                            description: json[:description].join("<br>"))

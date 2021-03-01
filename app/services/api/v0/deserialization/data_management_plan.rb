@@ -47,11 +47,14 @@ module Api
           #       ]
           #     }
           #   }
-          def deserialize(provenance:, json: {})
+          def deserialize(provenance:, json: {}, original_dmp: nil)
             return nil unless provenance.present? && valid?(json: json)
 
+            # If an original_dmp was specified then this is an update!
+            dmp = original_dmp if original_dmp.present?
+
             # First attempt to look the DMP up by its identifier
-            dmp = find_by_identifier(provenance: provenance, json: json)
+            dmp = find_by_identifier(provenance: provenance, json: json) unless dmp.present?
 
             # Get the Contact
             contact = Api::V0::Deserialization::Contributor.deserialize(
@@ -62,6 +65,7 @@ module Api
             dmp = find_by_contact_and_title(provenance: provenance, contact: contact, json: json) unless dmp.present?
 
             # Update the contents of the DMP
+            dmp.title = json[:title]
             dmp.primary_contact = contact
             dmp.description = json[:description]
             dmp.language = Api::V0::ConversionService.language(code: json[:language])

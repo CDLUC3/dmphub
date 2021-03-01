@@ -93,10 +93,11 @@ class DataManagementPlan < ApplicationRecord
     if contributor.is_a?(Contributor)
       # See if there is already a Primary Contact defined.
       current = contributors_data_management_plans.where(role: 'primary_contact').first
+
       # Delete the old one
-      current.destroy if current.present? && current.contributor != contributor
-      unless current.present?
-        # Add the new one
+      current.destroy if current.present? && current != contributor
+
+      if current != contributor
         contributors_data_management_plans << ContributorsDataManagementPlan.new(
           contributor: contributor, role: 'primary_contact', provenance: contributor.provenance
         )

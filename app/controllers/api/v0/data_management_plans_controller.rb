@@ -18,7 +18,7 @@ module Api
         @payload = { items: DataManagementPlan.where(id: dmp_ids) }
       end
 
-      # GET /data_management_plans/:id
+      # GET /data_management_plans/:doi
       def show
         if authorized?
           @source = "GET #{api_v0_data_management_plan_url(id: params[:id])}"
@@ -47,8 +47,6 @@ module Api
                 mintable: true
               )
 
-p "LICENSE COUNTER NOW: #{License.all.length}"
-
               if @dmp.dois.any? || @dmp.arks.any?
                 render 'show', status: :created
               else
@@ -57,9 +55,6 @@ p "LICENSE COUNTER NOW: #{License.all.length}"
               end
               # rubocop:enable Metrics/BlockNesting
             else
-
-p "FOOOOOOOOOOOOOOOOOO"
-
               doi = @dmp.dois.last || @dmp.urls.last
               msg = 'DMP already exists try sending an update to the attached :dmp_id instead'
               render_error errors: [msg], status: :method_not_allowed, items: [doi]
@@ -87,6 +82,53 @@ p "FOOOOOOOOOOOOOOOOOO"
       # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
 
+
+      # PUT /data_management_plans/:doi
+      def update
+        # Only proceed if the Application has permission
+        if permitted?
+          original = doi_param_to_dmp
+          if original.present? && !original.new_record?
+            @dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
+              provenance: provenance, json: dmp_params.to_h.with_indifferent_access,
+              original_dmp: original
+            )
+
+            if @dmp.present?
+              @dmp = PersistenceService.process_full_data_management_plan(
+                client: client,
+                dmp: @dmp,
+                history_description: "#{request.method} #{request.url}",
+                mintable: false
+              )
+
+              render 'show', status: :ok
+            elsif provenance.present?
+              log_error(error: 'Update failed - invalid JSON received and DMP could not be deserialized.')
+              # TODO: We may want to comment this out for Prod
+              log_error(error: dmp_params.to_h)
+              msg = 'You must include at least a :title, :contact (with :name) and :dmp_id (with :identifier)'
+              render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
+            else
+              log_error(error: "Update failed - provenance is missing! CLIENT: '#{client&.name}'")
+              msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :name }'
+              render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
+            end
+          else
+            doi = original.dois.last || original.urls.last
+            msg = 'DMP does not exist try sending a create instead'
+            render_error errors: [msg], status: :not_found, items: [doi]
+          end
+        else
+          render_error errors: 'Unauthorized', status: :unauthorized
+        end
+      rescue ActionController::ParameterMissing => e
+        render_error errors: "Invalid json format (#{e.message})", status: :bad_request
+      rescue StandardError => e
+        log_error(error: e)
+        render_error errors: [e.message], status: :bad_request
+      end
+
       private
 
       def dmp_params
@@ -108,6 +150,10 @@ p "FOOOOOOOOOOOOOOOOOO"
           # Allows for retrieving the record by the associated object's URL
           @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('url', '')}")
                            .where(category: 'url', descriptor: 'is_metadata_for')
+                           .first&.identifiable
+        else
+          @dmp = Identifier.where('value LIKE ?', "%#{params[:id]}")
+                           .where(category: 'doi', descriptor: 'is_identified_by')
                            .first&.identifiable
         end
       end

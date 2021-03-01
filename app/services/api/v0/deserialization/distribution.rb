@@ -81,10 +81,6 @@ module Api
               license = Api::V0::Deserialization::License.deserialize(
                 provenance: provenance, distribution: distribution, json: license_json
               )
-
-pp ::License.all.map { |l| "LICENSE DIST ID: #{l.distribution_id}" }
-p "DISTRIBUTION - WHY SAVE!? #{distribution.id}"
-
               distribution.licenses << license if license.present?
             end
             distribution

@@ -53,7 +53,11 @@ Rails.application.routes.draw do
                                         as: 'data_management_plan',
                                         constraints: { id: /\S+/ }
 
-      resources :data_management_plans, except: %w[show delete]
+      put '/data_management_plans/*id', to: 'data_management_plans#update',
+                                        as: 'update_data_management_plan',
+                                        constraints: { id: /\S+/ }
+
+      resources :data_management_plans, except: %w[show delete update]
       resources :fundings, only: %w[index update]
 
       # get 'data_management_plans/*id', to: 'data_management_plans#show', as: 'data_management_plan', constraints: { id: /\S+/ }

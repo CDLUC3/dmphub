@@ -41,14 +41,14 @@ RSpec.describe Funding, type: :model do
     end
     it 'does not delete the affiliation' do
       affiliation = create(:affiliation)
-      model = create(:funding, :complete, affiliation: affiliation)
+      model = create(:funding, affiliation: affiliation)
       model.destroy
       expect(Affiliation.last).to eql(affiliation)
     end
     it 'does not delete the funded_affiliation' do
       affiliation = create(:affiliation)
       funded_affiliation = create(:affiliation)
-      model = create(:funding, :complete, affiliation: affiliation, funded_affiliations: [funded_affiliation])
+      model = create(:funding, affiliation: affiliation, funded_affiliations: [funded_affiliation])
       model.destroy
       expect(Affiliation.last).to eql(funded_affiliation)
     end

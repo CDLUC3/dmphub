@@ -23,7 +23,14 @@ RSpec.describe Api::V0::Deserialization::Funding do
       grant_id: {
         type: @grant_id.category, identifier: @grant_id.value
       },
-      funding_status: %w[planned granted rejected].sample
+      funding_status: %w[planned granted rejected].sample,
+      dmproadmap_funding_opportunity_id: {
+        type: ::Identifier.categories.keys.sample,
+        identifier: SecureRandom.uuid
+      },
+      dmproadmap_funded_affiliations: [
+        name: Faker::Company.unique.name
+      ]
     }
   end
 
@@ -134,6 +141,117 @@ RSpec.describe Api::V0::Deserialization::Funding do
         expect(result.urls.first.category).to eql(@json[:grant_id][:type])
         expect(result.urls.first.value).to eql(@json[:grant_id][:identifier])
       end
+    end
+
+    describe '#attach_funding_opportunity_id(provenance:, funding:, json:)' do
+      before(:each) do
+        @id_count = @funding.identifiers.length
+      end
+      it "returns :funding as-is if json is not present" do
+        result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
+                                                                      funding: @funding, json: nil)
+        expect(result).to eql(@funding)
+        expect(result.identifiers.length).to eql(@id_count)
+      end
+      it "returns :funding as-is if json[:dmproadmap_funding_opportunity_id] is not present" do
+        @json[:dmproadmap_funding_opportunity_id] = {}
+        result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
+                                                                      funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.identifiers.length).to eql(@id_count)
+      end
+      it "returns :funding as-is if the json[:dmproadmap_funding_opportunity_id] is invalid" do
+        @json[:dmproadmap_funding_opportunity_id] = { identifier: SecureRandom.uuid }
+        result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
+                                                                      funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.identifiers.length).to eql(@id_count)
+      end
+      it "attaches the json[:dmproadmap_funding_opportunity_id] to :funding" do
+        result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
+                                                                      funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.identifiers.length).to eql(@id_count + 1)
+        expected = @json[:dmproadmap_funding_opportunity_id][:identifier]
+        expect(result.identifiers.map(&:value).include?(expected)).to eql(true)
+      end
+    end
+
+    describe '#deserialize_funded_affiliations(provenance:, funding:, json:)' do
+      before(:each) do
+        @affil_count = @funding.funded_affiliations.length
+      end
+      it "returns :funding as-is if json is not present" do
+        result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
+                                                                        funding: @funding, json: nil)
+        expect(result).to eql(@funding)
+        expect(result.funded_affiliations.length).to eql(@affil_count)
+      end
+      it "returns :funding as-is if json[:dmproadmap_funded_affiliations] is not present" do
+        @json.delete(:dmproadmap_funded_affiliations)
+        result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
+                                                                        funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.funded_affiliations.length).to eql(@affil_count)
+      end
+      it "returns :funding as-is if json[:dmproadmap_funded_affiliations] is empty" do
+        @json[:dmproadmap_funded_affiliations] = []
+        result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
+                                                                        funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.funded_affiliations.length).to eql(@affil_count)
+      end
+      it "returns :funding as-is if the json[:dmproadmap_funded_affiliations] is invalid" do
+        @json[:dmproadmap_funded_affiliations] = [{ foo: "bar" }]
+        result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
+                                                                        funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.funded_affiliations.length).to eql(@affil_count)
+      end
+      it "attaches the json[:dmproadmap_funded_affiliations] to :funding" do
+        allow(Api::V0::Deserialization::Affiliation).to receive(:deserialize).and_return(build(:affiliation))
+        result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
+                                                                        funding: @funding, json: @json)
+        expect(result).to eql(@funding)
+        expect(result.funded_affiliations.length).to eql(@affil_count + 1)
+      end
+    end
+  end
+
+  context "Updates" do
+    before(:each) do
+      allow(ExternalApis::RorService).to receive(:search).and_return([])
+      @json = {
+        name: Faker::Movies::StarWars.unique.character,
+        funder_id: {
+          type: ::Identifier.categories.keys.sample,
+          identifier: Faker::Internet.unique.url
+        },
+        grant_id: {
+          type: ::Identifier.categories.keys.sample,
+          identifier: Faker::Internet.unique.url
+        },
+        funding_status: %w[planned granted rejected].sample,
+        dmproadmap_funding_opportunity_id: {
+          type: ::Identifier.categories.keys.sample,
+          identifier: Faker::Internet.unique.url
+        },
+        dmproadmap_funded_affiliations: [{ name: Faker::Company.name }]
+      }
+    end
+    it 'does not update the fields if no match is found in DB' do
+      result = described_class.deserialize(provenance: @provenance, project: @project, json: @json)
+      expect(result.new_record?).to eql(true)
+    end
+    it 'updates the record if matched by :project && :affiliation' do
+      @json[:funder_id] = { type: @funder_id.category, identifier: @funder_id.value }
+      fund = described_class.deserialize(provenance: @provenance, project: @project, json: @json)
+      ids = fund.identifiers.map(&:value)
+      expect(fund.new_record?).to eql(false)
+      expect(fund.affiliation).to eql(@funder)
+      expect(fund.status).to eql(@json[:funding_status])
+      expect(ids.include?(@json[:grant_id][:identifier])).to eql(true)
+      expect(ids.include?(@json[:dmproadmap_funding_opportunity_id][:identifier])).to eql(true)
     end
   end
 end

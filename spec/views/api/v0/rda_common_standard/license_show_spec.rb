@@ -15,7 +15,7 @@ describe 'API V0 - Award Show' do
   end
 
   it 'has a start_date attribute' do
-    expect(@json['start_date']).to eql(@license.start_date.to_s)
+    expect(@json['start_date']).to eql(@license.start_date.to_formatted_s(:iso8601))
   end
 end
 

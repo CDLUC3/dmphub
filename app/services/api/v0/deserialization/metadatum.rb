@@ -19,10 +19,11 @@ module Api
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
             # Try to find the Metadata by the standard id
-            metadata = find_by_identifier(provenance: provenance, json: json)
-            return nil unless metadata.present? && metadata.valid?
+            metadatum = find_by_identifier(provenance: provenance, json: json)
+            metadatum.description = json[:description] if json[:description].present?
+            metadatum.language = json[:language] if json[:language].present?
 
-            attach_identifier(provenance: provenance, dataset: dataset, json: json)
+            attach_identifier(provenance: provenance, metadatum: metadatum, json: json)
           end
 
           private
@@ -34,16 +35,14 @@ module Api
 
           # Locate the Metadatum by its Identifier
           def find_by_identifier(provenance:, json: {})
-            id = json.fetch(:metadata_standard_id, {})
-            return nil unless id[:identifier].present?
+            id_json = json.fetch(:metadata_standard_id, {})
+            return nil unless id_json[:identifier].present?
 
-            id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
-                                                                  identifiable: nil,
-                                                                  json: json[:metadata_standard_id])
-            return id.identifiable if id.present? && id.identifiable.is_a?(Metadatum)
+            id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance, identifiable: nil,
+                                                                  identifiable_type: 'Metadatum', json: id_json)
+            return id.identifiable if id.present? && id.identifiable.is_a?(::Metadatum)
 
-            ::Metadatum.new(provenance: provenance, description: json[:description],
-                            language: json[:language])
+            ::Metadatum.new(provenance: provenance)
           end
 
           # Marshal the Identifier and attach it to the Metadatum
@@ -52,7 +51,7 @@ module Api
             return metadatum unless id[:identifier].present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: metadatum, json: id
+              provenance: provenance, identifiable: metadatum, json: id, identifiable_type: 'Metadatum'
             )
             metadatum.identifiers << identifier if identifier.present? && identifier.new_record?
             metadatum

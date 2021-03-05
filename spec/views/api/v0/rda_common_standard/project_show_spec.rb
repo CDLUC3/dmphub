@@ -19,11 +19,11 @@ describe 'API V0 - Project Show' do
   end
 
   it 'has a start attribute' do
-    expect(@json['start']).to eql(@project.start_on.to_s)
+    expect(@json['start']).to eql(@project.start_on.to_formatted_s(:iso8601))
   end
 
   it 'has a end attribute' do
-    expect(@json['end']).to eql(@project.end_on.to_s)
+    expect(@json['end']).to eql(@project.end_on.to_formatted_s(:iso8601))
   end
 
   it 'has a funding attribute' do

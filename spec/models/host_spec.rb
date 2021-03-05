@@ -28,7 +28,7 @@ RSpec.describe Host, type: :model do
   end
 
   context 'associations' do
-    it { is_expected.to belong_to(:distribution).optional }
+    it { is_expected.to have_many(:distributions) }
     it { is_expected.to have_many(:identifiers) }
   end
 
@@ -40,7 +40,7 @@ RSpec.describe Host, type: :model do
   describe 'cascading deletes' do
     it 'does not delete the distribution' do
       distribution = create(:distribution)
-      model = create(:host, distribution: distribution)
+      model = create(:host, distributions: [distribution])
       model.destroy
       expect(Distribution.last).to eql(distribution)
     end

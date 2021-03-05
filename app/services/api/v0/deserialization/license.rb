@@ -14,10 +14,10 @@ module Api
           def deserialize(provenance:, distribution:, json: {})
             return nil unless provenance.present? && distribution.present? && valid?(json: json)
 
-            license = ::License.find_or_initialize_by(license_ref: json[:license_ref],
+            license = ::License.find_or_initialize_by(start_date: json[:start_date],
                                                       distribution: distribution)
             license.provenance = provenance unless license.provenance.present?
-            license.start_date = json[:start_date]
+            license.license_ref = json[:license_ref]
             license
           end
 

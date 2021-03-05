@@ -11,12 +11,12 @@ RSpec.describe Api::V0::Deserialization::Contributor do
     @role = Api::V0::ConversionService.to_credit_taxonomy(role: 'investigation')
     @category = 'orcid'
 
-    @contributor = create(:contributor, affiliation: @affiliation, roles: [@role],
-                                        provenance: @provenance, name: @name, email: @email)
+    @contributor = create(:contributor, affiliation: @affiliation, provenance: @provenance,
+                                        name: @name, email: @email)
     @identifier = create(:identifier, identifiable: @contributor, provenance: @provenance,
                                       category: @category, value: SecureRandom.uuid)
     @contributor.reload
-    @json = { name: @name, mbox: @email, roles: [@role] }
+    @json = { name: @name, mbox: @email, role: [@role] }
   end
 
   describe '#deserialize(provenance:, json: {})' do
@@ -26,11 +26,6 @@ RSpec.describe Api::V0::Deserialization::Contributor do
 
     it 'returns nil if json is not valid' do
       result = described_class.deserialize(provenance: @provenance, json: {})
-      expect(result).to eql(nil)
-    end
-    it 'returns nil if the Contributor is not valid' do
-      allow_any_instance_of(Contributor).to receive(:valid?).and_return(false)
-      result = described_class.deserialize(provenance: @provenance, json: @json)
       expect(result).to eql(nil)
     end
     it 'calls attach_identifier' do
@@ -51,28 +46,27 @@ RSpec.describe Api::V0::Deserialization::Contributor do
         expect(result).to eql(false)
       end
       it 'returns false if :name and :mbox are not present' do
-        json = { roles: [@role] }
-        result = described_class.send(:valid?, is_contact: true, json: json)
+        result = described_class.send(:valid?, is_contact: true, json: {})
         expect(result).to eql(false)
       end
       context 'Contact' do
-        it 'returns true without :roles' do
+        it 'returns true without :role' do
           json = { name: @name, mbox: @email }
           result = described_class.send(:valid?, is_contact: true, json: json)
           expect(result).to eql(true)
         end
-        it 'returns true with :roles' do
+        it 'returns true with :role' do
           result = described_class.send(:valid?, is_contact: true, json: @json)
           expect(result).to eql(true)
         end
       end
       context 'Contributor' do
-        it 'returns false without :roles' do
+        it 'returns false without :role' do
           json = { name: @name, mbox: @email }
           result = described_class.send(:valid?, is_contact: false, json: json)
           expect(result).to eql(false)
         end
-        it 'returns true with :roles' do
+        it 'returns true with :role' do
           result = described_class.send(:valid?, is_contact: false, json: @json)
           expect(result).to eql(true)
         end
@@ -108,17 +102,6 @@ RSpec.describe Api::V0::Deserialization::Contributor do
         result = described_class.send(:marshal_contributor, provenance: @provenance,
                                                             is_contact: true, json: @json)
         expect(result.affiliation).to eql(@affiliation)
-      end
-      it 'attaches the correct roles if Contributor is the Contact' do
-        result = described_class.send(:marshal_contributor, provenance: @provenance,
-                                                            is_contact: true, json: @json)
-        expected = Api::V0::ConversionService.to_credit_taxonomy(role: 'data_curation')
-        expect(result.roles.include?(expected)).to eql(true)
-      end
-      it 'attaches the roles to the Contributor' do
-        result = described_class.send(:marshal_contributor, provenance: @provenance,
-                                                            is_contact: false, json: @json)
-        expect(result.roles).to eql([@role])
       end
     end
 
@@ -231,53 +214,6 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       end
     end
 
-    describe '#assign_contact_roles(contributor:)' do
-      it 'returns nil if the contributor is not present' do
-        result = described_class.send(:assign_contact_roles, contributor: nil)
-        expect(result).to eql(nil)
-      end
-      it 'assigns the :data_curation role' do
-        expected = Api::V0::ConversionService.to_credit_taxonomy(role: 'data_curation')
-        result = described_class.send(:assign_contact_roles, contributor: @contributor)
-        expect(result.roles.include?(expected)).to eql(true)
-      end
-    end
-
-    describe '#assign_roles(contributor:, json:)' do
-      it 'returns nil if the contributor is not present' do
-        result = described_class.send(:assign_roles, contributor: nil, json: @json)
-        expect(result).to eql(nil)
-      end
-      it 'returns the Contributor as-is if json is not present' do
-        result = described_class.send(:assign_roles, contributor: @contributor, json: {})
-        expect(result).to eql(@contributor)
-      end
-      it 'returns the Contributor as-is if json :roles is not present' do
-        json = { name: @name }
-        result = described_class.send(:assign_roles, contributor: @contributor, json: json)
-        expect(result).to eql(@contributor)
-      end
-      it 'converts roles to CRediT taxonomy roles' do
-        json = { roles: ['Investigation'] }
-        expected = Api::V0::ConversionService.to_credit_taxonomy(role: 'investigation')
-        result = described_class.send(:assign_roles, contributor: @contributor, json: json)
-        expect(result.roles.last).to eql(expected)
-      end
-      it 'leaves url roles as-is' do
-        json = { roles: [Faker::Internet.url] }
-        result = described_class.send(:assign_roles, contributor: @contributor, json: json)
-        expect(result.roles.last).to eql(json[:roles].first)
-      end
-      it 'assigns the roles' do
-        result = described_class.send(:assign_roles, contributor: @contributor, json: @json)
-        expect(result.roles).to eql(@json[:roles])
-      end
-      it 'does not duplicate roles' do
-        json = { roles: %w[Investigation Investigation] }
-        result = described_class.send(:assign_roles, contributor: @contributor, json: json)
-        expect(result.roles.length).to eql(1)
-      end
-    end
 
     describe '#attach_identifier(provenance:, contributor:, json:)' do
       it 'returns the Contributor as-is if json is not present' do
@@ -304,25 +240,60 @@ RSpec.describe Api::V0::Deserialization::Contributor do
         expect(result.identifiers).to eql(@contributor.identifiers)
       end
       it 'initializes the identifier and adds it to the Contributor for a :contact_id' do
-        json = { contact_id: { type: 'URL', identifier: @identifier.value } }
-        count = @contributor.identifiers.length
+        json = { contact_id: { type: 'URL', identifier: Faker::Internet.url } }
         result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          contributor: @contributor, json: json)
-        expect(result.identifiers.length > count).to eql(true)
+                                                          contributor: build(:contributor), json: json)
+        expect(result.identifiers.length).to eql(1)
         expect(result.identifiers.last.category).to eql('url')
-        id = result.identifiers.last.value
-        expect(id).to eql(@identifier.value)
+        expect(result.identifiers.last.value).to eql(json[:contact_id][:identifier])
       end
       it 'initializes the identifier and adds it to the Contributor for a :contributor_id' do
-        json = { contributor_id: { type: 'URL', identifier: @identifier.value } }
+        json = { contributor_id: { type: 'URL', identifier: Faker::Internet.url } }
         count = @contributor.identifiers.length
         result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          contributor: @contributor, json: json)
-        expect(result.identifiers.length > count).to eql(true)
+                                                          contributor: build(:contributor), json: json)
+        expect(result.identifiers.length).to eql(1)
         expect(result.identifiers.last.category).to eql('url')
-        id = result.identifiers.last.value
-        expect(id).to eql(@identifier.value)
+        expect(result.identifiers.last.value).to eql(json[:contributor_id][:identifier])
       end
+    end
+  end
+
+  context "Updates" do
+    before(:each) do
+      @json = {
+        name: Faker::Movies::StarWars.unique.character,
+        mbox: Faker::Internet.unique.email,
+        role: [::ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }.sample],
+        contributor_id: {
+          type: ::Identifier.categories.keys.reject { |c| c == @contributor.identifiers.first.category }.sample,
+          identifier: Faker::Internet.unique.url
+        }
+      }
+    end
+    it 'does not update the fields if no match is found in DB' do
+      result = described_class.deserialize(provenance: @provenance, json: @json)
+      expect(result.new_record?).to eql(true)
+    end
+    it 'updates the record if matched by :identifier' do
+      @json[:contributor_id] = {
+        type: @contributor.identifiers.first.category,
+        identifier: @contributor.identifiers.first.value
+      }
+      contrib = described_class.deserialize(provenance: @provenance, json: @json)
+      # Expect the identifier not to have changed!
+      expect(contrib.identifiers.last).to eql(@contributor.identifiers.last)
+      expect(contrib.email).to eql(@json[:mbox])
+      expect(contrib.name).to eql(@json[:name])
+    end
+    it 'updates the record if matched by :email' do
+      @json[:mbox] = @contributor.email
+      contrib = described_class.deserialize(provenance: @provenance, json: @json)
+      # Expect the email not to have changed!
+      expect(contrib.email).to eql(@contributor.email)
+      expect(contrib.name).to eql(@json[:name])
+      expect(contrib.identifiers.last.category).to eql(@json[:contributor_id][:type])
+      expect(contrib.identifiers.last.value).to eql(@json[:contributor_id][:identifier])
     end
   end
 end

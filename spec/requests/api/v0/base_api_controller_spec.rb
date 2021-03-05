@@ -94,7 +94,7 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
       it 'returns true' do
         expected = "#{@client.name} (#{@client.client_id})"
         @mock_request.headers['HTTP_USER_AGENT'] = expected
-        expect(@controller).to receive(:request).and_return(@mock_request)
+        expect(@controller).to receive(:request).times(2).and_return(@mock_request)
         expect(@controller.send(:check_agent)).to eql(true)
       end
     end

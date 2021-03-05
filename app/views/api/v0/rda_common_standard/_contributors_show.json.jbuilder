@@ -21,5 +21,5 @@ else
     json.partial! 'api/v0/rda_common_standard/identifiers_show',
                   identifier: contributor.orcids.first
   end
-  json.roles roles
+  json.role roles
 end

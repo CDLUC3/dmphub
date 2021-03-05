@@ -22,7 +22,7 @@ describe 'API V0 - Dataset Show' do
   end
 
   it 'has a issued attribute' do
-    expect(@json['issued']).to eql(@dataset.publication_date.to_s)
+    expect(@json['issued']).to eql(@dataset.publication_date.to_formatted_s(:iso8601))
   end
 
   it 'has a language attribute' do

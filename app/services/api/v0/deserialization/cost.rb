@@ -14,16 +14,23 @@ module Api
           #       "value": 10500
           #     }
           def deserialize(provenance:, dmp:, json: {})
-            return nil unless dmp.present? && json[:title].present?
+            return nil unless provenance.present? && dmp.present? && valid?(json: json)
 
             cost = ::Cost.find_or_initialize_by(title: json[:title], data_management_plan: dmp)
-            return nil unless cost.present? && cost.valid?
+            return nil unless cost.present?
 
             cost.provenance = provenance unless cost.provenance.present?
             cost.description = json[:description]
-            cost.currency_code = json[:currency_code]
-            cost.value = json[:value].to_i
+            cost.currency_code = Api::V0::ConversionService.currency_code(code: json[:currency_code])
+            cost.value = json[:value].to_f
             cost
+          end
+
+          private
+
+          # The JSON is valid if the Dataset has a title
+          def valid?(json: {})
+            json.present? && json[:title].present? && json[:value].present? && json[:currency_code].present?
           end
         end
       end

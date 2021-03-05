@@ -6,8 +6,9 @@ describe 'API V0 - Data Management Plan Show' do
   before(:each) do
     project = create(:project, :complete)
     @data_management_plan = create(:data_management_plan, :complete, project: project)
+    @client = create(:api_client)
     render partial: 'api/v0/rda_common_standard/data_management_plans_show.json.jbuilder',
-           locals: { data_management_plan: @data_management_plan }
+           locals: { data_management_plan: @data_management_plan, client: @client }
     @json = JSON.parse(rendered)
   end
 
@@ -20,15 +21,15 @@ describe 'API V0 - Data Management Plan Show' do
   end
 
   it 'has a created attribute' do
-    expect(@json['created']).to eql(@data_management_plan.created_at.utc.to_s)
+    expect(@json['created']).to eql(@data_management_plan.created_at.utc.to_formatted_s(:iso8601))
   end
 
   it 'has a modified attribute' do
-    expect(@json['modified']).to eql(@data_management_plan.updated_at.utc.to_s)
+    expect(@json['modified']).to eql(@data_management_plan.updated_at.utc.to_formatted_s(:iso8601))
   end
 
   it 'has a dmp_id attribute' do
-    expect(@json['dmp_id']['identifier']).to eql(@data_management_plan.identifiers.first.value)
+    expect(@json['dmp_id']['identifier']).to eql(@data_management_plan.dois.first.value)
   end
 
   it 'has a description attribute' do

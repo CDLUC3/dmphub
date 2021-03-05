@@ -29,12 +29,17 @@ module Api
             project.start_on = json[:start] if json[:start].present?
             project.end_on = json[:end] if json[:end].present?
 
+            # Attach fundings
+            touched = []
             json.fetch(:funding, []).each do |funding_json|
               funding = Api::V0::Deserialization::Funding.deserialize(
                 provenance: provenance, project: project, json: funding_json
               )
+              touched << funding
               project.fundings << funding if funding.present?
             end
+            # Remove fundings that were not in the json
+            project.fundings = project.fundings.select { |fund| touched.include?(fund) }
             project
           end
           # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

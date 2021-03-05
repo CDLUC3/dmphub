@@ -9,13 +9,16 @@ module Api
           # Convert incoming JSON into a SecurityPrivacyStatement
           #    {
           #      "title": "Patient personal information",
-          #      "description": "We are going to anonymize all of the patient personal info"
+          #      "description": ["We are going to anonymize all of the patient personal info"]
           #    }
           def deserialize(provenance:, dataset:, json: {})
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
             # Try to find the SecurityPrivacyStatement by title
-            find_by_title(provenance: provenance, dataset: dataset, json: json)
+            statement = find_by_title(provenance: provenance, dataset: dataset, json: json)
+
+            statement.description = json.fetch(:description, []).join("<br>") if json[:description].present?
+            statement
           end
 
           private
@@ -34,8 +37,7 @@ module Api
             return statement if statement.present?
 
             # If no good result was found just use the specified title
-            ::SecurityPrivacyStatement.new(provenance: provenance, title: json[:title],
-                                           description: json[:description].join("<br>"))
+            ::SecurityPrivacyStatement.new(provenance: provenance, title: json[:title])
           end
         end
       end

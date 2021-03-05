@@ -81,6 +81,7 @@ module Api
 
             grant = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: funding, json: json[:grant_id],
+              identifiable_type: 'Funding',
               descriptor: 'is_funded_by'
             )
             return funding unless grant.present?
@@ -95,7 +96,7 @@ module Api
 
             opportunity = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: funding, descriptor: 'is_required_by',
-              json: json[:dmproadmap_funding_opportunity_id]
+              identifiable_type: 'Funding', json: json[:dmproadmap_funding_opportunity_id],
             )
             return funding unless opportunity.present?
 
@@ -105,7 +106,8 @@ module Api
 
           # Convert the funded_affiliations
           def deserialize_funded_affiliations(provenance:, funding:, json:)
-            return funding unless funding.present? && json.fetch(:dmproadmap_funded_affiliations, []).any?
+            return funding unless funding.present? && json.present? &&
+                                  json.fetch(:dmproadmap_funded_affiliations, []).any?
 
             json[:dmproadmap_funded_affiliations].each do |affiliation|
               funded = Api::V0::Deserialization::Affiliation.deserialize(

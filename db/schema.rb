@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_26_211157) do
+ActiveRecord::Schema.define(version: 2021_03_04_164818) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -140,6 +140,7 @@ ActiveRecord::Schema.define(version: 2021_02_26_211157) do
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "project_id"
     t.bigint "provenance_id"
+    t.datetime "version"
     t.index ["project_id"], name: "index_data_management_plans_on_project_id"
     t.index ["provenance_id"], name: "index_data_management_plans_on_provenance_id"
   end

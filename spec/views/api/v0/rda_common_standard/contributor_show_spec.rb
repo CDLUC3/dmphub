@@ -4,7 +4,11 @@ require 'rails_helper'
 
 describe 'API V0 - Contributor Show' do
   before(:each) do
+    dmp = create(:data_management_plan)
     @contributor = create(:contributor, :complete, affiliation: create(:affiliation))
+    roles = ::ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }
+    @cdmp = create(:contributors_data_management_plan, data_management_plan: dmp, contributor: @contributor,
+                                                       role: roles.sample)
     @partial = 'api/v0/rda_common_standard/contributors_show.json.jbuilder'
   end
 
@@ -40,7 +44,8 @@ describe 'API V0 - Contributor Show' do
 
   context 'other contributor' do
     before(:each) do
-      render partial: @partial, locals: { contributor: @contributor, rel: 'author' }
+      render partial: @partial,
+             locals: { contributor: @contributor, rel: 'author', roles: [@cdmp.role] }
       @json = JSON.parse(rendered)
     end
 
@@ -48,8 +53,8 @@ describe 'API V0 - Contributor Show' do
       expect(@json['contributor_id']['identifier']).to eql(@contributor.orcids.first.value)
     end
 
-    it 'has a roles attribute' do
-      expect(@json['roles'].first['identifier']).to eql(@contributor.credits.first.value)
+    it 'has a role attribute' do
+      expect(@json['role']).to eql([@cdmp.role])
     end
   end
 end
@@ -74,8 +79,5 @@ end
 #     "type":"HTTP-ORCID",
 #     "identifier":"https://orcid.org/0000-0000-0000-0000"
 #   },
-#   "roles":[{
-#     "type":"HTTP-CASRAI",
-#     "identifier": "http://credit.niso.org/contributor-roles/investigation"
-#   }]
+#   "role":["http://credit.niso.org/contributor-roles/investigation"]
 # }

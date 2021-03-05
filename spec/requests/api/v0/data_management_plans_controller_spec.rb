@@ -6,6 +6,8 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   include DataciteMocks
 
   before(:each) do
+    mock_externals
+
     create(:provenance, name: 'datacite')
     @client = create(:api_client)
     @provenance = Provenance.by_api_client(api_client: @client).first

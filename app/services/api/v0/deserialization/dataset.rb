@@ -40,9 +40,11 @@ module Api
 
             # Try to find the Dataset by the identifier
             dataset = find_by_identifier(provenance: provenance, json: json)
+            # Its ok to update the title if we found this by its id
+            dataset.title = json[:title] if dataset.present?
 
             # Try to find the Dataset by title
-            dataset = find_by_title(provenance: provenance, json: json) unless dataset.present?
+            dataset = find_by_title(provenance: provenance, dmp: dmp, json: json) unless dataset.present?
             return nil unless dataset.present? && dataset.valid?
 
             dataset.personal_data = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:personal_data])
@@ -73,17 +75,21 @@ module Api
             id_json = json.fetch(:dataset_id, {})
             return nil unless id_json[:identifier].present?
 
-            id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
-                                                                  identifiable: nil,
-                                                                  json: id_json)
-            id.present? && id.identifiable.is_a?(Dataset) ? id.identifiable : nil
+            id = Api::V0::Deserialization::Identifier.deserialize(
+              provenance: provenance, identifiable: nil, json: id_json, descriptor: 'is_identified_by',
+              identifiable_type: 'Dataset'
+            )
+            return id.identifiable if id.present? && id.identifiable.is_a?(::Host)
+
+            id.present? && id.identifiable.is_a?(::Dataset) ? id.identifiable : nil
           end
 
           # Search for the Dataset by it title
-          def find_by_title(provenance:, json: {})
-            return nil unless json.present? && json[:title].present?
+          def find_by_title(provenance:, dmp:, json: {})
+            return nil unless json.present? && dmp.present? && json[:title].present?
 
-            dataset = ::Dataset.where('LOWER(title) = ?', json[:title].downcase).first
+            dataset = ::Dataset.where(data_management_plan: dmp)
+                               .where('LOWER(title) = ?', json[:title].downcase).first
             return dataset if dataset.present?
 
             # If no good result was found just use the specified title
@@ -99,7 +105,7 @@ module Api
             return dataset unless id[:identifier].present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: dataset, json: id
+              provenance: provenance, identifiable: dataset, json: id, identifiable_type: 'Dataset'
             )
             dataset.identifiers << identifier if identifier.present? && identifier.new_record?
             dataset
@@ -115,6 +121,8 @@ module Api
 
           # Deserialize any Metadata
           def deserialize_metadata(provenance:, dataset:, json:)
+            return dataset unless json.present? && provenance.present? && dataset.present?
+
             json.fetch(:metadata, []).each do |metadatum_json|
               metadata = Api::V0::Deserialization::Metadatum.deserialize(
                 provenance: provenance, dataset: dataset, json: metadatum_json
@@ -126,6 +134,8 @@ module Api
 
           # Deserialize any Security and Privacy Statements
           def deserialize_security_privacy_statements(provenance:, dataset:, json:)
+            return dataset unless json.present? && provenance.present? && dataset.present?
+
             json.fetch(:security_and_privacy, []).each do |s_and_p_json|
               s_and_p = Api::V0::Deserialization::SecurityPrivacyStatement.deserialize(
                 provenance: provenance, dataset: dataset, json: s_and_p_json
@@ -137,6 +147,8 @@ module Api
 
           # Deserialize any Technical Resources
           def deserialize_technical_resources(provenance:, dataset:, json:)
+            return dataset unless json.present? && provenance.present? && dataset.present?
+
             json.fetch(:technical_resource, []).each do |tech_resource_json|
               tech_resource = Api::V0::Deserialization::TechnicalResource.deserialize(
                 provenance: provenance, dataset: dataset, json: tech_resource_json
@@ -148,6 +160,8 @@ module Api
 
           # Deserialize any Distributions
           def deserialize_distributions(provenance:, dataset:, json:)
+            return dataset unless json.present? && provenance.present? && dataset.present?
+
             json.fetch(:distribution, []).each do |distribution_json|
               distribution = Api::V0::Deserialization::Distribution.deserialize(
                 provenance: provenance, dataset: dataset, json: distribution_json

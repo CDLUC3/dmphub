@@ -41,11 +41,6 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
       expect(described_class).to have_received(:find_by_identifier)
       expect(described_class).to have_received(:find_by_name)
     end
-    it 'returns nil if the Affiliation is not valid' do
-      allow(described_class).to receive(:find_by_identifier).and_return(@affiliation)
-      allow_any_instance_of(Affiliation).to receive(:valid?).and_return(false)
-      expect(described_class.deserialize(provenance: @provenance, json: @json)).to eql(nil)
-    end
     it 'attaches the identifier to the Affiliation' do
       allow(described_class).to receive(:find_by_identifier).and_return(@affiliation)
       result = described_class.deserialize(provenance: @provenance, json: @json)
@@ -143,7 +138,6 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         result = described_class.send(:find_by_name, provenance: @provenance, json: json)
         expect(result.new_record?).to eql(true)
         expect(result.name).to eql(json[:name])
-        expect(result.alternate_names).to eql([])
         expect(result.types).to eql([])
         expect(result.attrs).to eql({})
       end
@@ -151,50 +145,84 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
 
     describe '#attach_identifier(provenance: provenance, affiliation:, json:)' do
       it 'returns the Affiliation as-is if json is not present' do
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: {})
+        result = described_class.send(:attach_identifiers, provenance: @provenance,
+                                                           affiliation: @affiliation, json: {})
         expect(result.identifiers).to eql(@affiliation.identifiers)
       end
       it 'returns the Affiliation as-is if the json has no identifier' do
         json = { name: @name }
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: json)
+        result = described_class.send(:attach_identifiers, provenance: @provenance,
+                                                           affiliation: @affiliation, json: json)
         expect(result.identifiers).to eql(@affiliation.identifiers)
       end
-      it 'returns the Affiliation as-is if the Affiliation already has the :affiliation_id' do
+      it 'returns the Affiliation as-is if the Affiliation is not a new record' do
         json = { affiliation_id: { type: @category, identifier: @identifier.value } }
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: json)
-        expect(result.identifiers).to eql(@affiliation.identifiers)
-      end
-      it 'returns the Affiliation as-is if the Affiliation already has the :funder_id' do
-        json = { funder_id: { type: @category, identifier: @identifier.value } }
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: json)
+        result = described_class.send(:attach_identifiers, provenance: @provenance,
+                                                           affiliation: @affiliation, json: json)
         expect(result.identifiers).to eql(@affiliation.identifiers)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :affiliation_id' do
-        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.first
+        affiliation = build(:affiliation)
+        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { affiliation_id: { type: category, identifier: @identifier.value } }
-        count = @affiliation.identifiers.length
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: json)
+        count = affiliation.identifiers.length
+        result = described_class.send(:attach_identifiers, provenance: @provenance,
+                                                           affiliation: affiliation, json: json)
         expect(result.identifiers.length > count).to eql(true)
         expect(result.identifiers.last.category).to eql(category)
         id = result.identifiers.last.value
         expect(id).to eql(@identifier.value)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :funder_id' do
-        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.first
+        affiliation = build(:affiliation)
+        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { funder_id: { type: category, identifier: @identifier.value } }
-        count = @affiliation.identifiers.length
-        result = described_class.send(:attach_identifier, provenance: @provenance,
-                                                          affiliation: @affiliation, json: json)
+        count = affiliation.identifiers.length
+        result = described_class.send(:attach_identifiers, provenance: @provenance,
+                                                           affiliation: affiliation, json: json)
         expect(result.identifiers.length > count).to eql(true)
         expect(result.identifiers.last.category).to eql(category)
         id = result.identifiers.last.value
         expect(id).to eql(@identifier.value)
       end
+    end
+  end
+
+  context 'Updates' do
+    before(:each) do
+      allow(ExternalApis::RorService).to receive(:search).and_return([])
+      @json = {
+        name: Faker::Company.unique.name,
+        abbreviation: Faker::Lorem.word.upcase,
+        affiliation_id: {
+          type: ::Identifier.categories.keys.reject { |c| c == @affiliation.identifiers.first.category }.sample,
+          identifier: Faker::Internet.url
+        }
+      }
+    end
+
+    it 'does not update the fields if no match is found in DB' do
+      result = described_class.deserialize(provenance: @provenance, json: @json)
+      expect(result.new_record?).to eql(true)
+    end
+    it 'updates the record if matched by :identifier' do
+      @json[:affiliation_id] = {
+        type: @affiliation.identifiers.first.category,
+        identifier: @affiliation.identifiers.first.value
+      }
+      affil = described_class.deserialize(provenance: @provenance, json: @json)
+      # Expect the name and identifier not to have changed!
+      expect(affil.name).to eql(@affiliation.name)
+      expect(affil.identifiers.last).to eql(@affiliation.identifiers.last)
+      expect(affil.alternate_names.include?(@json[:abbreviation])).to eql(true)
+    end
+    it 'updates the record if matched by :name' do
+      @json[:name] = @affiliation.name
+      affil = described_class.deserialize(provenance: @provenance, json: @json)
+      # Expect the name and identifier not to have changed!
+      expect(affil.name).to eql(@affiliation.name)
+      expect(affil.identifiers.last).to eql(@affiliation.identifiers.last)
+      expect(affil.alternate_names.include?(@json[:abbreviation])).to eql(true)
     end
   end
 end

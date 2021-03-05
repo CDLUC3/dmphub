@@ -28,8 +28,6 @@ class Funding < ApplicationRecord
 
   accepts_nested_attributes_for :identifiers, :affiliation, :funded_affiliations
 
-  # validates :affiliation, :status, presence: true
-
   before_validation :ensure_status
 
   def funded?

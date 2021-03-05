@@ -55,19 +55,11 @@ RSpec.describe Api::V0::Deserialization::Project do
       it 'returns false if json is not present' do
         expect(described_class.send(:valid?, json: {})).to eql(false)
       end
-      it 'returns true if :title, :start and :end are present' do
+      it 'returns true if :title is present' do
         expect(described_class.send(:valid?, json: @json)).to eql(true)
       end
       it 'returns false if :title is not present' do
         @json.delete(:title)
-        expect(described_class.send(:valid?, json: @json)).to eql(false)
-      end
-      it 'returns false if :start is not present' do
-        @json.delete(:start)
-        expect(described_class.send(:valid?, json: @json)).to eql(false)
-      end
-      it 'returns false if :end is not present' do
-        @json.delete(:end)
         expect(described_class.send(:valid?, json: @json)).to eql(false)
       end
     end
@@ -88,6 +80,44 @@ RSpec.describe Api::V0::Deserialization::Project do
         expect(result.title).to eql(json[:title])
         expect(result.provenance).to eql(@provenance)
       end
+    end
+  end
+
+  context 'Updates' do
+    before(:each) do
+      allow(ExternalApis::RorService).to receive(:search).and_return([])
+      @funder = create(:affiliation)
+      @funding = create(:funding, affiliation: @funder, project: @project)
+      @json = {
+        title: Faker::Lorem.sentence,
+        description: Faker::Lorem.paragraph,
+        start: (Time.now.utc + 30.days).to_formatted_s(:iso8601),
+        end: (Time.now.utc + 90.days).to_formatted_s(:iso8601),
+        funding: [{ name: Faker::Movies::StarWars.planet }]
+      }
+    end
+    it 'does not update the fields if no match is found in DB' do
+      result = described_class.deserialize(provenance: @provenance, dmp: @dmp, json: @json)
+      expect(result.new_record?).to eql(true)
+    end
+    it 'updates the record if matched by :data_management_plan && :title' do
+      @json[:title] = @project.title
+      result = described_class.deserialize(provenance: @provenance, dmp: @dmp, json: @json)
+      expect(result.new_record?).to eql(false)
+      expect(result.title).to eql(@project.title)
+      expect(result.description).to eql(@json[:description])
+      expect(result.start_on.to_formatted_s(:iso8601)).to eql(@json[:start])
+      expect(result.end_on.to_formatted_s(:iso8601)).to eql(@json[:end])
+    end
+    it 'it adds a new funding' do
+      @json[:title] = @project.title
+      result = described_class.deserialize(provenance: @provenance, dmp: @dmp, json: @json)
+      expect(result.fundings.map { |f| f.affiliation.name }.include?(@json[:funding].first[:name])).to eql(true)
+    end
+    it 'it removes fundings' do
+      @json[:title] = @project.title
+      result = described_class.deserialize(provenance: @provenance, dmp: @dmp, json: @json)
+      expect(result.fundings.include?(@funding)).to eql(false)
     end
   end
 end

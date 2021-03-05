@@ -8,7 +8,7 @@ module Api
         class << self
           # Convert the incoming JSON into a Contributor
           #   {
-          #     "roles": [
+          #     "role": [
           #       "https://dictionary.casrai.org/Contributor_Roles/Project_administration"
           #     ],
           #     "name": "Jane Doe",
@@ -26,12 +26,17 @@ module Api
           #       "identifier": "https://orcid.org/0000-0000-0000-0000"
           #     }
           #   }
+          #
+          # NOTE: `role: []` is processed in the DataManagementPlan deserialization service
+          #       but included here as a validation check
           def deserialize(provenance:, json: {}, is_contact: false)
             return nil unless valid?(is_contact: is_contact, json: json)
 
             contributor = marshal_contributor(provenance: provenance,
                                               is_contact: is_contact, json: json)
             return nil unless contributor.present?
+            # If the contributor already has an identifier just return them
+            return contributor unless contributor.identifiers.any?
 
             attach_identifier(provenance: provenance, contributor: contributor, json: json)
           end
@@ -44,6 +49,9 @@ module Api
             return false unless json.present?
             return false unless json[:name].present? || json[:mbox].present?
 
+            # Make the role an array in the event that it is a string
+            json[:role] = [json[:role]] if json[:role].present? && json[:role].is_a?(String)
+
             is_contact ? true : json[:role].present? && json[:role].any?
           end
 
@@ -53,24 +61,28 @@ module Api
 
             # Try to find the Org by the identifier
             contributor = find_by_identifier(provenance: provenance, json: json)
+            # Update the email if we found them by identifier
+            contributor.email = json[:mbox] if contributor.present? && json[:mbox].present?
 
             # Search by email if available and not found above
             contributor = find_by_email_or_name(provenance: provenance, is_contact: is_contact, json: json) unless contributor.present?
 
             # Attach the Affiliation unless its already defined
+            contributor.name = json[:name] if json[:name].present?
             contributor.affiliation = deserialize_affiliation(provenance: provenance, json: json)
             contributor
           end
 
           # Locate the Contributor by its identifier
           def find_by_identifier(provenance:, json: {})
-            id = json.fetch(:contributor_id, json.fetch(:contact_id, {}))
-            return nil unless id[:identifier].present?
+            id_json = json.fetch(:contributor_id, json.fetch(:contact_id, {}))
+            return nil unless id_json[:identifier].present?
 
             id = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: nil, json: json, descriptor: 'is_identified_by'
+              provenance: provenance, identifiable: nil, json: id_json, descriptor: 'is_identified_by',
+              identifiable_type: 'Contributor'
             )
-            id.present? && id.identifiable.is_a?(Contributor) ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(::Contributor) ? id.identifiable : nil
           end
 
           # Find the Contributor by its name or email or initialize one
@@ -79,6 +91,7 @@ module Api
 
             # Search the DB for the email
             contributor = find_by_email(json: json) if json[:mbox].present?
+            contributor.name = json[:name] if contributor.present? && json[:name].present?
             return contributor if contributor.present?
 
             # Search the DB for the name
@@ -114,11 +127,11 @@ module Api
 
           # Marshal the Identifier and attach it
           def attach_identifier(provenance:, contributor:, json: {})
-            id = json.fetch(:contributor_id, json.fetch(:contact_id, {}))
-            return contributor unless id[:identifier].present?
+            id_json = json.fetch(:contributor_id, json.fetch(:contact_id, {}))
+            return contributor unless id_json[:identifier].present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: contributor, json: id
+              provenance: provenance, identifiable: contributor, json: id_json, identifiable_type: 'Contributor'
             )
             contributor.identifiers << identifier if identifier.present? && identifier.new_record?
             contributor

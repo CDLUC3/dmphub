@@ -112,7 +112,7 @@ RSpec.describe ExternalApis::BaseService do
       end
       it 'includes :debug_output if :debug is true' do
         result = described_class.send(:options, additional_headers: {}, debug: true)
-        expect(result[:debug_output].nil?).to eql(false)
+        expect(result[:debug_output].present?).to eql(true)
       end
       it 'includes :follow_redirects option' do
         result = described_class.send(:options)

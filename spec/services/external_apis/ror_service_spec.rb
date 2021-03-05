@@ -43,8 +43,9 @@ RSpec.describe ExternalApis::RorService do
         expect(described_class.search(term: @term)).to eql([])
       end
       it 'logs the response as an error' do
-        described_class.expects(:handle_http_failure).at_least(1)
+        allow(described_class).to receive(:handle_http_failure)
         described_class.search(term: @term)
+        expect(described_class).to have_received(:handle_http_failure)
       end
     end
 
@@ -148,8 +149,9 @@ RSpec.describe ExternalApis::RorService do
       it 'calls the handle_http_failure method if a non 200 response is received' do
         stub_request(:get, @uri).with(headers: @headers)
                                 .to_return(status: 403, body: '', headers: {})
-        described_class.expects(:handle_http_failure).at_least(1)
+        allow(described_class).to receive(:handle_http_failure)
         expect(described_class.send(:query_ror, term: @term)).to eql([])
+        expect(described_class).to have_received(:handle_http_failure)
       end
       it 'returns the response body as JSON' do
         stub_request(:get, @uri).with(headers: @headers)
@@ -190,8 +192,8 @@ RSpec.describe ExternalApis::RorService do
 
     describe '#process_pages' do
       before(:each) do
-        described_class.stubs(:max_pages).returns(2)
-        described_class.stubs(:max_results_per_page).returns(5)
+        allow(described_class).to receive(:max_pages).and_return(2)
+        allow(described_class).to receive(:max_results_per_page).and_return(5)
 
         @search = URI("#{described_class.api_base_url}#{described_class.search_path}")
         @term = Faker::Lorem.word

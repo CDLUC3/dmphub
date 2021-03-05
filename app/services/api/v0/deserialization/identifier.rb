@@ -11,12 +11,13 @@ module Api
           #      "type": "ROR",
           #      "identifier": "https://ror.org/43y4g4"
           #    }
-          def deserialize(provenance:, identifiable:, json: {}, descriptor: 'is_identified_by')
-            return nil unless valid?(json: json)
+          def deserialize(provenance:, identifiable:, json: {}, identifiable_type: nil, descriptor: 'is_identified_by')
+            return nil unless valid?(json: json) && (identifiable.present? || identifiable_type.present?)
 
-            identifier = find_existing(provenance: provenance,
-                                       identifiable: identifiable,
-                                       json: json)
+            # If no :identifiable_type was specified, derive it from the :identifiable
+            identifiable_type = identifiable.class.name unless identifiable_type.present?
+            identifier = find_existing(provenance: provenance, identifiable: identifiable,
+                                       identifiable_type: identifiable_type, json: json)
             return identifier if identifier.present?
 
             category = type_to_category(json: json)
@@ -38,32 +39,42 @@ module Api
             json[:type].present? && json[:identifier].present?
           end
 
+          # Converts the incoming type into a Identifier.categories enum value
           def type_to_category(json: {})
             return nil unless json.present?
-            return identifier_category_from_value(value: identifier) unless json[:type].present?
 
-            category = Api::V0::ConversionService.to_identifier_category(
-              rda_category: json[:type]
-            )
-            return nil unless ::Identifier.categories.keys.include?(category.to_s)
+            # Attempt to use the specified category
+            category = Api::V0::ConversionService.to_identifier_category(rda_category: json[:type])
+            return category if ::Identifier.categories.keys.include?(category.to_s)
 
+            # Otherwise derive the category from the value
+            category = Api::V0::ConversionService.identifier_category_from_value(value: json[:identifier])
             category
           end
 
           # This will find the identifier we are after. If it is an identifier
           # category that requires universal uniqueness (e.g. DOI, URL) it may
           # not match our identifiable!
-          def find_existing(provenance:, identifiable:, json:)
+          def find_existing(provenance:, identifiable:, identifiable_type: nil, json: {})
             category = type_to_category(json: json)
             return nil unless category.present?
 
-            id = ::Identifier.by_provenance_and_category_and_value(
-              provenance: provenance, category: category, value: json[:identifier]
-            )
-            return nil if id.empty?
-            return nil if id.first.identifiable != identifiable && identifiable.present?
+            # If this is a universally unique identifier type (e.g URL or DOI)
+            if ::Identifier.requires_universal_uniqueness.map(&:to_s).include?(category)
+              ids = ::Identifier.where(value: json[:identifier])
+              return nil if ids.empty?
 
-            id.first
+              # Verify we have the right thing by comparing the identifiable or intended identifiable_type
+              id = ids.select { |i| i.identifiable == identifiable }.last if identifiable.present?
+              id = ids.select { |i| i.identifiable_type == identifiable_type }.last unless id.present?
+            else
+              # We would never be searching for identifiable with an identifier that is not universally unique
+              return nil unless identifiable.present?
+
+              id = ::Identifier.where(identifiable: identifiable, category: category,
+                                      value: json[:identifier]).last
+            end
+            id
           end
         end
       end

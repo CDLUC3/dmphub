@@ -42,6 +42,21 @@ FactoryBot.define do
         data_management_plan.primary_contact = create(:contributor, :complete) unless data_management_plan.primary_contact.present?
         data_management_plan.project = create(:project, :complete, data_management_plan_count: 0) unless data_management_plan.project.present?
 
+        # Add the DOI
+        unique_categories = ::Identifier.requires_universal_uniqueness.map(&:to_s)
+        data_management_plan.identifiers << create(:identifier, category: unique_categories.sample,
+                                                                identifiable: data_management_plan,
+                                                                descriptor: 'is_identified_by',
+                                                                value: Faker::Internet.url,
+                                                                provenance: data_management_plan.provenance)
+
+        # URL of the original DMP source
+        data_management_plan.identifiers << create(:identifier, category: unique_categories.sample,
+                                                                identifiable: data_management_plan,
+                                                                descriptor: 'is_metadata_for',
+                                                                value: Faker::Internet.url,
+                                                                provenance: data_management_plan.provenance)
+
         # Add contributors
         evaluator.contributors_count.times do
           per = create(:contributor, :complete, provenance: data_management_plan.provenance)
@@ -56,11 +71,13 @@ FactoryBot.define do
         evaluator.datasets_count.times do
           data_management_plan.datasets << create(:dataset, :complete, provenance: data_management_plan.provenance)
         end
+
+        relateds = ::Identifier.descriptors.keys.reject { |k| %w[is_identified_by is_metadata_for].include?(k) }
         evaluator.identifiers_count.times do
-          data_management_plan.identifiers << create(:identifier, category: 'doi',
-                                                                  identifiable: data_management_plan,
-                                                                  descriptor: Identifier.descriptors.keys.sample,
-                                                                  provenance: data_management_plan.provenance)
+          data_management_plan.identifiers << create(:identifier, category: ::Identifier.categories.keys.sample,
+                                                                identifiable: data_management_plan,
+                                                                descriptor: relateds.sample,
+                                                                provenance: data_management_plan.provenance)
         end
       end
     end

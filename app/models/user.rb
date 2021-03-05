@@ -46,7 +46,7 @@ class User < ApplicationRecord
   # has_many :access_tokens, class_name: 'Doorkeeper::AccessToken',
   #                          foreign_key: :resource_owner_id, dependent: :delete_all
 
-  belongs_to :affiliation
+  belongs_to :affiliation, optional: true
 
   # Validations
   validates :accept_terms, acceptance: true

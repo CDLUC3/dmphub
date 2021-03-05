@@ -15,7 +15,9 @@ module Api
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
             # Try to find the TechnicalResource by name
-            find_by_title(provenance: provenance, dataset: dataset, json: json)
+            resource = find_by_title(provenance: provenance, dataset: dataset, json: json)
+            resource.description = json[:description] if json[:description].present?
+            resource
           end
 
           private
@@ -34,8 +36,7 @@ module Api
             return resource if resource.present?
 
             # If no good result was found just use the specified title
-            ::TechnicalResource.new(provenance: provenance, title: json[:title],
-                                    description: json[:description])
+            ::TechnicalResource.new(provenance: provenance, title: json[:title])
           end
         end
       end

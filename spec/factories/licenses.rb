@@ -15,7 +15,7 @@
 FactoryBot.define do
   factory :license do
     license_ref  { Faker::Internet.url }
-    start_date   { Time.now + 30.days }
+    start_date   { (Time.now + 30.days).utc }
 
     before :create do |license|
       license.provenance = build(:provenance) unless license.provenance.present?

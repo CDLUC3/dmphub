@@ -23,7 +23,10 @@ module Api
 
             # Try to find the Org by name
             affiliation = find_by_name(provenance: provenance, json: json) unless affiliation.present?
+
             affiliation.provenance = provenance unless affiliation.provenance.present?
+            affiliation.alternate_names << json[:abbreviation] if json[:abbreviation].present?
+            affiliation.alternate_names = affiliation.alternate_names.uniq
             affiliation
           end
 
@@ -39,13 +42,14 @@ module Api
 
           # Locate the Affiliation by its Identifier
           def find_by_identifier(provenance:, json: {})
-            id = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
-            return nil unless id[:identifier].present?
+            id_json = json.fetch(:affiliation_id, json.fetch(:funder_id, {}))
+            return nil unless id_json[:identifier].present?
 
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
-                                                                  json: json)
-            id.present? && id.identifiable.is_a?(Affiliation) ? id.identifiable : nil
+                                                                  identifiable_type: 'Affiliation',
+                                                                  json: id_json)
+            id.present? && id.identifiable.is_a?(::Affiliation) ? id.identifiable : nil
           end
 
           # Search for an Org locally and then externally if not found
@@ -54,19 +58,25 @@ module Api
             return nil unless json.present? && json[:name].present?
 
             # Search both the local DB and the ROR API
-            results = AffiliationSelection::SearchService.search_combined(search_term: json['name'])
+            results = AffiliationSelection::SearchService.search_combined(search_term: json[:name])
             return results.first if results.length == 1 && results.first.is_a?(::Affiliation)
 
             # Grab the closest match - only caring about results that 'contain'
             # the name with preference to those that start with the name
             result = results.select { |r| %w[0 1].include?(r[:weight].to_s) }.first
-            # If no good result was found just use the specified name
-            return ::Affiliation.find_or_initialize_by(name: json['name']) unless result.present?
+            affil = AffiliationSelection::HashToAffiliationService.to_affiliation(hash: result) if result.present?
 
-            affiliation = AffiliationSelection::HashToAffiliationService.to_affiliation(hash: result)
-            affiliation&.alternate_names = [] unless affiliation&.alternate_names.present?
-            affiliation.alternate_names << result[:abbreviation]
-            attach_identifiers(provenance: provenance, affiliation: affiliation, json: json, result: result)
+            # If no good result was found just use the specified name
+            affil = ::Affiliation.find_or_initialize_by(name: json[:name]) unless affil.present?
+
+            # Attach the alternate names / abbreviations
+            affil.alternate_names = [] unless affil.alternate_names.present?
+            affil.alternate_names << result[:abbreviation] if result.present?
+
+            affil.types = result.present? ? result.fetch(:types, []) : []
+            affil.attrs = result.present? ? result.fetch(:attrs, {}) : {}
+
+            attach_identifiers(provenance: provenance, affiliation: affil, json: json, result: result)
           end
           # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
@@ -82,13 +92,14 @@ module Api
               if result[:ror].present?
                 affiliation.identifiers << ::Identifier.find_or_initialize_by(
                   provenance: ror_prov, category: 'ror', descriptor: 'is_identified_by',
-                  value: "https://ror.org/#{result[:ror]}"
+                  value: "https://ror.org/#{result[:ror]}", identifiable_type: 'Affiliation'
                 )
               end
               if result[:fundref].present?
                 affiliation.identifiers << ::Identifier.find_or_initialize_by(
                   provenance: ror_prov, category: 'fundref', descriptor: 'is_identified_by',
-                  value: "https://api.crossref.org/funders/#{result[:fundref]}"
+                  value: "https://api.crossref.org/funders/#{result[:fundref]}",
+                  identifiable_type: 'Affiliation'
                 )
               end
             end

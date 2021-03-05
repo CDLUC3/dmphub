@@ -40,9 +40,9 @@ module Api
           #       }],
           #       "dmproadmap_related_identifiers": [
           #         {
-          #           "relation_type": "is_referenced_by",
-          #           "related_identifier_type": "DOI",
-          #           "value": "http://doi.org/10.123/12345.aBc"
+          #           "descriptor": "is_referenced_by",
+          #           "type": "DOI",
+          #           "identifier": "http://doi.org/10.123/12345.aBc"
           #         }
           #       ]
           #     }
@@ -66,7 +66,7 @@ module Api
 
             # Update the contents of the DMP
             dmp.title = json[:title]
-            dmp.primary_contact = contact
+            dmp.version = get_version(value: json[:modified])
             dmp.description = json[:description]
             dmp.language = Api::V0::ConversionService.language(code: json[:language])
             dmp.ethical_issues = Api::V0::ConversionService.yes_no_unknown_to_boolean(json[:ethical_issues_exist])
@@ -87,7 +87,15 @@ module Api
             json.present? &&
               json[:title].present? &&
               json[:dmp_id].present? && json[:dmp_id][:identifier].present? &&
-              json[:contact].present? # && json[:contact][:mbox].present?
+              json[:contact].present? &&
+              (json[:contact][:mbox].present? || json[:contact].fetch(:contact_id, {})[:identifier].present?)
+          end
+
+          # Convert the string into a Time or use the current Time if it fails
+          def get_version(value: '')
+            DateTime.parse(value.to_s)&.utc
+          rescue ArgumentError
+            Time.now.utc
           end
 
           # Locate the DMP by its identifier
@@ -97,8 +105,9 @@ module Api
 
             id = Api::V0::Deserialization::Identifier.deserialize(provenance: provenance,
                                                                   identifiable: nil,
+                                                                  identifiable_type: 'DataManagementPlan',
                                                                   json: id_json)
-            id.present? && id.identifiable.is_a?(DataManagementPlan) ? id.identifiable : nil
+            id.present? && id.identifiable.is_a?(::DataManagementPlan) ? id.identifiable : nil
           end
 
           # Find the DMP by its title and contact
@@ -119,7 +128,8 @@ module Api
 
             descriptor = id[:type].downcase == 'url' ? 'is_metadata_for' : 'is_identified_by'
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor
+              provenance: provenance, identifiable: dmp, json: id, descriptor: descriptor,
+              identifiable_type: 'DataManagementPlan'
             )
             dmp.identifiers << identifier if identifier.present? && identifier.new_record?
             dmp
@@ -127,6 +137,8 @@ module Api
 
           # Deserialize the Project information and attach to DMP
           def deserialize_projects(provenance:, dmp:, json: {})
+            return dmp unless provenance.present? && dmp.present? && json.present?
+
             # TODO: We can currently only handle one project, update to allow
             #       multiples unless the RDA Common Standard changes
             #
@@ -139,35 +151,71 @@ module Api
             project = Api::V0::Deserialization::Project.deserialize(
               provenance: provenance, dmp: dmp, json: json[:project]&.first
             )
-            dmp.project = project.present? ? project : default_project(provenance: provenance, dmp: dmp)
+
+            dmp.project = project.present? ? project : default_project(provenance: provenance, dmp: dmp, json: json)
+            dmp
+          end
+
+          # Deserialize the Contact
+          def deserialize_contact(provenance:, dmp:, json: {})
+            return dmp unless provenance.present? && dmp.present? && json.present?
+
+            # Remove the old contact (without Persisting the change yet!)
+            dmp.contributors_data_management_plans = dmp.contributors_data_management_plans.reject do |cdmp|
+              cdmp.role == 'primary_contact'
+            end
+
+            # Attach the Primary Contact
+            contact = Api::V0::Deserialization::Contributor.deserialize(
+              provenance: provenance, json: json[:contact], is_contact: true
+            )
+
+            if contact.present?
+              cdmp = ::ContributorsDataManagementPlan.find_or_initialize_by(
+                data_management_plan: dmp, contributor: contact,
+                provenance: provenance, role: 'primary_contact'
+              )
+              dmp.contributors_data_management_plans << cdmp
+            end
             dmp
           end
 
           # Deserialize the Contributor information and attach to DMP
           def deserialize_contributors(provenance:, dmp:, json: {})
+            return dmp unless provenance.present? && dmp.present? && json.present?
+
+            # Clear the old contributor and contact info
+            dmp.contributors_data_management_plans.clear
+
+            # Attach the Contributors and their roles
             json.fetch(:contributor, []).each do |contributor_json|
               contributor = Api::V0::Deserialization::Contributor.deserialize(
                 provenance: provenance, json: contributor_json
               )
 
-              contributor_json.fetch(:role, []).map do |role|
+              cdmps = contributor_json.fetch(:role, []).map do |role|
                 url = role.starts_with?('http') ? role : Api::V0::ConversionService.to_credit_taxonomy(role: role)
-                next unless url.present?
+                return nil unless url.present?
 
                 cdmp = ContributorsDataManagementPlan.find_or_initialize_by(
                   data_management_plan: dmp, contributor: contributor,
                   provenance: provenance, role: role
                 )
-                next unless cdmp.present?
-
-                dmp.contributors_data_management_plans << cdmp
+                dmp.contributors_data_management_plans << cdmp if cdmp.new_record?
               end
             end
+
+            # Add the primary contact
+            deserialize_contact(provenance: provenance, dmp: dmp, json: json)
             dmp
           end
 
           # Deserialize the Cost information and attach to DMP
           def deserialize_costs(provenance:, dmp:, json: {})
+            return dmp unless provenance.present? && dmp.present? && json.present?
+
+            dmp.costs.clear
+
             json.fetch(:cost, []).each do |cost_json|
               cost = Api::V0::Deserialization::Cost.deserialize(
                 provenance: provenance, dmp: dmp, json: cost_json
@@ -179,49 +227,68 @@ module Api
 
           # Deserialize the Dataset information and attach to DMP
           def deserialize_datasets(provenance:, dmp:, json: {})
+            return dmp unless provenance.present? && dmp.present? && json.present?
+
+            dmp.datasets.clear
+
             json.fetch(:dataset, []).each do |dataset_json|
               dataset = Api::V0::Deserialization::Dataset.deserialize(
                 provenance: provenance, dmp: dmp, json: dataset_json
               )
               dmp.datasets << dataset if dataset.present?
             end
-            dmp.datasets << default_dataset(provenance: provenance, dmp: dmp) unless dmp.datasets.any?
+            dmp.datasets << default_dataset(provenance: provenance, dmp: dmp, json: json[:title]) unless dmp.datasets.any?
             dmp
           end
 
           # Deserialize any relatedIdentifiers that were passed in
           def deserialize_related_identifiers(provenance:, dmp:, json:)
-            return dmp unless provenance.present? && json.fetch(:dmproadmap_related_identifiers, []).any?
+            return dmp unless provenance.present? && json.present? && dmp.present?
 
-            json[:dmproadmap_related_identifiers].each do |related|
-              related[:type] = Api::V0::ConversionService.identifier_category_from_value(value: related[:identifier])
+            # Only retain the identifiers with loaded meaning
+            #   is_identified_by -> One of the DMP's identifiers (e.g. ARK, DOI, etc.)
+            #   is_metadata_for -> The location of the original DMP
+            dmp.identifiers = dmp.identifiers.select do |id|
+              %w[is_identified_by is_metadata_for].include?(id.descriptor)
+            end
+
+            json.fetch(:dmproadmap_related_identifiers, []).each do |related|
+              unless related[:type].present?
+                related[:type] = Api::V0::ConversionService.identifier_category_from_value(value: related[:identifier])
+              end
 
               identifier = Api::V0::Deserialization::Identifier.deserialize(
-                provenance: provenance, identifiable: dmp, descriptor: related[:relation_type], json: related
+                provenance: provenance, identifiable: dmp, identifiable_type: 'DataManagementPlan',
+                descriptor: related[:descriptor], json: related
               )
               next unless identifier.present?
+
               dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
             end
             dmp
           end
 
           # Generate a default project
-          def default_project(provenance:, dmp:)
+          def default_project(provenance:, dmp:, json:)
             return nil unless provenance.present? && dmp.present?
 
             ::Project.new(
               provenance: provenance,
-              title: "Project: #{dmp.title}",
+              title: "Project: #{dmp.title || json[:title]}",
               start_on: Time.now,
               end_on: (Time.now + 2.years)
             )
           end
 
           # Generate a default dataset
-          def default_dataset(provenance:, dmp:)
+          def default_dataset(provenance:, dmp:, json:)
             return nil unless provenance.present? && dmp.present?
 
-            ::Dataset.new(title: "Dataset for: #{dmp.title}", dataset_type: 'dataset', provenance: provenance)
+            ::Dataset.new(
+              title: "Dataset for: #{dmp.title || json[:title]}",
+              dataset_type: 'dataset',
+              provenance: provenance
+            )
           end
         end
         # rubocop:enable Metrics/ClassLength

@@ -59,15 +59,16 @@ module Api
           def find_by_identifier(provenance:, json: {})
             return nil unless json[:url].present? || json[:dmproadmap_host_id].present?
 
-            # First try to find the Host by its host_id if applicable
+            # First try to find the Host by its dmproadmap_host_id if applicable
             id = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: nil, json: json.fetch(:dmproadmap_host_id, {})
+              provenance: provenance, identifiable: nil, json: json.fetch(:dmproadmap_host_id, {}),
+              identifiable_type: 'Host'
             )
-            return id.identifiable if id.present? && id.identifiable.is_a?(Host)
+            return id.identifiable if id.present? && id.identifiable.is_a?(::Host)
 
             # Otherwise try to find the Host by its URL
-            id = ::Identifier.where(value: json[:url], category: 'url', descriptor: 'is_identified_by').first
-            id.present? && id.identifiable.is_a?(Host) ? id.identifiable : nil
+            id = ::Identifier.where(value: json[:url], category: 'url').first
+            id.present? && id.identifiable.is_a?(::Host) ? id.identifiable : nil
           end
 
           # Marshal the URL as an Identifier and attach it
@@ -87,7 +88,7 @@ module Api
             return host unless id[:identifier].present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: host, json: id
+              provenance: provenance, identifiable: host, json: id, identifiable_type: 'Host'
             )
             host.identifiers << identifier if identifier.present? && identifier.new_record?
             host

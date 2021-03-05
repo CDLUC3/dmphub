@@ -157,7 +157,7 @@ module ExternalApis
           headers: headers.merge(additional_headers),
           follow_redirects: true
         }
-        hash[:debug_output] = @stdout if debug
+        hash[:debug_output] = Rails.logger if debug
         hash
       end
     end

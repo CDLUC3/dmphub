@@ -30,7 +30,7 @@ RSpec.describe Distribution, type: :model do
   context 'associations' do
     it { is_expected.to belong_to(:dataset).optional }
     it { is_expected.to have_many(:licenses) }
-    it { is_expected.to have_one(:host) }
+    it { is_expected.to belong_to(:host).optional }
   end
 
   it 'factory can produce a valid model' do
@@ -52,12 +52,11 @@ RSpec.describe Distribution, type: :model do
       model.destroy
       expect(License.where(id: ident).empty?).to eql(true)
     end
-    it 'deletes associated host' do
+    it 'does not delete associated host' do
       host = create(:host)
-      ident = host.id
       model = create(:distribution, host: host)
       model.destroy
-      expect(Host.where(id: ident).empty?).to eql(true)
+      expect(Host.last).to eql(host)
     end
   end
 end

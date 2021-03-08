@@ -54,7 +54,7 @@ class LandingPresenter
       hash = { size: size / 1.megabytes, units: 'MB' } if size >= 1.megabytes && !hash.present?
       hash = { size: size, units: 'bytes' } unless hash.present?
 
-      "#{hash[:size]} #{hash[:units]}"
+      "#{hash[:size]&.to_i} #{hash[:units]}"
     end
   end
 end

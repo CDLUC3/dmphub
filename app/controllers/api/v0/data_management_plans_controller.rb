@@ -9,6 +9,7 @@ module Api
       before_action :base_response_content
       before_action :doi_param_to_dmp, only: %w[show update delete]
 
+      # GET /data_management_plans
       def index
         dmp_ids = ApiClientAuthorization.by_api_client_and_type(
           api_client_id: client[:id],
@@ -36,7 +37,6 @@ module Api
           @dmp = Api::V0::Deserialization::DataManagementPlan.deserialize(
             provenance: provenance, json: dmp_params.to_h.with_indifferent_access
           )
-
           if @dmp.present?
             if @dmp.new_record?
               # rubocop:disable Metrics/BlockNesting
@@ -60,13 +60,12 @@ module Api
               render_error errors: [msg], status: :method_not_allowed, items: [doi]
             end
           elsif provenance.present?
-            log_error(error: 'Create failed - invalid JSON received and DMP could not be deserialized.')
+            log_error(error: StandardError.new('Create failed - invalid JSON received and DMP could not be deserialized.'))
             # TODO: We may want to comment this out for Prod
-            log_error(error: dmp_params.to_h)
             msg = 'You must include at least a :title, :contact (with :name) and :dmp_id (with :identifier)'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           else
-            log_error(error: "Create failed - provenance is missing! CLIENT: '#{client&.name}'")
+            log_error(error: StandardError.new("Create failed - provenance is missing! CLIENT: '#{client&.name}'"))
             msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :name }'
             render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
           end
@@ -104,13 +103,11 @@ module Api
 
               render 'show', status: :ok
             elsif provenance.present?
-              log_error(error: 'Update failed - invalid JSON received and DMP could not be deserialized.')
-              # TODO: We may want to comment this out for Prod
-              log_error(error: dmp_params.to_h)
+              log_error(error: StandardError.new('Update failed - invalid JSON received and DMP could not be deserialized.'))
               msg = 'You must include at least a :title, :contact (with :name) and :dmp_id (with :identifier)'
               render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
             else
-              log_error(error: "Update failed - provenance is missing! CLIENT: '#{client&.name}'")
+              log_error(error: StandardError.new("Update failed - provenance is missing! CLIENT: '#{client&.name}'"))
               msg = 'The :dmp must include a :title, { dmp_id: :identifier } and { contact: :name }'
               render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
             end

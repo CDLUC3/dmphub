@@ -346,6 +346,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         end
         new_role = roles.sample
         @json[:contributor] = [{
+          name: Faker::Movies::StarWars.character,
           mbox: @dmp.contributors_data_management_plans.last.contributor.email,
           role: [old_cdmp.role, new_role]
         }]
@@ -363,6 +364,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         end
         new_role = roles.sample
         @json[:contributor] = [{
+          name: Faker::Movies::StarWars.character,
           mbox: @dmp.contributors_data_management_plans.last.contributor.email,
           role: [new_role]
         }]

@@ -15,6 +15,7 @@
 #  updated_at                 :datetime         not null
 #  project_id                 :bigint
 #  provenance_id              :bigint
+#  version                    :datetime
 #
 # A data management plan
 class DataManagementPlan < ApplicationRecord
@@ -39,6 +40,8 @@ class DataManagementPlan < ApplicationRecord
 
   # Callbacks
   before_validation :ensure_dataset
+
+  after_save :check_version
 
   # Scopes
   scope :by_client, lambda { |client_id:|
@@ -92,12 +95,14 @@ class DataManagementPlan < ApplicationRecord
   def primary_contact=(contributor)
     if contributor.is_a?(Contributor)
       # See if there is already a Primary Contact defined.
-      current = contributors_data_management_plans.where(role: 'primary_contact').first
+      prim = primary_contact
+      current = contributors_data_management_plans.select { |cdmp| cdmp.role == 'primary_contact' } if prim.present?
 
-      # Delete the old one
-      current.destroy if current.present? && current != contributor
+      # Remove the old contact
+      contributors_data_management_plans.delete(current) if current.present? && prim != contributor
 
-      if current != contributor
+      # Add the new contact
+      if prim != contributor
         contributors_data_management_plans << ContributorsDataManagementPlan.new(
           contributor: contributor, role: 'primary_contact', provenance: contributor.provenance
         )
@@ -107,7 +112,8 @@ class DataManagementPlan < ApplicationRecord
   # rubocop:enable Style/GuardClause
 
   def doi
-    dois.select { |d| d.descriptor == 'is_identified_by' && %w[ark doi].include?(d.category) }.last
+    identifiers.select { |d| d.descriptor == 'is_identified_by' && %w[ark doi].include?(d.category) }
+               .compact.last
   end
 
   def mint_doi(provenance:)
@@ -137,6 +143,13 @@ class DataManagementPlan < ApplicationRecord
   # Create a default stub dataset unless one exists
   def ensure_dataset
     datasets << Dataset.new(title: title, provenance: provenance) unless datasets.any?
+  end
+
+  # If the version of the DMP has changed and we have a DOI then we need to send an update to EZID
+  def check_version
+    return true unless version_changed? && doi.present? && !Rails.env.development?
+
+    ExternalApis::EzidService.update_doi(data_management_plan: self)
   end
 
   # Generate a mock/fake DOI

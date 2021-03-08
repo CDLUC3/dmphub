@@ -15,6 +15,7 @@
 #  updated_at                 :datetime         not null
 #  project_id                 :bigint
 #  provenance_id              :bigint
+#  version                    :datetime
 #
 FactoryBot.define do
   factory :data_management_plan do
@@ -24,6 +25,7 @@ FactoryBot.define do
     ethical_issues_description  { Faker::Lorem.paragraph }
     ethical_issues_report       { Faker::Internet.url }
     language                    { Api::V0::ConversionService::LANGUAGES.sample }
+    version                     { Time.now }
 
     before :create do |data_management_plan|
       data_management_plan.provenance = build(:provenance) unless data_management_plan.provenance.present?
@@ -44,14 +46,14 @@ FactoryBot.define do
 
         # Add the DOI
         unique_categories = ::Identifier.requires_universal_uniqueness.map(&:to_s)
-        data_management_plan.identifiers << create(:identifier, category: unique_categories.sample,
+        data_management_plan.identifiers << create(:identifier, category: %w[doi ark].sample,
                                                                 identifiable: data_management_plan,
                                                                 descriptor: 'is_identified_by',
-                                                                value: Faker::Internet.url,
+                                                                value: SecureRandom.uuid,
                                                                 provenance: data_management_plan.provenance)
 
         # URL of the original DMP source
-        data_management_plan.identifiers << create(:identifier, category: unique_categories.sample,
+        data_management_plan.identifiers << create(:identifier, category: 'url',
                                                                 identifiable: data_management_plan,
                                                                 descriptor: 'is_metadata_for',
                                                                 value: Faker::Internet.url,

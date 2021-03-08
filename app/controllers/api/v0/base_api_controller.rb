@@ -100,7 +100,7 @@ module Api
         Rails.logger.error "Incoming params: #{params.inspect}"
         # Rails.logger.error "Incoming headers: #{request.headers.inspect}"
         Rails.logger.error error.message
-        Rails.logger.error error.backtrace[0..5]
+        Rails.logger.error error.backtrace[0..5] if error.backtrace.present?
       end
 
       def log_access

@@ -1,5 +1,10 @@
 # frozen_string_literal: true
 
+def load_test_json(file_name: 'minimal_dmptool.json')
+  path = Rails.root.join('spec','support', 'test_cases', file_name)
+  JSON.parse(File.read(path))
+end
+
 # methods for use with building models/objects from JSON
 def open_json_mock(file_name:, part: 'complete')
   return '' unless file_name.present?

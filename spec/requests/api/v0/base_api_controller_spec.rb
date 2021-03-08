@@ -30,7 +30,7 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
         allow_any_instance_of(MockController).to receive(:authorize_request).and_return(true)
         allow_any_instance_of(MockController).to receive(:check_agent).and_return(true)
         get api_v0_force_error_path
-        expect(assigns(:payload)).to eql({ errors: @controller.errors })
+        expect(assigns(:payload)).to eql({ errors: @controller.errors, items: [] })
         expect(response).to render_template('api/v0/error')
       end
       after(:each) do
@@ -47,6 +47,7 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
       before(:each) do
         @client = create(:api_client)
         struct = OpenStruct.new(headers: {})
+        allow(@controller).to receive(:check_agent).and_return(true)
         allow(@controller).to receive(:request).and_return(struct)
       end
 
@@ -82,19 +83,19 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
         allow_any_instance_of(MockController).to receive(:client).and_return(@client)
       end
       it 'returns false if HTTP_USER_AGENT is not present' do
-        expect(@controller).to receive(:request).and_return(@mock_request)
+        expect(@controller).to receive(:request).twice.and_return(@mock_request)
         expect(@controller.send(:check_agent)).to eql(false)
       end
       it 'returns false if HTTP_USER_AGENT does not match the current client' do
         expected = "#{@client.name} (#{SecureRandom.uuid})"
         @mock_request.headers['HTTP_USER_AGENT'] = expected
-        expect(@controller).to receive(:request).and_return(@mock_request)
+        expect(@controller).to receive(:request).twice.and_return(@mock_request)
         expect(@controller.send(:check_agent)).to eql(false)
       end
       it 'returns true' do
         expected = "#{@client.name} (#{@client.client_id})"
         @mock_request.headers['HTTP_USER_AGENT'] = expected
-        expect(@controller).to receive(:request).times(2).and_return(@mock_request)
+        expect(@controller).to receive(:request).twice.and_return(@mock_request)
         expect(@controller.send(:check_agent)).to eql(true)
       end
     end
@@ -212,14 +213,14 @@ RSpec.describe Api::V0::BaseApiController, type: :request do
         allow_any_instance_of(MockController).to receive(:authorize_request).and_return(true)
         allow_any_instance_of(MockController).to receive(:check_agent).and_return(true)
 
-        Affiliation.destroy_all
-        4.times { create(:affiliation) }
-        @orgs = Affiliation.all
+        DataManagementPlan.destroy_all
+        4.times { create(:data_management_plan) }
+        @dmps = DataManagementPlan.all
       end
 
       it 'sets the results to the correct page' do
         get api_v0_paginator_path, params: { page: 2, per_page: 2 }
-        expect(assigns(:payload)[:items].first).to eql(Affiliation.all.third)
+        expect(assigns(:payload)[:items].first).to eql(DataManagementPlan.all.third)
       end
       it 'sets the results to the correct per_page' do
         get api_v0_paginator_path, params: { page: 2, per_page: 2 }
@@ -252,7 +253,7 @@ class MockController < Api::V0::BaseApiController
   end
 
   def paginator
-    @payload = { items: paginate_response(results: Affiliation.all) }
+    @payload = { items: paginate_response(results: DataManagementPlan.all) }
     @dmps = []
     render 'api/v0/data_management_plans/index', status: :ok
   end

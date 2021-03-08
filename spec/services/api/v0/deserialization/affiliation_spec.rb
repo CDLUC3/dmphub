@@ -162,6 +162,7 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         expect(result.identifiers).to eql(@affiliation.identifiers)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :affiliation_id' do
+        ::Identifier.all.destroy_all
         affiliation = build(:affiliation)
         category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { affiliation_id: { type: category, identifier: @identifier.value } }
@@ -174,6 +175,7 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         expect(id).to eql(@identifier.value)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :funder_id' do
+        ::Identifier.all.destroy_all
         affiliation = build(:affiliation)
         category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { funder_id: { type: category, identifier: @identifier.value } }

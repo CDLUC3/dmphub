@@ -34,14 +34,6 @@ class PersistenceService
     # from trying to create the record twice
     def safe_save(dmp:)
       dmp.project = safe_save_project(project: dmp.project)
-
-p "PERSISTENCE!!!!!!!!!!!!!!!!!!!!"
-dmp.contributors_data_management_plans.each do |cdmp|
-p cdmp.role
-p cdmp.contributor.inspect
-end
-
-
       dmp.contributors_data_management_plans = dmp.contributors_data_management_plans.map do |cdmp|
         safe_save_contributor_data_management_plan(cdmp: cdmp)
       end

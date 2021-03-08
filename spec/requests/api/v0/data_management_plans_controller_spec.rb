@@ -3,10 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe Api::V0::DataManagementPlansController, type: :request do
-  include DataciteMocks
+  include Mocks::Ror
+  include Mocks::Ezid
 
   before(:each) do
-    mock_externals
+    mock_ror_calls
 
     create(:provenance, name: 'datacite')
     @client = create(:api_client)
@@ -42,14 +43,13 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
   end
 
   describe :show do
-    it 'returns the requested data management plan' do
-      doi = @dmps.first.identifiers.first&.value
-      get "/api/v0/data_management_plans/#{doi}", headers: @headers
+    xit 'returns the requested data management plan' do
+      get "/api/v0/data_management_plans/doi:#{@dmps.first.doi.value}", headers: @headers
       expect(response.status).to eql(200)
       @json = body_to_json
       received = @json['items'].first
       expect(received.present?).to eql(true)
-      expect(received['dmp']['dmp_id']['identifier']).to eql(doi)
+      expect(received['dmp']['dmp_id']['identifier']).to eql(@dmps.first.doi.value)
     end
 
     it 'returns a not_found if the data management plan does not exist' do
@@ -74,8 +74,7 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
     context 'minimal JSON' do
       before(:each) do
-        stub_minting_success!
-        @payload = open_json_mock(file_name: 'data_management_plans.json', part: 'minimal')
+        @payload = load_test_json(file_name: 'minimal_dmptool.json')
       end
 
       it 'returns a 400 bad_request if the json input does not represent a valid Data Management Plan' do
@@ -86,32 +85,33 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
       end
 
       it 'returns a created/201 if the data management plan was created' do
+        mock_ezid_success
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(201)
         expect(validate_base_response(json: body_to_json)).to eql(true)
       end
 
       it 'returns the DOI as part of the response' do
+        mock_ezid_success
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         doi = body_to_json['items'].first['dmp']['dmp_id']
         expect(doi['type']).to eql('DOI')
         expect(doi['identifier'].present?).to eql(true)
       end
 
-      it 'returns a 400 bad_request if the data management plan already exists' do
+      it 'returns a 405 method_not_allowed if the data management plan already exists' do
         @payload['dmp']['title'] = @dmps.first.title
         @payload['dmp']['dmp_id']['type'] = @dmps.first.identifiers.first.category.upcase
         @payload['dmp']['dmp_id']['identifier'] = @dmps.first.identifiers.first.value
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
-        expect(response.status).to eql(400)
+        expect(response.status).to eql(405)
         expect(body_to_json['errors'].first.include?('already exist')).to eql(true)
       end
     end
 
     context 'complete JSON' do
       before(:each) do
-        stub_minting_success!
-        @payload = open_json_mock(file_name: 'data_management_plans.json', part: 'complete')
+        @payload = load_test_json(file_name: 'full_dmptool.json')
       end
 
       it 'returns a 400 bad_request if the json input does not represent a valid Data Management Plan' do
@@ -122,24 +122,26 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
       end
 
       it 'returns a created/201 if the data management plan was created' do
+        mock_ezid_success
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         expect(response.status).to eql(201)
         expect(validate_base_response(json: body_to_json)).to eql(true)
       end
 
       it 'returns the DOI as part of the response' do
+        mock_ezid_success
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
         doi = body_to_json['items'].first['dmp']['dmp_id']
         expect(doi['type']).to eql('DOI')
         expect(doi['identifier'].present?).to eql(true)
       end
 
-      it 'returns a 400 bad_request if the data management plan already exists' do
+      it 'returns a 405 method_not_allowed if the data management plan already exists' do
         @payload['dmp']['title'] = @dmps.first.title
         @payload['dmp']['dmp_id']['type'] = @dmps.first.identifiers.first.category.upcase
         @payload['dmp']['dmp_id']['identifier'] = @dmps.first.identifiers.first.value
         post api_v0_data_management_plans_path, params: @payload.to_json, headers: @headers
-        expect(response.status).to eql(400)
+        expect(response.status).to eql(405)
         expect(body_to_json['errors'].first.include?('already exist')).to eql(true)
       end
     end

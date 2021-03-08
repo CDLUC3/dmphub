@@ -47,7 +47,7 @@ module Api
           # and roles (if this is not the Contact)
           def valid?(is_contact:, json: {})
             return false unless json.present?
-            return false unless json[:name].present? || json[:mbox].present?
+            return false unless json[:name].present? && json[:mbox].present?
 
             # Make the role an array in the event that it is a string
             json[:role] = [json[:role]] if json[:role].present? && json[:role].is_a?(String)
@@ -69,6 +69,7 @@ module Api
 
             # Attach the Affiliation unless its already defined
             contributor.name = json[:name] if json[:name].present?
+
             contributor.affiliation = deserialize_affiliation(provenance: provenance, json: json)
             contributor
           end
@@ -95,7 +96,8 @@ module Api
             return contributor if contributor.present?
 
             # Search the DB for the name
-            find_by_name(provenance: provenance, json: json)
+            contributor = find_by_name(provenance: provenance, json: json)
+            return contributor if contributor.present?
           end
 
           # Find the Contributor by email (for the DMP)

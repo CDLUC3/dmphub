@@ -1,0 +1,12 @@
+{
+  "dmp": {
+    "title": "My Test Plan",
+    "created": "2021-02-02T16:55:45Z",
+    "modified": "2021-02-23T21:45:36Z",
+    "dmp_id": { "type": "url", "identifier": "https://example.org/dmps/12345" },
+    "contact": {
+      "name": "Twisted Sister",
+      "mbox": "twisted@example.org"
+    }
+  }
+}

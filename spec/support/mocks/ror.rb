@@ -5,8 +5,17 @@ module Mocks
   # Using the top 3 results from: https://api.ror.org/organizations?query=Berkeley
   # rubocop:disable Metrics/ModuleLength
   module Ror
+
+    def mock_ror_calls
+      stub_request(:get, "https://api.ror.org/heartbeat")
+        .to_return(status: 200, body: "", headers: {})
+
+      stub_request(:get, /ror\.org\/organizations/)
+        .to_return(status: 200, body: mock_ror_success, headers: {})
+    end
+
     # rubocop:disable Metrics/MethodLength
-    def mock_success
+    def mock_ror_success
       {
         'number_of_results': 17,
         'time_taken': 22,

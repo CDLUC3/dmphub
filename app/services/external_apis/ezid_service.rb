@@ -70,6 +70,28 @@ module ExternalApis
         []
       end
 
+      # Update the DOI
+      def update_doi(data_management_plan:)
+        return false unless data_management_plan.doi.present?
+
+        data = json_from_template(provenance: data_management_plan.provenance, dmp: data_management_plan)
+        hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
+        resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
+                         additional_headers: hdrs, data: data,
+                         basic_auth: creds) # , debug: true)
+
+        unless resp.present? && resp.code == 200
+          handle_http_failure(method: 'EZID update_doi', http_response: resp)
+          return []
+        end
+
+        process_ezid_response(resp.body)
+      # If a JSON parse error occurs then return results of a local table search
+      rescue JSON::ParserError => e
+        log_error(method: 'EZID update_doi', error: e)
+        []
+      end
+
       # Destroy the DOI
       def delete_doi(doi:)
         uri = "#{api_base_url}#{delete_path}"

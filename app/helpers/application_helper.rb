@@ -95,8 +95,12 @@ module ApplicationHelper
     doi = dmp.doi&.value
     return value unless doi.present?
 
-    prefix = Rails.configuration.x.ezid[:doi_prefix]
-    value.gsub(dmp.id.to_s, doi.gsub(prefix, 'doi:'))
+    ark_prefix = Rails.configuration.x.ezid[:ark_prefix]
+    doi_prefix = Rails.configuration.x.ezid[:doi_prefix]
+    ret = value.gsub(dmp.id.to_s, doi.gsub(doi_prefix, 'doi:')) if doi_prefix.present? && doi.include?(doi_prefix)
+    ret = value.gsub(dmp.id.to_s, doi.gsub(ark_prefix, 'ark:')) if ark_prefix.present? && doi.include?(ark_prefix)
+
+    ret || doi
   end
 
   def citation(dmp:)

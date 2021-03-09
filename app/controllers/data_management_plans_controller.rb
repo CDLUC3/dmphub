@@ -16,7 +16,7 @@ class DataManagementPlansController < ApplicationController
       @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
       render 'show'
     else
-      @dmp = DataManagementPlan.find(params[:id])
+      doi_param_to_dmp
 
       if @dmp.present?
         @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
@@ -60,6 +60,20 @@ class DataManagementPlansController < ApplicationController
       :title, :description, :language, :ethical_issues, :ethical_issues_report,
       :ethical_issues_description, person_data_management_plans_attributes: person_data_management_plan_params
     )
+  end
+
+  # Convert the incoming DOI/ARK/URL into a DMP
+  def doi_param_to_dmp
+    case params[:id][0..3]
+    when 'doi:'
+      @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('doi:', '')}")
+                       .where(category: 'doi', descriptor: 'is_identified_by')
+                       .first&.identifiable
+    when 'ark:'
+      @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('ark:', '')}")
+                       .where(category: 'ark', descriptor: 'is_identified_by')
+                       .first&.identifiable
+    end
   end
 
   def params_to_rda_json

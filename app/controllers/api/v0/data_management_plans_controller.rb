@@ -112,7 +112,7 @@ module Api
               render_error errors: ["Invalid JSON format - #{msg}"], status: :bad_request
             end
           else
-            doi = original.dois.last || original.urls.last
+            doi = original.present? ? (original.dois.last || original.urls.last) : nil
             msg = 'DMP does not exist try sending a create instead'
             render_error errors: [msg], status: :not_found, items: [doi]
           end

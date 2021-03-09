@@ -3,7 +3,7 @@
 require 'uc3-ssm'
 
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.14.1'
+lock '~> 3.16'
 
 set :rails_env, ENV['RAILS_ENV']
 

@@ -41,7 +41,9 @@ class DataManagementPlan < ApplicationRecord
   # Callbacks
   before_validation :ensure_dataset
 
-  after_save :check_version
+  after_update :check_version, if: :saved_change_to_version?
+
+  after_touch :check_version
 
   # Scopes
   scope :by_client, lambda { |client_id:|
@@ -113,7 +115,7 @@ class DataManagementPlan < ApplicationRecord
 
   def doi
     identifiers.select { |d| d.descriptor == 'is_identified_by' && %w[ark doi].include?(d.category) }
-               .compact.last
+               .compact.first
   end
 
   def mint_doi(provenance:)
@@ -147,7 +149,7 @@ class DataManagementPlan < ApplicationRecord
 
   # If the version of the DMP has changed and we have a DOI then we need to send an update to EZID
   def check_version
-    return true unless version_changed? && doi.present? && !Rails.env.development?
+    return true unless doi.present? && !Rails.env.development?
 
     ExternalApis::EzidService.update_doi(data_management_plan: self)
   end

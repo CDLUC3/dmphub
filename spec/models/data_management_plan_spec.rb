@@ -88,6 +88,41 @@ RSpec.describe DataManagementPlan, type: :model do
     end
   end
 
+  context 'callbacks' do
+    before(:each) do
+      @dmp = create(:data_management_plan, :complete, provenance: create(:provenance))
+      allow(ExternalApis::EzidService).to receive(:update_doi).and_return('foo')
+    end
+
+    describe 'trigger the check_version callback on :after_update' do
+      it 'does not trigger if :version did not change' do
+        expect(@dmp.update(title: Faker::Lorem.sentence)).to eql(true)
+        expect(ExternalApis::EzidService).not_to have_received(:update_doi)
+      end
+      it 'does not trigger if :doi is not present' do
+        @dmp.identifiers.clear
+        expect(@dmp.update(title: Faker::Lorem.sentence)).to eql(true)
+        expect(ExternalApis::EzidService).not_to have_received(:update_doi)
+      end
+      it 'triggers an EzidService.update_doi call' do
+        expect(@dmp.update(version: Time.now + 2.minutes)).to eql(true)
+        expect(ExternalApis::EzidService).to have_received(:update_doi)
+      end
+    end
+
+    describe 'trigger the check_version callback on :after_touch' do
+      it 'does not trigger if :doi is not present' do
+        @dmp.identifiers.clear
+        expect(@dmp.touch).to eql(true)
+        expect(ExternalApis::EzidService).not_to have_received(:update_doi)
+      end
+      it 'triggers an EzidService.update_doi call' do
+        expect(@dmp.touch).to eql(true)
+        expect(ExternalApis::EzidService).to have_received(:update_doi)
+      end
+    end
+  end
+
   context 'instance methods' do
     before(:each) do
       @dmp = create(:data_management_plan, :complete)

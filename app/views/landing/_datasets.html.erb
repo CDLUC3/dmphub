@@ -6,7 +6,7 @@
 
   <%
   size = dataset.distributions.collect(&:byte_size).sort { |a, b| a <=> b }.last
-  hosts = dataset.distributions.collect(&:host).sort { |a, b| a.title <=> b.title }
+  hosts = dataset.distributions.select{ |d| d.host.present? }.map(&:host).sort { |a, b| a.title <=> b.title }
   %>
 
   <ul class="landing-list">

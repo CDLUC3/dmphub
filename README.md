@@ -1,5 +1,6 @@
 # DMPHub
-
+[![Actions Status](https://github.com/CDLUC3/dmphub/workflows/Brakeman/badge.svg)](https://github.com/CDLUC3/dmptool/actions)
+[![Actions Status](https://github.com/CDLUC3/dmphub/workflows/Rubocop/badge.svg)](https://github.com/CDLUC3/dmptool/actions)
 
 This repository covers work on a machine actionable DMP hub, from work funded by an NSF EAGER grant (https://www.nsf.gov/awardsearch/showAward?AWD_ID=1745675&HistoricalAwards=false). This 'Hub' application provides the following services:
 
@@ -384,7 +385,7 @@ If there is an issue with the JSON format, or a required attribute is missing th
   "total_items": 0,
   "items": [],
   "errors": ["Invalid JSON format", "DataManagementPlan - title cannot by blank"]
-}    
+}
 ```
 
 ### Update a DMP
@@ -416,7 +417,7 @@ If there is an issue with the JSON format, or a required attribute is missing th
   "total_items": 0,
   "items": [],
   "errors": ["Invalid JSON format", "DataManagementPlan - title cannot by blank"]
-}    
+}
 ```
 
 ### Delete a DMP
@@ -445,7 +446,7 @@ If successful an HTTP 200 - 'Success' status will be returned along with the ful
   "per_page": 20,
   "total_items": 0,
   "items": []
-}    
+}
 ```
 
 If you do not have the authority to delete the DMP, or it could not be found, you will receive a 404 'Not Found' response.
@@ -462,7 +463,7 @@ If you do not have the authority to delete the DMP, or it could not be found, yo
   "total_items": 0,
   "items": [],
   "errors": []
-}    
+}
 ```
 
 ### Provisioning with Puppet

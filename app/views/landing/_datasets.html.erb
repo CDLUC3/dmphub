@@ -14,6 +14,6 @@
     <li><strong>Anticipated volume:</strong><span><%= LandingPresenter.byte_size(size: size) %></span></li>
     <li><strong>Release timeline:</strong><span><%= safe_date(date: dataset.publication_date) %></span></li>
     <li><strong>Intended repository:</strong><span><%= hosts.map { |host| host_to_link(host: host) }.join('</span>, <span>').html_safe %></span></li>
-    <li><strong>License for reuse:</strong><span><%= LandingPresenter.latest_license_link(hosts: hosts) %></span></li>
+    <li><strong>License for reuse:</strong><span><%= latest_license_link(dataset: dataset) %></span></li>
   </ul>
 <% end %>

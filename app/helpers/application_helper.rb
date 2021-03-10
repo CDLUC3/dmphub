@@ -78,9 +78,12 @@ module ApplicationHelper
 
     licenses = dataset.distributions.map { |distro| distro.licenses  }.flatten.compact.uniq
     latest = licenses.sort { |a, b| b&.start_date <=> a&.start_date }.first
-    return link_to latest.license_ref if latest.present? && latest.license_ref.present?
 
-    'unspecified'
+    if latest.present? && latest.license_ref.present?
+      link_to latest.license_ref, latest.license_ref, target: '_blank'
+    else
+      'unspecified'
+    end
   end
 
   def humanize_underscored(name:)

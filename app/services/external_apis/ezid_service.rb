@@ -77,7 +77,7 @@ module ExternalApis
 
         data = json_from_template(provenance: data_management_plan.provenance, dmp: data_management_plan)
         hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
-        identifier = data_management_plan.doi_without_prefix.gsub('doi:', 'doi:/').gsub('ark:', 'ark:/')
+        identifier = data_management_plan.doi_without_prefix
         resp = http_put(uri: "#{api_base_url}id/#{identifier}?update_if_exists=yes",
                          additional_headers: hdrs, data: data,
                          basic_auth: creds) # , debug: true)

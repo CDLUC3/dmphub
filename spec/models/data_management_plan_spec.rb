@@ -209,6 +209,55 @@ RSpec.describe DataManagementPlan, type: :model do
       end
     end
 
+    describe 'doi_without_prefix' do
+      before(:each) do
+        @dmp.identifiers.clear
+        Rails.configuration.x.ezid.delete(:doi_prefix)
+        Rails.configuration.x.ezid.delete(:ark_prefix)
+      end
+
+      it 'returns nil unless the DMP has a DOI' do
+        @dmp.identifiers.clear
+        expect(@dmp.doi_without_prefix).to eql(nil)
+      end
+      it 'does not replace the DOI prefix if it is not defined' do
+        val = 'https://doi.org/10.1234/1234.ABCD'
+        @dmp.identifiers << build(:identifier, descriptor: 'is_identified_by', category: 'doi', value: val)
+        expect(@dmp.doi_without_prefix).to eql(val)
+      end
+      it 'does not replace the ARK prefix if it is not defined' do
+        val = 'https://ezid.cdlib.org/id/10.1234/1234.abcd'
+        @dmp.identifiers << build(:identifier, descriptor: 'is_identified_by', category: 'ark', value: val)
+        expect(@dmp.doi_without_prefix).to eql(val)
+      end
+      it 'replace the DOI prefix' do
+        prefix = 'https://doi.org/'
+        val = '10.1234/1234.ABCD'
+        @dmp.identifiers << build(:identifier, descriptor: 'is_identified_by', category: 'doi',
+                                               value: "#{prefix}#{val}")
+        Rails.configuration.x.ezid[:doi_prefix] = prefix
+        expect(@dmp.doi_without_prefix).to eql("doi:#{val}")
+      end
+      it 'replace the ARK prefix' do
+        prefix = 'https://ezid.cdlib.org/id/'
+        val = '10.1234/1234.abcd'
+        @dmp.identifiers << build(:identifier, descriptor: 'is_identified_by', category: 'ark',
+                                               value: "#{prefix}#{val}")
+        Rails.configuration.x.ezid[:ark_prefix] = prefix
+        expect(@dmp.doi_without_prefix).to eql("ark:#{val}")
+      end
+      it 'replaces both the DOI and ARK prefixes' do
+        doi_prefix = 'https://doi.org/'
+        ark_prefix = 'https://ezid.cdlib.org/id/'
+        val = '10.1234/1234.abcd'
+        @dmp.identifiers << build(:identifier, descriptor: 'is_identified_by', category: 'ark',
+                                               value: "#{ark_prefix}#{doi_prefix}#{val}")
+        Rails.configuration.x.ezid[:doi_prefix] = doi_prefix
+        Rails.configuration.x.ezid[:ark_prefix] = ark_prefix
+        expect(@dmp.doi_without_prefix).to eql("ark:doi:#{val}")
+      end
+    end
+
     describe 'mint_doi' do
       before(:each) do
         @dmp.identifiers.clear

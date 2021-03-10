@@ -57,6 +57,7 @@ class DatacitePresenter
 
     mapping = Rails.configuration.x.funders[:award_urls]
     return funding.urls.last.value unless mapping.present?
+    return nil unless mapping[:"#{funding.affiliation.fundrefs.last.value}"].present?
 
     funding.urls.last.value&.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
   end

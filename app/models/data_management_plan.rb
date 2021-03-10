@@ -118,6 +118,17 @@ class DataManagementPlan < ApplicationRecord
                .compact.first
   end
 
+  def doi_without_prefix
+    value = doi&.value
+    return nil unless value.present?
+
+    ark_prefix = Rails.configuration.x.ezid[:ark_prefix]
+    doi_prefix = Rails.configuration.x.ezid[:doi_prefix]
+
+    value = value.gsub(doi_prefix, 'doi:') if doi_prefix.present?
+    ark_prefix.present? ? value.gsub(ark_prefix, 'ark:') : value
+  end
+
   def mint_doi(provenance:)
     # When running in Dev mode just generate a random DOI value
     if Rails.env.development?

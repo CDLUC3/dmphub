@@ -4,7 +4,12 @@
 _target: <%= presenter.landing_page %>
 datacite: <?xml version="1.0" encoding="UTF-8"?>
   <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4.3/metadata.xsd">
+    <% if data_management_plan.doi.present? %>
+    <% value = data_management_plan.doi_without_prefix&.gsub('doi:', '').gsub('ark:', '') %>
+    <identifier identifierType="<%= data_management_plan.doi.category.upcase %>"><%= value %></identifier>
+    <% else %>
     <identifier identifierType="DOI">(:tba)</identifier>
+    <% end %>
     <creators>
       <% presenter.creators.each do |creator| %>
       <creator>

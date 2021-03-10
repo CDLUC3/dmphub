@@ -9,9 +9,12 @@ describe 'EZID XML' do
     @dmp.project.fundings.each do |funding|
       funding.affiliation.identifiers << build(:identifier, category: 'fundref', descriptor: 'is_identified_by',
                                                             provenance: @dmp.provenance,
-                                                            value: 'https://api.crossref.org/funders/100000001')
+                                                            value: 'https://doi.org/10.13039/100000001')
       funding.status = 'granted'
     end
+    Rails.configuration.x.funders[:award_urls] = {
+      'https://doi.org/10.13039/100000001': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
+    }
     @dmp.identifiers << build(:identifier, category: 'url', descriptor: 'is_cited_by', provenance: @dmp.provenance)
     @presenter = DatacitePresenter.new(@dmp)
     render template: 'ezid/minter', locals: { data_management_plan: @dmp }

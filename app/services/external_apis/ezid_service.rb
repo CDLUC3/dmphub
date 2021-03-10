@@ -59,6 +59,7 @@ module ExternalApis
                          basic_auth: creds) # , debug: true)
 
         unless resp.present? && resp.code == 201
+          log_error(method: 'EZID mint_doi', error: StandardError.new("REQUEST DATA: #{data.inspect}"))
           handle_http_failure(method: 'EZID mint_doi', http_response: resp)
           return []
         end
@@ -76,11 +77,13 @@ module ExternalApis
 
         data = json_from_template(provenance: data_management_plan.provenance, dmp: data_management_plan)
         hdrs = { 'Content-Type': 'text/plain', 'Accept': 'text/plain' }
-        resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
+        identifier = data_management_plan.doi_without_prefix.gsub('doi:', 'doi:/').gsub('ark:', 'ark:/')
+        resp = http_post(uri: "#{api_base_url}id/#{identifier}?update_if_exists=yes",
                          additional_headers: hdrs, data: data,
                          basic_auth: creds) # , debug: true)
 
         unless resp.present? && resp.code == 200
+          log_error(method: 'EZID update_doi', error: StandardError.new("REQUEST DATA: #{data.inspect}"))
           handle_http_failure(method: 'EZID update_doi', http_response: resp)
           return []
         end

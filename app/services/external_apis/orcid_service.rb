@@ -92,7 +92,7 @@ module ExternalApis
       private
 
       def auth(token:)
-        { 'Authorization': "Bearer #{token}" }
+        { Authorization: "Bearer #{token}" }
       end
     end
   end

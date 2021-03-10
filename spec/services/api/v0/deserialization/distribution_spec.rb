@@ -114,7 +114,7 @@ RSpec.describe Api::V0::Deserialization::Distribution do
 
     describe '#find_by_title(provenance:, host:, json: {})' do
       it 'returns nil if :json is not present' do
-        result = described_class.send(:find_by_title, provenance: @provenance, host:nil, json: nil)
+        result = described_class.send(:find_by_title, provenance: @provenance, host: nil, json: nil)
         expect(result).to eql(nil)
       end
       it 'returns nil if :title is not present' do

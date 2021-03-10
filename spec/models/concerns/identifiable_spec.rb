@@ -52,7 +52,7 @@ RSpec.describe Identifiable do
 
     describe '#find_by_identifiers(provenance:, json_array:)' do
       before(:each) do
-        @json = [{ 'category': @id1.category, 'value': @id1.value }]
+        @json = [{ category: @id1.category, value: @id1.value }]
       end
       it 'returns nil if json_array is not an array' do
         result = Affiliation.find_by_identifiers(provenance: @provenance, json_array: nil)
@@ -73,7 +73,7 @@ RSpec.describe Identifiable do
         contributor = create(:contributor)
         identifier = create(:identifier, identifiable: contributor, provenance: @provenance,
                                          category: @category)
-        json = { 'category': @category, 'value': identifier.value }
+        json = { category: @category, value: identifier.value }
         result = Contributor.send(:find_association, provenance: @provenance, json: json)
         expect(result).to eql(contributor)
       end

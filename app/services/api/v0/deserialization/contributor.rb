@@ -45,6 +45,7 @@ module Api
 
           # The JSON is valid if the Contributor has a name or email
           # and roles (if this is not the Contact)
+          # rubocop:disable Metrics/CyclomaticComplexity
           def valid?(is_contact:, json: {})
             return false unless json.present?
             return false unless json[:name].present? && json[:mbox].present?
@@ -54,6 +55,7 @@ module Api
 
             is_contact ? true : json[:role].present? && json[:role].any?
           end
+          # rubocop:enable Metrics/CyclomaticComplexity
 
           # Find or initialize the Contributor
           def marshal_contributor(provenance:, is_contact:, json: {})

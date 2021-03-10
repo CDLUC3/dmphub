@@ -17,7 +17,7 @@ module Api
             # Try to find the SecurityPrivacyStatement by title
             statement = find_by_title(provenance: provenance, dataset: dataset, json: json)
 
-            statement.description = json.fetch(:description, []).join("<br>") if json[:description].present?
+            statement.description = json.fetch(:description, []).join('<br>') if json[:description].present?
             statement
           end
 

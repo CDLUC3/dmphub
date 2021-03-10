@@ -16,8 +16,8 @@ module Api
 
             # If no :identifiable_type was specified, derive it from the :identifiable
             identifiable_type = identifiable.class.name unless identifiable_type.present?
-            identifier = find_existing(provenance: provenance, identifiable: identifiable,
-                                       identifiable_type: identifiable_type, json: json)
+            identifier = find_existing(identifiable: identifiable, identifiable_type: identifiable_type,
+                                       json: json)
             return identifier if identifier.present?
 
             category = type_to_category(json: json)
@@ -48,14 +48,14 @@ module Api
             return category if ::Identifier.categories.keys.include?(category.to_s)
 
             # Otherwise derive the category from the value
-            category = Api::V0::ConversionService.identifier_category_from_value(value: json[:identifier])
-            category
+            Api::V0::ConversionService.identifier_category_from_value(value: json[:identifier])
           end
 
           # This will find the identifier we are after. If it is an identifier
           # category that requires universal uniqueness (e.g. DOI, URL) it may
           # not match our identifiable!
-          def find_existing(provenance:, identifiable:, identifiable_type: nil, json: {})
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+          def find_existing(identifiable:, identifiable_type: nil, json: {})
             category = type_to_category(json: json)
             return nil unless category.present?
 
@@ -76,6 +76,7 @@ module Api
             end
             id
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         end
       end
     end

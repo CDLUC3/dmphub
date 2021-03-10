@@ -2,7 +2,6 @@
 
 json.partial! 'api/v0/standard_response', items: [@dmp]
 
-# rubocop:disable Lint/UselessTimes
 # Skipping rubocop check here because we need it to be an Array otherwise jbuilder creates a Hash
 json.items [@dmp] do |dmp|
   json.dmp do
@@ -21,4 +20,3 @@ json.items [@dmp] do |dmp|
                   data_management_plan: dmp, client: @client
   end
 end
-# rubocop:enable Lint/UselessTimes

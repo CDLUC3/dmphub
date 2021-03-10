@@ -6,7 +6,7 @@ RSpec.describe Api::V0::Auth::Jwt::AuthorizationService do
   before(:each) do
     @token = SecureRandom.uuid
     allow(Api::V0::Auth::Jwt::JsonWebToken).to receive(:decode).and_return({ client_id: @token })
-    @headers = { 'Authorization': "Bearer #{@token}" }
+    @headers = { Authorization: "Bearer #{@token}" }
     @service = described_class.new(headers: @headers)
   end
 

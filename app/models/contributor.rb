@@ -32,6 +32,6 @@ class Contributor < ApplicationRecord
 
   # Instance Methods
   def name_first_last
-    name.split(' ').reverse.join(' ')
+    name.split.reverse.join(' ')
   end
 end

@@ -19,7 +19,7 @@ RSpec.describe Api::V0::Deserialization::Dataset do
 
     metadatum = create(:metadatum, dataset: @dataset, provenance: @provenance)
     create(:identifier, identifiable: metadatum, value: Faker::Internet.url,
-                                      category: ::Identifier.requires_universal_uniqueness.sample.to_s)
+                        category: ::Identifier.requires_universal_uniqueness.sample.to_s)
     create(:security_privacy_statement, dataset: @dataset, provenance: @provenance)
     create(:technical_resource, dataset: @dataset, provenance: @provenance)
     create(:dataset_keyword, dataset: @dataset, keyword: create(:keyword))
@@ -191,12 +191,12 @@ RSpec.describe Api::V0::Deserialization::Dataset do
       end
       it 'returns the Dataset as-is if json is not present' do
         result = described_class.send(:deserialize_metadata, provenance: @provenance, dataset: @dataset,
-                                                            json: nil)
+                                                             json: nil)
         expect(result.metadata).to eql(@dataset.metadata)
       end
       it 'adds the Metadata to the Dataset' do
         result = described_class.send(:deserialize_metadata, provenance: @provenance, dataset: build(:dataset),
-                                                            json: @json)
+                                                             json: @json)
         expect(result.metadata.length).to eql(@json[:metadata].length)
         metadatum = result.metadata.last
         json_metadata = @json[:metadata].last

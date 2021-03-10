@@ -174,7 +174,7 @@ module ExternalApis
         dflt = I18n.default_locale || 'en'
         return dflt unless item.present?
 
-        labels = item.fetch('labels', [{ 'iso639': dflt }])
+        labels = item.fetch('labels', [{ iso639: dflt }])
         labels.first&.fetch('iso639', I18n.default_locale) || dflt
       end
 

@@ -45,6 +45,7 @@ class LandingPresenter
       data_management_plan.identifiers.reject { |id| id.category == 'ark' }
     end
 
+    # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     def byte_size(size:)
       return 'unspecified' unless size.present? && size.is_a?(Numeric) && size.positive?
 
@@ -56,5 +57,6 @@ class LandingPresenter
 
       "#{hash[:size]&.to_i} #{hash[:units]}"
     end
+    # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   end
 end

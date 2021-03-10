@@ -31,12 +31,12 @@ RSpec.describe Api::V0::Deserialization::Identifier do
     it 'finds the Identifier when :identifiable_type is specified but :identifiable is not' do
       json = { type: @doi.category, identifier: @doi.value }
       result = described_class.deserialize(provenance: @provenance, identifiable: nil,
-                                                                    identifiable_type: 'Affiliation', json: json)
+                                           identifiable_type: 'Affiliation', json: json)
       expect(result).to eql(@doi)
     end
     it 'initializes a new Identifier when :identifiable is nil' do
       result = described_class.deserialize(provenance: @provenance, identifiable: nil, json: @json,
-                                                                    identifiable_type: 'Affiliation')
+                                           identifiable_type: 'Affiliation')
       expect(result.new_record?).to eql(true)
       expect(result.identifiable_type).to eql(nil)
       expect(result.category).to eql(@json[:type])
@@ -53,14 +53,13 @@ RSpec.describe Api::V0::Deserialization::Identifier do
     end
     it 'uses the specified descriptor' do
       result = described_class.deserialize(provenance: @provenance, identifiable: @identifiable, json: @json,
-                                                                    descriptor: 'is_referenced_by')
+                                           descriptor: 'is_referenced_by')
       expect(result.new_record?).to eql(true)
       expect(result.descriptor).to eql('is_referenced_by')
     end
   end
 
   context 'private methods' do
-
     describe '#valid?(json:)' do
       it 'returns nil if json is not valid' do
         expect(described_class.send(:valid?, json: nil)).to eql(false)
@@ -90,7 +89,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
       end
       it 'derives the :category from the :identifier value' do
         typ = 'foo'
-        result = described_class.send(:type_to_category, json: { type: typ, identifier: Faker::Internet.url  })
+        result = described_class.send(:type_to_category, json: { type: typ, identifier: Faker::Internet.url })
         expect(result).to eql('url')
       end
     end

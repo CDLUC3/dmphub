@@ -4,6 +4,7 @@
 # rubocop:disable Metrics/ClassLength
 class PersistenceService
   class << self
+    # rubocop:disable Metrics/CyclomaticComplexity
     def process_full_data_management_plan(client:, dmp:, history_description:, mintable: false)
       raise StandardError, 'process_full_data_management_plan failed - No client and or dmp provided!' unless client.present? && dmp.present?
 
@@ -27,6 +28,7 @@ class PersistenceService
       p "PersistenceService.process_full_data_management_plan - #{e.message}"
       raise e
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
     private
 

@@ -75,7 +75,7 @@ RSpec.describe Affiliation, type: :model do
       expect(@model.alternate_names.is_a?(Array)).to eql(true)
     end
     it 'saves :attrs properly' do
-      hash = { 'foo': 'bar' }
+      hash = { foo: 'bar' }
       @model.attrs = hash
       @model.save
       expect(@model.attrs).to eql(hash)

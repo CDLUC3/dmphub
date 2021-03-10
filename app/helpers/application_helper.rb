@@ -73,11 +73,12 @@ module ApplicationHelper
     "<host title=\"#{host.description}\">#{host.title}</host>"
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def latest_license_link(dataset:)
     return 'unspecified' unless dataset.present? && dataset.distributions.any?
 
-    licenses = dataset.distributions.map { |distro| distro.licenses  }.flatten.compact.uniq
-    latest = licenses.sort { |a, b| b&.start_date <=> a&.start_date }.first
+    licenses = dataset.distributions.map(&:licenses).flatten.compact.uniq
+    latest = licenses.min { |a, b| b&.start_date <=> a&.start_date }
 
     if latest.present? && latest.license_ref.present?
       link_to latest.license_ref, latest.license_ref, target: '_blank'
@@ -85,6 +86,7 @@ module ApplicationHelper
       'unspecified'
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   def humanize_underscored(name:)
     return nil unless name.present?
@@ -104,16 +106,11 @@ module ApplicationHelper
     id_to_doi(dmp: dmp, value: landing_page_url(dmp))
   end
 
+  # Swaps out the internal :id for the :doi value (sans URL prefix)
   def id_to_doi(dmp:, value:)
-    doi = dmp.doi&.value
-    return value unless doi.present?
+    return value unless dmp.doi.present?
 
-    ark_prefix = Rails.configuration.x.ezid[:ark_prefix]
-    doi_prefix = Rails.configuration.x.ezid[:doi_prefix]
-    ret = value.gsub(dmp.id.to_s, doi.gsub(doi_prefix, 'doi:')) if doi_prefix.present? && doi.include?(doi_prefix)
-    ret = value.gsub(dmp.id.to_s, doi.gsub(ark_prefix, 'ark:')) if ark_prefix.present? && doi.include?(ark_prefix)
-
-    ret || doi
+    value.gsub(dmp.id.to_s, dmp.doi_without_prefix)
   end
 
   def citation(dmp:)

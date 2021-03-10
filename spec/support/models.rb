@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def load_test_json(file_name: 'minimal_dmptool.json')
-  path = Rails.root.join('spec','support', 'test_cases', file_name)
+  path = Rails.root.join('spec', 'support', 'test_cases', file_name)
   JSON.parse(File.read(path))
 end
 

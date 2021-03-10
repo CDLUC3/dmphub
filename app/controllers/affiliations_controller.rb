@@ -5,7 +5,6 @@ class AffiliationsController < ApplicationController
   include AffiliationSelectable
 
   # POST /affiliations  (via AJAX from Affiliation Typeaheads ... see below for specific pages)
-  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def search
     # If the search term is greater than 2 characters
     if search_params.present? && search_params.fetch(:q, '').length > 2
@@ -59,7 +58,6 @@ class AffiliationsController < ApplicationController
       render json: []
     end
   end
-  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   private
 

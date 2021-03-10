@@ -35,7 +35,7 @@ module ExternalApis
       # If a JSON parse error occurs then return results of a local table search
       rescue JSON::ParserError => e
         log_error(method: 'CitationService fetch JSON parse error', error: e)
-        persist_citation(id: id, citation: failure_message(doi: id.value), json: { 'source': 'datacite' })
+        persist_citation(id: id, citation: failure_message(doi: id.value), json: { source: 'datacite' })
       end
       # rubocop:enable Metrics/CyclomaticComplexity
 

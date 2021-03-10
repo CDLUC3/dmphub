@@ -27,7 +27,6 @@ module Api
 
       # PUT /awards/:id
       # rubocop:disable Metrics/AbcSize
-      # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
       def update
         # Expecting the following format:
         # {
@@ -98,7 +97,6 @@ module Api
         end
       end
       # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
       private
 

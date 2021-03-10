@@ -95,7 +95,7 @@ RSpec.describe ExternalApis::BaseService do
 
     context '#options(additional_headers:, debug:)' do
       before(:each) do
-        allow(described_class).to receive(:headers).and_return({ 'Accept': '*/*' })
+        allow(described_class).to receive(:headers).and_return({ Accept: '*/*' })
       end
       it 'headers just include base headers if no :additional_headers' do
         result = described_class.send(:options)
@@ -124,6 +124,6 @@ RSpec.describe ExternalApis::BaseService do
   def stub_redirect(uri:, redirect_to:)
     stub_request(:get, uri).with(headers: described_class.headers)
                            .to_return(status: 301, body: '',
-                                      headers: { 'Location': redirect_to })
+                                      headers: { Location: redirect_to })
   end
 end

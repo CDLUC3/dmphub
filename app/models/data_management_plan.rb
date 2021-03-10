@@ -18,6 +18,7 @@
 #  version                    :datetime
 #
 # A data management plan
+# rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
   include Alterable
   include Authorizable
@@ -131,22 +132,22 @@ class DataManagementPlan < ApplicationRecord
 
   def mint_doi(provenance:)
     # When running in Dev mode just generate a random DOI value
-    if Rails.env.development?
-      ids = [
-        Identifier.new(
-          value: mock_doi,
-          descriptor: 'is_identified_by',
-          category: 'doi',
-          provenance: provenance
-        )
-      ]
-    else
-      # retrieve the Datacite Provenance or initialize it
-      ids = ExternalApis::EzidService.mint_doi(
-        data_management_plan: self,
-        provenance: provenance
-      )
-    end
+    ids = if Rails.env.development?
+            [
+              Identifier.new(
+                value: mock_doi,
+                descriptor: 'is_identified_by',
+                category: 'doi',
+                provenance: provenance
+              )
+            ]
+          else
+            # retrieve the Datacite Provenance or initialize it
+            ExternalApis::EzidService.mint_doi(
+              data_management_plan: self,
+              provenance: provenance
+            )
+          end
     identifiers << ids.flatten.compact
     doi.present? || arks.any?
   end
@@ -169,6 +170,7 @@ class DataManagementPlan < ApplicationRecord
   def mock_doi
     mocked = 'https://doi.org/'
     mocked += "#{Faker::Number.number(digits: 2)}.#{Faker::Number.number(digits: 4)}"
-    mocked += "/#{Faker::Alphanumeric.alphanumeric(number: 6)}"
+    "#{mocked}/#{Faker::Alphanumeric.alphanumeric(number: 6)}"
   end
 end
+# rubocop:enable Metrics/ClassLength

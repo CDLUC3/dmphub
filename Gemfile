@@ -51,7 +51,7 @@ gem 'linkeddata'
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
 gem 'mysql2' # , '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
-gem "omniauth", "~> 1.9"
+gem 'omniauth', '~> 1.9'
 # ORCID OAuth 2.0 Strategy for the OmniAuth Ruby authentication framework.
 gem 'omniauth-orcid'
 # This plugin adds helpers for the reCAPTCHA API.

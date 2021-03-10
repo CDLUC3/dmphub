@@ -27,7 +27,8 @@ class DatacitePresenter
     case cdmp.role
     when 'http://credit.niso.org/contributor-roles/data-curation'
       'DataCurator'
-    when 'http://credit.niso.org/contributor-roles/formal-analysis'
+    when 'http://credit.niso.org/contributor-roles/formal-analysis',
+         'http://credit.niso.org/contributor-roles/validation'
       'Researcher'
     when 'http://credit.niso.org/contributor-roles/investigation'
       'ProjectLeader'
@@ -39,8 +40,6 @@ class DatacitePresenter
       'Producer'
     when 'http://credit.niso.org/contributor-roles/supervision'
       'Supervisor'
-    when 'http://credit.niso.org/contributor-roles/validation'
-      'Researcher'
     when 'http://credit.niso.org/contributor-roles/writing-review-editing'
       'Editor'
     else
@@ -50,7 +49,7 @@ class DatacitePresenter
   # rubocop:enable Metrics/CyclomaticComplexity
 
   # Retrieve the award URI without the URL portion for DataCite's <AwardNumber>
-  # rubocop:disable Metrics/CyclomaticComplexity
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def award_number(funding:)
     return '' unless funding.funded? && funding.affiliation&.fundrefs&.any?
     return '' unless funding.urls.last.present?
@@ -61,7 +60,7 @@ class DatacitePresenter
 
     funding.urls.last.value&.gsub(mapping[:"#{funding.affiliation.fundrefs.last.value}"], '')
   end
-  # rubocop:enable Metrics/CyclomaticComplexity
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
   # Retrieve the landing page URL for EZID's _target (where the DOI will resolve to)
   def landing_page

@@ -35,6 +35,7 @@ module Api
           #        "$ref": "SEE TechnicalResource.deserialize! for details"
           #      }]
           #    }
+          # rubocop:disable Metrics/CyclomaticComplexity
           def deserialize(provenance:, dmp:, json: {})
             return nil unless provenance.present? && dmp.present? && valid?(json: json)
 
@@ -62,6 +63,7 @@ module Api
 
             attach_identifier(provenance: provenance, dataset: dataset, json: json)
           end
+          # rubocop:enable Metrics/CyclomaticComplexity
 
           private
 

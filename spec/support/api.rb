@@ -26,7 +26,7 @@ end
 def default_authenticated_headers(client:, token: mock_access_token(client: client))
   default_headers.merge(
     'User-Agent': "#{client.name} (#{client.client_id})",
-    'Authorization': token
+    Authorization: token
   )
 end
 

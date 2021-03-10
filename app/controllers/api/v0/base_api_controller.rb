@@ -196,7 +196,7 @@ module Api
       end
 
       def security_and_privacy_statement_permitted_params
-        [:title, description: []]
+        [:title, { description: [] }]
       end
 
       def technical_resource_permitted_params

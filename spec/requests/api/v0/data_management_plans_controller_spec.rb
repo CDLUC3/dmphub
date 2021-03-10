@@ -67,7 +67,7 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
   describe :create do
     it 'returns a 400 bad_request if the json input does not have a `dmp`' do
-      post api_v0_data_management_plans_path, params: { 'dmp': {} }, headers: @headers
+      post api_v0_data_management_plans_path, params: { dmp: {} }, headers: @headers
       expect(response.status).to eql(400)
       expect(body_to_json['errors'].downcase).to eql('invalid json format')
     end

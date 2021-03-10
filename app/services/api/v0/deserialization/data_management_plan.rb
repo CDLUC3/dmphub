@@ -181,6 +181,7 @@ module Api
           end
 
           # Deserialize the Contributor information and attach to DMP
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize_contributors(provenance:, dmp:, json: {})
             return dmp unless provenance.present? && dmp.present? && json.present?
 
@@ -193,7 +194,7 @@ module Api
                 provenance: provenance, json: contributor_json
               )
 
-              cdmps = contributor_json.fetch(:role, []).map do |role|
+              contributor_json.fetch(:role, []).map do |role|
                 url = role.starts_with?('http') ? role : Api::V0::ConversionService.to_credit_taxonomy(role: role)
                 return nil unless url.present?
 
@@ -209,6 +210,7 @@ module Api
             deserialize_contact(provenance: provenance, dmp: dmp, json: json)
             dmp
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Deserialize the Cost information and attach to DMP
           def deserialize_costs(provenance:, dmp:, json: {})
@@ -242,6 +244,7 @@ module Api
           end
 
           # Deserialize any relatedIdentifiers that were passed in
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize_related_identifiers(provenance:, dmp:, json:)
             return dmp unless provenance.present? && json.present? && dmp.present?
 
@@ -253,9 +256,7 @@ module Api
             end
 
             json.fetch(:dmproadmap_related_identifiers, []).each do |related|
-              unless related[:type].present?
-                related[:type] = Api::V0::ConversionService.identifier_category_from_value(value: related[:identifier])
-              end
+              related[:type] = Api::V0::ConversionService.identifier_category_from_value(value: related[:identifier]) unless related[:type].present?
 
               identifier = Api::V0::Deserialization::Identifier.deserialize(
                 provenance: provenance, identifiable: dmp, identifiable_type: 'DataManagementPlan',
@@ -267,6 +268,7 @@ module Api
             end
             dmp
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Generate a default project
           def default_project(provenance:, dmp:, json:)

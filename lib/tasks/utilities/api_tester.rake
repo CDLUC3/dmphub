@@ -4,7 +4,7 @@ require 'httparty'
 
 namespace :api_tester do
   desc 'Verifies that the specified host\'s API is functional. Expects 4 args: host, client name, client_id and client_secret'
-  task :verify, [:host, :client_name, :client_id, :client_secret] => [:environment] do |t, args|
+  task :verify, %i[host client_name client_id client_secret] => [:environment] do |_t, args|
     if args.any? && args[:client_secret].present?
       @args = args
       headers = auth
@@ -14,7 +14,9 @@ namespace :api_tester do
         pp retrieve_dmps(headers: headers).inspect
       end
     else
+      # rubocop:disable Layout/LineLength
       p 'Missing essential information. This script requires 4 arguments. The host (e.g. https://my.org.edu), your client name, client_id and the client_secret.'
+      # rubocop:enable Layout/LineLength
       p 'Please retry with: `rails "api_tester:verify[http://localhost:3001,dmptool,12345,abcdefg]"`'
       p 'Note the position of the quotes!'
     end
@@ -25,7 +27,7 @@ namespace :api_tester do
   def default_headers
     {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Server-Agent': "#{@args[:client_name]} (#{@args[:client_id]})"
     }
   end
@@ -45,7 +47,7 @@ namespace :api_tester do
     return nil unless resp.code == 200
 
     token = response
-    headers.merge({ 'Authorization': "#{token['token_type']} #{token['access_token']}" })
+    headers.merge({ Authorization: "#{token['token_type']} #{token['access_token']}" })
   end
 
   # Fetch the list of DMPs via the API

@@ -24,7 +24,7 @@ FactoryBot.define do
         data_management_plan_count { 1 }
       end
 
-      before :create do |contributor, evaluator|
+      before :create do |contributor, _evaluator|
         contributor.affiliation = create(:affiliation, :complete) unless contributor.affiliation.present?
       end
 

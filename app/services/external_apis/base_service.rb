@@ -48,10 +48,10 @@ module ExternalApis
       def headers
         hash = {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
           'User-Agent': "#{app_name} (#{app_email})"
         }
-        hash.merge({ 'Host': URI(api_base_url).hostname.to_s })
+        hash.merge({ Host: URI(api_base_url).hostname.to_s })
       rescue URI::InvalidURIError => e
         handle_uri_failure(method: "BaseService.headers #{e.message}",
                            uri: api_base_url)

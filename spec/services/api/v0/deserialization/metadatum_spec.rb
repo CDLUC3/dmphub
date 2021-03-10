@@ -118,7 +118,6 @@ RSpec.describe Api::V0::Deserialization::Metadatum do
 
   context 'Updates' do
     before(:each) do
-
     end
 
     it 'does not update the fields if no match is found in DB' do

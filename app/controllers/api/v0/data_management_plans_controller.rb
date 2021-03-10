@@ -3,6 +3,7 @@
 module Api
   module V0
     # Controller providing DMP functionality
+    # rubocop:disable Metrics/ClassLength
     class DataManagementPlansController < BaseApiController
       protect_from_forgery with: :null_session, only: [:create]
 
@@ -29,8 +30,6 @@ module Api
       end
 
       # POST /data_management_plans
-      # rubocop:disable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/MethodLength
       def create
         # Only proceed if the Application has permission
         if permitted?
@@ -78,9 +77,6 @@ module Api
         log_error(error: e)
         render_error errors: [e.message], status: :bad_request
       end
-      # rubocop:enable Metrics/MethodLength
-      # rubocop:enable Metrics/PerceivedComplexity, Metrics/CyclomaticComplexity
-
 
       # PUT /data_management_plans/:doi
       def update
@@ -134,25 +130,25 @@ module Api
 
       # Convert the incoming DOI/ARK/URL into a DMP
       def doi_param_to_dmp
-        case params[:id][0..3]
-        when 'doi:'
-          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('doi:', '')}")
+        @dmp = case params[:id][0..3]
+               when 'doi:'
+                 Identifier.where('value LIKE ?', "%#{params[:id].gsub('doi:', '')}")
                            .where(category: 'doi', descriptor: 'is_identified_by')
                            .first&.identifiable
-        when 'ark:'
-          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('ark:', '')}")
+               when 'ark:'
+                 Identifier.where('value LIKE ?', "%#{params[:id].gsub('ark:', '')}")
                            .where(category: 'ark', descriptor: 'is_identified_by')
                            .first&.identifiable
-        when 'url:'
-          # Allows for retrieving the record by the associated object's URL
-          @dmp = Identifier.where('value LIKE ?', "%#{params[:id].gsub('url', '')}")
+               when 'url:'
+                 # Allows for retrieving the record by the associated object's URL
+                 Identifier.where('value LIKE ?', "%#{params[:id].gsub('url', '')}")
                            .where(category: 'url', descriptor: 'is_metadata_for')
                            .first&.identifiable
-        else
-          @dmp = Identifier.where('value LIKE ?', "%#{params[:id]}")
+               else
+                 Identifier.where('value LIKE ?', "%#{params[:id]}")
                            .where(category: 'doi', descriptor: 'is_identified_by')
                            .first&.identifiable
-        end
+               end
       end
 
       def setup_authorizations(dmp:)
@@ -177,5 +173,6 @@ module Api
         @dmp.present? && client.present? && @dmp.authorized?(api_client: client)
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

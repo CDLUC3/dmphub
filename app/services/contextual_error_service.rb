@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 # Persistence service for use when saving an entire DMP model (e.g. a DMP with project, datasets, etc.)
-# rubocop:disable Metrics/ClassLength
 class ContextualErrorService
   class << self
     # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity

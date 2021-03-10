@@ -96,7 +96,7 @@ module Api
 
             opportunity = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: funding, descriptor: 'is_required_by',
-              identifiable_type: 'Funding', json: json[:dmproadmap_funding_opportunity_id],
+              identifiable_type: 'Funding', json: json[:dmproadmap_funding_opportunity_id]
             )
             return funding unless opportunity.present?
 

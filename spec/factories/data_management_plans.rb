@@ -45,7 +45,6 @@ FactoryBot.define do
         data_management_plan.project = create(:project, :complete, data_management_plan_count: 0) unless data_management_plan.project.present?
 
         # Add the DOI
-        unique_categories = ::Identifier.requires_universal_uniqueness.map(&:to_s)
         data_management_plan.identifiers << create(:identifier, category: %w[doi ark].sample,
                                                                 identifiable: data_management_plan,
                                                                 descriptor: 'is_identified_by',
@@ -77,9 +76,9 @@ FactoryBot.define do
         relateds = ::Identifier.descriptors.keys.reject { |k| %w[is_identified_by is_metadata_for].include?(k) }
         evaluator.identifiers_count.times do
           data_management_plan.identifiers << create(:identifier, category: ::Identifier.categories.keys.sample,
-                                                                identifiable: data_management_plan,
-                                                                descriptor: relateds.sample,
-                                                                provenance: data_management_plan.provenance)
+                                                                  identifiable: data_management_plan,
+                                                                  descriptor: relateds.sample,
+                                                                  provenance: data_management_plan.provenance)
         end
       end
     end

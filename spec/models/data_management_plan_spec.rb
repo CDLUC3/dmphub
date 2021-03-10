@@ -321,7 +321,7 @@ RSpec.describe DataManagementPlan, type: :model do
 
       describe 'mock_doi' do
         it 'returns a fake DOI' do
-          doi_regex = /https:\/\/doi.org\/[0-9]{2}\.[0-9]{4}\/[a-zA-Z0-9]{6}/
+          doi_regex = %r{https://doi.org/[0-9]{2}\.[0-9]{4}/[a-zA-Z0-9]{6}}
           expect(@dmp.send(:mock_doi) =~ doi_regex).to eql(0)
         end
       end

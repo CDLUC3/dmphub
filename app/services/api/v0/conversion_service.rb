@@ -125,7 +125,7 @@ module Api
 
         # Translates identifier categories to RDA Common Standard
         def to_identifier_category(rda_category:)
-          return "other" unless rda_category.present?
+          return 'other' unless rda_category.present?
 
           case rda_category
           when 'CRediT'
@@ -136,20 +136,22 @@ module Api
         end
 
         # Attempts to detrmine the identifier category based on the content of the value
+        # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
         def identifier_category_from_value(value:)
           return nil unless value.present?
 
           value = value.to_s.downcase
 
           # TODO: We need some better regex matchers here
-          return "ror" if value.start_with?("ror:") || value.include?("ror.org/")
-          return "orcid" if value.start_with?("orcid:") || value.include?("orcid.org/")
-          return "doi" if value.start_with?("doi:") || value.include?("doi.org/")
-          return "ark" if value.include?("ark:")
-          return "url" if value.start_with?("http")
+          return 'ror' if value.start_with?('ror:') || value.include?('ror.org/')
+          return 'orcid' if value.start_with?('orcid:') || value.include?('orcid.org/')
+          return 'doi' if value.start_with?('doi:') || value.include?('doi.org/')
+          return 'ark' if value.include?('ark:')
+          return 'url' if value.start_with?('http')
 
           'other'
         end
+        # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
         # Convert from a role to the CRediT URL
         def to_credit_taxonomy(role:)

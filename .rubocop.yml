@@ -1,4 +1,6 @@
 AllCops:
+  NewCops: enable
+
   Exclude:
     - 'app/views/*.html.erb'
     - 'bin/**/*'
@@ -31,6 +33,20 @@ Metrics/BlockLength:
 # because they invoke another method with several parameters
 Metrics/MethodLength:
   Max: 30
+  Exclude:
+    - 'app/controllers/**/*'
+# Ignore complexity and method length errors in controllers since rubocop hates if else blocks
+# but Rails wants clean render redirects (only one per action)
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - 'app/controllers/**/*'
+Metrics/PerceivedComplexity:
+  Exclude:
+    - 'app/controllers/**/*'
+
+Naming/VariableNumber:
+  Exclude:
+    - 'lib/tasks/**/*'
 
 Style/ExponentialNotation:
   Enabled: true

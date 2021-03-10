@@ -214,7 +214,6 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       end
     end
 
-
     describe '#attach_identifier(provenance:, contributor:, json:)' do
       it 'returns the Contributor as-is if json is not present' do
         result = described_class.send(:attach_identifier, provenance: @provenance,
@@ -259,7 +258,7 @@ RSpec.describe Api::V0::Deserialization::Contributor do
     end
   end
 
-  context "Updates" do
+  context 'Updates' do
     before(:each) do
       @json = {
         name: Faker::Movies::StarWars.unique.character,

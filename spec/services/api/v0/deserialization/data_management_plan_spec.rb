@@ -33,7 +33,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       cost: [
         {
           title: Faker::Lorem.sentence,
-          currency_code: Api::V0::ConversionService::CURRENCY_CODES.sample ,
+          currency_code: Api::V0::ConversionService::CURRENCY_CODES.sample,
           value: Faker::Number.number
         }
       ],
@@ -306,7 +306,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       end
       it 'adds the Contributor to a new DataManagementPlan' do
         result = described_class.send(:deserialize_contributors, provenance: @provenance,
-                                                            dmp: build(:data_management_plan), json: @json)
+                                                                 dmp: build(:data_management_plan), json: @json)
         cdmps = result.contributors_data_management_plans
         emails = cdmps.map { |cdmp| cdmp.contributor.email }.uniq
         expect(cdmps.length).to eql(@json[:contributor].length + 1)
@@ -515,15 +515,12 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
     end
 
     describe '#default_project(provenance:, dmp:)' do
-
     end
 
     describe '#default_dataset(provenance:, dmp:)' do
-
     end
   end
 
   context 'Updates' do
-
   end
 end

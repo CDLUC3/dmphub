@@ -147,27 +147,27 @@ RSpec.describe Api::V0::Deserialization::Funding do
       before(:each) do
         @id_count = @funding.identifiers.length
       end
-      it "returns :funding as-is if json is not present" do
+      it 'returns :funding as-is if json is not present' do
         result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
                                                                       funding: @funding, json: nil)
         expect(result).to eql(@funding)
         expect(result.identifiers.length).to eql(@id_count)
       end
-      it "returns :funding as-is if json[:dmproadmap_funding_opportunity_id] is not present" do
+      it 'returns :funding as-is if json[:dmproadmap_funding_opportunity_id] is not present' do
         @json[:dmproadmap_funding_opportunity_id] = {}
         result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
                                                                       funding: @funding, json: @json)
         expect(result).to eql(@funding)
         expect(result.identifiers.length).to eql(@id_count)
       end
-      it "returns :funding as-is if the json[:dmproadmap_funding_opportunity_id] is invalid" do
+      it 'returns :funding as-is if the json[:dmproadmap_funding_opportunity_id] is invalid' do
         @json[:dmproadmap_funding_opportunity_id] = { identifier: SecureRandom.uuid }
         result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
                                                                       funding: @funding, json: @json)
         expect(result).to eql(@funding)
         expect(result.identifiers.length).to eql(@id_count)
       end
-      it "attaches the json[:dmproadmap_funding_opportunity_id] to :funding" do
+      it 'attaches the json[:dmproadmap_funding_opportunity_id] to :funding' do
         result = described_class.send(:attach_funding_opportunity_id, provenance: @provenance,
                                                                       funding: @funding, json: @json)
         expect(result).to eql(@funding)
@@ -181,34 +181,34 @@ RSpec.describe Api::V0::Deserialization::Funding do
       before(:each) do
         @affil_count = @funding.funded_affiliations.length
       end
-      it "returns :funding as-is if json is not present" do
+      it 'returns :funding as-is if json is not present' do
         result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
                                                                         funding: @funding, json: nil)
         expect(result).to eql(@funding)
         expect(result.funded_affiliations.length).to eql(@affil_count)
       end
-      it "returns :funding as-is if json[:dmproadmap_funded_affiliations] is not present" do
+      it 'returns :funding as-is if json[:dmproadmap_funded_affiliations] is not present' do
         @json.delete(:dmproadmap_funded_affiliations)
         result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
                                                                         funding: @funding, json: @json)
         expect(result).to eql(@funding)
         expect(result.funded_affiliations.length).to eql(@affil_count)
       end
-      it "returns :funding as-is if json[:dmproadmap_funded_affiliations] is empty" do
+      it 'returns :funding as-is if json[:dmproadmap_funded_affiliations] is empty' do
         @json[:dmproadmap_funded_affiliations] = []
         result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
                                                                         funding: @funding, json: @json)
         expect(result).to eql(@funding)
         expect(result.funded_affiliations.length).to eql(@affil_count)
       end
-      it "returns :funding as-is if the json[:dmproadmap_funded_affiliations] is invalid" do
-        @json[:dmproadmap_funded_affiliations] = [{ foo: "bar" }]
+      it 'returns :funding as-is if the json[:dmproadmap_funded_affiliations] is invalid' do
+        @json[:dmproadmap_funded_affiliations] = [{ foo: 'bar' }]
         result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
                                                                         funding: @funding, json: @json)
         expect(result).to eql(@funding)
         expect(result.funded_affiliations.length).to eql(@affil_count)
       end
-      it "attaches the json[:dmproadmap_funded_affiliations] to :funding" do
+      it 'attaches the json[:dmproadmap_funded_affiliations] to :funding' do
         allow(Api::V0::Deserialization::Affiliation).to receive(:deserialize).and_return(build(:affiliation))
         result = described_class.send(:deserialize_funded_affiliations, provenance: @provenance,
                                                                         funding: @funding, json: @json)
@@ -218,7 +218,7 @@ RSpec.describe Api::V0::Deserialization::Funding do
     end
   end
 
-  context "Updates" do
+  context 'Updates' do
     before(:each) do
       allow(ExternalApis::RorService).to receive(:search).and_return([])
       @json = {

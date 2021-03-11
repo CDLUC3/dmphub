@@ -96,9 +96,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
 
     describe '#find_existing(provenance:, identifiable:, json:)' do
       it 'returns nil if json is not present' do
-        result = described_class.send(:find_existing, provenance: @provenance,
-                                                      identifiable: @identifiable,
-                                                      json: nil)
+        result = described_class.send(:find_existing, identifiable: @identifiable, json: nil)
         expect(result).to eql(nil)
       end
       context 'category that must be universally unique (e.g. DOI, URL)' do
@@ -109,32 +107,28 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         end
         it 'finds the Identifier if :identifiable is not specified but :identiable_type is' do
           json = { type: @url.category, identifier: @url.value }
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Affiliation',
                                                         json: json)
           expect(result).to eql(@url)
         end
         it 'finds the Identifier if :identifiable is specified but :identiable_type is not' do
           json = { type: @url.category, identifier: @url.value }
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: @identifiable,
+          result = described_class.send(:find_existing, identifiable: @identifiable,
                                                         json: json)
           expect(result).to eql(@url)
         end
         it 'does not find the Identifier if :identifiable does not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: @json[:identifier])
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: @identifiable,
+          result = described_class.send(:find_existing, identifiable: @identifiable,
                                                         json: @json)
           expect(result).to eql(nil)
         end
         it 'does not find the Identifier if :identifiable_type does not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: @json[:identifier])
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Affiliation',
                                                         json: @json)
           expect(result).to eql(nil)
@@ -142,8 +136,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         it 'does not find the Identifier when values do not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: @value)
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Host',
                                                         json: @json)
           expect(result).to eql(nil)
@@ -158,32 +151,28 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         end
         it 'does not find the Identifier if :identifiable is not specified' do
           json = { type: @other.category, identifier: @other.value }
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Affiliation',
                                                         json: json)
           expect(result).to eql(nil)
         end
         it 'finds the Identifier if :identifiable is specified' do
           json = { type: @other.category, identifier: @other.value }
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: @identifiable,
+          result = described_class.send(:find_existing, identifiable: @identifiable,
                                                         json: json)
           expect(result).to eql(@other)
         end
         it 'does not find the Identifier if :identifiable does not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: @json[:identifier])
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: @identifiable,
+          result = described_class.send(:find_existing, identifiable: @identifiable,
                                                         json: @json)
           expect(result).to eql(nil)
         end
         it 'does not find the Identifier if :identifiable_type does not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: @json[:identifier])
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Affiliation',
                                                         json: @json)
           expect(result).to eql(nil)
@@ -191,8 +180,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         it 'does not find the Identifier when values do not match' do
           create(:identifier, identifiable: create(:host), provenance: @provenance,
                               category: @json[:type], value: SecureRandom.uuid)
-          result = described_class.send(:find_existing, provenance: @provenance,
-                                                        identifiable: nil,
+          result = described_class.send(:find_existing, identifiable: nil,
                                                         identifiable_type: 'Host',
                                                         json: @json)
           expect(result).to eql(nil)

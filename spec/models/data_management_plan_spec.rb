@@ -95,30 +95,28 @@ RSpec.describe DataManagementPlan, type: :model do
     end
 
     describe 'trigger the check_version callback on :after_update' do
-      it 'does not trigger if :version did not change' do
-        expect(@dmp.update(title: Faker::Lorem.sentence)).to eql(true)
-        expect(ExternalApis::EzidService).not_to have_received(:update_doi)
-      end
-      it 'does not trigger if :doi is not present' do
+      it 'does not call EzidService if :doi is not present' do
         @dmp.identifiers.clear
-        expect(@dmp.update(title: Faker::Lorem.sentence)).to eql(true)
+        expect(@dmp.update(version: Time.now + 2.minutes)).to eql(true)
         expect(ExternalApis::EzidService).not_to have_received(:update_doi)
       end
-      it 'triggers an EzidService.update_doi call' do
+      it 'changing the version triggers the callback' do
         expect(@dmp.update(version: Time.now + 2.minutes)).to eql(true)
-        expect(ExternalApis::EzidService).to have_received(:update_doi)
+        expect(@dmp).to have_received(:version_check)
       end
     end
 
     describe 'trigger the check_version callback on :after_touch' do
-      it 'does not trigger if :doi is not present' do
+      it 'does not call EzidService if :doi is not present' do
         @dmp.identifiers.clear
+        @dmp.version = Time.now + 2.minutes
         expect(@dmp.touch).to eql(true)
         expect(ExternalApis::EzidService).not_to have_received(:update_doi)
       end
-      it 'triggers an EzidService.update_doi call' do
+      it 'triggers if the version changed call' do
+        @dmp.version = Time.now + 2.minutes
         expect(@dmp.touch).to eql(true)
-        expect(ExternalApis::EzidService).to have_received(:update_doi)
+        expect(@dmp).to have_received(:version_check)
       end
     end
   end
@@ -302,9 +300,6 @@ RSpec.describe DataManagementPlan, type: :model do
       end
 
       describe 'check_version callback' do
-        it 'returns true if :version did not change' do
-          expect(@dmp.send(:check_version)).to eql(true)
-        end
         it 'returns true if DMP has no :doi' do
           @dmp.identifiers.clear
           expect(@dmp.send(:check_version)).to eql(true)

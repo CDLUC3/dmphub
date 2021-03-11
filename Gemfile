@@ -73,6 +73,8 @@ gem 'capistrano-rails', '~> 1.3', require: false
 group :development, :test do
   # Add a comment summarizing the current schema to the top or bottom of each of your models and factories
   gem 'annotate'
+  # Security vulnerability scanner for Ruby on Rails. (http://brakemanscanner.org)
+  gem 'brakeman'
   # Call 'byebug' anywhere in the code to stop execution and get a
   # debugger console
   gem 'byebug', platforms: %i[mri mingw x64_mingw]

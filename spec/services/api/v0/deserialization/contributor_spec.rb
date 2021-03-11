@@ -248,7 +248,6 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       end
       it 'initializes the identifier and adds it to the Contributor for a :contributor_id' do
         json = { contributor_id: { type: 'URL', identifier: Faker::Internet.url } }
-        count = @contributor.identifiers.length
         result = described_class.send(:attach_identifier, provenance: @provenance,
                                                           contributor: build(:contributor), json: json)
         expect(result.identifiers.length).to eql(1)

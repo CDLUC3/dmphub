@@ -94,7 +94,6 @@ RSpec.describe Api::V0::Deserialization::Distribution do
 
     describe '#find_by_urls(json:)' do
       it 'returns nil if :json is not present' do
-        json = { name: @name }
         result = described_class.send(:find_by_urls, json: nil)
         expect(result).to eql(nil)
       end
@@ -214,6 +213,7 @@ RSpec.describe Api::V0::Deserialization::Distribution do
     end
   end
 
+  # rubocop:disable Metrics/AbcSize
   def verify_expected_updates
     result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
     expect(result.available_until.to_formatted_s(:iso8601)).to eql(@json[:available_until])
@@ -225,4 +225,5 @@ RSpec.describe Api::V0::Deserialization::Distribution do
     expect(result.licenses.last.start_date.to_formatted_s(:iso8601)).to eql(@json[:license].first[:start_date])
     result
   end
+  # rubocop:enable Metrics/AbcSize
 end

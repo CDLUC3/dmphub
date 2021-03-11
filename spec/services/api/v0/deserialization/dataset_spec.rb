@@ -306,6 +306,7 @@ RSpec.describe Api::V0::Deserialization::Dataset do
     end
   end
 
+  # rubocop:disable Metrics/AbcSize
   def verify_expected_updates
     result = described_class.deserialize(provenance: @provenance, dmp: @dmp, json: @json)
     expect(result.personal_data).to eql(Api::V0::ConversionService.yes_no_unknown_to_boolean(@json[:personal_data]))
@@ -332,4 +333,5 @@ RSpec.describe Api::V0::Deserialization::Dataset do
     expect(distros.include?(@json[:distribution].first[:title])).to eql(true)
     result
   end
+  # rubocop:enable Metrics/AbcSize
 end

@@ -117,9 +117,6 @@ RSpec.describe Api::V0::Deserialization::Metadatum do
   end
 
   context 'Updates' do
-    before(:each) do
-    end
-
     it 'does not update the fields if no match is found in DB' do
       result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
       expect(result.new_record?).to eql(true)

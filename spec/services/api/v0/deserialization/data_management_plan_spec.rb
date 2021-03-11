@@ -137,7 +137,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       end
     end
 
-    describe '#get_version(value: '')' do
+    describe '#get_version(value: "")' do
       it 'returns the current Time as UTC if the value is not a parseable Time' do
         now = Time.now.utc
         version = described_class.send(:get_version, value: Faker::Lorem.word)
@@ -173,7 +173,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         expect(described_class.send(:find_by_identifier, provenance: @provenance, json: @json)).to eql(nil)
       end
       it 'finds the DataManagementPlan by :dmp_id' do
-        id = @dmp.identifiers.select { |id| 'is_identified_by' == id.descriptor }.first
+        id = @dmp.identifiers.select { |i| i.descriptor == 'is_identified_by' }.first
         @json[:dmp_id] = { type: id.category, identifier: id.value }
         result = described_class.send(:find_by_identifier, provenance: @provenance, json: @json)
         expect(result).to eql(@dmp)
@@ -273,14 +273,14 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       it 'Replaces the Primary Contact' do
         result = described_class.send(:deserialize_contact, provenance: @provenance, dmp: @dmp, json: @json)
 
-        cdmp = result.contributors_data_management_plans.select { |cdmp| cdmp.role == 'primary_contact' }.first
+        cdmp = result.contributors_data_management_plans.select { |c| c.role == 'primary_contact' }.first
         expect(cdmp.contributor.name).to eql(@json[:contact][:name])
         expect(cdmp.role).to eql('primary_contact')
       end
       it 'adds the Primary Contact if its a new DataManagementPlan' do
         result = described_class.send(:deserialize_contact, provenance: @provenance,
                                                             dmp: build(:data_management_plan), json: @json)
-        cdmp = result.contributors_data_management_plans.select { |cdmp| cdmp.role == 'primary_contact' }.first
+        cdmp = result.contributors_data_management_plans.select { |c| c.role == 'primary_contact' }.first
         expect(cdmp.contributor.name).to eql(@json[:contact][:name])
         expect(cdmp.role).to eql('primary_contact')
       end
@@ -308,7 +308,6 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         result = described_class.send(:deserialize_contributors, provenance: @provenance,
                                                                  dmp: build(:data_management_plan), json: @json)
         cdmps = result.contributors_data_management_plans
-        emails = cdmps.map { |cdmp| cdmp.contributor.email }.uniq
         expect(cdmps.length).to eql(@json[:contributor].length + 1)
         cdmps.each do |cdmp|
           if cdmp.role == 'primary_contact'
@@ -319,7 +318,6 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         end
       end
       it 'adds the Contributor to an existing DataManagementPlan' do
-        count = @dmp.contributors.length
         @dmp.contributors_data_management_plans.each do |cdmp|
           # Skip the contact role here. It is covered above in the :before
           next if cdmp.role == 'primary_contact'
@@ -513,14 +511,5 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         expect(result.identifiers.map(&:value).include?(related.value)).not_to eql(true)
       end
     end
-
-    describe '#default_project(provenance:, dmp:)' do
-    end
-
-    describe '#default_dataset(provenance:, dmp:)' do
-    end
-  end
-
-  context 'Updates' do
   end
 end

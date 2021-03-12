@@ -1,8 +1,8 @@
 # DMPHub
 
-![Brakeman](https://github.com/github/CDLUC3/dmphub/actions/workflows/brakeman-analysis.yml/badge.svg)
-![Rubocop](https://github.com/github/CDLUC3/dmphub/actions/workflows/rubocop-analysis.yml/badge.svg)
-![RSpec](https://github.com/github/CDLUC3/dmphub/actions/workflows/rspec-tests.yml/badge.svg)
+![Brakeman](https://github.com/CDLUC3/dmphub/actions/workflows/brakeman-analysis.yml/badge.svg)
+![Rubocop](https://github.com/CDLUC3/dmphub/actions/workflows/rubocop-analysis.yml/badge.svg)
+![RSpec](https://github.com/CDLUC3/dmphub/actions/workflows/rspec-tests.yml/badge.svg)
 
 This repository covers work on a machine actionable DMP hub, from work funded by an NSF EAGER grant (https://www.nsf.gov/awardsearch/showAward?AWD_ID=1745675&HistoricalAwards=false). This 'Hub' application provides the following services:
 

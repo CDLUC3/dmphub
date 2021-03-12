@@ -246,14 +246,12 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
                                                              dmp: build(:data_management_plan), json: @json)
         expect(result.project.new_record?).to eql(true)
         expect(result.project.title.starts_with?('Project: ')).to eql(true)
-        expect(result.project.start_on + 2.years).to eql(result.project.end_on)
       end
       it 'adds a default Project to the existing DataManagementPlan' do
         @json.delete(:project)
         result = described_class.send(:deserialize_projects, provenance: @provenance, dmp: @dmp, json: @json)
         expect(result.project.new_record?).to eql(true)
         expect(result.project.title).to eql("Project: #{@dmp.title}")
-        expect(result.project.start_on + 2.years).to eql(result.project.end_on)
       end
     end
 
@@ -330,7 +328,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         end
 
         result = described_class.send(:deserialize_contributors, provenance: @provenance, dmp: @dmp, json: @json)
-        expect(result.contributors.length).to eql(@json[:contributor].length)
+        expect(result.contributors.length).to eql(@json[:contributor].length + 1)
         @json[:contributor].each do |contrib|
           cdmp = result.contributors_data_management_plans.select { |c| c.contributor.email == contrib[:mbox] }.first
           expect(cdmp.contributor.name).to eql(contrib[:name])

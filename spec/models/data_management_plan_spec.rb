@@ -91,7 +91,8 @@ RSpec.describe DataManagementPlan, type: :model do
   context 'callbacks' do
     before(:each) do
       @dmp = create(:data_management_plan, :complete, provenance: create(:provenance))
-      allow(ExternalApis::EzidService).to receive(:update_doi).and_return('foo')
+      allow(@dmp).to receive(:check_version).and_return(true)
+      allow(ExternalApis::EzidService).to receive(:update_doi).and_return(true)
     end
 
     describe 'trigger the check_version callback on :after_update' do
@@ -102,7 +103,7 @@ RSpec.describe DataManagementPlan, type: :model do
       end
       it 'changing the version triggers the callback' do
         expect(@dmp.update(version: Time.now + 2.minutes)).to eql(true)
-        expect(@dmp).to have_received(:version_check)
+        expect(@dmp).to have_received(:check_version)
       end
     end
 
@@ -116,7 +117,7 @@ RSpec.describe DataManagementPlan, type: :model do
       it 'triggers if the version changed call' do
         @dmp.version = Time.now + 2.minutes
         expect(@dmp.touch).to eql(true)
-        expect(@dmp).to have_received(:version_check)
+        expect(@dmp).to have_received(:check_version)
       end
     end
   end
@@ -325,11 +326,16 @@ RSpec.describe DataManagementPlan, type: :model do
 
   context 'DEV mode testing' do
     before(:each) do
+      Rails.env = 'development'
       @dmp = build(:data_management_plan)
     end
+
+    after(:each) do
+      Rails.env = 'test'
+    end
+
     describe 'mint_doi' do
       it 'gets a mock DOI when in dev mode' do
-        Rails.env = 'development'
         allow(@dmp).to receive(:mock_doi).and_return('foo')
         expect(@dmp.mint_doi(provenance: build(:provenance))).to eql(true)
         expect(@dmp).to have_received(:mock_doi)
@@ -338,7 +344,6 @@ RSpec.describe DataManagementPlan, type: :model do
     end
     describe 'check_version callback' do
       it 'returns true if in dev mode' do
-        Rails.env = 'development'
         expect(@dmp.send(:check_version)).to eql(true)
       end
     end

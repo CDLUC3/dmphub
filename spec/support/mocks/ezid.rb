@@ -9,7 +9,7 @@ module Mocks
         .to_return(status: 201, body: mock_ezid_response, headers: {})
 
       stub_request(:put, %r{ezid\.cdlib\.org/id/})
-      .to_return(status: 200, body: mock_ezid_response, headers: {})
+        .to_return(status: 200, body: mock_ezid_response, headers: {})
     end
 
     def mock_ezid_failure

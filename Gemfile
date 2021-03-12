@@ -54,6 +54,8 @@ gem 'mysql2' # , '~> 0.4.10'
 gem 'omniauth', '~> 1.9'
 # ORCID OAuth 2.0 Strategy for the OmniAuth Ruby authentication framework.
 gem 'omniauth-orcid'
+# Fix for security issue in omniauth: https://github.com/omniauth/omniauth/wiki/Resolving-CVE-2015-9284
+gem 'omniauth-rails_csrf_protection'
 # This plugin adds helpers for the reCAPTCHA API.
 gem 'recaptcha'
 # A simple HTTP and REST client for Ruby, inspired by the Sinatra's microframework style of specifying

@@ -17,7 +17,7 @@ namespace :api_tester do
       # rubocop:disable Layout/LineLength
       p 'Missing essential information. This script requires 4 arguments. The host (e.g. https://my.org.edu), your client name, client_id and the client_secret.'
       # rubocop:enable Layout/LineLength
-      p 'Please retry with: `rails "api_tester:verify[http://localhost:3001,dmptool,12345,abcdefg]"`'
+      p 'Please retry with: `rails "api_tester:verify[http://localhost:3001,dmphub,1234567890,0987654321]"`'
       p 'Note the position of the quotes!'
     end
   end

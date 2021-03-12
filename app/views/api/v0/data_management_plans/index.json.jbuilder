@@ -8,6 +8,15 @@ json.items @payload[:items].each do |dmp|
     next unless dmp.doi.present?
 
     json.schema 'https://github.com/RDA-DMP-Common/RDA-DMP-Common-Standard/tree/master/examples/JSON/JSON-schema/1.0'
+    extensions = [
+      { name: 'dmphub', uri: 'https://github.com/CDLUC3/dmphub-json-schema' },
+      { name: 'dmproadmap', uri: 'https://github.com/DMPRoadmap/api-json-schema' }
+    ]
+    json.extensions extensions do |extension|
+      json.name extension[:name]
+      json.uri extension[:uri]
+    end
+
     json.title dmp.title
     json.description dmp.description
     json.created dmp.created_at.to_s
@@ -38,11 +47,7 @@ json.items @payload[:items].each do |dmp|
       end
     end
 
-    json.extension do
-      json.dmphub do
-        json.partial! 'api/v0/hateoas', dmp: dmp, client: @client
-      end
-    end
+    json.partial! 'api/v0/hateoas', dmp: dmp, client: @client
   end
 end
 # rubocop:enable Metrics/BlockLength

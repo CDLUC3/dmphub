@@ -88,9 +88,11 @@ namespace :initialize do
        :\"#{client.client_id}\",\"client_secret\"}` when authenticating."
   end
 
-  desc 'Create the stub DataCite and Crossref Prvoenance records for the CitationService'
+  desc 'Create the stub Provenance records'
   task datacite_crossref_provenance: :environment do
     Provenance.create(name: 'datacite', description: 'DataCite')
     Provenance.create(name: 'crossref', description: 'Crossref')
+    Provenance.create(name: 'ezid', description: 'EZID')
+    Provenance.create(name: 'ror', description: 'Research Organization Registry (ror.org)')
   end
 end

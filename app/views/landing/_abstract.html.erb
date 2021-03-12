@@ -1,10 +1,8 @@
 <%# locals: project, dmp %>
 
 <p>
-<% if dmp.description.present? && dmp.description.html_safe? %>
-  <%= project.description.html_safe %>
-<% elsif project.description.present? && project.description.html_safe? %>
-  <%= dmp.description.html_safe %>
+<% if dmp.description.present? || project.description.present? %>
+  <%= dmp.description.present? ? sanitize(dmp.description) : sanitize(project.description) %>
 <% else %>
   No abstract was provided.<br>
   Please refer to the 'Is Metadata For' identifier above for more information about this DMP.

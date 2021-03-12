@@ -2,7 +2,7 @@
 
 <% datasets.each do |dataset| %>
   <h4><%= dataset.title %></h4>
-  <p><%= dataset.description&.html_safe %></p>
+  <p><%= sanitize(dataset.description) %></p>
 
   <%
   size = dataset.distributions.collect(&:byte_size).sort { |a, b| a <=> b }.last

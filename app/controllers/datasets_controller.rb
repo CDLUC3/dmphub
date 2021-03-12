@@ -6,7 +6,7 @@ class DatasetsController < ApplicationController
 
   # GET /data_management_plan/:id/datasets
   def index
-    @data_management_plan = DataManagementPlan.where(params[:id]).first || DataManagementPlan.new
+    @data_management_plan = DataManagementPlan.where(id: params[:id]).first || DataManagementPlan.new
     @datasets = @data_management_plan.datasets || [Dataset.new]
   end
 

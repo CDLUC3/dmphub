@@ -1,7 +1,7 @@
 <%# locals: dmp %>
 
 <ul class="landing-list published-works">
-  <li><strong>When citing this DMP use:</strong><br><%= citation(dmp: dmp).html_safe %></li>
+  <li><strong>When citing this DMP use:</strong><br><%= sanitize(citation(dmp: dmp)) %></li>
 
   <li>
     <strong>When connecting to this DMP to related project outputs (such as datasets) use the ID:</strong><br>

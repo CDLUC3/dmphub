@@ -28,7 +28,7 @@ class Dataset < ApplicationRecord
   # Based on the DataCite 4.3 schema resourceTypeGeneral
   # Note that the 'model' value is changed to 'model_representation' in this list
   # because 'model' conflicts with an ActiveRecord method
-  enum dataset_type: %i[audiovisual collection datapaper dataset event image
+  enum dataset_type: %i[audiovisual collection data_paper dataset event image
                         interactive_resource model_representation other physical_object
                         service software sound text workflow]
 

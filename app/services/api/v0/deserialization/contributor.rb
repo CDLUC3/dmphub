@@ -35,8 +35,9 @@ module Api
             contributor = marshal_contributor(provenance: provenance,
                                               is_contact: is_contact, json: json)
             return nil unless contributor.present?
-            # If the contributor already has an identifier just return them
-            return contributor unless contributor.identifiers.any?
+
+p "DESERIALIZATION: #{contributor.identifiers.any?}"
+p contributor.identifiers.inspect
 
             attach_identifier(provenance: provenance, contributor: contributor, json: json)
           end
@@ -137,7 +138,11 @@ module Api
             identifier = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: contributor, json: id_json, identifiable_type: 'Contributor'
             )
-            contributor.identifiers << identifier if identifier.present? && identifier.new_record?
+            return contributor unless identifier.present?
+
+            # If the identifier doesn't match the existing one then get rid of the old one
+            contributor.identifiers.destroy_all if contributor.identifiers.last&.value != identifier.value
+            contributor.identifiers << identifier
             contributor
           end
         end

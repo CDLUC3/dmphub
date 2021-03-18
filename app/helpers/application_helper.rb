@@ -21,8 +21,9 @@ module ApplicationHelper
     end
   end
 
-  def identifier_to_link(identifier:, text: '')
-    return 'Unknown' unless identifier.present?
+  def identifier_to_link(identifier:, text: '', show_default: true)
+    return show_default ? 'Unknown' : nil unless identifier.present? || text.present?
+    return text unless identifier.present?
 
     url = identifier_to_url(identifier: identifier)
     return url unless url.start_with?('http')
@@ -81,7 +82,7 @@ module ApplicationHelper
     latest = licenses.min { |a, b| b&.start_date <=> a&.start_date }
 
     if latest.present? && latest.license_ref.present?
-      link_to latest.license_ref, latest.license_ref, target: '_blank'
+      link_to latest.display_name, latest.license_ref.gsub('.json', ''), target: '_blank'
     else
       'unspecified'
     end

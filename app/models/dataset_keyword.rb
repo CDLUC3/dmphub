@@ -10,7 +10,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# The Join Bewteen a Dataset and a Keyword
 class DatasetKeyword < ApplicationRecord
   self.table_name = 'datasets_keywords'
 

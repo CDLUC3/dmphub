@@ -14,7 +14,6 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
-# A person
 class Citation < ApplicationRecord
   # Associations
   belongs_to :identifier

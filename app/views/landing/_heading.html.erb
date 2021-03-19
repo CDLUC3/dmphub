@@ -12,7 +12,7 @@ narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
   </div>
 
   <div class="t-step__logo">
-    <% if narrative_url.present? %>
+    <% if narrative_url.present? && dmp.source_privacy == 'open' %>
       <div><%= link_to image_tag('stack_of_papers_72x41.png', alt: 'DMP icon'),
                      narrative_url.value, target: "_blank", aria: { hidden: true } %></div>
       <div><%= base_message %> available <%= identifier_to_link(identifier: narrative_url, text: 'here') %>.</div>

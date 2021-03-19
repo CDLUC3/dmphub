@@ -11,7 +11,6 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
-# Permissions for an ApiClient
 class ApiClientPermission < ApplicationRecord
   # Associations
   belongs_to :api_client

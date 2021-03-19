@@ -19,7 +19,6 @@
 #  pid_system          :text(65535)
 #  provenance_id       :bigint
 #
-# A Dataset Distribution Host
 class Host < ApplicationRecord
   include Alterable
   include Authorizable

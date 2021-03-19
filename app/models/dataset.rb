@@ -19,7 +19,6 @@
 #  updated_at              :datetime         not null
 #  provenance_id           :bigint
 #
-# A dataset
 class Dataset < ApplicationRecord
   include Alterable
   include Authorizable

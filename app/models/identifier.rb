@@ -14,7 +14,6 @@
 #  descriptor        :integer          default("is_funded_by")
 #  provenance_id     :bigint
 #
-# Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class Identifier < ApplicationRecord
   include Alterable
 

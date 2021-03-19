@@ -12,7 +12,6 @@
 #  updated_at      :datetime         not null
 #  provenance_id   :bigint
 #
-# A Dataset Distribution License
 class License < ApplicationRecord
   include Alterable
   include Authorizable

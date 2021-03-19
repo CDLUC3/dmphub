@@ -13,7 +13,6 @@
 #  types           :text(65535)
 #  provenance_id   :bigint
 #
-# An Organization
 class Affiliation < ApplicationRecord
   include Alterable
   include Authorizable

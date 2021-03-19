@@ -9,7 +9,7 @@
 #  last_name              :string(255)
 #  email                  :string(255)      not null
 #  secret                 :text(65535)
-#  role                   :integer          default(0), not null
+#  role                   :integer          default("user"), not null
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  encrypted_password     :string(255)      default(""), not null
@@ -27,7 +27,6 @@
 #  orcid                  :string(255)
 #  affiliation_id         :bigint
 #
-# Respresents a user of the API
 class User < ApplicationRecord
   extend Devise::Models
 

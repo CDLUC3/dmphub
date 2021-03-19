@@ -16,9 +16,8 @@
 #  project_id                 :bigint
 #  provenance_id              :bigint
 #  version                    :datetime
+#  source_privacy             :integer          default(0)
 #
-# A data management plan
-# rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
   include Alterable
   include Authorizable
@@ -35,6 +34,8 @@ class DataManagementPlan < ApplicationRecord
 
   accepts_nested_attributes_for :costs, :datasets, :project,
                                 :contributors_data_management_plans
+
+  enum source_privacy: %i[closed open]
 
   # Validations
   validates :title, presence: true

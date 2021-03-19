@@ -12,7 +12,6 @@
 #  title         :string(255)      not null
 #  provenance_id :bigint
 #
-# A Dataset Technical Resource
 class TechnicalResource < ApplicationRecord
   include Alterable
   include Authorizable

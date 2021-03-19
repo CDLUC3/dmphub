@@ -73,6 +73,10 @@ module Api
             dmp.ethical_issues_report = json[:ethical_issues_report]
             dmp.ethical_issues_description = json[:ethical_issues_description]
 
+p "PRIVACY SETTING: #{json[:dmproadmap_privacy]}"
+
+            dmp.source_privacy = (json[:dmproadmap_privacy] == 'public' ? 'open' : 'closed')
+
             dmp = deserialize_projects(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)

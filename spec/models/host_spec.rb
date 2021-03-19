@@ -5,7 +5,6 @@
 # Table name: hosts
 #
 #  id                  :bigint           not null, primary key
-#  distribution_id     :bigint
 #  title               :string(255)      not null
 #  description         :text(4294967295)
 #  supports_versioning :boolean

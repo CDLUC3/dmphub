@@ -16,7 +16,6 @@
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
 #
-# A Client of the DMPHub API
 class ApiClient < ApplicationRecord
   # If the Client_id or client_secret are nil generate them
   before_validation :generate_credentials,

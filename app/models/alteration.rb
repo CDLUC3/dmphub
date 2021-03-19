@@ -12,7 +12,6 @@
 #  updated_at     :datetime         not null
 #  provenance_id  :bigint           not null
 #
-# A change log
 class Alteration < ApplicationRecord
   # Associations
   belongs_to :provenance

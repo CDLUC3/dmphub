@@ -9,7 +9,6 @@
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #
-# A Dataset Keyword
 class Keyword < ApplicationRecord
   # Associations
   has_many :dataset_keywords, dependent: :destroy

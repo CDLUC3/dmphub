@@ -16,6 +16,7 @@
 #  project_id                 :bigint
 #  provenance_id              :bigint
 #  version                    :datetime
+#  source_privacy             :integer          default(0)
 #
 FactoryBot.define do
   factory :data_management_plan do
@@ -26,6 +27,7 @@ FactoryBot.define do
     ethical_issues_report       { Faker::Internet.url }
     language                    { Api::V0::ConversionService::LANGUAGES.sample }
     version                     { Time.now }
+    source_privacy              { DataManagementPlan.source_privacies.keys.sample }
 
     before :create do |data_management_plan|
       data_management_plan.provenance = build(:provenance) unless data_management_plan.provenance.present?

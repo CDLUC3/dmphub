@@ -12,7 +12,6 @@
 #  updated_at              :datetime         not null
 #  provenance_id           :bigint
 #
-# A Data Management Plan to Person Relationship
 class ContributorsDataManagementPlan < ApplicationRecord
   include Alterable
 

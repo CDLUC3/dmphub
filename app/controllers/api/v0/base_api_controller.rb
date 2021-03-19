@@ -131,7 +131,7 @@ module Api
       # =========================
       def plan_permitted_params
         %i[created modified title description language ethical_issues_exist
-           ethical_issues_description ethical_issues_report schema] +
+           ethical_issues_description ethical_issues_report schema dmproadmap_privacy] +
           [dmp_id: identifier_permitted_params,
            contact: contributor_permitted_params,
            contributor: contributor_permitted_params,
@@ -144,7 +144,9 @@ module Api
            dmproadmap_template: %i[id title],
            dmproadmap_latest_version: %i[uri],
            dmproadmap_links: %i[download],
-           dmproadmap_related_identifiers: %i[relation_type related_identifier_type value]]
+           dmproadmap_related_identifiers: %i[relation_type related_identifier_type value],
+           dmproadmap_subscribers: [:name, :callback, actions:[]]
+          ]
       end
 
       def identifier_permitted_params

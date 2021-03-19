@@ -19,7 +19,6 @@
 #  provenance_id   :bigint
 #  host_id         :bigint
 #
-# A Dataset Distribution
 class Distribution < ApplicationRecord
   include Alterable
   include Authorizable

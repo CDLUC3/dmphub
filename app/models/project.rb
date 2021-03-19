@@ -13,7 +13,6 @@
 #  updated_at    :datetime         not null
 #  provenance_id :bigint
 #
-# A project
 class Project < ApplicationRecord
   include Alterable
   include Authorizable

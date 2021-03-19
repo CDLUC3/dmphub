@@ -12,7 +12,6 @@
 #  updated_at    :datetime         not null
 #  provenance_id :bigint
 #
-# A Dataset Security and Privacy Statement
 class SecurityPrivacyStatement < ApplicationRecord
   include Alterable
   include Authorizable

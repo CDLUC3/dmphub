@@ -50,6 +50,13 @@ module ExternalApis
         }
       end
 
+      # Fetch the DOI metadata to see if it exists
+      def verify_doi_exists(data_management_plan:)
+        identifier = data_management_plan.doi_without_prefix
+        resp = http_get(uri: "#{api_base_url}id/#{identifier}", additional_headers: {})
+        resp.code == 200
+      end
+
       # Create a new DOI
       def mint_doi(data_management_plan:, provenance:)
         data = json_from_template(provenance: provenance, dmp: data_management_plan)

@@ -12,7 +12,6 @@
 #  affiliation_id :bigint
 #  provenance_id  :bigint
 #
-# A person
 class Contributor < ApplicationRecord
   include Alterable
   include Authorizable

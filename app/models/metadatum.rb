@@ -12,7 +12,6 @@
 #  updated_at    :datetime         not null
 #  provenance_id :bigint
 #
-# A Dataset Metadata
 class Metadatum < ApplicationRecord
   include Alterable
   include Authorizable

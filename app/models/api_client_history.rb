@@ -12,7 +12,6 @@
 #  created_at              :datetime         not null
 #  updated_at              :datetime         not null
 #
-# An event that the ApiClient performed on a DataManagementPlan
 class ApiClientHistory < ApplicationRecord
   # ============ #
   # Associations #

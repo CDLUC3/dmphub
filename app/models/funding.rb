@@ -12,7 +12,6 @@
 #  affiliation_id :bigint
 #  provenance_id  :bigint
 #
-# A data management plan
 class Funding < ApplicationRecord
   include Alterable
   include Authorizable

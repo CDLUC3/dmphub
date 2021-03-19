@@ -14,7 +14,6 @@
 #  updated_at              :datetime         not null
 #  provenance_id           :bigint
 #
-# A Data Management Plan Cost
 class Cost < ApplicationRecord
   include Alterable
   include Authorizable

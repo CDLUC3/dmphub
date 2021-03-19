@@ -11,7 +11,6 @@
 #  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
-# Represents an identifier (e.g. ORCID, email, DOI, etc.)
 class ApiClientAuthorization < ApplicationRecord
   # Associations
   belongs_to :api_client

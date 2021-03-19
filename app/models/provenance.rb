@@ -10,7 +10,6 @@
 #  created_at  :datetime         not null
 #  updated_at  :datetime         not null
 #
-# An external system
 class Provenance < ApplicationRecord
   # Associations
   has_many :alterations

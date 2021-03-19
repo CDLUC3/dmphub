@@ -15,6 +15,8 @@
 #  updated_at                 :datetime         not null
 #  project_id                 :bigint
 #  provenance_id              :bigint
+#  version                    :datetime
+#  source_privacy             :integer          default(0)
 #
 require 'rails_helper'
 

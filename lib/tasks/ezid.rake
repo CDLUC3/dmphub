@@ -12,4 +12,20 @@ namespace :ezid do
       end
     end
   end
+
+  desc 'Generates the EZID XML for specified Data Management Plan'
+  task :xml, %i[data_management_plan_id] => [:environment] do |_t, args|
+    if args.any? && args[:data_management_plan_id].present?
+      dmp = DataManagementPlan.find_by(id: args.data_management_plan_id)
+
+      if dmp.present?
+        controller = ActionController::Base.new
+        pp controller.render_to_string("ezid/minter.xml", locals: { data_management_plan: dmp })
+      else
+        p 'Could not find the specified DMP. We are looking for data_management_plan.id'
+      end
+    else
+      p 'You must specify an ID retry with: `rails "ezid:xml[123]"`.'
+    end
+  end
 end

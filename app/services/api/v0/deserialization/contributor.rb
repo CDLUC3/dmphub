@@ -36,9 +36,6 @@ module Api
                                               is_contact: is_contact, json: json)
             return nil unless contributor.present?
 
-p "DESERIALIZATION: #{contributor.identifiers.any?}"
-p contributor.identifiers.inspect
-
             attach_identifier(provenance: provenance, contributor: contributor, json: json)
           end
 

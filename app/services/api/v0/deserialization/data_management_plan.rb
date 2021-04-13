@@ -253,7 +253,7 @@ module Api
             download_link = json.fetch('dmproadmap_links', {})['download']
             return dmp unless download_link.present?
 
-            identifier = dmp.identifiers.select { |id| id.descriptor == 'is_metadata_for' }
+            identifier = dmp.identifiers.select { |id| id.descriptor == 'is_metadata_for' }.last
             identifier.value = download_link if identifier.present?
             return dmp unless identifier.present?
 

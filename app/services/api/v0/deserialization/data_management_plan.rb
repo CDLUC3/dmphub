@@ -73,14 +73,14 @@ module Api
             dmp.ethical_issues_report = json[:ethical_issues_report]
             dmp.ethical_issues_description = json[:ethical_issues_description]
 
-p "PRIVACY SETTING: #{json[:dmproadmap_privacy]}"
-
             dmp.source_privacy = (json[:dmproadmap_privacy] == 'public' ? 'open' : 'closed')
 
             dmp = deserialize_projects(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
+
+            dmp = deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
             deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
           end
 
@@ -122,7 +122,7 @@ p "PRIVACY SETTING: #{json[:dmproadmap_privacy]}"
 
             # If no good result was found just initialize a new one
             dmp = ::DataManagementPlan.new(provenance: provenance, title: json[:title])
-            attach_identifier(provenance: provenance, dmp: dmp, json: json)
+            # attach_identifier(provenance: provenance, dmp: dmp, json: json)
           end
 
           # Marshal the Identifier and attach it
@@ -244,6 +244,24 @@ p "PRIVACY SETTING: #{json[:dmproadmap_privacy]}"
               dmp.datasets << dataset if dataset.present?
             end
             dmp.datasets << default_dataset(provenance: provenance, dmp: dmp, json: json[:title]) unless dmp.datasets.any?
+            dmp
+          end
+
+          def deserialize_download_link(provenance:, dmp:, json:)
+            return dmp unless provenance.present? && json.present? && dmp.present?
+
+            download_link = json.fetch('dmproadmap_links', {})['download']
+            return dmp unless download_link.present?
+
+            identifier = dmp.identifiers.select { |id| id.descriptor == 'is_metadata_for' }
+            identifier.value = download_link if identifier.present?
+            return dmp unless identifier.present?
+
+            identifier = Api::V0::Deserialization::Identifier.deserialize(
+              provenance: provenance, identifiable: dmp, json: id, descriptor: 'is_metadata_for',
+              identifiable_type: 'DataManagementPlan'
+            )
+            dmp.identifiers << identifier if identifier.present? && identifier.new_record?
             dmp
           end
 

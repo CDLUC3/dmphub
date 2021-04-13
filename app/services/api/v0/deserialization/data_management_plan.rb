@@ -258,8 +258,8 @@ module Api
             return dmp unless identifier.present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
-              provenance: provenance, identifiable: dmp, json: id, descriptor: 'is_metadata_for',
-              identifiable_type: 'DataManagementPlan'
+              provenance: provenance, identifiable: dmp, json: { type: 'url', identifier: download_link },
+              descriptor: 'is_metadata_for', identifiable_type: 'DataManagementPlan'
             )
             dmp.identifiers << identifier if identifier.present? && identifier.new_record?
             dmp

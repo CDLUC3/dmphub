@@ -22,7 +22,7 @@ class DataManagementPlansController < ApplicationController
         @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
         render 'show'
       else
-        redirect_to root_path, alert: 'No data management plan found for that DOI'
+        redirect_to root_path_location, alert: 'No data management plan found for that DOI'
       end
     end
   end

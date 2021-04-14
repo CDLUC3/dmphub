@@ -96,6 +96,10 @@ module ApplicationHelper
   end
 
   def landing_page_path_with_doi(dmp:)
+    # Temporarily override the default root_path behavior to redirect users to the DMPTool
+    # until we have decided what to do for the search/dashboard
+    root_path = Rails.env.production? ? 'https://dmptool.org/' : (Rails.env.stage? ? 'https://dmptool-stg.cdlib.org/' : 'https://dmptool-stg.cdlib.org/')
+
     return root_path unless dmp.id.present? && dmp.doi.present?
 
     id_to_doi(dmp: dmp, value: landing_page_path(dmp))

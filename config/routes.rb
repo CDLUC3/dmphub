@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  root to: 'home#index'
+
+  # Temporarily redirecting traffic to the root path to the DMPTool until we develop out our dashboard
+  #root to: 'home#index'
+  get '/' => redirect(Rails.env.production? ? 'https://dmptool.org/' : (Rails.env.stage? ? 'https://dmptool-stg.cdlib.org/' : 'https://dmptool-stg.cdlib.org/'))
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   devise_for :users, controllers: {

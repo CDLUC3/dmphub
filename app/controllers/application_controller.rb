@@ -4,6 +4,14 @@
 class ApplicationController < ActionController::Base
   private
 
+  # Temporarily override the default root_path behavior to redirect users to the DMPTool
+  # until we have decided what to do for the search/dashboard
+  def root_path_location
+    dmptool_url = 'https://dmptool.org/' if Rails.env.production?
+    dmptool_url = 'https://dmptool-stg.cdlib.org/' unless dmptool_url.present?
+    dmptool_url
+  end
+
   def after_sign_in_path_for(_resource)
     dashboard_path
   end
@@ -13,11 +21,11 @@ class ApplicationController < ActionController::Base
   end
 
   def after_sign_in_error_path_for(_resource)
-    root_path
+    root_path_location
   end
 
   def after_sign_up_error_path_for(_resource)
-    root_path
+    root_path_location
   end
 
   def pagination_params

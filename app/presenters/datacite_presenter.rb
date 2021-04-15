@@ -64,7 +64,7 @@ class DatacitePresenter
 
   # Retrieve the landing page URL for EZID's _target (where the DOI will resolve to)
   def landing_page
-    url = Rails.application.routes.url_helpers.data_management_plan_url(@dmp)
+    url = Rails.application.routes.url_helpers.landing_page_url(@dmp.doi_without_prefix)
     url.gsub('dmphub1', 'dmphub').gsub('dmphub2', 'dmphub')
   end
 

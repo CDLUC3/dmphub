@@ -47,6 +47,9 @@ module Api
               )
 
               if @dmp.dois.any? || @dmp.arks.any?
+                # Issue a quick update back to EZID to update the landing page
+                ExternalApis::EzidService.update_doi(data_management_plan: @dmp)
+
                 render 'show', status: :created
               else
                 render_error errors: ['Unable to acquire a DOI at this time. Please try your request later.'],

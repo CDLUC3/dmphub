@@ -40,9 +40,6 @@ class PersistenceService
         safe_save_contributor_data_management_plan(cdmp: cdmp)
       end
       dmp.datasets = safe_save_datasets(datasets: dmp.datasets)
-
-p "BEFORE SAVE: #{dmp.source_privacy}"
-
       dmp.save
       dmp.reload
     end

@@ -44,7 +44,7 @@ module ApplicationHelper
     when 'ror'
       "https://ror.org/#{identifier.value}"
     else
-      "#{identifier.category}:#{identifier.value}"
+      identifier.category == 'other' ? identifier.value : "#{identifier.category}:#{identifier.value}"
     end
   end
 

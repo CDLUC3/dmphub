@@ -16,8 +16,8 @@ module Dmphub
     # ------------- #
     # EZID SETTINGS #
     # ------------- #
-    config.x.ezid.landing_page_url = Rails.application.credentials.dmphub[:ezid_landing_page_url]
-    config.x.ezid.api_base_url = Rails.application.credentials.dmphub[:ezid_api_base_url]
+    config.x.ezid.landing_page_url = Rails.application.credentials.ezid[:landing_page_url]
+    config.x.ezid.api_base_url = Rails.application.credentials.ezid[:api_base_url]
     config.x.ezid.mint_path = 'login'
     config.x.ezid.mint_path = 'id'
     config.x.ezid.delete_path = 'dois/'

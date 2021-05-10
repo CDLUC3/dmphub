@@ -255,7 +255,7 @@ module Api
 
             identifier = dmp.identifiers.select { |id| id.descriptor == 'is_metadata_for' }.last
             identifier.value = download_link if identifier.present?
-            return dmp unless identifier.present?
+            return dmp if identifier.present?
 
             identifier = Api::V0::Deserialization::Identifier.deserialize(
               provenance: provenance, identifiable: dmp, json: { type: 'url', identifier: download_link },

@@ -16,8 +16,13 @@ module Dmphub
     # ------------- #
     # EZID SETTINGS #
     # ------------- #
-    config.x.ezid.landing_page_url = 'https://ezid-stg.cdlib.org/id/'
-    config.x.ezid.api_base_url = 'https://ezid-stg.cdlib.org/'
+    if Rails.env.production?
+      config.x.ezid.landing_page_url = 'https://ezid.cdlib.org/id/'
+      config.x.ezid.api_base_url = 'https://ezid.cdlib.org/'
+    else
+      config.x.ezid.landing_page_url = 'https://ezid-stg.cdlib.org/id/'
+      config.x.ezid.api_base_url = 'https://ezid-stg.cdlib.org/'
+    end
     config.x.ezid.mint_path = 'login'
     config.x.ezid.mint_path = 'id'
     config.x.ezid.delete_path = 'dois/'

@@ -16,7 +16,7 @@ The DMPHub serves two primary purposes:
 
 ![](docs/dmphubusecase.png)
 
-The DMPHub does not currently provide any UI pages to allow a user to add or edit DMP metadata. All management of DMP metadata is meant to be performed via it's API.
+The DMPHub does not currently pro vide any UI pages to allow a user to add or edit DMP metadata. All management of DMP metadata is meant to be performed via it's API.
 
 The DMPHub provides an API that communicates via the new metadata standard developed by an RDA working group called the [RDA common standard for machine-actionable data management plans](https://rda-dmp-common.github.io/RDA-DMP-Common-Standard/).
 

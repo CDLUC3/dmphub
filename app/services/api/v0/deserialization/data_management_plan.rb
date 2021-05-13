@@ -80,8 +80,8 @@ module Api
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
 
-            dmp = deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
-            deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
+            deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
+            # deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
           end
 
           private

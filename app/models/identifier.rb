@@ -44,6 +44,9 @@ class Identifier < ApplicationRecord
                       does_reference is_referenced_by
                       requires is_required_by
                       reviews is_reviewed_by]
+  # Reference:
+  #   is_metadata_for == 13
+  #   is_referenced_by == 30
 
   # Associations
   belongs_to :identifiable, polymorphic: true

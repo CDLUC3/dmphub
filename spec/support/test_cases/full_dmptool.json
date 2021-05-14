@@ -146,8 +146,8 @@
     "dmproadmap_related_identifiers": [
       { "relation_type": "IsReferencedBy", "related_identifier_type": "URL", "value": "https://dmptool.org" }
     ],
-    "dmproadmap_links": [
-      { "download": "http://localhost:3000/plans/51155/export.pdf?export%5Bform%5D=true" }
-    ]
+    "dmproadmap_links": {
+      "download": "http://localhost:3000/plans/51155/export.pdf?export%5Bform%5D=true"
+    }
   }
 }

@@ -79,9 +79,8 @@ module Api
             dmp = deserialize_contributors(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
-
-            deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
-            # deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
+            dmp = deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
+            deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
           end
 
           private
@@ -122,7 +121,7 @@ module Api
 
             # If no good result was found just initialize a new one
             dmp = ::DataManagementPlan.new(provenance: provenance, title: json[:title])
-            # attach_identifier(provenance: provenance, dmp: dmp, json: json)
+            attach_identifier(provenance: provenance, dmp: dmp, json: json)
           end
 
           # Marshal the Identifier and attach it

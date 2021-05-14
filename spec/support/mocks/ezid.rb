@@ -5,15 +5,15 @@ module Mocks
   # Using the top 3 results from: https://api.ror.org/organizations?query=Berkeley
   module Ezid
     def mock_ezid_success
-      stub_request(:post, %r{ezid\.cdlib\.org/shoulder/doi:})
+      stub_request(:post, %r{ezid-stg\.cdlib\.org/shoulder/doi:})
         .to_return(status: 201, body: mock_ezid_response, headers: {})
 
-      stub_request(:put, %r{ezid\.cdlib\.org/id/})
+      stub_request(:put, %r{ezid-stg\.cdlib\.org/id/})
         .to_return(status: 200, body: mock_ezid_response, headers: {})
     end
 
     def mock_ezid_failure
-      stub_request(:post, %r{ezid\.cdlib\.org/shoulder/doi:})
+      stub_request(:post, %r{ezid-stg\.cdlib\.org/shoulder/doi:})
         .to_return(status: 400, body: mock_ezid_error, headers: {})
     end
 

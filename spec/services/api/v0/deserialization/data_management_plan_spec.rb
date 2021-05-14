@@ -96,7 +96,8 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       expect(described_class).to have_received(:deserialize_contributors)
       expect(described_class).to have_received(:deserialize_costs)
       expect(described_class).to have_received(:deserialize_datasets)
-      expect(described_class).to have_received(:deserialize_related_identifiers)
+      # TODO: Uncomment once we reenable related identifiers
+      # expect(described_class).to have_received(:deserialize_related_identifiers)
     end
     it 'sets the values' do
       result = described_class.deserialize(provenance: @provenance, json: @json)

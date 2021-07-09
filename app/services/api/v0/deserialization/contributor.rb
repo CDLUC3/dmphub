@@ -46,7 +46,7 @@ module Api
           # rubocop:disable Metrics/CyclomaticComplexity
           def valid?(is_contact:, json: {})
             return false unless json.present?
-            return false unless json[:name].present? && json[:mbox].present?
+            return false unless json[:name].present? || json[:mbox].present?
 
             # Make the role an array in the event that it is a string
             json[:role] = [json[:role]] if json[:role].present? && json[:role].is_a?(String)

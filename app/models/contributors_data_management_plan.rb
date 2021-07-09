@@ -33,6 +33,7 @@ class ContributorsDataManagementPlan < ApplicationRecord
     http://credit.niso.org/contributor-roles/visualization
     http://credit.niso.org/contributor-roles/writing-original-draft
     http://credit.niso.org/contributor-roles/writing-review-editing
+    other
   ]
 
   # Associations

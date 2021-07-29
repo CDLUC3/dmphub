@@ -81,8 +81,6 @@ module Api
               provenance: provenance, identifiable: nil, json: id_json, descriptor: 'is_identified_by',
               identifiable_type: 'Dataset'
             )
-            return id.identifiable if id.present? && id.identifiable.is_a?(::Host)
-
             id.present? && id.identifiable.is_a?(::Dataset) ? id.identifiable : nil
           end
 

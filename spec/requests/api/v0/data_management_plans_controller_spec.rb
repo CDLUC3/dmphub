@@ -36,7 +36,7 @@ RSpec.describe Api::V0::DataManagementPlansController, type: :request do
 
     it 'does not return data management plans owned by another client' do
       dmps = @json['items'].map { |item| item['dmp'] }.select do |dmp|
-        dmp['dmp_id']['type'] == 'DOI' && dmp['dmp_id']['identifier'] == @other_dmp.dois.first
+        dmp['dmp_id']['type'] == 'DOI' && dmp['dmp_id']['identifier'] == @other_dmp.doi
       end
       expect(dmps.empty?).to eql(true)
     end

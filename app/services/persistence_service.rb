@@ -86,6 +86,7 @@ class PersistenceService
         dataset.distributions.each do |distribution|
           distribution.host = safe_save_host(host: distribution.host)
         end
+
         dataset
       end
     end
@@ -112,15 +113,17 @@ class PersistenceService
       return metadatum unless metadatum.present? && metadatum.urls.any?
 
       Metadatum.transaction do
-        url = metadatum.urls.first
-        id = Identifier.find_or_initialize_by(value: url.value, category: url.category,
-                                              descriptor: url.descriptor)
-        return id.identifiable unless id.new_record?
-
         datum = Metadatum.find_or_create_by(description: metadatum.description,
                                             language: metadatum.language)
-        id.identifiable = datum
-        id.save
+        if datum.new_record?
+          datum.update(saveable_attributes(attrs: metadatum.attributes))
+          datum = datum.reload
+
+          metadatum.identifiers.each do |id|
+            id.identifiable = datum.reload
+            safe_save_identifier(identifier: id)
+          end
+        end
         datum.reload
       end
     end

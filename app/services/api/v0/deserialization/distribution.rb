@@ -32,8 +32,12 @@ module Api
             host = Api::V0::Deserialization::Host.deserialize(
               provenance: provenance, json: json.fetch(:host, {})
             )
+
             # Try to find the Distribution by title
-            distribution = find_by_title(provenance: provenance, host: host, json: json) unless distribution.present?
+            distribution = ::Distribution.new(
+              provenance: provenance, title: json[:title], access_url: json[:access_url],
+              download_url: json[:download_url]
+            )
             return nil unless distribution.present?
 
             distribution.host = host
@@ -62,19 +66,6 @@ module Api
             ::Distribution.where(access_url: json[:access_url])
                           .or(::Distribution.where(download_url: json[:download_url]))
                           .first
-          end
-
-          # Search for the Distribution by it title
-          def find_by_title(provenance:, host:, json: {})
-            return nil unless json.present? && json[:title].present?
-
-            distribution = ::Distribution.where(host: host)
-                                         .where('LOWER(title) = ?', json[:title].downcase).first
-            return distribution if distribution.present?
-
-            # If no good result was found just use the specified title
-            ::Distribution.new(provenance: provenance, title: json[:title],
-                               access_url: json[:access_url], download_url: json[:download_url])
           end
 
           # Deserialize any Licenses

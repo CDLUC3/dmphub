@@ -7,6 +7,7 @@ describe 'API V0 - Data Management Plan Show' do
     project = create(:project, :complete)
     @data_management_plan = create(:data_management_plan, :complete, project: project)
     @client = create(:api_client)
+    @doi = @data_management_plan.doi
     render partial: 'api/v0/rda_common_standard/data_management_plans_show.json.jbuilder',
            locals: { data_management_plan: @data_management_plan, client: @client }
     @json = JSON.parse(rendered)
@@ -29,7 +30,7 @@ describe 'API V0 - Data Management Plan Show' do
   end
 
   it 'has a dmp_id attribute' do
-    expect(@json['dmp_id']['identifier']).to eql(@data_management_plan.dois.first.value)
+    expect(@json['dmp_id']['identifier']).to eql(@doi.value)
   end
 
   it 'has a description attribute' do

@@ -21,7 +21,7 @@ module Api
             # Try to find the Metadata by the standard id
             metadatum = find_by_identifier(provenance: provenance, json: json)
             metadatum.description = json[:description] if json[:description].present?
-            metadatum.language = json[:language] if json[:language].present?
+            metadatum.language = Api::V0::ConversionService.language(code: json[:language])
 
             attach_identifier(provenance: provenance, metadatum: metadatum, json: json)
           end

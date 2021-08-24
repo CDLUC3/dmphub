@@ -22,4 +22,9 @@ class Metadatum < ApplicationRecord
 
   # Validations
   validates :language, presence: true
+
+  # The RDA Common standard only allows for the description.
+  def name
+    description.split(" - ").first
+  end
 end

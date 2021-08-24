@@ -124,7 +124,35 @@ module ApplicationHelper
 
     author = dmp.primary_contact.name
     pub_year = dmp.created_at.strftime('%Y')
-    doi = identifier_to_link(identifier: dmp.dois.last)
+    doi = identifier_to_link(identifier: dmp.doi)
     "#{author}. (#{pub_year}). \"#{dmp.title}\" [Data Management Plan]. DMPHub. #{doi}"
+  end
+
+  def research_domain_from_keywords(keywords: [])
+    keywords = keywords.reject do |key|
+      key.value.start_with?(%r{[0-9\.]\s+\-})
+    end
+    return "" unless keywords.any?
+
+    <<~HTML
+      <li>
+        <strong>Research domain</strong>:<span>#{keywords.uniq.first.value}</span>
+      </li>
+    HTML
+  end
+
+  def metadata_standards(dataset:)
+    return "" unless dataset.present? && dataset.metadata.any?
+
+    standards = dataset.metadata.map do |standard|
+      link_to(standard.name, standard.urls.first&.value, target: '_blank',
+              title: standard.name)
+    end
+
+    <<~HTML
+      <li>
+        <strong>Metadata Standard(s)</strong>:<span>#{standards.join(", ")}</span>
+      </li>
+    HTML
   end
 end

@@ -13,9 +13,15 @@ narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
 
   <div class="t-step__logo">
     <% if narrative_url.present? && dmp.source_privacy == 'open' %>
+      <%
+      # Temporary hack until we can get the PDF download working
+      url = narrative_url.value.gsub("api/v2/", "")
+                               .gsub(".pdf", "/export.pdf?export[question_headings]=true")
+      id = Identifier.new(value: url)
+      %>
       <div><%= link_to image_tag('stack_of_papers_72x41.png', alt: 'DMP icon'),
-                     narrative_url.value, target: "_blank", aria: { hidden: true } %></div>
-      <div><%= base_message %> available <%= identifier_to_link(identifier: narrative_url, text: 'here') %>.</div>
+                     url, target: "_blank", aria: { hidden: true } %></div>
+      <div><%= base_message %> available <%= identifier_to_link(identifier: id, text: 'here') %>.</div>
     <% else %>
       <div><%= image_tag('stack_of_papers_72x41.png', alt: 'DMP icon') %></div>
       <div><%= base_message %>.</div>

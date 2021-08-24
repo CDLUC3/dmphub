@@ -1,6 +1,9 @@
 <%# locals: dmp, project %>
 
 <ul class="landing-list">
+  <%= sanitize(research_domain_from_keywords(
+    keywords: dmp.datasets.map { |d| d.keywords }.flatten.uniq
+  )) %>
   <li><strong>Project Start</strong>:<span><%= safe_date(date: project.start_on) %></span></li>
   <li><strong>Project End</strong>:<span><%= safe_date(date: project.end_on) %></span></li>
   <li><strong>Created</strong>:<span><%= safe_date(date: dmp.created_at) %></span></li>

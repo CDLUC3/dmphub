@@ -10,8 +10,8 @@
   %>
 
   <ul class="landing-list">
-    <%= sanitize(metadata_standards(dataset: dataset)) %>
     <li><strong>Format:</strong><span><%= humanize_underscored(name: dataset.dataset_type) %></span></li>
+    <%= sanitize(metadata_standards(dataset: dataset)) %>
     <li><strong>Anticipated volume:</strong><span><%= LandingPresenter.byte_size(size: size) %></span></li>
     <li><strong>Release timeline:</strong><span><%= safe_date(date: dataset.publication_date) %></span></li>
     <li><strong>Intended repository:</strong><span><%= hosts.map { |host| host_to_link(host: host) }.join('</span>, <span>').html_safe %></span></li>

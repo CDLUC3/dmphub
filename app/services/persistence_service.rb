@@ -11,11 +11,6 @@ class PersistenceService
       provenance = Provenance.where(name: client.name).first
       action = dmp.new_record? ? 'add' : 'edit'
 
-p "SAFE SAVE DMP:"
-pp dmp.inspect
-p "------------------------------"
-pp dmp.identifiers.inspect
-
       ActiveRecord::Base.transaction do
         dmp = safe_save(dmp: dmp)
         dmp = dmp.reload

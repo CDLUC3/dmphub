@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_03_19_184054) do
+ActiveRecord::Schema.define(version: 2021_09_27_175929) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -83,7 +83,6 @@ ActiveRecord::Schema.define(version: 2021_03_19_184054) do
     t.bigint "provenance_id", null: false
     t.integer "object_type", default: 0, null: false
     t.text "citation_text"
-    t.json "original_json"
     t.datetime "retrieved_on", null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
@@ -239,6 +238,7 @@ ActiveRecord::Schema.define(version: 2021_03_19_184054) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "descriptor", default: 0
     t.bigint "provenance_id"
+    t.integer "work_type"
     t.index ["category"], name: "index_identifiers_on_category"
     t.index ["provenance_id"], name: "index_identifiers_on_provenance_id"
   end

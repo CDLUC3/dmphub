@@ -16,6 +16,7 @@
 #
 class Identifier < ApplicationRecord
   include Alterable
+  include Uc3Citation
 
   # Based on the DataCite 4.3 schema relatedIdentifierType
   enum category: %i[ark arxiv bibcode credit doi duns ean13 eissn fundref handle
@@ -48,9 +49,15 @@ class Identifier < ApplicationRecord
   #   is_metadata_for == 13
   #   is_referenced_by == 30
 
+  # The type/category of work the identifier represents
+  enum work_type: %i[article book dataset output_management_plan paper preprint
+                     software supplemental_information]
+
   # Associations
   belongs_to :identifiable, polymorphic: true
   has_one :citation, required: false, dependent: :destroy
+
+  after_create :load_citation, if: :doi?
 
   # Validations
   validates :category, :value, :provenance, presence: true
@@ -75,6 +82,26 @@ class Identifier < ApplicationRecord
 
   def requires_universal_uniqueness
     ::Identifier.requires_universal_uniqueness
+  end
+
+  def load_citation
+    provenance = Provenance.find_by(name: 'citation_service')
+    return false unless provenance.present?
+
+    wrk_typ = work_type == 'supplemental_information' ? '' : work_type
+    citation = fetch_citation(doi: value, work_type: wrk_typ, debug: true)
+    return false unless citation.present?
+
+    Citation.create(
+      identifier: self,
+      provenance: provenance,
+      object_type: citation.include?('[Article]') ? 'article' : 'dataset',
+      citation_text: citation,
+      retrieved_on: Time.now
+    )
+  rescue StandardError => e
+    p e.message
+    pp e.backtrace
   end
 
   class << self

@@ -33,8 +33,5 @@
 <% if relateds.any? %>
   <h3>Other works associated with this research project</h3>
   <%= render partial: '/landing/published_works',
-             locals: {
-               publications: relateds.select { |r| r.citation.present? && r.citation.article_journal? },
-               datasets: relateds.select { |r| r.citation.present? && r.citation.dataset? }
-             } %>
+             locals: { publications: relateds } %>
 <% end %>

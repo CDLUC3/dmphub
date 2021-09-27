@@ -144,13 +144,13 @@ module Api
            dmproadmap_template: %i[id title],
            dmproadmap_latest_version: %i[uri],
            dmproadmap_links: %i[download],
-           dmproadmap_related_identifiers: %i[relation_type related_identifier_type value],
+           dmproadmap_related_identifiers: identifier_permitted_params,
            dmproadmap_subscribers: [:name, :callback, actions:[]]
           ]
       end
 
       def identifier_permitted_params
-        %i[type identifier]
+        %i[type identifier descriptor work_type]
       end
 
       def contributor_permitted_params

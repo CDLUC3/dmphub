@@ -9,7 +9,6 @@
 #  provenance_id :bigint           not null
 #  object_type   :integer          default("dataset"), not null
 #  citation_text :text(65535)
-#  original_json :json
 #  retrieved_on  :datetime         not null
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null
@@ -20,9 +19,9 @@ class Citation < ApplicationRecord
   belongs_to :provenance
 
   # Validations
-  validates :object_type, :citation_text, :original_json, :retrieved_on, presence: true
+  validates :object_type, :citation_text, :retrieved_on, presence: true
 
-  enum object_type: %i[dataset article_journal]
+  enum object_type: %i[dataset article book software]
 
   def to_s
     citation_text.to_s

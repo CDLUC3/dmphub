@@ -26,6 +26,7 @@ module Api
             ::Identifier.find_or_initialize_by(provenance: provenance,
                                                category: category,
                                                descriptor: descriptor,
+                                               work_type: work_type_from_json(json: json),
                                                identifiable: identifiable,
                                                value: json[:identifier])
           end
@@ -49,6 +50,14 @@ module Api
 
             # Otherwise derive the category from the value
             Api::V0::ConversionService.identifier_category_from_value(value: json[:identifier])
+          end
+
+          # Determine if we received a known work_type otherwise just ignore it
+          def work_type_from_json(json:)
+            return nil unless json.present? && json[:work_type].present?
+            return nil unless ::Identifier.work_types.keys.include?(json[:work_type].downcase)
+
+            json[:work_type].downcase
           end
 
           # This will find the identifier we are after. If it is an identifier

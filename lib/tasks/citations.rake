@@ -32,7 +32,7 @@ namespace :citations do
 
     dois.select do |id|
       !id.citation.present? ||
-        id.citation.citation_text.start_with?('Unable to find a citation')
+        id.citation.citation_text&.start_with?('Unable to find a citation')
     end
   end
 end

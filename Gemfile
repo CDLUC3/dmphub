@@ -28,8 +28,9 @@ gem 'jbuilder', '~> 2.7'
 # Our homegrown artisinal SSM gem
 gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: '0.3.1'
 
-# Our homegrown artisinal Citation gem
-gem 'uc3-citation', git: 'https://github.com/CDLUC3/uc3-citation', branch: 'main'
+# A library (owned by UC3) that retrieves an citation for the specified DOI
+# https://github.com/CDLUC3/uc3-citation
+gem 'uc3-citation'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

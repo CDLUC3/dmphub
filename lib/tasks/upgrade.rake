@@ -43,7 +43,7 @@ namespace :upgrade do
       else
         work_type = 'supplemental_information'
       end
-      citation.identifier.update(work_type: work_type)
+      citation.identifier&.update(work_type: work_type)
     end
   end
 end

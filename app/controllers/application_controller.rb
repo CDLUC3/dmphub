@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   # until we have decided what to do for the search/dashboard
   def root_path_location
     dmptool_url = 'https://dmptool.org/' if Rails.env.production?
-    dmptool_url = 'https://dmptool-dev.cdlib.org/' if root_url.include?('-dev.cdlib.org')
+    dmptool_url = 'https://dmptool-dev.cdlib.org/' if dashboard_url.include?('-dev.cdlib.org')
     dmptool_url = 'https://dmptool-stg.cdlib.org/' unless dmptool_url.present?
     dmptool_url
   end

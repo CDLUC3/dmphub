@@ -8,19 +8,23 @@ class DataManagementPlansController < ApplicationController
   def show
     val = params[:id].gsub('doi:', Rails.configuration.x.ezid[:doi_prefix])
     doi = Identifier.where(value: val, category: 'doi', identifiable_type: 'DataManagementPlan').first
+    @source = request.referer
 
     if doi.present?
       @dmp = DataManagementPlan.find(doi.identifiable_id)
-      @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
-      render 'show'
     else
       doi_param_to_dmp
+    end
 
+    respond_to do |format|
       if @dmp.present?
         @json = render_to_string(template: '/api/v0/data_management_plans/show.json.jbuilder')
-        render 'show'
+
+        format.html { render 'show' }
+        format.json { render 'api/v0/data_management_plans/show' }
       else
-        redirect_to root_path_location, alert: 'No data management plan found for that DOI'
+        format.html { redirect_to root_path_location, alert: 'No data management plan found for that DOI' }
+        format.json { render '/api/v0/error', status: :not_found }
       end
     end
   end

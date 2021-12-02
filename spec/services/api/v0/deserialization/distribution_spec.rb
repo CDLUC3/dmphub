@@ -47,22 +47,6 @@ RSpec.describe Api::V0::Deserialization::Distribution do
       result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
       expect(result).to eql(nil)
     end
-    it 'finds an existing Distribution by its :title and :host' do
-      @json[:title] = @distribution.title
-      @json[:host] = { title: @host.title, url: @host.identifiers.last.value }
-      result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
-      expect(result.new_record?).to eql(false)
-    end
-    it 'finds an existing Distribution by its :access_url' do
-      @json[:access_url] = @distribution.access_url
-      result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
-      expect(result.new_record?).to eql(false)
-    end
-    it 'finds an existing Distribution by its :download_url' do
-      @json[:download_url] = @distribution.download_url
-      result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
-      expect(result.new_record?).to eql(false)
-    end
     it 'initializes a new Distribution' do
       result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
       expect(result.new_record?).to eql(true)
@@ -89,52 +73,6 @@ RSpec.describe Api::V0::Deserialization::Distribution do
       it 'returns true if :title and :data_acces present' do
         json = { title: Faker::Lorem.word, data_access: ::Distribution.data_accesses.keys.sample }
         expect(described_class.send(:valid?, json: json)).to eql(true)
-      end
-    end
-
-    describe '#find_by_urls(json:)' do
-      it 'returns nil if :json is not present' do
-        result = described_class.send(:find_by_urls, json: nil)
-        expect(result).to eql(nil)
-      end
-      it 'finds the Distribution by :access_url' do
-        @json.delete(:download_url)
-        @json[:access_url] = @distribution.access_url
-        result = described_class.send(:find_by_urls, json: @json)
-        expect(result).to eql(@distribution)
-      end
-      it 'finds the Distribution by :download_url' do
-        @json.delete(:access_url)
-        @json[:download_url] = @distribution.download_url
-        result = described_class.send(:find_by_urls, json: @json)
-        expect(result).to eql(@distribution)
-      end
-    end
-
-    describe '#find_by_title(provenance:, host:, json: {})' do
-      it 'returns nil if :json is not present' do
-        result = described_class.send(:find_by_title, provenance: @provenance, host: nil, json: nil)
-        expect(result).to eql(nil)
-      end
-      it 'returns nil if :title is not present' do
-        @json.delete(:title)
-        result = described_class.send(:find_by_title, provenance: @provenance, host: nil, json: @json)
-        expect(result).to eql(nil)
-      end
-      it 'finds the Distribution by :title with a nil Host' do
-        @json[:title] = @distribution.title
-        @distribution.update(host: nil)
-        result = described_class.send(:find_by_title, provenance: @provenance, host: nil, json: @json)
-        expect(result).to eql(@distribution)
-      end
-      it 'finds the Distribution by :title and :host' do
-        @json[:title] = @distribution.title
-        result = described_class.send(:find_by_title, provenance: @provenance, host: @host, json: @json)
-        expect(result).to eql(@distribution)
-      end
-      it 'initializes a new Distribution if no match is found' do
-        result = described_class.send(:find_by_title, provenance: @provenance, host: @host, json: @json)
-        expect(result.new_record?).to eql(true)
       end
     end
 
@@ -167,30 +105,6 @@ RSpec.describe Api::V0::Deserialization::Distribution do
     it 'does not update the fields if no match is found in DB' do
       result = described_class.deserialize(provenance: @provenance, dataset: @dataset, json: @json)
       expect(result.new_record?).to eql(true)
-    end
-    it 'updates the record if matched by :download_url' do
-      @json[:title] = @distribution.title
-      @json[:download_url] = @distribution.download_url
-      result = verify_expected_updates
-      expect(result.access_url).to eql(@json[:access_url])
-      expect(result.host.title).to eql(@json[:host][:title])
-      expect(result.host.identifiers.last.value).to eql(@json[:host][:url])
-
-      # Expect that it did not update the :download_url, :title or :host
-      expect(result.title).to eql(@distribution.title)
-      expect(result.download_url).to eql(@distribution.download_url)
-    end
-    it 'updates the record if matched by :access_url' do
-      @json[:title] = @distribution.title
-      @json[:access_url] = @distribution.access_url
-      result = verify_expected_updates
-      expect(result.download_url).to eql(@json[:download_url])
-      expect(result.host.title).to eql(@json[:host][:title])
-      expect(result.host.identifiers.last.value).to eql(@json[:host][:url])
-
-      # Expect that it did not update the :download_url, :title or :host
-      expect(result.title).to eql(@distribution.title)
-      expect(result.access_url).to eql(@distribution.access_url)
     end
     it 'updates the record if matched by :title and :host' do
       @json[:title] = @distribution.title

@@ -328,7 +328,8 @@ GEM
     parser (3.1.0.0)
       ast (~> 2.4.1)
     public_suffix (4.0.6)
-    puma (3.12.6)
+    puma (4.3.9)
+      nio4r (~> 2.0)
     racc (1.6.0)
     rack (2.2.3)
     rack-proxy (0.7.2)
@@ -625,7 +626,7 @@ DEPENDENCIES
   omniauth (~> 1.9)
   omniauth-orcid
   omniauth-rails_csrf_protection
-  puma (~> 3.11)
+  puma (~> 4.3)
   rails (~> 6.0.0)
   rails-controller-testing
   recaptcha

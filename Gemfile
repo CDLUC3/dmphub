@@ -75,6 +75,9 @@ gem 'text'
 gem 'capistrano', '~> 3.10', require: false
 # gem 'capistrano3-puma', require: false
 gem 'capistrano-rails', '~> 1.3', require: false
+# Protect your Rails and Rack apps from bad clients. Rack::Attack lets you easily decide when
+# to allow, block and throttle based on properties of the request.
+gem 'rack-attack'
 
 group :development, :test do
   # Add a comment summarizing the current schema to the top or bottom of each of your models and factories

@@ -15,7 +15,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <creator>
         <creatorName nameType="Personal"><%= creator.name %></creatorName>
         <% if creator.orcids.any? %>
-        <nameIdentifier schemeURI="http://orcid.org/" nameIdentifierScheme="ORCID">
+        <nameIdentifier schemeURI="https://orcid.org/" nameIdentifierScheme="ORCID">
           <%= creator.orcids.last.value %>
         </nameIdentifier>
         <% end %>
@@ -48,12 +48,23 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <contributor contributorType="<%= presenter.role_for(cdmp) %>">
         <contributorName nameType="Personal"><%= contributor.name %></contributorName>
         <% if contributor.orcids.any? %>
-        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="http://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
+        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/"><%= contributor.orcids.last.value %></nameIdentifier>
         <% end %>
         <% if contributor.affiliation.present? && contributor.affiliation.rors.any? %>
         <affiliation affiliationIdentifier="<%= contributor.affiliation.rors.last.value %>" affiliationIdentifierScheme="ROR">
           <%= presenter.affiliation_name_without_contextual(name: contributor.affiliation.name) %>
         </affiliation>
+        <% end %>
+      </contributor>
+      <% end %>
+      <% data_management_plan.sponsors.each do |sponsor| %>
+      <contributor contributorType="Sponsor">
+        <contributorName nameType="<%= sponsor.name_type.humanize %>"><%= sponsor.name %></contributorName>
+        <% if sponsor.rors.any? %>
+        <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org/"><%= sponsor.rors.last.value %></nameIdentifier>
+        <% end %>
+        <% if sponsor.orcids.any? %>
+        <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/"><%= sponsor.orcids.last.value %></nameIdentifier>
         <% end %>
       </contributor>
       <% end %>

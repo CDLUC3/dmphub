@@ -30,9 +30,10 @@ class DataManagementPlan < ApplicationRecord
   has_many :contributors, through: :contributors_data_management_plans
   has_many :costs, dependent: :destroy
   has_many :datasets, dependent: :destroy
+  has_many :sponsors, dependent: :destroy
   has_many :history, class_name: 'ApiClientHistory', dependent: :destroy
 
-  accepts_nested_attributes_for :costs, :datasets, :project,
+  accepts_nested_attributes_for :costs, :datasets, :project, :sponsors,
                                 :contributors_data_management_plans
 
   enum source_privacy: %i[closed open]

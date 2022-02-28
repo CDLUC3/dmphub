@@ -80,7 +80,8 @@ module Api
             dmp = deserialize_costs(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
-            deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
+            dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
+            deserialize_sponsors(provenance: provenance, dmp: dmp, json: json)
           end
 
           private
@@ -246,6 +247,7 @@ module Api
             dmp
           end
 
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize_download_link(provenance:, dmp:, json:)
             return dmp unless provenance.present? && json.present? && dmp.present?
 
@@ -263,6 +265,7 @@ module Api
             dmp.identifiers << identifier if identifier.present? && identifier.new_record?
             dmp
           end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
           # Deserialize any relatedIdentifiers that were passed in
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
@@ -286,6 +289,40 @@ module Api
               next unless identifier.present?
 
               dmp.identifiers << identifier unless dmp.identifiers.include?(identifier)
+            end
+            dmp
+          end
+          # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+
+          # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
+          def deserialize_sponsors(provenance:, dmp:, json:)
+            return dmp unless provenance.present? && json.present? && dmp.present?
+
+            sponsors = json.fetch(:dmproadmap_sponsors, [])
+            return dmp unless sponsors.any?
+
+            sponsors.each do |hash|
+              # First see if we already know about this sponsor
+              if dmp.sponsors.any?
+                matches = dmp.sponsors.select do |s|
+                  s.name.downcase == hash[:name].downcase ||
+                    (hash.fetch(:sponsor_id, {})[:identifier].present? &&
+                     s.identifiers.select { |id| id.value.downcase == hash[:sponsor_id][:identifier].downcase })
+                end
+                next if matches.any?
+              end
+
+              # Initialize the sponsor and add it to the DMP
+              sponsor = ::Sponsor.find_or_initialize_by(data_management_plan_id: dmp.id, name: hash[:name])
+              sponsor.name_type = 'organizational'
+              sponsor.provenance = provenance
+
+              identifier = Api::V0::Deserialization::Identifier.deserialize(
+                provenance: provenance, identifiable: sponsor, json: hash[:sponsor_id], identifiable_type: 'Sponsor'
+              )
+              sponsor.identifiers << identifier if identifier.present?
+
+              dmp.sponsors << sponsor if sponsor.present? && sponsor.valid
             end
             dmp
           end

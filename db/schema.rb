@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_27_175929) do
+ActiveRecord::Schema.define(version: 2022_02_28_211804) do
 
   create_table "affiliations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "name", null: false
@@ -300,6 +300,18 @@ ActiveRecord::Schema.define(version: 2021_09_27_175929) do
     t.bigint "provenance_id"
     t.index ["dataset_id"], name: "index_security_privacy_statements_on_dataset_id"
     t.index ["provenance_id"], name: "index_security_privacy_statements_on_provenance_id"
+  end
+
+  create_table "sponsors", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+    t.bigint "data_management_plan_id"
+    t.string "name", null: false
+    t.integer "name_type", default: 0, null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "provenance"
+    t.index ["data_management_plan_id"], name: "index_sponsors_on_data_management_plan_id"
+    t.index ["name"], name: "index_sponsors_on_name"
+    t.index ["name_type"], name: "index_sponsors_on_name_type"
   end
 
   create_table "technical_resources", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

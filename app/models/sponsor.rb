@@ -12,7 +12,7 @@
 #  data_management_plan_id  :bigint           not null
 #  provenance_id            :bigint
 #
-class Contributor < ApplicationRecord
+class Sponsor < ApplicationRecord
   include Alterable
   include Authorizable
   include Identifiable

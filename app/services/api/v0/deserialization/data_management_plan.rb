@@ -300,6 +300,9 @@ module Api
 
             sponsors = json.fetch(:dmproadmap_sponsors, [])
 
+Rails.logger.warn json.inspect
+Rails.logger.warn '-------------------------'
+Rails.logger.warn "Sponsors: #{json.fetch(:dmproadmap_sponsors).inspect}"
 Rails.logger.warn "SPONSOR DESERILIAZATION **************************"
 Rails.logger.warn sponsors
 

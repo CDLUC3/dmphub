@@ -299,9 +299,16 @@ module Api
             return dmp unless provenance.present? && json.present? && dmp.present?
 
             sponsors = json.fetch(:dmproadmap_sponsors, [])
+
+Rails.logger.warn "SPONSOR DESERILIAZATION **************************"
+Rails.logger.warn sponsors
+
             return dmp unless sponsors.any?
 
             sponsors.each do |hash|
+
+Rails.logger.warn hash
+
               # First see if we already know about this sponsor
               if dmp.sponsors.any?
                 matches = dmp.sponsors.select do |s|
@@ -317,9 +324,14 @@ module Api
               sponsor.name_type = 'organizational'
               sponsor.provenance = provenance
 
+Rails.logger.warn sponsor.inspect
+
               identifier = Api::V0::Deserialization::Identifier.deserialize(
                 provenance: provenance, identifiable: sponsor, json: hash[:sponsor_id], identifiable_type: 'Sponsor'
               )
+
+Rails.logger.warn identifier.inspect
+
               sponsor.identifiers << identifier if identifier.present?
 
               dmp.sponsors << sponsor if sponsor.present? && sponsor.valid

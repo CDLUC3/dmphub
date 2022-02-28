@@ -21,7 +21,7 @@ class Sponsor < ApplicationRecord
   before_validation :ensure_name_type
 
   # Associations
-  belongs_to :data_management_plan
+  belongs_to :data_management_plan, optional: true
 
   # Validations
   validates :name, presence: true

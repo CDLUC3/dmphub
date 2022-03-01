@@ -83,6 +83,7 @@ module Api
             dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
 
 Rails.logger.warn "START DESERIALIZATION: #{dmp.sponsors.inspect}"
+Rails.logger.warn json.inspect
 
             deserialize_sponsors(provenance: provenance, dmp: dmp, json: json)
           end
@@ -299,6 +300,10 @@ Rails.logger.warn "START DESERIALIZATION: #{dmp.sponsors.inspect}"
 
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize_sponsors(provenance:, dmp:, json:)
+
+Rails.logger.warn "PROVENANCE: #{provenance.inspect}"
+Rails.logger.warn "DMP: #{dmp.inspect}"
+
             return dmp unless provenance.present? && json.present? && dmp.present?
 
 Rails.logger.warn json.fetch(:dmproadmap_sponsors, []).inspect

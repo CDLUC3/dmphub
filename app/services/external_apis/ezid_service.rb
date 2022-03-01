@@ -89,7 +89,7 @@ module ExternalApis
                         additional_headers: hdrs, data: data,
                         basic_auth: creds) # , debug: true)
 
-        unless resp.present? && resp.code == 200
+        unless resp.present? && [200, 201].include?(resp.code)
           log_error(method: 'EZID update_doi', error: StandardError.new("REQUEST DATA: #{data.inspect}"))
           handle_http_failure(method: 'EZID update_doi', http_response: resp)
           return []

@@ -92,6 +92,8 @@ module Api
               original_dmp: original
             )
 
+Rails.logger.warn "AFTER DESERIALIZATION: #{@dmp.sponsors.inspect}"
+
             if @dmp.present?
               @dmp = PersistenceService.process_full_data_management_plan(
                 client: client,

@@ -12,21 +12,10 @@ class PersistenceService
       action = dmp.new_record? ? 'add' : 'edit'
 
       ActiveRecord::Base.transaction do
-
-Rails.logger.warn "START PERSISTENCE SERVICE SAVE: #{dmp.sponsors.inspect}"
-
         dmp = safe_save(dmp: dmp)
-
-Rails.logger.warn "AFTER SAFE SAVE: #{dmp.sponsors.inspect}"
-
         dmp = dmp.reload
 
-Rails.logger.warn "AFTER RELOAD: #{dmp.sponsors.inspect}"
-
         errs = ContextualErrorService.contextualize_errors(dmp: dmp)
-
-Rails.logger.warn "ERRORS: #{errs.inspect}"
-
         raise StandardError, errs.join(', ') if errs.any?
 
         dmp.mint_doi(provenance: provenance) if mintable && !dmp.doi.present?

@@ -81,10 +81,6 @@ module Api
             dmp = deserialize_datasets(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_download_link(provenance: provenance, dmp: dmp, json: json)
             dmp = deserialize_related_identifiers(provenance: provenance, dmp: dmp, json: json)
-
-Rails.logger.warn "START DESERIALIZATION: #{dmp.sponsors.inspect}"
-Rails.logger.warn json.inspect
-
             deserialize_sponsors(provenance: provenance, dmp: dmp, json: json)
           end
 
@@ -300,18 +296,10 @@ Rails.logger.warn json.inspect
 
           # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
           def deserialize_sponsors(provenance:, dmp:, json:)
-
-Rails.logger.warn "PROVENANCE: #{provenance.inspect}"
-Rails.logger.warn "DMP: #{dmp.inspect}"
-
             return dmp unless provenance.present? && json.present? && dmp.present?
-
-Rails.logger.warn json.fetch(:dmproadmap_sponsors, []).inspect
 
             sponsors = json.fetch(:dmproadmap_sponsors, [])
             return dmp unless sponsors.any?
-
-Rails.logger.warn "DESERIALIZATION SPONSORS: #{sponsors.inspect}"
 
             sponsors.each do |hash|
               # First see if we already know about this sponsor
@@ -329,14 +317,10 @@ Rails.logger.warn "DESERIALIZATION SPONSORS: #{sponsors.inspect}"
               sponsor.name_type = (hash[:type] == 'field_station' ? 'organizational' : 'personal')
               sponsor.provenance = provenance
 
-Rails.logger.warn "SPONSOR: #{sponsor.inspect}"
-
               identifier = Api::V0::Deserialization::Identifier.deserialize(
                 provenance: provenance, identifiable: sponsor, json: hash[:sponsor_id], identifiable_type: 'Sponsor'
               )
               sponsor.identifiers << identifier if identifier.present?
-
-Rails.logger.warn "SPONSOR ID: #{identifier.inspect}"
 
               dmp.sponsors << sponsor if sponsor.present? && sponsor.valid?
             end

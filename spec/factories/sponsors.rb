@@ -12,26 +12,13 @@
 #  data_management_plan_id  :bigint           not null
 #  provenance_id            :bigint
 #
-class Sponsor < ApplicationRecord
-  include Alterable
-  include Authorizable
-  include Identifiable
+FactoryBot.define do
+  factory :sponsor do
+    name      { Faker::Company.unique.name }
+    name_type { Sponsor.name_types.keys.sample }
 
-  # Callbacks
-  before_validation :ensure_name_type
-
-  # Associations
-  belongs_to :data_management_plan, optional: true
-
-  # Validations
-  validates :name, presence: true
-  validates :name_type, presence: true
-
-  enum name_type: %i[organizational personal]
-
-  private
-
-  def ensure_name_type
-    self.name_type = 'organizational' unless name_type.present?
+    before :create do |license|
+      license.provenance = build(:provenance) unless license.provenance.present?
+    end
   end
 end

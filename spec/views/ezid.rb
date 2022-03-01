@@ -16,12 +16,15 @@ describe 'EZID XML' do
       'https://doi.org/10.13039/100000001': 'https://www.nsf.gov/awardsearch/showAward?AWD_ID='
     }
     @dmp.identifiers << build(:identifier, category: 'url', descriptor: 'is_cited_by', provenance: @dmp.provenance)
+    @sponsor = build(:sponsor, name_type: 'organizational')
+    @sponsor.identifiers << build(:identifier, category: 'ror', descriptor: 'is_identified_by', provenance: @dmp.provenance)
+    @dmp.sponsors << @sponsor
     @presenter = DatacitePresenter.new(@dmp)
     render template: 'ezid/minter', locals: { data_management_plan: @dmp }
 
     lines = rendered.split(/[\r\n]/)
     @target = lines.select { |l| l.split(':').first == '_target' }.first.gsub('_target: ', '')
-    xml = rendered.gsub(/[\r\n]_target: #{@target}[\r\n]datacite: /, '')
+    xml = rendered.gsub(/[\r\n]?_target:\s+#{@target}[\r\n]datacite:\s+/, '')
     @xml = Nokogiri::XML(xml)
   end
 
@@ -147,6 +150,22 @@ describe 'EZID XML' do
         expected = @presenter.contributors.first.contributor.affiliation
         expect(subject.attr('affiliationIdentifier').value).to eql(expected.rors.first.value)
         expect(subject.children.first.text.strip).to eql(expected.name)
+      end
+    end
+    context '<contributor[contributorType="Sponsor"]>' do
+      before(:each) do
+        @sponsor = @xml.css('contributors contributor[contributorType="Sponsor"]').first
+      end
+      it 'has a <contributorName> element' do
+        subject = @sponsor.css('contributorName')
+        expect(subject.attr('nameType').value).to eql('Organizational')
+        expect(subject.children.first.text.strip).to eql(@dmp.sponsors.first.name)
+      end
+      it 'has a <nameIdentifier> element if the creator has a ROR' do
+        subject = @sponsor.css('nameIdentifier')
+        expect(subject.attr('nameIdentifierScheme').value).to eql('ROR')
+        expect(subject.attr('schemeURI').value).to eql('https://ror.org/')
+        expect(subject.children.first.text.strip).to eql(@dmp.sponsors.first.rors.first.value)
       end
     end
 

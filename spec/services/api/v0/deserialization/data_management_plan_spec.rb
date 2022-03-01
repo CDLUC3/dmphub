@@ -51,6 +51,13 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
           descriptor: Identifier.descriptors.keys.reject { |k| %w[is_identified_by is_metadata_for].include?(k) }.sample,
           identifier: SecureRandom.uuid
         }
+      ],
+      dmproadmap_sponsors: [
+        {
+          name: Faker::Company.unique.name,
+          type: 'field_station',
+          sponsor_id: { type: 'ror', identifier: "https://ror.org/#{Faker::Alphanumeric.alphanumeric}" }
+        }
       ]
     }
   end
@@ -508,6 +515,48 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
 
         expect(result.identifiers.length).to eql(count - 1)
         expect(result.identifiers.map(&:value).include?(related.value)).not_to eql(true)
+      end
+    end
+
+    describe '#deserialize_sponsors(provenance:, dmp:, json:)' do
+      it 'returns the DataManagementPlan as-is if provenance is not present' do
+        result = described_class.send(:deserialize_sponsors, provenance: nil, dmp: @dmp, json: @json)
+        expect(result.sponsors.empty?).to eql(true)
+      end
+      it 'returns the DataManagementPlan as-is if dmp is not present' do
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: nil, json: @json)
+        expect(result).to eql(nil)
+      end
+      it 'returns the DataManagementPlan as-is if json is not present' do
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: @dmp, json: nil)
+        expect(result.sponsors.empty?).to eql(true)
+      end
+      it 'returns the DataManagementPlan as-is if json does not contain dmproadmap_sponsors' do
+        @json.delete(:dmproadmap_sponsors)
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: @dmp, json: @json)
+        expect(result.sponsors.empty?).to eql(true)
+      end
+      it 'does not introduce duplicate sponsors' do
+        sponsor = @json[:dmproadmap_sponsors].first
+        @json[:dmproadmap_sponsors] << sponsor
+        expect(@json[:dmproadmap_sponsors].length).to eql(2)
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: @dmp, json: @json)
+        expect(result.sponsors.length).to eql(1)
+      end
+      it 'sets the name_type to personal if type is not "field_station"' do
+        @json[:dmproadmap_sponsors].first[:type] = 'foo'
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: @dmp, json: @json)
+        expect(result.sponsors.first.personal?).to eql(true)
+      end
+      it 'adds the sponsor' do
+        result = described_class.send(:deserialize_sponsors, provenance: @provenance, dmp: @dmp, json: @json)
+        expect(result.sponsors.length).to eql(1)
+        sponsor = result.sponsors.first
+        expect(sponsor.name).to eql(@json[:dmproadmap_sponsors].first[:name])
+        expect(sponsor.organizational?).to eql(true)
+        expect(sponsor.provenance).to eql(@provenance)
+        expect(sponsor.identifiers.length).to eql(1)
+        expect(sponsor.rors.first.value).to eql(@json[:dmproadmap_sponsors].first[:sponsor_id][:identifier])
       end
     end
   end

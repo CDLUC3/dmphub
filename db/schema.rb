@@ -308,10 +308,11 @@ ActiveRecord::Schema.define(version: 2022_02_28_211804) do
     t.integer "name_type", default: 0, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.string "provenance"
+    t.bigint "provenance_id"
     t.index ["data_management_plan_id"], name: "index_sponsors_on_data_management_plan_id"
     t.index ["name"], name: "index_sponsors_on_name"
     t.index ["name_type"], name: "index_sponsors_on_name_type"
+    t.index ["provenance_id"], name: "index_sponsors_on_provenance_id"
   end
 
   create_table "technical_resources", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|

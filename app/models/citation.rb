@@ -21,7 +21,7 @@ class Citation < ApplicationRecord
   # Validations
   validates :object_type, :citation_text, :retrieved_on, presence: true
 
-  enum object_type: %i[dataset article book software]
+  enum object_type: %i[dataset article book software protocol]
 
   def to_s
     citation_text.to_s

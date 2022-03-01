@@ -139,6 +139,7 @@ module Api
            project: project_permitted_params,
            dataset: dataset_permitted_params,
            extensions: %i[uri name],
+           dmproadmap_sponsors: sponsor_permitted_params,
 
            # Extensions to the RDA common metadata standard for DMPs:
            dmproadmap_template: %i[id title],
@@ -151,6 +152,11 @@ module Api
 
       def identifier_permitted_params
         %i[type identifier descriptor work_type]
+      end
+
+      def sponsor_permitted_params
+        %i[name type] +
+          [sponsor_id: identifier_permitted_params]
       end
 
       def contributor_permitted_params

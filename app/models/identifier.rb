@@ -51,7 +51,7 @@ class Identifier < ApplicationRecord
 
   # The type/category of work the identifier represents
   enum work_type: %i[article book dataset output_management_plan paper preprint
-                     software supplemental_information]
+                     software supplemental_information protocol]
 
   # Associations
   belongs_to :identifiable, polymorphic: true
@@ -95,7 +95,7 @@ class Identifier < ApplicationRecord
     Citation.create(
       identifier: self,
       provenance: provenance,
-      object_type: citation.include?('[Article]') ? 'article' : 'dataset',
+      object_type: (citation.include?('[Article]') ? 'article' : (wrk_typ.present? ? wrk_typ : 'dataset')),
       citation_text: citation,
       retrieved_on: Time.now
     )

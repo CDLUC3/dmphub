@@ -59,13 +59,14 @@ module Api
           def marshal_contributor(provenance:, is_contact:, json: {})
             return nil unless json.present?
 
+            # Search by email if available and not found above
+            contributor = find_by_email_or_name(provenance: provenance, is_contact: is_contact, json: json)
+            contributor = attach_identifier(provenance: provenance, contributor: contributor, json: json) unless contributor.present?
+
             # Try to find the Org by the identifier
-            contributor = find_by_identifier(provenance: provenance, json: json)
+            contributor = find_by_identifier(provenance: provenance, json: json) unless contributor.present?
             # Update the email if we found them by identifier
             contributor.email = json[:mbox] if contributor.present? && json[:mbox].present?
-
-            # Search by email if available and not found above
-            contributor = find_by_email_or_name(provenance: provenance, is_contact: is_contact, json: json) unless contributor.present?
 
             # Attach the Affiliation unless its already defined
             contributor.name = json[:name] if json[:name].present?

@@ -78,7 +78,7 @@ ActiveRecord::Schema.define(version: 2022_02_28_211804) do
     t.index ["name"], name: "index_api_clients_on_name"
   end
 
-  create_table "citations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
+  create_table "citations", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "identifier_id", null: false
     t.bigint "provenance_id", null: false
     t.integer "object_type", default: 0, null: false
@@ -273,8 +273,8 @@ ActiveRecord::Schema.define(version: 2022_02_28_211804) do
 
   create_table "projects", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8mb4", force: :cascade do |t|
     t.string "title", null: false
-    t.datetime "start_on"
-    t.datetime "end_on"
+    t.datetime "start_on", null: false
+    t.datetime "end_on", null: false
     t.text "description", size: :long
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

@@ -61,7 +61,7 @@ datacite: <?xml version="1.0" encoding="UTF-8"?>
       <contributor contributorType="Sponsor">
         <contributorName nameType="<%= sponsor.name_type.humanize %>"><%= sponsor.name %></contributorName>
         <% if sponsor.rors.any? %>
-        <nameIdentifier nameIdentifierScheme="ROR" schemeURI="https://ror.org/"><%= sponsor.rors.last.value %></nameIdentifier>
+        <nameIdentifier nameIdentifierScheme="ROR"><%= sponsor.rors.last.value %></nameIdentifier>
         <% end %>
         <% if sponsor.orcids.any? %>
         <nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/"><%= sponsor.orcids.last.value %></nameIdentifier>

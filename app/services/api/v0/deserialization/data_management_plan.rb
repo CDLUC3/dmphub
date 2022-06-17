@@ -313,7 +313,7 @@ module Api
               end
 
               # Initialize the sponsor and add it to the DMP
-              sponsor = ::Sponsor.find_or_initialize_by(name: hash[:name])
+              sponsor = ::Sponsor.find_or_initialize_by(name: hash[:name], data_management_plan: dmp)
               sponsor.name_type = (hash[:type] == 'field_station' ? 'organizational' : 'personal')
               sponsor.provenance = provenance
 

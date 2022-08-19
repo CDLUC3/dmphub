@@ -59,22 +59,12 @@ module ExternalApis
 
       # Create a new DOI
       def mint_doi(data_management_plan:, provenance:)
-
-Rails.logger.warn "DEBUGGING -- START EZID MINT"
-
         data = json_from_template(provenance: provenance, dmp: data_management_plan)
-
-Rails.logger.warn 'DEBUGGING -- PAYLOAD:'
-Rails.logger.warn data.inspect
 
         hdrs = { 'Content-Type': 'text/plain', Accept: 'text/plain' }
         resp = http_post(uri: "#{api_base_url}shoulder/#{shoulder}",
                          additional_headers: hdrs, data: data,
                          basic_auth: creds, debug: true)
-
-Rails.logger.warn "DEBUGGING -- RESPONSE:"
-Rails.logger.warn "CREDS: #{creds.inspect}"
-Rails.logger.warn resp.body
 
         unless resp.present? && resp.code == 201
           log_error(method: 'EZID mint_doi', error: StandardError.new("REQUEST DATA: #{data.inspect}"))
@@ -143,8 +133,6 @@ Rails.logger.warn resp.body
       def process_ezid_response(body)
         ids = body.gsub('success: ', '').split(' | ')
         provenance = Provenance.find_or_create_by(name: 'ezid')
-
-Rails.logger.warn "DEBUGGING -- IDS FROM EZID: #{ids.inspect}"
 
         ids.map do |id|
           parts = id.split(':')

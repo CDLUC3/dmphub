@@ -45,13 +45,6 @@ module Api
                 history_description: "#{request.method} #{request.url}",
                 mintable: true
               )
-
-Rails.logger.warn "DEBUGGING -- API CONTROLLER - CREATE"
-Rails.logger.warn @dmp.inspect
-Rails.logger.warn "DEBUGGING -- DMP VALID? #{@dmp.valid?}"
-Rails.logger.warn "DEBUGGING -- DMP ERRORS: #{@dmp.errors.full_messages}"
-
-
               if @dmp.dois.any? || @dmp.arks.any?
                 # Issue a quick update back to EZID to update the landing page
                 ExternalApis::EzidService.update_doi(data_management_plan: @dmp)
@@ -97,12 +90,6 @@ Rails.logger.warn "DEBUGGING -- DMP ERRORS: #{@dmp.errors.full_messages}"
               provenance: provenance, json: dmp_params.to_h.with_indifferent_access,
               original_dmp: original
             )
-
-Rails.logger.warn "DEBUGGING -- API CONTROLLER - UPDATE"
-Rails.logger.warn @dmp.inspect
-Rails.logger.warn "DEBUGGING -- DMP VALID? #{@dmp.valid?}"
-Rails.logger.warn "DEBUGGING -- DMP ERRORS: #{@dmp.errors.full_messages}"
-
             if @dmp.present?
               @dmp = PersistenceService.process_full_data_management_plan(
                 client: client,

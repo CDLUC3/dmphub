@@ -48,10 +48,12 @@ gem 'jwt'
 # A Scope & Engine based, clean, powerful, customizable and sophisticated paginator for
 # modern web app frameworks and ORMs
 gem 'kaminari'
+
 # This is a meta-distribution of RDF.rb including all currently available and usable
 # parsing/serialization extensions, intended to make producing and consuming Linked Data
 # with Ruby as quick & easy as possible.
 # gem 'linkeddata'
+
 # A simple, fast Mysql library for Ruby, binding to libmysql (https://github.com/brianmario/mysql2)
 gem 'mysql2' # , '~> 0.4.10'
 # OmniAuth is a library that standardizes multi-provider authentication for web applications.
@@ -78,10 +80,6 @@ gem 'capistrano-rails', '~> 1.3', require: false
 # Protect your Rails and Rack apps from bad clients. Rack::Attack lets you easily decide when
 # to allow, block and throttle based on properties of the request.
 gem 'rack-attack'
-
-# Peg psych due to an issue in Rails 6 that is not corrected until Rails 7
-#   see: https://stackoverflow.com/questions/68802089/rails-couldnt-infer-whether-you-are-using-multiple-databases-from-your-database
-# gem 'psych', '< 4.0.0'
 
 group :development, :test do
   # Add a comment summarizing the current schema to the top or bottom of each of your models and factories

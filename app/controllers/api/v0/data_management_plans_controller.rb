@@ -46,10 +46,10 @@ module Api
                 mintable: true
               )
 
-Rails.logger.warn "API CONTROLLER - CREATE"
+Rails.logger.warn "DEBUGGING -- API CONTROLLER - CREATE"
 Rails.logger.warn @dmp.inspect
-Rails.logger.warn "DMP VALID? #{@dmp.valid?}"
-Rails.logger.warn "DMP ERRORS: #{@dmp.errors.full_messages}"
+Rails.logger.warn "DEBUGGING -- DMP VALID? #{@dmp.valid?}"
+Rails.logger.warn "DEBUGGING -- DMP ERRORS: #{@dmp.errors.full_messages}"
 
 
               if @dmp.dois.any? || @dmp.arks.any?
@@ -97,6 +97,11 @@ Rails.logger.warn "DMP ERRORS: #{@dmp.errors.full_messages}"
               provenance: provenance, json: dmp_params.to_h.with_indifferent_access,
               original_dmp: original
             )
+
+Rails.logger.warn "DEBUGGING -- API CONTROLLER - UPDATE"
+Rails.logger.warn @dmp.inspect
+Rails.logger.warn "DEBUGGING -- DMP VALID? #{@dmp.valid?}"
+Rails.logger.warn "DEBUGGING -- DMP ERRORS: #{@dmp.errors.full_messages}"
 
             if @dmp.present?
               @dmp = PersistenceService.process_full_data_management_plan(

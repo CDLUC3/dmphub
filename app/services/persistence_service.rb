@@ -18,11 +18,11 @@ class PersistenceService
         errs = ContextualErrorService.contextualize_errors(dmp: dmp)
         raise StandardError, errs.join(', ') if errs.any?
 
-Rails.logger.warn "STARTING DOI MINT -- mintable? #{mintable} && no doi? #{!dmp.doi.present?}"
+Rails.logger.warn "DEBUGGING -- STARTING DOI MINT -- mintable? #{mintable} && no doi? #{!dmp.doi.present?}"
 
         dmp.mint_doi(provenance: provenance) if mintable && !dmp.doi.present?
 
-Rails.logger.warn "DONE DOI MINT"
+Rails.logger.warn "DEBUGGING -- DONE DOI MINT"
 
         ApiClientAuthorization.find_or_create_by(authorizable: dmp, api_client: client)
         ApiClientHistory.create(api_client: client, data_management_plan: dmp,

@@ -73,6 +73,7 @@ Rails.logger.warn data.inspect
                          basic_auth: creds, debug: true)
 
 Rails.logger.warn "DEBUGGING -- RESPONSE:"
+Rails.logger.warn "CREDS: #{creds.inspect}"
 Rails.logger.warn resp.body
 
         unless resp.present? && resp.code == 201

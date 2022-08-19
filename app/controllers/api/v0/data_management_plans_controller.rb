@@ -46,6 +46,12 @@ module Api
                 mintable: true
               )
 
+Rails.logger.warn "API CONTROLLER - CREATE"
+Rails.logger.warn @dmp.inspect
+Rails.logger.warn "DMP VALID? #{@dmp.valid?}"
+Rails.logger.warn "DMP ERRORS: #{@dmp.errors.full_messages}"
+
+
               if @dmp.dois.any? || @dmp.arks.any?
                 # Issue a quick update back to EZID to update the landing page
                 ExternalApis::EzidService.update_doi(data_management_plan: @dmp)

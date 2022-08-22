@@ -7,7 +7,7 @@
 
     <%= favicon_link_tag asset_path('favicon.ico') %>
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'express/lib/application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
@@ -28,7 +28,7 @@
 
         <%= yield %>
 
-        <span class="spinner"><%= image_tag 'spinner.jpg', alt: "Please wait spinner" %></span>
+        <span class="spinner"><%#= image_tag 'spinner.jpg', alt: "Please wait spinner" %></span>
       </main>
 
       <%= render partial: 'layouts/footer' %>

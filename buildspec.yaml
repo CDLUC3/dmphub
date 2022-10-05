@@ -1,0 +1,51 @@
+# Build specifications for AWS CodeBuild
+#   See: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
+
+# Each input artifact is extracted to its own directory by CodePipeline, the locations of which
+# are stored in environment variables. The directory for the primary source artifact (this repo)
+# is made available with $CODEBUILD_SRC_DIR. The directory for the DMPHub push artifacts is
+# made available with $CODEBUILD_SRC_DIR_uc3-dmp-hub-commit.
+
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      # Set some ENV variables here because CF only allows a limit of 1000 characters in the
+      # EnvironmentVariable config for the Pipeline action :(
+      - export RAILS_LOG_TO_STDOUT=true
+      - export DRAGONFLY_AWS=false
+      - export AWS_VERSION=$(aws --version)
+
+      # Fetch the Git commit from the DMPRoadmap repo
+      - cd ${CODEBUILD_SRC_DIR_dmphub_commit}" && export CODE_REVISION=$(git log --format="%H" -n 1 | cut -c 1-7)
+
+      # Fetch the ECR repository name
+      - echo $ECR_REPOSITORY_URI >> .ecr
+      - export SHORT_ECR_URI=$(awk '{gsub("$ECR_REPOSITORY_NAME", "");print}' .ecr)
+      - rm .ecr
+
+      # Set the repository URI to your ECR image and add an image tag with the first seven characters of the Git commit ID of the source.
+      - echo Logging in to Amazon ECR ...
+      - cd $CODEBUILD_SRC_DIR
+      - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $SHORT_ECR_URI
+      - IMAGE_TAG=${CODE_REVISION:=latest}
+  build:
+    commands:
+      # Build the Docker image and tag it
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - cd $CODEBUILD_SRC_DIR
+      - docker build -t $SHORT_ECR_URI:latest .
+      - docker tag $ECR_REPOSITORY_URI:latest $SHORT_ECR_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      # Push the Docker image to the ECR repository. Fargate will pick it up an deploy automatically
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - cd $CODEBUILD_SRC_DIR
+      - docker push $SHORT_ECR_URI:latest
+      - docker push $SHORT_ECR_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"uc3-dmp-hub","imageUri":"%s"}]' $ECR_REPOSITORY_URI:$IMAGE_TAG > dmphub_image.json
+      - cat dmphub_image.json

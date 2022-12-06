@@ -3,30 +3,39 @@
 <%
 base_message = 'This page represents key information from a data management plan'
 primary_funder = LandingPresenter.primary_funder(data_management_plan: dmp)
+primary_institution = LandingPresenter.primary_institution(data_management_plan: dmp)
 narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
 %>
 
-<div class="t-step__landing">
-  <div>
-    <h1>A data management plan for this project was submitted to the <%= primary_funder %> with the information below.</h1>
+<div class="t-step__landing-header">
+  <div class="dmptool-logo">
+    <%= image_tag('dmptool_logo_u166.svg', alt: 'DMPTool logo') %>
   </div>
-
-  <div class="t-step__logo">
-    <% if narrative_url.present? && dmp.source_privacy == 'open' %>
+  <div class="dmp-menu">
+    <ul>
+      <li><strong>DMP ID:</strong> <%= dmp.doi_without_prefix&.gsub('doi:', '') %></li>
+      <li><strong>Version:</strong> <%= version_date(dmp: dmp) %></li>
+    </ul>
+  </div>
+</div>
+<div class="t-step__landing-title">
+  <div class="dmp-title">
+    <p>This page describes a data management plan written for the <%= primary_institution %> using the DMPTool.</p>
+    <h1><%= dmp.title %></h1>
+  </div>
+  <% if narrative_url.present? && dmp.source_privacy == 'open' %>
+    <div class="dmp-pdf">
       <%
       # Temporary hack until we can get the PDF download working
       url = narrative_url.value.gsub("api/v2/", "")
-                               .gsub(".pdf", "/export.pdf?export[question_headings]=true")
-      id = Identifier.new(value: url)
+                              .gsub(".pdf", "/export.pdf?export[question_headings]=true")
       %>
-      <div><%= link_to image_tag('stack_of_papers_72x41.png', alt: 'DMP icon'),
-                     url, target: "_blank", aria: { hidden: true } %></div>
-      <div><%= base_message %> available <%= identifier_to_link(identifier: id, text: 'here') %>.</div>
-    <% else %>
-      <div><%= image_tag('stack_of_papers_72x41.png', alt: 'DMP icon') %></div>
-      <div><%= base_message %>.</div>
-    <% end %>
-  </div>
+      <a href="<%= url %>" target="_blank">
+        <%= image_tag('u153.svg', alt: 'PDF icon', aria: { hidden: true }) %>
+      </a>
+      <a href="<%= url %>" target="_blank">
+        Read the data management plan
+      </a>
+    </div>
+  <% end %>
 </div>
-
-<h2><%= @dmp.title %></h2>

@@ -1,19 +1,19 @@
 <%# locals: fundings %>
 
 <% if fundings.any? %>
-  <ul class="landing-list">
-    <% fundings.each do |funding| %>
-      <%
-      grant = funding.identifiers.select { |id| id.descriptor == 'is_funded_by' }.last
-      opportunity = funding.identifiers.select { |id| id.descriptor == 'is_required_by' }.last
-      fundref = funding.affiliation.fundrefs.last
-      %>
-      <ul class="landing-list">
-        <li><strong>Status</strong>:<span><%= humanize_underscored(name: funding.status) %></span></li>
-        <li><strong>Funder</strong>:<span><%= (fundref.present? ? identifier_to_link(identifier: fundref, text: funding.affiliation.name) : funding.affiliation.name) %></span></li>
-        <li><strong>Funding opportunity number</strong>:<span><%= opportunity.present? ? identifier_to_link(identifier: opportunity) : '' %></span></li>
-        <li><strong>Grant</strong>:<span><%= grant.present? ? identifier_to_link(identifier: grant) : '' %></span></li>
-      </ul>
-    <% end %>
-  </ul>
+  <% fundings.each do |funding| %>
+    <%
+    grant = funding.identifiers.select { |id| id.descriptor == 'is_funded_by' }.last
+    opportunity = funding.identifiers.select { |id| id.descriptor == 'is_required_by' }.last
+    fundref = funding.affiliation.fundrefs.last
+    %>
+    <ul class="landing-list">
+      <li><strong>Status:</strong><span><%= humanize_underscored(name: funding.status) %></span></li>
+      <li><strong>Funder:</strong><span><%= (fundref.present? ? identifier_to_link(identifier: fundref, text: funding.affiliation.name) : funding.affiliation.name) %></span></li>
+      <% if opportunity.present? %>
+        <li><strong>Funding opportunity number:</strong><span><%= identifier_to_link(identifier: opportunity) %></span></li>
+      <% end %>
+      <li><strong>Grant:</strong><span><%= grant.present? ? identifier_to_link(identifier: grant) : 'unspecified' %></span></li>
+    </ul>
+  <% end %>
 <% end %>

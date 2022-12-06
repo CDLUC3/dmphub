@@ -1,37 +1,39 @@
 <%= render partial: '/landing/heading', locals: { dmp: @dmp } %>
 
-<% if @dmp.contributors_data_management_plans.any? %>
-  <h3>Contributors to this project</h3>
-  <%= render partial: '/landing/contributors',
-             locals: { primary_contact: @dmp.primary_contact, cdmps: @dmp.contributors_data_management_plans } %>
-<% end %>
+<div class="t-step__content">
+  <% if @dmp.contributors_data_management_plans.any? %>
+    <h2>Contributors to this project</h2>
+    <%= render partial: '/landing/contributors',
+              locals: { primary_contact: @dmp.primary_contact, cdmps: @dmp.contributors_data_management_plans } %>
+  <% end %>
 
-<h3>Project details</h3>
-<%= render partial: '/landing/data_management_plan', locals: { dmp: @dmp, project: @dmp.project } %>
+  <h2>Project details</h2>
+  <%= render partial: '/landing/data_management_plan', locals: { dmp: @dmp, project: @dmp.project } %>
 
-<h3>Citation</h3>
-<%= render partial: '/landing/citation', locals: { dmp: @dmp } %>
+  <h2>Citation</h2>
+  <%= render partial: '/landing/citation', locals: { dmp: @dmp } %>
 
-<% if @dmp.project.fundings.any? %>
-  <h3>Funding status and sources for this project</h3>
-  <%= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
-<% end %>
+  <% if @dmp.project.fundings.any? %>
+    <h2>Funding status and sources for this project</h2>
+    <%= render partial: '/landing/fundings', locals: { fundings: @dmp.project.fundings } %>
+  <% end %>
 
-<% if @dmp.description.present? || @dmp.project.description.present? %>
-  <h3>Project description</h3>
-  <%= render partial: '/landing/abstract',
-             locals: { dmp: @dmp, project: @dmp.project } %>
-<% end %>
+  <% if @dmp.description.present? || @dmp.project.description.present? %>
+    <h2>Project description</h2>
+    <%= render partial: '/landing/abstract',
+              locals: { dmp: @dmp, project: @dmp.project } %>
+  <% end %>
 
-<% if @dmp.datasets.any? %>
-  <h3>Planned outputs</h3>
-  <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
-<% end %>
+  <% if @dmp.datasets.any? %>
+    <h2>Planned outputs</h2>
+    <%= render partial: '/landing/datasets', locals: { datasets: @dmp.datasets } %>
+  <% end %>
 
-<% relateds = LandingPresenter.related_publications(data_management_plan: @dmp) %>
+  <% relateds = LandingPresenter.related_publications(data_management_plan: @dmp) %>
 
-<% if relateds.any? %>
-  <h3>Other works associated with this research project</h3>
-  <%= render partial: '/landing/published_works',
-             locals: { publications: relateds } %>
-<% end %>
+  <% if relateds.any? %>
+    <h2>Other works associated with this research project</h2>
+    <%= render partial: '/landing/published_works',
+              locals: { publications: relateds } %>
+  <% end %>
+</div>

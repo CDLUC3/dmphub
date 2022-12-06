@@ -1,0 +1,120 @@
+a,
+a:hover,
+a:active,
+a:visited {
+  color: $color-green;
+}
+
+/* Controls the positioning of the DMPTool logo and the DMP ID and version nav */
+.t-step__landing-header {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: $space2;
+  row-gap: $space3;
+
+  background-color: $color-blue;
+  color: $color-white;
+  font-size: 1.1rem;
+  padding: $space1 $space3;
+}
+.t-step__landing-header .dmptool-logo {
+  width: 140px;
+  height: auto;
+}
+.t-step__landing-header .dmp-menu {
+
+  margin: 0;
+}
+.t-step__landing-header .dmp-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.t-step__landing-header .dmp-menu li {
+  display: inline;
+  margin-left: $space2;
+}
+.t-step__landing-header .dmp-menu li strong {
+  font-weight: 600;
+  margin-right: $space1;
+}
+
+/* Controls the DMP title and PDF link section */
+.t-step__landing-title {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  column-gap: $space2;
+  row-gap: $space3;
+  margin: 0 50px;
+}
+.t-step__landing-title p {
+  font-size: .8rem;
+  font-weight: 600;
+}
+.t-step__landing-title .dmp-title {
+  max-width: 70%;
+}
+.t-step__landing-title .dmp-pdf {
+  display: flex;
+  align-items: center;
+  border: 2px solid $color-green;
+  padding: 20px;
+  max-width: 240px;
+}
+.t-step__landing-title .dmp-pdf img{
+  height: 36px;
+  margin-right: 20px;
+}
+
+/* Controls the content of the DMP */
+.t-step__content {
+  display: flex;
+  flex-direction: column;
+}
+.t-step__content h2 {
+  border-left: 1pt solid $color-black;
+  border-top: 1pt solid $color-black;
+  font-size: 1.4rem;
+  color: $color-blue;
+  margin: 10px 50px 10px 30px;
+  padding: 8px 10px;
+}
+.t-step__content h3 {
+  background-color: $color-white;
+  color: $color-blue;
+  margin: 10px 50px 10px 50px;
+  font-size: 1.2rem;
+}
+.t-step__content div.text-block {
+  max-width: 80%;
+  margin: 0 30px 10px 70px;
+  font-size: 1.1rem;
+}
+.t-step__content div.text-block p {
+  margin: 0 0 5px 0;
+}
+.t-step__content ul {
+  max-width: 80%;
+  list-style: none;
+  margin: 0 30px 15px 30px;
+  font-size: 1.1rem;
+}
+.t-step__content ul li {
+  margin-bottom: 5px;
+}
+.t-step__content ul li.margin10 {
+  margin-bottom: 10px;
+}
+.t-step__content ul li strong {
+  font-weight: 600;
+  padding-right: 5px;
+}
+.t-step__content ul li span {
+  padding-right: 8px;
+}

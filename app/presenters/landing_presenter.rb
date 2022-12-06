@@ -8,6 +8,15 @@ class LandingPresenter
       data_management_plan.identifiers.where(descriptor: 'is_metadata_for').last
     end
 
+    def primary_institution(data_management_plan:)
+      return 'DMPHub' unless data_management_plan.is_a?(DataManagementPlan)
+
+      contact = data_management_plan.primary_contact
+      return 'DMPHub' unless contact.is_a?(Contributor) && contact.affiliation.is_a?(Affiliation)
+
+      contact.affiliation.name
+    end
+
     # Detects the primary funder name
     def primary_funder(data_management_plan:)
       return 'DMPHub' unless data_management_plan.present? && data_management_plan.project.present?

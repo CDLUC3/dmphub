@@ -3,9 +3,15 @@
 # Generic helper
 module ApplicationHelper
   def safe_date(date:)
-    return 'Unknown' unless date.is_a?(Time)
+    return 'unspecified' unless date.is_a?(Time)
 
     date.strftime('%B %d, %Y')
+  end
+
+  def version_date(dmp:)
+    return 'Unknown' unless dmp.is_a?(DataManagementPlan)
+
+    dmp.updated_at.strftime('%d %b %Y')
   end
 
   def safe_language(language:)
@@ -22,7 +28,7 @@ module ApplicationHelper
   end
 
   def identifier_to_link(identifier:, text: '', show_default: true)
-    return show_default ? 'Unknown' : nil unless identifier.present? || text.present?
+    return show_default ? 'unknown' : nil unless identifier.present? || text.present?
     return text unless identifier.present?
 
     url = identifier_to_url(identifier: identifier)
@@ -136,7 +142,7 @@ module ApplicationHelper
 
     <<~HTML
       <li>
-        <strong>Research domain</strong>:<span>#{keywords.uniq.first.value}</span>
+        <strong>Research domain:</strong> <span>#{keywords.uniq.first.value}</span>
       </li>
     HTML
   end
@@ -151,7 +157,7 @@ module ApplicationHelper
 
     <<~HTML
       <li>
-        <strong>Metadata Standard(s)</strong>:<span>#{standards.join(", ")}</span>
+        <strong>Metadata Standard(s):</strong> <span>#{standards.join(", ")}</span>
       </li>
     HTML
   end

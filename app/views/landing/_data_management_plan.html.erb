@@ -4,15 +4,15 @@
   <%= sanitize(research_domain_from_keywords(
     keywords: dmp.datasets.map { |d| d.keywords }.flatten.uniq
   )) %>
-  <li><strong>Project Start</strong>:<span><%= safe_date(date: project.start_on) %></span></li>
-  <li><strong>Project End</strong>:<span><%= safe_date(date: project.end_on) %></span></li>
-  <li><strong>Created</strong>:<span><%= safe_date(date: dmp.created_at) %></span></li>
-  <li><strong>Modified</strong>:<span><%= safe_date(date: dmp.updated_at) %></span></li>
+  <li><strong>Project Start:</strong> <span><%= safe_date(date: project.start_on) %></span></li>
+  <li><strong>Project End:</strong> <span><%= safe_date(date: project.end_on) %></span></li>
+  <li><strong>Created:</strong> <span><%= safe_date(date: dmp.created_at) %></span></li>
+  <li><strong>Modified:</strong> <span><%= safe_date(date: dmp.updated_at) %></span></li>
   <% if dmp.project.identifiers.last.present? %>
-    <li><strong>For more information visit the project landing page</strong>:<span><%= identifier_to_link(identifier: dmp.project.identifiers.last) %></span></li>
+    <li><strong>For more information visit the project landing page:</strong> <span><%= identifier_to_link(identifier: dmp.project.identifiers.last) %></span></li>
   <% end %>
   <li>
-    <strong>Ethical issues related to data that this DMP describes?</strong>:
+    <strong>Ethical issues related to data that this DMP describes?</strong>
     <span><%= Api::V0::ConversionService.boolean_to_yes_no_unknown(dmp.ethical_issues) %></span>
     <% if dmp.ethical_issues_report.present? %>
       <span><a href="<%= dmp.ethical_issues_report %>" target="_blank"><%= dmp.ethical_issues_report %></a></span>

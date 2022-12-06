@@ -1,20 +1,33 @@
 <%# locals: datasets %>
 
 <% datasets.each do |dataset| %>
-  <h4><%= dataset.title %></h4>
-  <p><%= sanitize(dataset.description) %></p>
-
+  <h3><%= dataset.title %></h3>
+  <% if dataset.description.present? %>
+    <div class="text-block"><%= sanitize(dataset.description) %></div>
+  <% end %>
   <%
   size = dataset.distributions.collect(&:byte_size).sort { |a, b| a <=> b }.last
   hosts = dataset.distributions.select{ |d| d.host.present? }.map(&:host).sort { |a, b| a.title <=> b.title }
   %>
 
   <ul class="landing-list">
-    <li><strong>Format:</strong><span><%= humanize_underscored(name: dataset.dataset_type) %></span></li>
-    <%= sanitize(metadata_standards(dataset: dataset)) %>
-    <li><strong>Anticipated volume:</strong><span><%= LandingPresenter.byte_size(size: size) %></span></li>
-    <li><strong>Release timeline:</strong><span><%= safe_date(date: dataset.publication_date) %></span></li>
-    <li><strong>Intended repository:</strong><span><%= hosts.map { |host| host_to_link(host: host) }.join('</span>, <span>').html_safe %></span></li>
-    <li><strong>License for reuse:</strong><span><%= latest_license_link(dataset: dataset) %></span></li>
+    <% if dataset.dataset_type.present? %>
+      <li><strong>Format:</strong><span><%= humanize_underscored(name: dataset.dataset_type) %></span></li>
+    <% end %>
+    <% if dataset.metadata.any? %>
+      <%= sanitize(metadata_standards(dataset: dataset)) %>
+    <% end %>
+    <% if size.present? && size != 'unspecified' %>
+      <li><strong>Anticipated volume:</strong><span><%= LandingPresenter.byte_size(size: size) %></span></li>
+    <% end %>
+    <% if dataset.publication_date.present? %>
+      <li><strong>Release timeline:</strong><span><%= safe_date(date: dataset.publication_date) %></span></li>
+    <% end %>
+    <% if hosts.any? %>
+      <li><strong>Intended repository:</strong><span><%= hosts.map { |host| host_to_link(host: host) }.join('</span>, <span>').html_safe %></span></li>
+    <% end %>
+    <% if dataset.distributions.any? && dataset.distributions.map(&:licenses).flatten.compact.any? %>
+      <li><strong>License for reuse:</strong><span><%= latest_license_link(dataset: dataset) %></span></li>
+    <% end %>
   </ul>
 <% end %>

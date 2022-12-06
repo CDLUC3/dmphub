@@ -4,17 +4,16 @@
   <% Identifier.work_types.keys.each do |work_type| %>
     <% pubs = publications.select { |pub| pub.work_type == work_type } %>
     <% if pubs.any? %>
-      <h4><%= work_type.humanize.pluralize %></h4>
-      <ul class="landing-list published-works">
+      <h3><%= work_type.humanize.pluralize %></h3>
+      <ul class="landing-list">
         <% pubs.each do |pub| %>
-          <% if pub.citation.present? && pub.citation.citation_text.present? %>
-            <li><%= pub.citation.citation_text.html_safe %></li>
-          <% else %>
-            <li>
-              <a href="<%= pub.value %>" target="_blank"><%= pub.value %></a>
-              &nbsp;<span>No citation available</span>
-            </li>
-          <% end %>
+          <li class="margin10">
+            <% if pub.citation.present? && pub.citation.citation_text.present? %>
+              <%= pub.citation.citation_text.html_safe %>
+            <% else %>
+              <a href="<%= pub.value %>" target="_blank"><%= pub.value %></a>&nbsp;<span>No citation available</span>
+            <% end %>
+          </li>
         <% end %>
       </ul>
     <% end %>

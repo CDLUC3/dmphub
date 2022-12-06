@@ -6,7 +6,7 @@
 
   <% resources.each do |resource| %>
     <% identifier = resource.identifiers.first %>
-    <p><strong><%= humanize_underscored(name: identifier.category) %></strong> <%= identifier.value %></p>
+    <p><strong><%= humanize_underscored(name: identifier.category) %>:</strong> <%= identifier.value %></p>
     <p><%= resource.description %></p>
   <% end %>
 <% end %>

@@ -1,15 +1,20 @@
 <%# locals: dmp %>
 
 <%
+dmptool_url = Rails.env.production? ? 'dmptool.org' : (Rails.env.stage? ? 'dmptool-stg.cdlib.org' : 'dmptool-dev.cdlib.org')
 base_message = 'This page represents key information from a data management plan'
-primary_funder = LandingPresenter.primary_funder(data_management_plan: dmp)
-primary_institution = LandingPresenter.primary_institution(data_management_plan: dmp)
 narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
+
+primary_funder = LandingPresenter.primary_funder(data_management_plan: dmp)
+primary_org = LandingPresenter.primary_institution(data_management_plan: dmp)
+
+org_link = identifier_to_link(identifier: primary_org.ror, text: primary_org.name) if primary_org.present?
+org_link = identifier_to_link(identifier: primary_funder.crossref, text: primary_funder.name) if org_link.nil?
 %>
 
 <div class="t-step__landing-header">
   <div class="dmptool-logo">
-    <%= image_tag('dmptool_logo_u166.svg', alt: 'DMPTool logo') %>
+    <a href="https://<%= dmptool_url %>" title="DMPTool homepage"><%= image_tag('dmptool_logo_u166.svg', alt: 'DMPTool logo') %></a>
   </div>
   <div class="dmp-menu">
     <ul>
@@ -20,7 +25,7 @@ narrative_url = LandingPresenter.narrative_url(data_management_plan: dmp)
 </div>
 <div class="t-step__landing-title">
   <div class="dmp-title">
-    <p>This page describes a data management plan written for the <%= primary_institution %> using the DMPTool.</p>
+    <p>This page describes a data management plan written for the <%= org_link %> using the <a href="https://<%= dmptool_url %>" title="DMPTool homepage">DMPTool</a>.</p>
     <h1><%= dmp.title %></h1>
   </div>
   <% if narrative_url.present? && dmp.source_privacy == 'open' %>

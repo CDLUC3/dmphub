@@ -9,12 +9,12 @@ class LandingPresenter
     end
 
     def primary_institution(data_management_plan:)
-      return 'DMPHub' unless data_management_plan.is_a?(DataManagementPlan)
+      return nil unless data_management_plan.is_a?(DataManagementPlan)
 
       contact = data_management_plan.primary_contact
-      return 'DMPHub' unless contact.is_a?(Contributor) && contact.affiliation.is_a?(Affiliation)
+      return nil unless contact.is_a?(Contributor) && contact.affiliation.is_a?(Affiliation)
 
-      contact.affiliation.name
+      contact.affiliation
     end
 
     # Detects the primary funder name

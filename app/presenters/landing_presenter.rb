@@ -19,12 +19,12 @@ class LandingPresenter
 
     # Detects the primary funder name
     def primary_funder(data_management_plan:)
-      return 'DMPHub' unless data_management_plan.present? && data_management_plan.project.present?
+      return nil unless data_management_plan.present? && data_management_plan.project.present?
 
       funders = data_management_plan.project.fundings.map(&:affiliation)
-      return 'DMPHub' unless funders.any?
+      return nil unless funders.any?
 
-      funders.last.name
+      funders.last
     end
 
     # Converts the ContributorDataManagementPlan array into an array of Contributors with Roles

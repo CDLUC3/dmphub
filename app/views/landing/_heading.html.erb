@@ -9,7 +9,7 @@ primary_funder = LandingPresenter.primary_funder(data_management_plan: dmp)
 primary_org = LandingPresenter.primary_institution(data_management_plan: dmp)
 
 org_link = identifier_to_link(identifier: primary_org.ror, text: primary_org.name) if primary_org.present?
-org_link = identifier_to_link(identifier: primary_funder.crossref, text: primary_funder.name) if org_link.nil?
+org_link = identifier_to_link(identifier: primary_funder.fundref, text: primary_funder.name) if org_link.nil?
 %>
 
 <div class="t-step__landing-header">

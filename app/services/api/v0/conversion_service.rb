@@ -155,7 +155,7 @@ module Api
 
         # Convert from a role to the CRediT URL
         def to_credit_taxonomy(role:)
-          return "other" if role.downcase == "other"
+          return 'other' if role.downcase == 'other'
 
           "https://dictionary.casrai.org/Contributor_Roles/#{role.capitalize}"
         end

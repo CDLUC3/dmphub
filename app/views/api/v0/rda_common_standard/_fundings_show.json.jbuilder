@@ -8,7 +8,7 @@ json.funder_id do
 end
 json.funding_status funding.status
 
-grant_id = funding.identifiers.select { |id| id.is_funded_by? }.first
+grant_id = funding.identifiers.select(&:is_funded_by?).first
 if grant_id.present?
   json.grant_id do
     json.partial! 'api/v0/rda_common_standard/identifiers_show',
@@ -16,7 +16,7 @@ if grant_id.present?
   end
 end
 
-opportunity_id = funding.identifiers.select { |id| id.is_required_by? }.first
+opportunity_id = funding.identifiers.select(&:is_required_by?).first
 if opportunity_id.present? && opportunity_id.value != grant_id&.value
   json.dmproadmap_funding_opportunity_id do
     json.type Api::V0::ConversionService.to_rda_identifier_category(category: opportunity_id.category)

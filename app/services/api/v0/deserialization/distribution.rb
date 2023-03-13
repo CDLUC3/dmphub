@@ -27,7 +27,7 @@ module Api
             return nil unless provenance.present? && dataset.present? && valid?(json: json)
 
             # Try to find the Distribution by the identifier
-            distribution = find_by_urls(json: json)
+            # distribution = find_by_urls(json: json)
 
             host = Api::V0::Deserialization::Host.deserialize(
               provenance: provenance, json: json.fetch(:host, {})

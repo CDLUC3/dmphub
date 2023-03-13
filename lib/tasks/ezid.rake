@@ -20,7 +20,7 @@ namespace :ezid do
 
       if dmp.present?
         controller = ActionController::Base.new
-        pp controller.render_to_string("ezid/minter.xml", locals: { data_management_plan: dmp })
+        pp controller.render_to_string('ezid/minter.xml', locals: { data_management_plan: dmp })
       else
         p 'Could not find the specified DMP. We are looking for data_management_plan.id'
       end

@@ -246,7 +246,7 @@ namespace :csv_loader do
     # Remove the funding and process it
     fundings = hash[:funding].select do |f|
       f.fetch(:grant_id, {})[:identifier] == award ||
-        !f[:grant_id].present? && f[:name] == line['funder_name']
+        (!f[:grant_id].present? && f[:name] == line['funder_name'])
     end
     found = fundings.any?
 

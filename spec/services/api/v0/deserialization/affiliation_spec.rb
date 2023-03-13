@@ -162,9 +162,9 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         expect(result.identifiers).to eql(@affiliation.identifiers)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :affiliation_id' do
-        ::Identifier.all.destroy_all
+        Identifier.all.destroy_all
         affiliation = build(:affiliation)
-        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
+        category = Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { affiliation_id: { type: category, identifier: @identifier.value } }
         count = affiliation.identifiers.length
         result = described_class.send(:attach_identifiers, provenance: @provenance,
@@ -175,9 +175,9 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         expect(id).to eql(@identifier.value)
       end
       it 'initializes the identifier and adds it to the Affiliation for a :funder_id' do
-        ::Identifier.all.destroy_all
+        Identifier.all.destroy_all
         affiliation = build(:affiliation)
-        category = ::Identifier.categories.keys.reject { |cat| cat == @category }.sample
+        category = Identifier.categories.keys.reject { |cat| cat == @category }.sample
         json = { funder_id: { type: category, identifier: @identifier.value } }
         count = affiliation.identifiers.length
         result = described_class.send(:attach_identifiers, provenance: @provenance,
@@ -197,7 +197,7 @@ RSpec.describe Api::V0::Deserialization::Affiliation do
         name: Faker::Company.unique.name,
         abbreviation: Faker::Lorem.word.upcase,
         affiliation_id: {
-          type: ::Identifier.categories.keys.reject { |c| c == @affiliation.identifiers.first.category }.sample,
+          type: Identifier.categories.keys.reject { |c| c == @affiliation.identifiers.first.category }.sample,
           identifier: Faker::Internet.url
         }
       }

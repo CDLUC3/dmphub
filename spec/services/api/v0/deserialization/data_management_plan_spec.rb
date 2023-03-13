@@ -27,7 +27,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
         {
           name: Faker::Music::PearlJam.unique.musician,
           mbox: Faker::Internet.unique.email,
-          role: [::ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }.sample]
+          role: [ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }.sample]
         }
       ],
       cost: [
@@ -41,7 +41,7 @@ RSpec.describe Api::V0::Deserialization::DataManagementPlan do
       dataset: [
         {
           title: Faker::Music::PearlJam.song,
-          data_acces: ::Dataset.dataset_types.keys.sample,
+          data_acces: Dataset.dataset_types.keys.sample,
           dataset_id: { type: Identifier.categories.keys.sample, value: SecureRandom.uuid }
         }
       ],

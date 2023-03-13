@@ -75,9 +75,9 @@ FactoryBot.define do
           data_management_plan.datasets << create(:dataset, :complete, provenance: data_management_plan.provenance)
         end
 
-        relateds = ::Identifier.descriptors.keys.reject { |k| %w[is_identified_by is_metadata_for].include?(k) }
+        relateds = Identifier.descriptors.keys.reject { |k| %w[is_identified_by is_metadata_for].include?(k) }
         evaluator.identifiers_count.times do
-          data_management_plan.identifiers << create(:identifier, category: ::Identifier.categories.keys.sample,
+          data_management_plan.identifiers << create(:identifier, category: Identifier.categories.keys.sample,
                                                                   identifiable: data_management_plan,
                                                                   descriptor: relateds.sample,
                                                                   provenance: data_management_plan.provenance)

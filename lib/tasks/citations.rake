@@ -23,8 +23,6 @@ namespace :citations do
   private
 
   def fetch_dois
-    cut_off_date = Time.now - 31.days
-
     dois = Identifier.includes(:citation)
                      .where(identifiable_type: 'DataManagementPlan', category: 'doi')
                      .where.not(descriptor: 'is_identified_by')

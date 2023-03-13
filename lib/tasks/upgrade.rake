@@ -31,18 +31,18 @@ namespace :upgrade do
   task initialize_work_types: :environment do
     p 'Setting Identifier.work_types based on value of Citation.object_type'
     Citation.includes(:identifier).all.each do |citation|
-      case citation.object_type
-      when 'article'
-        work_type = 'article'
-      when 'book'
-        work_type = 'book'
-      when 'dataset'
-        work_type = 'dataset'
-      when 'software'
-        work_type = 'software'
-      else
-        work_type = 'supplemental_information'
-      end
+      work_type = case citation.object_type
+                  when 'article'
+                    'article'
+                  when 'book'
+                    'book'
+                  when 'dataset'
+                    'dataset'
+                  when 'software'
+                    'software'
+                  else
+                    'supplemental_information'
+                  end
       citation.identifier&.update(work_type: work_type)
     end
   end

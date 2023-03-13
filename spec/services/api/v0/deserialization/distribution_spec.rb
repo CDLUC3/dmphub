@@ -17,7 +17,7 @@ RSpec.describe Api::V0::Deserialization::Distribution do
       access_url: Faker::Internet.unique.url,
       available_until: (Time.now + 2.years).utc.to_formatted_s(:iso8601),
       byte_size: Faker::Number.number,
-      data_access: ::Distribution.data_accesses.keys.sample,
+      data_access: Distribution.data_accesses.keys.sample,
       description: Faker::Lorem.paragraph,
       download_url: Faker::Internet.unique.url,
       format: Faker::Lorem.word,
@@ -63,7 +63,7 @@ RSpec.describe Api::V0::Deserialization::Distribution do
         expect(described_class.send(:valid?, json: json)).to eql(false)
       end
       it 'returns false if :title is not present' do
-        json = { data_access: ::Distribution.data_accesses.keys.sample }
+        json = { data_access: Distribution.data_accesses.keys.sample }
         expect(described_class.send(:valid?, json: json)).to eql(false)
       end
       it 'returns false if :data_acces is not present' do
@@ -71,7 +71,7 @@ RSpec.describe Api::V0::Deserialization::Distribution do
         expect(described_class.send(:valid?, json: json)).to eql(false)
       end
       it 'returns true if :title and :data_acces present' do
-        json = { title: Faker::Lorem.word, data_access: ::Distribution.data_accesses.keys.sample }
+        json = { title: Faker::Lorem.word, data_access: Distribution.data_accesses.keys.sample }
         expect(described_class.send(:valid?, json: json)).to eql(true)
       end
     end

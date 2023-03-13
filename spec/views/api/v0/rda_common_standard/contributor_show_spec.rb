@@ -6,7 +6,7 @@ describe 'API V0 - Contributor Show' do
   before(:each) do
     dmp = create(:data_management_plan)
     @contributor = create(:contributor, :complete, affiliation: create(:affiliation))
-    roles = ::ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }
+    roles = ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }
     @cdmp = create(:contributors_data_management_plan, data_management_plan: dmp, contributor: @contributor,
                                                        role: roles.sample)
     @partial = 'api/v0/rda_common_standard/contributors_show.json.jbuilder'

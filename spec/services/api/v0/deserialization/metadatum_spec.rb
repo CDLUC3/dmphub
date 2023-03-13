@@ -7,7 +7,7 @@ RSpec.describe Api::V0::Deserialization::Metadatum do
     @provenance = create(:provenance)
     @dataset = create(:dataset)
     @metadatum = create(:metadatum, provenance: @provenance, dataset: @dataset)
-    @category = ::Identifier.requires_universal_uniqueness.sample.to_s
+    @category = Identifier.requires_universal_uniqueness.sample.to_s
     @value = SecureRandom.uuid
     @identifier = create(:identifier, identifiable: @metadatum, category: @category,
                                       value: @value, provenance: @provenance)
@@ -17,7 +17,7 @@ RSpec.describe Api::V0::Deserialization::Metadatum do
       description: Faker::Lorem.paragraph,
       language: Api::V0::ConversionService::LANGUAGES.sample,
       metadata_standard_id: {
-        type: ::Identifier.categories.keys.reject { |k| k == @category }.sample,
+        type: Identifier.categories.keys.reject { |k| k == @category }.sample,
         identifier: Faker::Internet.url
       }
     }

@@ -5,10 +5,10 @@ require 'uc3-ssm'
 # config valid for current version and patch releases of Capistrano
 lock '~> 3.16'
 
-set :rails_env, ENV['RAILS_ENV']
+set :rails_env, ENV.fetch('RAILS_ENV', nil)
 
 # The Capistrano directory e.g. /dmp/apps/dmphub/
-set :capistrano_dir, ENV['CAPISTRANO_DIR']
+set :capistrano_dir, ENV.fetch('CAPISTRANO_DIR', nil)
 
 # Default branch is :main
 ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp

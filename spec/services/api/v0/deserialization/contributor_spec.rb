@@ -92,7 +92,7 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       end
       it 'initializes a Contributor by its name/email' do
         allow(described_class).to receive(:find_by_identifier).and_return(nil)
-        allow(::Contributor).to receive(:where).and_return([])
+        allow(Contributor).to receive(:where).and_return([])
         result = described_class.send(:marshal_contributor, provenance: @provenance,
                                                             is_contact: true, json: @json)
         expect(result.new_record?).to eql(true)
@@ -150,7 +150,7 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       end
       it 'initializes a Contributor' do
         allow(described_class).to receive(:find_by_email).and_return(nil)
-        allow(::Contributor).to receive(:where).and_return([])
+        allow(Contributor).to receive(:where).and_return([])
         result = described_class.send(:find_by_email_or_name, provenance: @provenance,
                                                               is_contact: true, json: @json)
         expect(result.new_record?).to eql(true)
@@ -262,9 +262,9 @@ RSpec.describe Api::V0::Deserialization::Contributor do
       @json = {
         name: Faker::Movies::StarWars.unique.character,
         mbox: Faker::Internet.unique.email,
-        role: [::ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }.sample],
+        role: [ContributorsDataManagementPlan.roles.keys.reject { |k| k == 'primary_contact' }.sample],
         contributor_id: {
-          type: ::Identifier.categories.keys.reject { |c| c == @contributor.identifiers.first.category }.sample,
+          type: Identifier.categories.keys.reject { |c| c == @contributor.identifiers.first.category }.sample,
           identifier: Faker::Internet.unique.url
         }
       }

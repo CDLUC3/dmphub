@@ -146,8 +146,7 @@ module Api
            dmproadmap_latest_version: %i[uri],
            dmproadmap_links: %i[download],
            dmproadmap_related_identifiers: identifier_permitted_params,
-           dmproadmap_subscribers: [:name, :callback, actions:[]]
-          ]
+           dmproadmap_subscribers: [:name, :callback, { actions: [] }]]
       end
 
       def identifier_permitted_params

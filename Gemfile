@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '~>2.6'
+ruby '~>3.0'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 6.0.0'
@@ -26,7 +26,7 @@ gem 'jbuilder', '~> 2.7'
 # gem 'image_processing', '~> 1.2'
 
 # Our homegrown artisinal SSM gem
-gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: '0.3.1'
+gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: 'ruby3.0'
 
 # A library (owned by UC3) that retrieves an citation for the specified DOI
 # https://github.com/CDLUC3/uc3-citation

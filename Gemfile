@@ -26,7 +26,7 @@ gem 'jbuilder', '~> 2.7'
 # gem 'image_processing', '~> 1.2'
 
 # Our homegrown artisinal SSM gem
-gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: '0.3.1'
+gem 'uc3-ssm', git: 'https://github.com/CDLUC3/uc3-ssm', branch: 'ruby3.0'
 
 # A library (owned by UC3) that retrieves an citation for the specified DOI
 # https://github.com/CDLUC3/uc3-citation

@@ -1,11 +1,12 @@
 GIT
   remote: https://github.com/CDLUC3/uc3-ssm
-  revision: 5af8578418e9f6563f68ad92af54350b25396846
-  branch: 0.3.1
+  revision: 308d959d8ce243416bba2d870b22010927e2f5a2
+  branch: ruby3.0
   specs:
-    uc3-ssm (0.3.1)
+    uc3-ssm (0.3.5)
       aws-sdk-ssm (~> 1.84)
       logger (~> 1.4)
+      psych (< 4)
       yaml (~> 0.1)
 
 GEM
@@ -253,6 +254,7 @@ GEM
     parallel (1.23.0)
     parser (3.2.2.0)
       ast (~> 2.4.1)
+    psych (3.3.4)
     public_suffix (5.0.1)
     puma (3.12.6)
     racc (1.6.2)
@@ -491,4 +493,4 @@ RUBY VERSION
    ruby 3.0.4p208
 
 BUNDLED WITH
-   2.3.24
+   2.4.8

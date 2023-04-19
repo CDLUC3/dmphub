@@ -12,7 +12,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
     @identifier = create(:identifier, identifiable: @identifiable, provenance: @provenance)
     @doi = create(:identifier, identifiable: @identifiable, category: 'doi', provenance: @provenance)
     @json = {
-      type: ::Identifier.categories.keys.sample,
+      type: Identifier.categories.keys.sample,
       identifier: SecureRandom.uuid
     }
   end
@@ -83,7 +83,7 @@ RSpec.describe Api::V0::Deserialization::Identifier do
         expect(described_class.send(:type_to_category, json: nil)).to eql(nil)
       end
       it 'uses the specified :type if its a valid :category' do
-        typ = ::Identifier.categories.keys.sample
+        typ = Identifier.categories.keys.sample
         result = described_class.send(:type_to_category, json: { type: typ, identifier: Faker::Internet.url })
         expect(result).to eql(typ)
       end

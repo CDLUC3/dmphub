@@ -25,7 +25,7 @@ RSpec.describe Api::V0::Deserialization::Funding do
       },
       funding_status: %w[planned granted rejected].sample,
       dmproadmap_funding_opportunity_id: {
-        type: ::Identifier.categories.keys.sample,
+        type: Identifier.categories.keys.sample,
         identifier: SecureRandom.uuid
       },
       dmproadmap_funded_affiliations: [
@@ -90,7 +90,7 @@ RSpec.describe Api::V0::Deserialization::Funding do
       it 'returns an existing Funding record' do
         @funding.status = 'rejected'
         @funding.provenance = nil
-        allow(::Funding).to receive(:find_or_initialize_by).and_return(@funding)
+        allow(Funding).to receive(:find_or_initialize_by).and_return(@funding)
         result = described_class.send(:find_funding, provenance: @provenance, project: @project,
                                                      affiliation: @funder, json: @json)
         expect(result).to eql(@funding)
@@ -100,7 +100,7 @@ RSpec.describe Api::V0::Deserialization::Funding do
       it 'initializes a Funding record' do
         funding = build(:funding, project: @project, affiliation: @affiliation,
                                   status: nil)
-        allow(::Funding).to receive(:find_or_initialize_by).and_return(funding)
+        allow(Funding).to receive(:find_or_initialize_by).and_return(funding)
         result = described_class.send(:find_funding, provenance: @provenance, project: @project,
                                                      affiliation: @funder, json: @json)
         expect(result).to eql(funding)
@@ -108,7 +108,7 @@ RSpec.describe Api::V0::Deserialization::Funding do
         expect(result.provenance).to eql(@provenance)
       end
       it 'calls :deserialize_grant' do
-        allow(::Funding).to receive(:find_or_initialize_by).and_return(@funding)
+        allow(Funding).to receive(:find_or_initialize_by).and_return(@funding)
         allow(described_class).to receive(:deserialize_grant).and_return(@grant_id)
         described_class.send(:find_funding, provenance: @provenance, project: @project,
                                             affiliation: @funder, json: @json)
@@ -224,16 +224,16 @@ RSpec.describe Api::V0::Deserialization::Funding do
       @json = {
         name: Faker::Movies::StarWars.unique.character,
         funder_id: {
-          type: ::Identifier.categories.keys.sample,
+          type: Identifier.categories.keys.sample,
           identifier: Faker::Internet.unique.url
         },
         grant_id: {
-          type: ::Identifier.categories.keys.sample,
+          type: Identifier.categories.keys.sample,
           identifier: Faker::Internet.unique.url
         },
         funding_status: %w[planned granted rejected].sample,
         dmproadmap_funding_opportunity_id: {
-          type: ::Identifier.categories.keys.sample,
+          type: Identifier.categories.keys.sample,
           identifier: Faker::Internet.unique.url
         },
         dmproadmap_funded_affiliations: [{ name: Faker::Company.name }]

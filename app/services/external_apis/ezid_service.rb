@@ -4,6 +4,7 @@ require 'base64'
 
 module ExternalApis
   # This service provides an interface to Datacite API.
+  # rubocop:disable Metrics/ClassLength
   class EzidService < BaseService
     class << self
       # Retrieve the config settings from the initializer
@@ -146,4 +147,5 @@ module ExternalApis
       end
     end
   end
+  # rubocop:enable Metrics/ClassLength
 end

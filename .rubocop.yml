@@ -9,6 +9,10 @@ AllCops:
     - 'node_modules/**/*'
     - 'test/**/*'
 
+Style/OpenStructUse:
+  Exclude:
+    - 'spec/**/*'
+
 # Reasonable line-length check; it's too easy for the cure to be worse than the disease
 Layout/LineLength:
   Max: 150

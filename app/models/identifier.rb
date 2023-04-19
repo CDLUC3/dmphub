@@ -95,7 +95,11 @@ class Identifier < ApplicationRecord
     Citation.create(
       identifier: self,
       provenance: provenance,
-      object_type: (citation.include?('[Article]') ? 'article' : (wrk_typ.present? ? wrk_typ : 'dataset')),
+      object_type: (if citation.include?('[Article]')
+                      'article'
+                    else
+                      (wrk_typ.present? ? wrk_typ : 'dataset')
+                    end),
       citation_text: citation,
       retrieved_on: Time.now
     )

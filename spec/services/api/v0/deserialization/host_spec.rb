@@ -7,7 +7,7 @@ RSpec.describe Api::V0::Deserialization::Host do
     @provenance = create(:provenance)
     @host = create(:host, provenance: @provenance)
     @identifier = create(:identifier, identifiable: @host,
-                                      category: ::Identifier.requires_universal_uniqueness.sample.to_s,
+                                      category: Identifier.requires_universal_uniqueness.sample.to_s,
                                       value: SecureRandom.uuid, provenance: @provenance)
     @url = create(:identifier, identifiable: @host, category: 'url',
                                value: Faker::Internet.url, provenance: @provenance)
@@ -25,7 +25,7 @@ RSpec.describe Api::V0::Deserialization::Host do
       storage_type: Faker::Lorem.sentence,
       support_versioning: %w[yes no unknown].sample,
       url: Faker::Internet.url,
-      dmproadmap_host_id: { type: ::Identifier.categories.keys.sample, identifier: SecureRandom.uuid }
+      dmproadmap_host_id: { type: Identifier.categories.keys.sample, identifier: SecureRandom.uuid }
     }
   end
 
@@ -101,13 +101,13 @@ RSpec.describe Api::V0::Deserialization::Host do
       end
       it 'finds the Host by :url' do
         allow(Api::V0::Deserialization::Identifier).to receive(:deserialize).and_return(nil)
-        allow(::Identifier).to receive(:where).and_return([@identifier])
+        allow(Identifier).to receive(:where).and_return([@identifier])
         result = described_class.send(:find_by_identifier, provenance: @provenance, json: @json)
         expect(result).to eql(@host)
       end
       it 'returns nil if no Host was found' do
         allow(Api::V0::Deserialization::Identifier).to receive(:deserialize).and_return(nil)
-        allow(::Identifier).to receive(:where).and_return([])
+        allow(Identifier).to receive(:where).and_return([])
         result = described_class.send(:find_by_identifier, provenance: @provenance, json: @json)
         expect(result).to eql(nil)
       end

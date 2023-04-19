@@ -46,9 +46,7 @@ end
 # Key: "rack::attack:#{Time.now.to_i/:period}:logins/ip:#{req.ip}"
 Rack::Attack.throttle('logins/ip', limit: 5, period: 20.seconds) do |req|
   secure_paths = %w[/users/sign_in /users/auth/orcid /users/password /users]
-  if secure_paths.include?(req.path) && req.post?
-    req.ip
-  end
+  req.ip if secure_paths.include?(req.path) && req.post?
 end
 
 # Throttle POST requests to /login by email param

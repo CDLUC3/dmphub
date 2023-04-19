@@ -35,7 +35,7 @@ class License < ApplicationRecord
 
       JSON.parse(resp.body).fetch('name', license_ref)
     end
-  rescue JSON::ParserError => e
+  rescue JSON::ParserError
     Rails.logger.error "License.display_name could not parse the JSON for #{license_ref}"
     license_ref
   end

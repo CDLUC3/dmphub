@@ -25,6 +25,6 @@ class Metadatum < ApplicationRecord
 
   # The RDA Common standard only allows for the description.
   def name
-    description.split(" - ").first
+    description.split(' - ').first
   end
 end

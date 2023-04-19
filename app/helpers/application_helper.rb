@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # Generic helper
+# rubocop:disable Metrics/ModuleLength
 module ApplicationHelper
   def safe_date(date:)
     return 'unspecified' unless date.is_a?(Time)
@@ -27,6 +28,7 @@ module ApplicationHelper
     end
   end
 
+  # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
   def identifier_to_link(identifier:, text: '', show_default: true)
     return show_default ? 'unknown' : nil unless identifier.present? || text.present?
     return text unless identifier.present?
@@ -37,7 +39,9 @@ module ApplicationHelper
 
     link_to text.blank? ? url : text, url, target: '_blank'
   end
+  # rubocop:enable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
 
+  # rubocop:disable Metrics/CyclomaticComplexity
   def identifier_to_url(identifier:)
     return nil unless identifier.present?
     return identifier.value unless identifier.present? && !identifier.value.start_with?('http')
@@ -53,6 +57,7 @@ module ApplicationHelper
       identifier.category == 'other' ? identifier.value : "#{identifier.category}:#{identifier.value}"
     end
   end
+  # rubocop:enable Metrics/CyclomaticComplexity
 
   def orcid_without_url(value:)
     value.gsub(%r{^https?://orcid.org/}, '')
@@ -104,8 +109,7 @@ module ApplicationHelper
   def landing_page_path_with_doi(dmp:)
     # Temporarily override the default root_path behavior to redirect users to the DMPTool
     # until we have decided what to do for the search/dashboard
-    root_path = Rails.env.production? ? 'https://dmptool.org/' : (Rails.env.stage? ? 'https://dmptool-stg.cdlib.org/' : 'https://dmptool-stg.cdlib.org/')
-
+    root_path = Rails.env.production? ? 'https://dmptool.org/' : 'https://dmptool-stg.cdlib.org/'
     return root_path unless dmp.id.present? && dmp.doi.present?
 
     id_to_doi(dmp: dmp, value: landing_page_path(dmp))
@@ -136,9 +140,9 @@ module ApplicationHelper
 
   def research_domain_from_keywords(keywords: [])
     keywords = keywords.reject do |key|
-      key.value.start_with?(%r{[0-9\.]\s+\-})
+      key.value.start_with?(/[0-9.]\s+-/)
     end
-    return "" unless keywords.any?
+    return '' unless keywords.any?
 
     <<~HTML
       <li>
@@ -148,17 +152,18 @@ module ApplicationHelper
   end
 
   def metadata_standards(dataset:)
-    return "" unless dataset.present? && dataset.metadata.any?
+    return '' unless dataset.present? && dataset.metadata.any?
 
     standards = dataset.metadata.map do |standard|
       link_to(standard.name, standard.urls.first&.value, target: '_blank',
-              title: standard.name)
+                                                         title: standard.name)
     end
 
     <<~HTML
       <li>
-        <strong>Metadata Standard(s):</strong> <span>#{standards.join(", ")}</span>
+        <strong>Metadata Standard(s):</strong> <span>#{standards.join(', ')}</span>
       </li>
     HTML
   end
 end
+# rubocop:enable Metrics/ModuleLength

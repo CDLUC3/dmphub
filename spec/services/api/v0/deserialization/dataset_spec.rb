@@ -13,13 +13,13 @@ RSpec.describe Api::V0::Deserialization::Dataset do
     @host.reload
     @distribution = create(:distribution, provenance: @provenance, dataset: @dataset, host: @host)
     @identifier = create(:identifier, identifiable: @dataset,
-                                      category: ::Identifier.requires_universal_uniqueness.sample.to_s,
-                                      descriptor: ::Identifier.descriptors.keys.sample,
+                                      category: Identifier.requires_universal_uniqueness.sample.to_s,
+                                      descriptor: Identifier.descriptors.keys.sample,
                                       value: Faker::Internet.url)
 
     metadatum = create(:metadatum, dataset: @dataset, provenance: @provenance)
     create(:identifier, identifiable: metadatum, value: Faker::Internet.url,
-                        category: ::Identifier.requires_universal_uniqueness.sample.to_s)
+                        category: Identifier.requires_universal_uniqueness.sample.to_s)
     create(:security_privacy_statement, dataset: @dataset, provenance: @provenance)
     create(:technical_resource, dataset: @dataset, provenance: @provenance)
     create(:dataset_keyword, dataset: @dataset, keyword: create(:keyword))
@@ -28,18 +28,18 @@ RSpec.describe Api::V0::Deserialization::Dataset do
     # Full sample Dataset w/minimal associated objects
     @json = {
       title: Faker::Lorem.sentence,
-      type: ::Dataset.dataset_types.keys.sample,
+      type: Dataset.dataset_types.keys.sample,
       personal_data: %w[yes no unknown].sample,
       sensitive_data: %w[yes no unknown].sample,
       data_quality_assurance: Faker::Lorem.paragraph,
-      dataset_id: { type: ::Identifier.categories.keys.sample, identifier: SecureRandom.uuid },
+      dataset_id: { type: Identifier.categories.keys.sample, identifier: SecureRandom.uuid },
       description: Faker::Lorem.paragraph,
-      distribution: [{ title: Faker::Lorem.sentence, data_access: ::Distribution.data_accesses.keys.sample }],
+      distribution: [{ title: Faker::Lorem.sentence, data_access: Distribution.data_accesses.keys.sample }],
       issued: (Time.now + 65.days).utc.to_formatted_s(:iso8601),
       keyword: [Faker::Lorem.unique.word, Faker::Lorem.unique.word],
       language: Api::V0::ConversionService::LANGUAGES.sample,
       metadata: [
-        { metadata_standard_id: { type: ::Identifier.categories.keys.sample, identifier: Faker::Internet.url } }
+        { metadata_standard_id: { type: Identifier.categories.keys.sample, identifier: Faker::Internet.url } }
       ],
       preservation_statement: Faker::Lorem.paragraph,
       security_and_privacy: [{ title: Faker::Lorem.sentence }],

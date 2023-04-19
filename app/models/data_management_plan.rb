@@ -18,6 +18,7 @@
 #  version                    :datetime
 #  source_privacy             :integer          default(0)
 #
+# rubocop:disable Metrics/ClassLength
 class DataManagementPlan < ApplicationRecord
   include Alterable
   include Authorizable

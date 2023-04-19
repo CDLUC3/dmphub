@@ -74,10 +74,5 @@ module Dmphub
     config.x.ror.max_results_per_page = 20
     config.x.ror.max_redirects = 3
     config.x.ror.active = true
-
-    if Rails.env == 'production'
-      # Override default test/development constants here
-
-    end
   end
 end

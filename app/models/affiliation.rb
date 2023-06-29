@@ -28,7 +28,7 @@ class Affiliation < ApplicationRecord
   has_and_belongs_to_many :fundings, class_name: 'Funding', join_table: 'fundings_affiliations'
 
   # Validations
-  validates :name, presence: true, uniqueness: { case_sensitive: false }
+  validates :name, presence: true #, uniqueness: { case_sensitive: false }
 
   before_validation :ensure_defaults
 
